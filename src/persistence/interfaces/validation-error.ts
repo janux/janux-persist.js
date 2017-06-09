@@ -2,7 +2,7 @@
  * Project janux-persistence
  * Created by ernesto on 6/9/17.
  */
-export  interface  IValidaionError {
+export  interface  IValidationError {
     attribute: string;
     message: string;
     value: string;
