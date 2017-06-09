@@ -1,0 +1,35 @@
+{
+    "defaultSeverity": "off",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "eofline": false,
+        "quotemark": [
+            false
+        ],
+        "variable-name": [
+            true,
+            "ban-keywords",
+            "check-format",
+            "allow-leading-underscore"
+        ],
+        "trailing-comma": [
+            false
+        ],
+        "object-literal-sort-keys": [
+            false
+        ],
+        "curly": false,
+        "member-access": [
+            true,
+            "check-accessor",
+            "check-constructor"
+        ],
+        "no-empty-interface": false,
+        "no-console": true,
+        "no-shadowed-variable": false
+    },
+    "rulesDirectory": []
+}
