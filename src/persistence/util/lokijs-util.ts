@@ -1,11 +1,14 @@
 /**
- * Project glarus-system
+ * Project janux-persistence
  * Created by ernesto on 5/30/17.
  */
 
 import Promise = require('bluebird');
 import * as logger from 'log4js';
 
+/**
+ * Lokijs db functions util
+ */
 export class LokiJsUtil {
     public static findOneById(collection, id): Promise<any> {
         this._log.debug('Call to findOneById with ', id);

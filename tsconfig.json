@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "module": "commonjs",
+        "target": "ES5",
+        "outDir": "./dist",
+        "moduleResolution": "node",
+        "rootDir": "./src",
+        "sourceMap": true,
+        "declaration": true,
+        "skipLibCheck": true,
+        "removeComments": true
+    },
+    "exclude": [
+        "**/node_modules/*",
+        "vendor",
+        "dist",
+        "gulp",
+        "docker",
+        "config"
+    ]
+}

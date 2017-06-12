@@ -1,5 +1,5 @@
 /**
- * Project glarus-system
+ * Project janux-persistence
  * Created by ernesto on 5/30/17.
  */
 
@@ -8,6 +8,9 @@ import mongoose = require('mongoose');
 import {Model} from 'mongoose';
 import Promise = require('bluebird');
 
+/**
+ * Mongodb functions util
+ */
 export class MongoDbUtil {
 
     public static findOneById(model: Model<any>, id: any): Promise<any> {

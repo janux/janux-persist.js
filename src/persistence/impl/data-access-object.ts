@@ -6,35 +6,27 @@
 import * as _ from 'lodash';
 import * as logger from 'log4js';
 import uuid = require("uuid");
-import {IDataAccessObject} from "../interfaces/data-acces-object";
-import {IDbEngineUtilClass} from "../interfaces/db-engine-util-method";
 import Promise = require("bluebird");
-import {IDbParams} from "../interfaces/db-params";
-import {IEntity} from "../interfaces/entity";
+import {IEntityProperties} from "../interfaces/entity-properties";
 import {IValidationError} from "../interfaces/validation-error";
+import {TimeStampGenerator} from "../util/TimeStampGenerator";
+import {UuidGenerator} from "../util/UuidGenerator";
 
-export abstract class AbstractDataAccessObject<t extends IEntity> implements IDataAccessObject {
+export abstract class DataAccessObject<t> {
 
+    protected entityProperties: IEntityProperties;
     private readonly _log = logger.getLogger("DataAccessObject");
-    private readonly COMES_FROM_I_VERSIONABLE: string = "comesFromIVersionable";
-    private readonly DATE_CREATED_PROPERTY: string = "dateCreated";
-    private readonly DATE_UPDATED_PROPERTY: string = "dateUpdated";
+    private readonly ID_PROPERTY = "id";
 
-    // This variable holds all the params necessary that is going to send to the engine
-    private dbParams: IDbParams;
-    // This class holds all common db engine methods
-    private dbEngineUtil: IDbEngineUtilClass;
-
-    constructor(dbParams: IDbParams, dbEngineUtil: IDbEngineUtilClass) {
-        this.dbParams = dbParams;
-        this.dbEngineUtil = dbEngineUtil;
+    constructor(entityProperties: IEntityProperties) {
+        this.entityProperties = entityProperties;
     }
 
     public insert<t>(objectToInsert: t): Promise<t | IValidationError[]> {
         this._log.debug('Call to insert with %j', objectToInsert);
         let entityErrors: IValidationError[];
         // Check for an null id
-        if (!_.isEmpty(objectToInsert.id) || !_.isEmpty(objectToInsert.uuid)) {
+        if (objectToInsert[this.ID_PROPERTY] != null) {
             this._log.error('%j has an id', objectToInsert);
             return Promise.reject('Object has a defined id');
         }
@@ -45,13 +37,10 @@ export abstract class AbstractDataAccessObject<t extends IEntity> implements IDa
             return this.validateBeforeInsert(objectToInsert).then((validations: IValidationError[]) => {
                 this._log.debug("Returned errors from validateBeforeUpdate %j: ", validations);
                 if (validations.length === 0) {
-                    // If the object has an COMES_FROM_I_VERSIONABLE, let's add the
-                    // current date.
-                    if (objectToInsert.hasOwnProperty(this.COMES_FROM_I_VERSIONABLE)) {
-                        objectToInsert[this.DATE_CREATED_PROPERTY] = new Date();
-                    }
+                    // Generate the timestamp
+                    TimeStampGenerator.generateTimeStampForInsert(this.entityProperties, objectToInsert);
                     // Generate a unique uuid
-                    objectToInsert.uuid = uuid.v4();
+                    UuidGenerator.assignUuid(this.entityProperties, objectToInsert);
                     return this.insertMethod<t>(objectToInsert);
                 } else {
                     return Promise.reject(validations);
@@ -72,8 +61,9 @@ export abstract class AbstractDataAccessObject<t extends IEntity> implements IDa
      */
     public update<t>(objectToUpdate: t): Promise<t | IValidationError[]> {
         this._log.debug('Call to update with %j', objectToUpdate);
+
         let entityErrors: IValidationError[];
-        if (_.isEmpty(objectToUpdate.id) || _.isEmpty(objectToUpdate.uuid)) {
+        if (objectToUpdate[this.ID_PROPERTY] == null) {
             this._log.error('%j does not have an id', objectToUpdate);
             return Promise.reject('Object does not have an id');
         }
@@ -83,9 +73,7 @@ export abstract class AbstractDataAccessObject<t extends IEntity> implements IDa
                 .then((validations: IValidationError[]) => {
                     this._log.debug("Returned errors from validateBeforeUpdate %j: ", validations);
                     if (validations.length === 0) {
-                        if (objectToUpdate.hasOwnProperty(this.COMES_FROM_I_VERSIONABLE)) {
-                            objectToUpdate[this.DATE_UPDATED_PROPERTY] = new Date();
-                        }
+                        TimeStampGenerator.generateTimeStampForUpdate(this.entityProperties, objectToUpdate);
                         return this.updateMethod(objectToUpdate);
                     } else {
                         return Promise.reject(validations);
@@ -101,39 +89,29 @@ export abstract class AbstractDataAccessObject<t extends IEntity> implements IDa
      * Query an object by the id.
      * @param id The id.
      */
-    public findOneById(id: any): Promise<t> {
-        return this.dbEngineUtil.findOneById(id, this.dbParams);
-    }
+    public abstract findOneById(id: any): Promise<t>;
 
     /**
      * Query several objects by a array of ids.
      * @param arrayOfIds An array of ids.
      */
-    public  findAllByIds(arrayOfIds: any[]): Promise<t[]> {
-        return this.dbEngineUtil.findAllByIds(arrayOfIds, this.dbParams);
-    }
+    public abstract findAllByIds(arrayOfIds: any[]): Promise<t[]> ;
 
     /**
      * This method must be implemented in order to delete an record to the database.
      * @param objectToDelete The object to delete
      */
-    public remove<t>(objectToDelete: t): Promise<any> {
-        return this.dbEngineUtil.remove(objectToDelete, this.dbParams);
-    }
+    public abstract remove<t>(objectToDelete: t): Promise<any>;
 
     /**
      * Returns the amount of records that has the entity
      */
-    public  count(): Promise<number> {
-        return this.dbEngineUtil.count(this.dbParams);
-    }
+    public abstract count(): Promise<number> ;
 
     /**
      * Delete all records
      */
-    public  deleteAll(): Promise<any> {
-        return this.dbEngineUtil.deleteAll(this.dbParams);
-    }
+    public abstract deleteAll(): Promise<any> ;
 
     /**
      * Perform a query where the attribute must have the value.
@@ -142,9 +120,7 @@ export abstract class AbstractDataAccessObject<t extends IEntity> implements IDa
      * @param attributeName The attribute to look for.
      * @param value The value to look for.
      */
-    protected findOneByAttribute(attributeName: string, value): Promise<t> {
-        return this.dbEngineUtil.findOneByAttribute(attributeName, value, this.dbParams);
-    }
+    protected abstract findOneByAttribute(attributeName: string, value): Promise<t>;
 
     /**
      * Perform a query where the attribute must have the value.
@@ -153,45 +129,35 @@ export abstract class AbstractDataAccessObject<t extends IEntity> implements IDa
      * @param attributeName The attribute to look for.
      * @param value The value to look for.
      */
-    protected findAllByAttribute(attributeName: string, value): Promise<t[]> {
-        return this.dbEngineUtil.findAllByAttribute(attributeName, value, this.dbParams);
-    }
+    protected abstract findAllByAttribute(attributeName: string, value): Promise<t[]>;
 
     /**
      * Perform a query where the method filter an attribute by several values.
      * @param attributeName The attribute to look for.
      * @param values The list of values to filter.
      */
-    protected findAllByAttributeNameIn(attributeName: string, values: any[]): Promise<t[]> {
-        return this.dbEngineUtil.findAllByAttributeNameIn(attributeName, values, this.dbParams);
-    }
+    protected abstract findAllByAttributeNameIn(attributeName: string, values: any[]): Promise<t[]>;
 
     /**
      * This method must be implemented in order to insert an object to the database.
      * This method is called from this class and should not be called from outside.
      * @param objectToInsert The object to insert
      */
-    protected insertMethod<t>(objectToInsert: t): Promise<t> {
-        return this.dbEngineUtil.insertMethod(objectToInsert, this.dbParams);
-    }
+    protected abstract insertMethod<t>(objectToInsert: t): Promise<t>;
 
     /**
      * This method must be implemented in order to update an object to the database.
      * This method is called from this class and should not be called from outside.
      * @param objectToUpdate The object to update
      */
-    protected  updateMethod<t>(objectToUpdate: t): Promise<t> {
-        return this.dbEngineUtil.updateMethod(objectToUpdate, this.dbParams);
-    }
+    protected abstract updateMethod<t>(objectToUpdate: t): Promise<t>;
 
     /**
      * This method must be implemented in order to insert several object to the database.
      * This method is called from this class and should not be called from outside.
      * @param objectsToInsert The objects to insert
      */
-    protected  insertManyMethod<t>(objectsToInsert: t[]): Promise<any> {
-        return this.dbEngineUtil.insertManyMethod(objectsToInsert, this.dbParams);
-    }
+    protected abstract insertManyMethod<t>(objectsToInsert: t[]): Promise<any>;
 
     /**
      * This method must be implemented in order to perform non database validations before an insert or update,

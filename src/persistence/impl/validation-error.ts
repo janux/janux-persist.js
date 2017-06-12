@@ -9,7 +9,6 @@ export class ValidationError implements IValidationError {
     public message: string;
     public value: string;
 
-
     constructor(attribute: string, message: string, value: string) {
         this.attribute = attribute;
         this.message = message;
