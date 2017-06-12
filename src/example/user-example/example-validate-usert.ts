@@ -8,6 +8,11 @@ import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
 import {ExampleUser} from "./example-user";
 
+/**
+ * Validate the entity
+ * @param exampleUser The object to be validated
+ * @return {ValidationError[]} A list of errors founded.
+ */
 export function validateExampleUser(exampleUser: ExampleUser): ValidationError[] {
     const log = logger.getLogger("validateExampleUser");
     const errors: ValidationError[] = [];

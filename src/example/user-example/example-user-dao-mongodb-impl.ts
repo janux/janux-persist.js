@@ -10,6 +10,9 @@ import {DbEngineUtilMongodb} from "../../persistence/impl/db-engine-util-mongodb
 import {ValidationError} from "../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 
+/**
+ * this is the implementation for mongodb of ExampleUserDao
+ */
 export class ExampleUserDaoMongoDbImpl extends ExampleUserDao {
     public static createInstance(dbEngineUtil: DbEngineUtilMongodb, entityProperties: IEntityProperties) {
         return this.instance || (this.instance = new this(dbEngineUtil, entityProperties));

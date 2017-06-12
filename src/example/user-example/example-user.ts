@@ -2,6 +2,10 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
+
+/**
+ * This is the entity
+ */
 export class ExampleUser {
     public name: string;
     public lastName: string;

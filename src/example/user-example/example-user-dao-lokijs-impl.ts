@@ -9,6 +9,9 @@ import Promise = require("bluebird");
 import {DbEngineUtilLokijs} from "../../persistence/impl/db-engine-util-lokijs";
 import {ValidationError} from "../../persistence/impl/validation-error";
 
+/**
+ * this is the implementation for lokijs of ExampleUserDao
+ */
 export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
 
     public static createInstance(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {

@@ -12,6 +12,9 @@ import {IEntityProperties} from "../../persistence/interfaces/entity-properties"
 import {ExampleUser} from "./example-user";
 import {validateExampleUser} from "./example-validate-usert";
 
+/**
+ * This is the base dao class of the entity ExampleUser.
+ */
 export abstract class ExampleUserDao extends DataAccessObjectWithEngine<ExampleUser> {
 
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
