@@ -8,7 +8,6 @@ require('bluebird');
 var chai = require('chai');
 var expect = chai.expect;
 var log4js = require('log4js');
-var util = require('util');
 var ExampleUser = require("../../dist/index").ExampleUser;
 var validateExampleUser = require("../../dist/index").validateExampleUser;
 
