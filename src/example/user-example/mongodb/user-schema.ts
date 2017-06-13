@@ -16,5 +16,14 @@ export const MongoUserSchemaExample = new mongoose.Schema({
     },
     email: {
         type: String
+    },
+    uuid: {
+        type: String
+    },
+    dateUpdated: {
+        type: Date
+    },
+    dateCreated: {
+        type: Date
     }
 }, {collection: 'usersExample'});

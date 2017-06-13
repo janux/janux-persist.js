@@ -2,13 +2,14 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
-import {ExampleUser} from "./example-user";
-import {ExampleUserDao} from "./example-user-dao";
+import {ExampleUser} from "../example-user";
+import {ExampleUserDao} from "../example-user-dao";
 import Promise = require("bluebird");
 import {Model} from "mongoose";
-import {DbEngineUtilMongodb} from "../../persistence/impl/db-engine-util-mongodb";
-import {ValidationError} from "../../persistence/impl/validation-error";
-import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
+import {DbEngineUtilMongodb} from "../../../persistence/impl/db-engine-util-mongodb";
+import {ValidationError} from "../../../persistence/impl/validation-error";
+import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
+import {MongoDbUtil} from "../../../persistence/util/mongodb-util.js";
 
 /**
  * this is the implementation for mongodb of ExampleUserDao
@@ -49,9 +50,9 @@ export class ExampleUserDaoMongoDbImpl extends ExampleUserDao {
                 {email: {$eq: objectToUpdate.email}}
             ]
         };
-        return new Promise((resolve, reject) => {
-            this.model.find(query)
-                .lean().exec((err, result: any) => {
+
+        return MongoDbUtil.findAllByQuery(this.model, query)
+            .then((result) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {
                     errors.push(new ValidationError(
@@ -59,9 +60,8 @@ export class ExampleUserDaoMongoDbImpl extends ExampleUserDao {
                         'There is another user with the same email',
                         objectToUpdate.email));
                 }
-                resolve(errors);
+                return Promise.resolve(errors);
             });
-        });
     }
 
 }

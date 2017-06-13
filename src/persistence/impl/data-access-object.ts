@@ -53,6 +53,39 @@ export abstract class DataAccessObject<t> {
     }
 
     /**
+     * Insert a list of records to the database.
+     * Before insert all records.
+     * This method DOES NOT CHECK DATA CONSISTENCY. The data you are going to insert must be clean.
+     * @param objectsToInsert The object to insert
+     * @returns {any} A promise containing the inserted objects, a rejected promise if something went wrong
+     */
+    public insertMany<t>(objectsToInsert: t[]): Promise<any> {
+        this._log.debug('Call to insertMany with %j', objectsToInsert.length);
+        const id = 'id';
+        let entityErrors: IValidationError[];
+        for (const obj of objectsToInsert) {
+            if (obj[id] != null) {
+                this._log.error('%j has an id', obj);
+                return Promise.reject('Object has a defined id');
+            }
+        }
+        for (const obj of objectsToInsert) {
+            entityErrors = this.validateEntity(obj);
+            if (entityErrors.length > 0) {
+                this._log.warn('%j has validation errors: \n %j', obj, entityErrors);
+                return Promise.reject(entityErrors);
+            }else{
+                // Generate the timestamp
+                TimeStampGenerator.generateTimeStampForInsert(this.entityProperties, obj);
+                // Generate a unique uuid
+                UuidGenerator.assignUuid(this.entityProperties, obj);
+            }
+        }
+        // TODO: maybe add a beforeInsertMany abstract method
+        return this.insertManyMethod(objectsToInsert);
+    }
+
+    /**
      * Update the object.
      * Validate the object before update by checking and id attribute and calling
      * validateEntity and validateBeforeUpdate

@@ -2,12 +2,12 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
-import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
-import {ExampleUser} from "./example-user";
-import {ExampleUserDao} from "./example-user-dao";
+import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
+import {ExampleUser} from "../example-user";
+import {ExampleUserDao} from "../example-user-dao";
 import Promise = require("bluebird");
-import {DbEngineUtilLokijs} from "../../persistence/impl/db-engine-util-lokijs";
-import {ValidationError} from "../../persistence/impl/validation-error";
+import {DbEngineUtilLokijs} from "../../../persistence/impl/db-engine-util-lokijs";
+import {ValidationError} from "../../../persistence/impl/validation-error";
 
 /**
  * this is the implementation for lokijs of ExampleUserDao

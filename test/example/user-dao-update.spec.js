@@ -17,6 +17,8 @@ var ExampleUserDaoMongoDbImpl = require("../../dist/index").ExampleUserDaoMongoD
 var MongoUserSchemaExample = require("../../dist/index").MongoUserSchemaExample;
 var DbEngineUtilLokijs = require("../../dist/index").DbEngineUtilLokijs;
 var DbEngineUtilMongodb = require("../../dist/index").DbEngineUtilMongodb;
+var EntityProperties = require("../../dist/index").EntityProperties;
+
 
 //Config files
 var serverAppContext = config.get("serverAppContext");
@@ -24,13 +26,13 @@ var serverAppContext = config.get("serverAppContext");
 //lokiJs implementation
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
 var dbEngineUtilLokijs = new DbEngineUtilLokijs('usersExample', lokiDatabase);
-var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(dbEngineUtilLokijs, null);
+var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(dbEngineUtilLokijs, new EntityProperties(true,true));
 
 //Mongodb implementation
 mongoose.connect(serverAppContext.db.mongoConnUrl);
 var model = mongoose.model('users-example', MongoUserSchemaExample);
 var dbEngineUtilMongodb = new DbEngineUtilMongodb(model);
-var userDaoMongoDb = ExampleUserDaoMongoDbImpl.createInstance(dbEngineUtilMongodb, null);
+var userDaoMongoDb = ExampleUserDaoMongoDbImpl.createInstance(dbEngineUtilMongodb, new EntityProperties(true,true));
 
 const email = "jon@smith.com";
 const email2 = "jane_smith@gmail.com";
@@ -51,7 +53,7 @@ const invalidEmail = "email.com";
                 .then(function () {
                     var user = new ExampleUser(name, lastName, email);
                     var user2 = new ExampleUser(name, lastName, email2);
-                    userDao.insertManyMethod([user, user2]).then(function (result) {
+                    userDao.insertMany([user, user2]).then(function (result) {
                         insertedUsers = result;
                         done();
                     })
@@ -74,6 +76,9 @@ const invalidEmail = "email.com";
                                 expect(queryResult.name).eq(newName);
                                 expect(queryResult.lastName).eq(newLastName);
                                 expect(queryResult.email).eq(newEmail);
+                                expect(queryResult).to.have.property("dateCreated");
+                                expect(queryResult).to.have.property("uuid");
+                                expect(queryResult).to.have.property('dateUpdated');
                                 done();
                             }, function (error) {
                                 assert.fail(error, "The method shouldn't have returned a result");

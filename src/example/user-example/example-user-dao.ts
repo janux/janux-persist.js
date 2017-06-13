@@ -45,7 +45,7 @@ export abstract class ExampleUserDao extends DataAccessObjectWithEngine<ExampleU
      * Validate the entity before to insert it to the database. In this case checks for duplicated emails.
      * Given the validation is simple, you can program it without the need to code each db engine implementation.
      * @param objectToInsert
-     * @return {Bluebird<ValidationError[]>}
+     * @return {Promise<ValidationError[]>}
      */
     protected validateBeforeInsert<t>(objectToInsert: ExampleUser): Promise<IValidationError[]> {
         return this.findOneByAttribute("email", objectToInsert.email)

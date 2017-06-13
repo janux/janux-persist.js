@@ -3,7 +3,6 @@
  * Created by ernesto on 6/12/17.
  */
 
-import * as _ from 'lodash';
 import * as logger from 'log4js';
 import uuid = require("uuid");
 import {IEntityProperties} from "../interfaces/entity-properties";
@@ -14,7 +13,7 @@ export class UuidGenerator {
         this._log.debug("Call to assignUuid with entityProperties: %j, objectToInsert %j:",
             entityProperties,
             objectToInsert);
-        if (!_.isNull(entityProperties) && entityProperties.versionable === true) {
+        if (entityProperties != null && entityProperties.versionable === true) {
             this._log.debug("Inserting %j", this.UUID_PROPERTY);
             objectToInsert[this.UUID_PROPERTY] = uuid.v4();
         } else {

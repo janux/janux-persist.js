@@ -9,10 +9,10 @@
  */
 export * from  "./example/user-example/example-user";
 export * from  "./example/user-example/example-user-dao";
-export * from  "./example/user-example/example-user-dao-lokijs-impl";
-export * from  "./example/user-example/example-user-dao-mongodb-impl";
+export * from  "./example/user-example/lokijs/example-user-dao-lokijs-impl";
+export * from  "./example/user-example/mongodb/example-user-dao-mongodb-impl";
 export * from  "./example/user-example/example-validate-usert";
-export * from  "./example/user-example/user-schema";
+export * from  "./example/user-example/mongodb/user-schema";
 export * from  "./persistence/impl/db-engine-util-lokijs";
 export * from  "./persistence/impl/db-engine-util-mongodb";
 export * from  "./persistence/impl/data-access-object-with-engine";
