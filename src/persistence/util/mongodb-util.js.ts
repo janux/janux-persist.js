@@ -45,6 +45,7 @@ export class MongoDbUtil {
         return new Promise((resolve, reject) => {
             model.count({}, (err, count) => {
                 if (err) throw err;
+                this._log.debug("Result: %j", count);
                 resolve(count);
             });
         });

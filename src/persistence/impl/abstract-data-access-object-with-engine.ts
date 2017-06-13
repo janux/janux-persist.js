@@ -8,17 +8,17 @@ import uuid = require("uuid");
 import {IDbEngineUtil} from "../interfaces/db-engine-util-method";
 import Promise = require("bluebird");
 import {IEntityProperties} from "../interfaces/entity-properties";
-import {DataAccessObject} from "./data-access-object";
+import {AbstractDataAccessObject} from "./abstract-data-access-object";
 /**
  * Tish class, inside their properties,contains a generic interface where the class
  * can perform the basic db operations.
  */
-export abstract class DataAccessObjectWithEngine<t> extends DataAccessObject<t> {
+export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractDataAccessObject<t> {
 
     // This class holds all common db engine methods
     protected dbEngineUtil: IDbEngineUtil;
 
-    private readonly _logger = logger.getLogger("DataAccessObject");
+    private readonly _logger = logger.getLogger("AbstractDataAccessObjectWithEngine");
 
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(entityProperties);

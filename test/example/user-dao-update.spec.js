@@ -25,7 +25,7 @@ var serverAppContext = config.get("serverAppContext");
 
 //lokiJs implementation
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
-var dbEngineUtilLokijs = new DbEngineUtilLokijs('usersExample', lokiDatabase);
+var dbEngineUtilLokijs = new DbEngineUtilLokijs('users-example', lokiDatabase);
 var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(dbEngineUtilLokijs, new EntityProperties(true,true));
 
 //Mongodb implementation
@@ -61,7 +61,7 @@ const invalidEmail = "email.com";
         });
 
         context("Given the inserted users", function () {
-            it("This method should update with no problems", function (done) {
+            it("This method should update with no p roblems", function (done) {
                 var user = insertedUsers[0];
                 var id = user.id;
                 user.name = newName;

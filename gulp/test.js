@@ -27,8 +27,12 @@ module.exports = function (gulp) {
         //}));
     });
 
-    gulp.task('run-tests', ['ts-plus-test'], function () {
+    gulp.task('run-tests', ['set-test-node-env','ts-plus-test'], function () {
         return gulp.src(cfg.fileset.test, {read: false})
             .pipe(mocha({reporter: 'nyan'}));
+    });
+
+    gulp.task('set-test-node-env', function() {
+        return process.env.NODE_ENV = 'test';
     });
 };

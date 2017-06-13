@@ -25,7 +25,7 @@ var serverAppContext = config.get("serverAppContext");
 
 //lokiJs implementation
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
-var dbEngineUtilLokijs = new DbEngineUtilLokijs('usersExample', lokiDatabase);
+var dbEngineUtilLokijs = new DbEngineUtilLokijs('users-example', lokiDatabase);
 var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(dbEngineUtilLokijs, new EntityProperties(true,true));
 
 //Mongodb implementation

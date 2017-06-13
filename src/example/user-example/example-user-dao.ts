@@ -3,7 +3,7 @@
  * Created by ernesto on 6/12/17.
  */
 import * as _ from "lodash";
-import {DataAccessObjectWithEngine} from "../../persistence/impl/data-access-object-with-engine";
+import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
 import Promise = require("bluebird");
 import {ValidationError} from "../../persistence/impl/validation-error";
@@ -15,7 +15,7 @@ import {validateExampleUser} from "./example-validate-usert";
 /**
  * This is the base dao class of the entity ExampleUser.
  */
-export abstract class ExampleUserDao extends DataAccessObjectWithEngine<ExampleUser> {
+export abstract class ExampleUserDao extends AbstractDataAccessObjectWithEngine<ExampleUser> {
 
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);

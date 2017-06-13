@@ -25,7 +25,7 @@ export class LokiJsUtil {
     public static count(collection): Promise<any> {
         this._log.debug('Call to count with collection: %j', collection.name);
         const result = collection.count();
-        this._log.debug('Result id %j', result);
+        this._log.debug('Result %j', result);
         return Promise.resolve(result);
     }
 
@@ -73,7 +73,7 @@ export class LokiJsUtil {
         const query = {};
         query[attributeName] = {$in: values};
         const result = collection.find(query);
-        this._log.debug('Result id %j', result);
+        this._log.debug('Result %j', result);
         return Promise.resolve(result);
     }
 

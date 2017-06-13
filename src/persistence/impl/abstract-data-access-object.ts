@@ -3,7 +3,6 @@
  * Created by ernesto on 6/9/17.
  */
 
-import * as _ from 'lodash';
 import * as logger from 'log4js';
 import uuid = require("uuid");
 import Promise = require("bluebird");
@@ -12,10 +11,10 @@ import {IValidationError} from "../interfaces/validation-error";
 import {TimeStampGenerator} from "../util/TimeStampGenerator";
 import {UuidGenerator} from "../util/UuidGenerator";
 
-export abstract class DataAccessObject<t> {
+export abstract class AbstractDataAccessObject<t> {
 
     protected entityProperties: IEntityProperties;
-    private readonly _log = logger.getLogger("DataAccessObject");
+    private readonly _log = logger.getLogger("AbstractDataAccessObject");
     private readonly ID_PROPERTY = "id";
 
     constructor(entityProperties: IEntityProperties) {
@@ -74,7 +73,7 @@ export abstract class DataAccessObject<t> {
             if (entityErrors.length > 0) {
                 this._log.warn('%j has validation errors: \n %j', obj, entityErrors);
                 return Promise.reject(entityErrors);
-            }else{
+            } else {
                 // Generate the timestamp
                 TimeStampGenerator.generateTimeStampForInsert(this.entityProperties, obj);
                 // Generate a unique uuid
@@ -217,5 +216,5 @@ export abstract class DataAccessObject<t> {
      * @return A promise containing the validation errors. If there are no errors then
      * returns an empty array
      */
-    protected abstract validateBeforeUpdate<t>(objectToUpdate: t): Promise<any>;
+    protected abstract validateBeforeUpdate<t>(objectToUpdate: t): Promise<IValidationError[]>;
 }
