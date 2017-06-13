@@ -34,5 +34,5 @@ export class TimeStampGenerator {
 
     private static _log = logger.getLogger("TimeStampGenerator");
     private static DATE_CREATED_PROPERTY: string = "dateCreated";
-    private static DATE_UPDATED_PROPERTY: string = "dateUpdated";
+    private static DATE_UPDATED_PROPERTY: string = "lastUpdate";
 }

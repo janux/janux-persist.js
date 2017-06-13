@@ -78,7 +78,8 @@ const invalidEmail = "email.com";
                                 expect(queryResult.email).eq(newEmail);
                                 expect(queryResult).to.have.property("dateCreated");
                                 expect(queryResult).to.have.property("uuid");
-                                expect(queryResult).to.have.property('dateUpdated');
+                                expect(queryResult).to.have.property('lastUpdate');
+                                expect(queryResult.lastUpdate).to.be.a("Date");
                                 done();
                             }, function (error) {
                                 assert.fail(error, "The method shouldn't have returned a result");

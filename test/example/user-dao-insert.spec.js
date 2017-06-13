@@ -82,7 +82,7 @@ const incorrectEmail = "johnSmith.com";
                             expect(result).to.have.property('id');
                             expect(result).to.have.property('uuid');
                             expect(result).to.have.property('dateCreated');
-                            expect(result.dateUpdated).to.be.undefined;
+                            expect(result.lastUpdate).to.be.undefined;
                             expect(result.dateCreated).to.be.a("Date");
 
                             userDao.findOneById(result.id)
@@ -94,7 +94,7 @@ const incorrectEmail = "johnSmith.com";
                                     expect(result).to.have.property('uuid');
                                     expect(result).to.have.property('dateCreated');
                                     expect(result.dateCreated).to.be.a("Date");
-                                    expect(result.dateUpdated).to.be.undefined;
+                                    expect(result.lastUpdate).to.be.undefined;
                                     done();
                                 })
                                 .catch(function (err) {
@@ -154,7 +154,5 @@ const incorrectEmail = "johnSmith.com";
                     });
             })
         });
-
-
     });
 });

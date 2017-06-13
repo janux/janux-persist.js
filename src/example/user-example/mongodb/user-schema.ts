@@ -20,7 +20,7 @@ export const MongoUserSchemaExample = new mongoose.Schema({
     uuid: {
         type: String
     },
-    dateUpdated: {
+    lastUpdate: {
         type: Date
     },
     dateCreated: {
