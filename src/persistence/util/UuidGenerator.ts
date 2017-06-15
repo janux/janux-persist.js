@@ -13,7 +13,7 @@ export class UuidGenerator {
         this._log.debug("Call to assignUuid with entityProperties: %j, objectToInsert %j:",
             entityProperties,
             objectToInsert);
-        if (entityProperties != null && entityProperties.versionable === true) {
+        if (entityProperties != null && entityProperties.identifiable === true) {
             this._log.debug("Inserting %j", this.UUID_PROPERTY);
             objectToInsert[this.UUID_PROPERTY] = uuid.v4();
         } else {

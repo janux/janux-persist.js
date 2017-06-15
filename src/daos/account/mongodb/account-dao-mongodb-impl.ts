@@ -4,7 +4,7 @@
  */
 import {IEntityProperties} from "../../../index";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {Account} from "../account";
+import {AccountEntity} from "../account-entity";
 import {AccountDao} from "../account-dao";
 import Promise = require("bluebird");
 import {Model} from "mongoose";
@@ -20,15 +20,15 @@ export class AccountDaoMongodbImpl extends AccountDao {
         this.model = dbEngineUtil.model;
     }
 
-    protected validateBeforeInsert(objectToInsert: Account): Promise<IValidationError[]> {
+    protected validateBeforeInsert(objectToInsert: AccountEntity): Promise<IValidationError[]> {
         const query = {username: objectToInsert.username};
         return MongoDbUtil.findAllByQuery(this.model, query)
             .then((result) => {
-                return Promise.resolve(AccountValidator.validateBeforeInsertQueryResult(result, objectToInsert));
+                return Promise.resolve(AccountValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
             });
     }
 
-    protected validateBeforeUpdate(objectToUpdate: Account): Promise<IValidationError[]> {
+    protected validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<IValidationError[]> {
         const id = 'id';
         const query = {
             $and: [
@@ -37,8 +37,8 @@ export class AccountDaoMongodbImpl extends AccountDao {
             ]
         };
         return MongoDbUtil.findAllByQuery(this.model, query)
-            .then((result: Account[]) => {
-                return Promise.resolve(AccountValidator.validateBeforeInsertQueryResult(result, objectToUpdate));
+            .then((result: AccountEntity[]) => {
+                return Promise.resolve(AccountValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
             });
     }
 }

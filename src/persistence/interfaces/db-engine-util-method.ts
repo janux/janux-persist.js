@@ -19,4 +19,5 @@ export interface IDbEngineUtil {
     insertMethod(objectToInsert: any): Promise<any>;
     updateMethod(objectToUpdate: any): Promise<any>;
     insertManyMethod(objectsToInsert: any[]): Promise<any>;
+    findAll(): Promise<any[]>;
 }

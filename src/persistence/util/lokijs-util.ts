@@ -37,7 +37,7 @@ export class LokiJsUtil {
         const query = {};
         query[attributeName] = value;
         const result = collection.find(query);
-        this._log.debug('Result id %j', result);
+        this._log.debug('Result %j', result);
         return Promise.resolve(result);
     }
 
@@ -52,9 +52,9 @@ export class LokiJsUtil {
             attributeName,
             value);
         const query = {};
-        query[attributeName] = value;
+        query[attributeName] = {$eq: value};
         const result = collection.find(query);
-        this._log.debug('Result id %j', result);
+        this._log.debug('Result %j', result);
         if (result.length === 0) {
             return Promise.resolve(null);
         } else if (result.length === 1) {

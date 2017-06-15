@@ -77,4 +77,9 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
         this._log.debug("Call to insertManyMethod with objectsToInsert: %j", objectsToInsert);
         return LokiJsUtil.insertMany(this.db, this.collection, objectsToInsert);
     }
+
+    findAll(): Promise<any[]> {
+        this._log.debug("Call to findAll");
+        return LokiJsUtil.findAllByQuery(this.collection,{});
+    }
 }

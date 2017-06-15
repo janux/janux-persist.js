@@ -9,10 +9,16 @@
  */
 export  * from "./daos/account/accout-valdiator";
 export  * from "./daos/account/account-dao";
-export  * from "./daos/account/account";
+export  * from "./daos/account/account-entity";
 export  * from "./daos/account/lokijs/account-dao-lokijs-impl";
 export  * from "./daos/account/mongodb/account-dao-mongodb-impl";
 export  * from "./daos/account/mongodb/account-mongodb-schema";
+export  * from "./daos/display-name/display-name-entity";
+export  * from "./daos/display-name/display-name-validation";
+export  * from "./daos/display-name/display-name-dao";
+export  * from "./daos/display-name/lokijs/display-name-dao-lokijs-impl";
+export  * from "./daos/display-name/mongodb/display-name-mongodb-schema";
+export  * from "./daos/display-name/mongodb/display-name-dao-mondogb-impl";
 export  * from  "./example/user-example/example-user";
 export  * from  "./example/user-example/example-user-dao";
 export  * from  "./example/user-example/lokijs/example-user-dao-lokijs-impl";
@@ -32,3 +38,4 @@ export  * from  "./persistence/util/lokijs-util";
 export  * from  "./persistence/util/mongodb-util.js";
 export  * from  "./persistence/util/TimeStampGenerator";
 export  * from  "./persistence/util/UuidGenerator";
+export  * from  "./util/blank-string-validator";

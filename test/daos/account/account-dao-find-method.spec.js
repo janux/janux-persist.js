@@ -5,7 +5,7 @@
 var chai = require('chai');
 var expect = chai.expect;
 var config = require('config');
-var Account = require("../../../dist/index").Account;
+var AccountEntity = require("../../../dist/index").AccountEntity;
 var lokijs = require('lokijs');
 var AccountDaoLokiJsImpl = require("../../../dist/index").AccountDaoLokiJsImpl;
 var AccountDaoMongoDbImpls = require("../../../dist/index").AccountDaoMongodbImpl;
@@ -22,7 +22,8 @@ const password = "password";
 const username2 = "username2";
 const password2 = "password2";
 const username3 = "IDoNotExits";
-const invalidId = "100000000000";
+const id = "313030303030303030303030";
+const invalidId = "313030303030303030300000";
 
 // Loki js configuration
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
@@ -47,13 +48,14 @@ describe("Testing account dao find methods", function () {
 
                 accountDao.deleteAll()
                     .then(function () {
-                        var account1 = new Account();
+                        var account1 = new AccountEntity();
                         account1.username = username;
                         account1.password = password;
-
-                        var account2 = new Account();
+                        account1.contactId = id;
+                        var account2 = new AccountEntity();
                         account2.username = username2;
                         account2.password = password2;
+                        account2.contactId = id;
                         return accountDao.insertMany([account1, account2])
                     })
                     .then(function (result) {
@@ -69,6 +71,9 @@ describe("Testing account dao find methods", function () {
                     accountDao.findOneByUserName(username)
                         .then(function (result) {
                             expect(result).not.to.be.null;
+                            expect(result.username).eq(username);
+                            expect(result.password).eq(password);
+                            expect(result.contactId).eq(id);
                             done();
                         })
                 });
@@ -135,6 +140,16 @@ describe("Testing account dao find methods", function () {
                     accountDao.count()
                         .then(function (result) {
                             expect(result).eq(2);
+                            done();
+                        })
+                })
+            });
+
+            describe("When calling findAll", function () {
+                it("Should return all records", function (done) {
+                    accountDao.findAll()
+                        .then(function (result) {
+                            expect(result.length).eq(2);
                             done();
                         })
                 })

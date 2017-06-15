@@ -5,11 +5,11 @@ import {IEntityProperties} from "../interfaces/entity-properties";
  */
 export class EntityProperties implements IEntityProperties {
 
-    public versionable: boolean;
+    public identifiable: boolean;
     public timeStamp: boolean;
 
-    constructor(versionable: boolean, timeStamp: boolean) {
-        this.versionable = versionable;
+    constructor(identifiable: boolean, timeStamp: boolean) {
+        this.identifiable = identifiable;
         this.timeStamp = timeStamp;
     }
 }

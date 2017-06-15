@@ -9,7 +9,7 @@
 export interface IEntityProperties {
 
     // If true, the dao adds a uuid string before an insert.
-    versionable: boolean;
+    identifiable: boolean;
 
     // If true, the dao adds an lastUpdated attribute and insertDate attribute
     timeStamp: boolean;

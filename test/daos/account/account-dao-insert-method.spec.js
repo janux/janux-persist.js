@@ -6,8 +6,8 @@ var chai = require('chai');
 var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
-var Account = require("../../../dist/index").Account;
 var lokijs = require('lokijs');
+var AccountEntity = require("../../../dist/index").AccountEntity;
 var AccountDaoLokiJsImpl = require("../../../dist/index").AccountDaoLokiJsImpl;
 var AccountDaoMongoDbImpls = require("../../../dist/index").AccountDaoMongodbImpl;
 var DbEngineUtilLokijs = require("../../../dist/index").DbEngineUtilLokijs;
@@ -23,7 +23,7 @@ const username = "username";
 const password = "password";
 const username2 = "username2";
 const password2 = "password2";
-
+const id = "313030303030303030303030";
 
 // Loki js configuration
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
@@ -38,7 +38,7 @@ var accountDaoMongoDbImpl = new AccountDaoMongoDbImpls(dbEngineMongoDb, null);
 
 
 describe("Testing account dao insert methods", function () {
-    [accountDaoLokiJsImpl, accountDaoMongoDbImpl].forEach(function (accountDao) {
+    [accountDaoLokiJsImpl,accountDaoMongoDbImpl].forEach(function (accountDao) {
         beforeEach(function (done) {
             accountDao.deleteAll()
                 .then(function () {
@@ -50,11 +50,11 @@ describe("Testing account dao insert methods", function () {
         });
 
         describe("When inserting a valid record", function () {
-
             it("It should have been inserted correctly", function (done) {
-                var account = new Account();
+                var account = new AccountEntity();
                 account.username = username;
                 account.password = password;
+                account.contactId = id;
                 accountDao.insert(account)
                     .then(function (insertedRecord) {
                         //Validate the returned value
@@ -79,19 +79,22 @@ describe("Testing account dao insert methods", function () {
                 expect(entity).to.have.property("id");
                 expect(entity.username).eq(username);
                 expect(entity.password).eq(password);
+                expect(entity.contactId).eq(id);
             }
         });
 
         describe("When inserting a duplicated record", function () {
             it("The method should send an error", function (done) {
-                var account = new Account();
+                var account = new AccountEntity();
                 account.username = username;
                 account.password = password;
+                account.contactId = id;
                 accountDao.insert(account)
                     .then(function (result) {
-                        var account2 = new Account();
+                        var account2 = new AccountEntity();
                         account2.username = username;
                         account2.password = password;
+                        account2.contactId = id;
                         accountDao.insert(account2)
                             .then(function (result) {
                                 assert.fail("The method should have returned an error");
@@ -107,12 +110,14 @@ describe("Testing account dao insert methods", function () {
 
         describe("When inserting many records", function () {
             it("The method should have inserted the records", function (done) {
-                var account = new Account();
+                var account = new AccountEntity();
                 account.username = username;
                 account.password = password;
-                var account2 = new Account();
+                account.contactId = id;
+                var account2 = new AccountEntity();
                 account2.username = username2;
                 account2.password = password2;
+                account2.contactId = id;
                 accountDao.insertMany([account, account2])
                     .then(function (result) {
                         expect(result.length).eq(2);
@@ -127,16 +132,17 @@ describe("Testing account dao insert methods", function () {
 
         describe("When inserting a record that has an id", function () {
             it("It should send an error", function (done) {
-                var account = new Account();
+                var account = new AccountEntity();
                 account.username = username;
                 account.password = password;
+                account.contactId = id;
                 accountDao.insert(account)
                     .then(function (result) {
                         accountDao.insert(result)
                             .then(function (result2) {
                                 assert.fail("It should not have inserted the record");
                                 done();
-                            },function (err) {
+                            }, function (err) {
                                 assert("The program sent an error, is ok");
                                 done();
                             });

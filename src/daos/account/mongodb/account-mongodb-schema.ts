@@ -25,7 +25,8 @@ export const AccountMongoDbSchema = new mongoose.Schema({
     expirePassWord: {
         type: Date
     },
-    contact: {
-        type: mongoose.Schema.Types.Mixed
+    contactId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
     }
 });

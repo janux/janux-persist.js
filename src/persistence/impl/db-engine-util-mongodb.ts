@@ -71,4 +71,9 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
         this._log.debug("Call to insertManyMethod with objectsToInsert: %j", objectsToInsert);
         return MongoDbUtil.insertMany(this.model, objectsToInsert);
     }
+
+    findAll(): Promise<any[]> {
+        this._log.debug("Call to findAll");
+        return MongoDbUtil.findAllByQuery(this.model,{});
+    }
 }

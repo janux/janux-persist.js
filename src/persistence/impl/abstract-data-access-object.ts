@@ -10,6 +10,7 @@ import {IEntityProperties} from "../interfaces/entity-properties";
 import {IValidationError} from "../interfaces/validation-error";
 import {TimeStampGenerator} from "../util/TimeStampGenerator";
 import {UuidGenerator} from "../util/UuidGenerator";
+import {isValidId} from "../../util/id_validator";
 
 export abstract class AbstractDataAccessObject<t> {
 
@@ -95,7 +96,7 @@ export abstract class AbstractDataAccessObject<t> {
         this._log.debug('Call to update with %j', objectToUpdate);
 
         let entityErrors: IValidationError[];
-        if (objectToUpdate[this.ID_PROPERTY] == null) {
+        if (!isValidId(objectToUpdate[this.ID_PROPERTY])) {
             this._log.error('%j does not have an id', objectToUpdate);
             return Promise.reject('Object does not have an id');
         }
@@ -144,6 +145,11 @@ export abstract class AbstractDataAccessObject<t> {
      * Delete all records
      */
     public abstract deleteAll(): Promise<any> ;
+
+    /**
+     * Return all records
+     */
+    public abstract findAll(): Promise<t[]>;
 
     /**
      * Perform a query where the attribute must have the value.

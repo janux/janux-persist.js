@@ -4,3 +4,4 @@
 /dist/
 /janux-persistence-local.db
 /vendor/
+/janux-persistence-test.db

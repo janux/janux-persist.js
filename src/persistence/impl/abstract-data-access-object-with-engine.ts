@@ -59,6 +59,14 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     }
 
     /**
+     * Return all records
+     * @return {Promise<any[]>}
+     */
+    public findAll(): Promise<t[]> {
+        return this.dbEngineUtil.findAll();
+    }
+
+    /**
      * Delete all records
      */
     public  deleteAll(): Promise<any> {
@@ -113,6 +121,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     protected  updateMethod<t>(objectToUpdate: t): Promise<t> {
         return this.dbEngineUtil.updateMethod(objectToUpdate);
     }
+
 
     /**
      * This method must be implemented in order to insert several object to the database.

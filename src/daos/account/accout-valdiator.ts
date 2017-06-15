@@ -2,35 +2,44 @@
  * Project janux-persistence
  * Created by ernesto on 6/13/17.
  */
-import * as _ from 'lodash';
+
 import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {Account} from "./account";
+import {isBlank} from "../../util/blank-string-validator";
+import {AccountEntity} from "./account-entity";
+
 export class AccountValidator {
 
-    public static readonly ANOTHER_USER: string = "There is another user with the same username";
+    public static ANOTHER_USER: string = "There is another user with the same username";
+    public static PERSON_TYPE: string = "person";
+    public static ORGANIZATION_TYPE: string = "organization";
 
     /**
-     * Validate the account
-     * @param account Account to be validated
+     * Validate the accountEntity
+     * @param accountEntity AccountEntity to be validated
      * @return {ValidationError[]} A list ov validation errors.
      */
-    public static  validateAccount(account: Account): ValidationError[] {
-        this._log.debug("Call to validateAccount with account: %j:", account);
+    public static  validateAccount(accountEntity: AccountEntity): ValidationError[] {
+        this._log.debug("Call to validateAccount with accountEntity: %j:", accountEntity);
         const errors: ValidationError[] = [];
-        if (_.isEmpty(account.username)) {
-            errors.push(new ValidationError("username", "Username is empty", account.username));
+        if (isBlank(accountEntity.username)) {
+            errors.push(new ValidationError("username", "Username is empty", accountEntity.username));
         }
-        if (_.isEmpty(account.password)) {
-            errors.push(new ValidationError("password", "Password is empty", account.password));
+        if (isBlank(accountEntity.password)) {
+            errors.push(new ValidationError("password", "Password is empty", accountEntity.password));
         }
-        // TODO: validate contact info
+
+        if (isBlank(accountEntity.contactId)) {
+            errors.push(new ValidationError("contact", "Contact id is empty", ""));
+        }
+
         this._log.debug("Errors: %j", errors);
         return errors;
     }
 
-    public static validateBeforeInsertQueryResult(accounts: Account[], objectToInsert: Account): ValidationError[] {
-        this._log.debug("Call to validateBeforeInsertQueryResult with accounts: %j objectToInsert: %j",
+    public static validateResultQueryBeforeBdOperation(accounts: AccountEntity[],
+                                                       objectToInsert: AccountEntity): ValidationError[] {
+        this._log.debug("Call to validateResultQueryBeforeBdOperation with accounts: %j objectToInsert: %j",
             accounts, objectToInsert);
         const errors: ValidationError[] = [];
         if (accounts.length > 0) {

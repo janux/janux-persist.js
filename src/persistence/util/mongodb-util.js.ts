@@ -20,7 +20,7 @@ export class MongoDbUtil {
             model.findOne(query).lean().exec((err, result: any) => {
                 if (err) throw err;
                 if (result !== null) {
-                    result.id = result._id.toString();
+                    result = this.cleanObjectIds(result);
                 }
                 resolve(result);
             });
@@ -29,15 +29,10 @@ export class MongoDbUtil {
 
     public static findAllByIds(model: Model<any>, arrayOfIds: any[]): Promise<any> {
         this._log.debug('Call to findAllByIds with arrayOfIds: %j ', arrayOfIds);
-        return new Promise((resolve, reject) => {
-            const query = {
-                _id: {$in: arrayOfIds}
-            };
-            model.find(query).lean().exec((err, result) => {
-                if (err) throw err;
-                resolve(result);
-            });
-        });
+        const query = {
+            _id: {$in: arrayOfIds}
+        };
+        return this.findAllByQuery(model, query);
     }
 
     public static count(model: Model<any>): Promise<any> {
@@ -61,7 +56,7 @@ export class MongoDbUtil {
                 if (result.length === 0) {
                     resolve(null);
                 } else if (result.length === 1) {
-                    result[0].id = result[0]._id.toString();
+                    this.cleanObjectIds(result[0]);
                     resolve(result[0]);
                 } else {
                     this._log.warn("The query returned more than one result.");
@@ -89,6 +84,9 @@ export class MongoDbUtil {
         return new Promise((resolve, reject) => {
             model.find(query).lean().exec((err, result: any[]) => {
                 if (err) throw err;
+                for (const element of result) {
+                    this.cleanObjectIds(element);
+                }
                 resolve(result);
             });
         });
@@ -124,8 +122,8 @@ export class MongoDbUtil {
             const newObject = new model(objectToInsert);
             newObject.save((err, result: any) => {
                 if (err) throw err;
-                objectToInsert.id = result._id.toString();
-                resolve(objectToInsert);
+                result = this.cleanObjectIds(result._doc);
+                resolve(result);
             });
         });
     }
@@ -133,16 +131,15 @@ export class MongoDbUtil {
     public static insertMany(model: Model<any>, objectsToInsert: any[]): Promise<any> {
         this._log.debug("Call to insertMany with objectsToInsert %j", objectsToInsert);
         return new Promise((resolve, reject) => {
-            model.insertMany(objectsToInsert)
-                .then((values) => {
-                    for (const obj of values) {
-                        obj.id = obj._id.toString();
-                    }
-                    resolve(values);
-                })
-                .catch((reason) => {
-                    reject(reason);
-                });
+            model.insertMany(objectsToInsert, (err, values) => {
+                const result = [];
+                for (const obj of values) {
+                    let element = obj._doc;
+                    element = this.cleanObjectIds(element);
+                    result.push(element);
+                }
+                resolve(result);
+            });
         });
     }
 
@@ -151,9 +148,13 @@ export class MongoDbUtil {
         return new Promise((resolve, reject) => {
             const query = {_id: objectToUpdate.id};
             const values = {$set: objectToUpdate};
-            model.findOneAndUpdate(query, values).lean().exec((err, result: any) => {
+            const options = {};
+            const newAttribute = "new";
+            options[newAttribute] = true;
+            model.findOneAndUpdate(query, values, options).lean().exec((err, result: any) => {
                 if (err) throw err;
-                result.id = result._id.toString();
+                result = this.cleanObjectIds(result);
+                this._log.debug("Returning %j", result);
                 resolve(result);
             });
         });
@@ -171,4 +172,14 @@ export class MongoDbUtil {
     }
 
     private static _log = logger.getLogger('MongoDbUtil');
+
+    private static cleanObjectIds(object: any) {
+        object.id = object._id.toString();
+        Object.keys(object).forEach((key, index) => {
+            if (key !== "_id" && object[key] instanceof mongoose.Types.ObjectId) {
+                object[key] = object[key].toString();
+            }
+        });
+        return object;
+    }
 }

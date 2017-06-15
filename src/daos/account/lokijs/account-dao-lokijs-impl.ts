@@ -9,7 +9,7 @@ import Promise = require("bluebird");
 import {DbEngineUtilLokijs} from "../../../persistence/impl/db-engine-util-lokijs";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
 import {LokiJsUtil} from "../../../persistence/util/lokijs-util";
-import {Account} from "../account";
+import {AccountEntity} from "../account-entity";
 import {AccountValidator} from "../accout-valdiator";
 
 export class AccountDaoLokiJsImpl extends AccountDao {
@@ -21,18 +21,18 @@ export class AccountDaoLokiJsImpl extends AccountDao {
         this.lokijsCollection = dbEngineUtil.collection;
     }
 
-    protected validateBeforeInsert(objectToInsert: Account): Promise<IValidationError[]> {
+    protected validateBeforeInsert(objectToInsert: AccountEntity): Promise<IValidationError[]> {
         const query = {
             username: objectToInsert.username
         };
 
         return LokiJsUtil.findAllByQuery(this.lokijsCollection, query)
             .then((result) => {
-                return Promise.resolve(AccountValidator.validateBeforeInsertQueryResult(result, objectToInsert));
+                return Promise.resolve(AccountValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
             });
     }
 
-    protected validateBeforeUpdate(objectToUpdate: Account): Promise<IValidationError[]> {
+    protected validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<IValidationError[]> {
         const id = "id";
         const query = {
             $and: [
@@ -41,8 +41,8 @@ export class AccountDaoLokiJsImpl extends AccountDao {
             ]
         };
         return LokiJsUtil.findAllByQuery(this.lokijsCollection, query)
-            .then((result: Account[]) => {
-                return Promise.resolve(AccountValidator.validateBeforeInsertQueryResult(result, objectToUpdate));
+            .then((result: AccountEntity[]) => {
+                return Promise.resolve(AccountValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
             });
     }
 }
