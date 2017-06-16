@@ -3,6 +3,7 @@
  * Created by ernesto on 6/9/17.
  */
 import Promise = require("bluebird");
+import {AttributeFilter} from "../impl/attribute-filter";
 /**
  * Interface that defines the basic methods
  * per db engine
@@ -20,4 +21,5 @@ export interface IDbEngineUtil {
     updateMethod(objectToUpdate: any): Promise<any>;
     insertManyMethod(objectsToInsert: any[]): Promise<any>;
     findAll(): Promise<any[]>;
+    findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<any[]>;
 }

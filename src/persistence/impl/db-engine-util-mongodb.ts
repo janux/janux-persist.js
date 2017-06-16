@@ -7,10 +7,11 @@ import Promise = require("bluebird");
 import {Model} from "mongoose";
 import {IDbEngineUtil} from "../interfaces/db-engine-util-method";
 import {MongoDbUtil} from "../util/mongodb-util.js";
+import {AttributeFilter} from "./attribute-filter";
 
 export class DbEngineUtilMongodb implements IDbEngineUtil {
-
     public model: Model<any>;
+
     private _log = logger.getLogger("DbEngineUtilMongodb");
 
     constructor(model: Model<any>) {
@@ -74,6 +75,19 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
 
     findAll(): Promise<any[]> {
         this._log.debug("Call to findAll");
-        return MongoDbUtil.findAllByQuery(this.model,{});
+        return MongoDbUtil.findAllByQuery(this.model, {});
     }
+
+    public findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<any[]> {
+        const query = {
+            $and: []
+        };
+        for (const attribute of attributes) {
+            const condition = {};
+            condition[attribute.attributeName] = {$eq: attribute.value};
+            query.$and.push(condition);
+        }
+        return MongoDbUtil.findAllByQuery(this.model, query);
+    }
+
 }

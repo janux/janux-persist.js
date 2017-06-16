@@ -6,11 +6,12 @@
 import * as logger from 'log4js';
 import uuid = require("uuid");
 import Promise = require("bluebird");
+import {isValidId} from "../../util/id_validator";
 import {IEntityProperties} from "../interfaces/entity-properties";
 import {IValidationError} from "../interfaces/validation-error";
 import {TimeStampGenerator} from "../util/TimeStampGenerator";
 import {UuidGenerator} from "../util/UuidGenerator";
-import {isValidId} from "../../util/id_validator";
+import {AttributeFilter} from "./attribute-filter";
 
 export abstract class AbstractDataAccessObject<t> {
 
@@ -177,6 +178,12 @@ export abstract class AbstractDataAccessObject<t> {
     protected abstract findAllByAttributeNameIn(attributeName: string, values: any[]): Promise<t[]>;
 
     /**
+     * Perform a query with then and operator for every attribute and value
+     * @param attributes The attributes to filter
+     */
+    protected abstract findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<t[]>;
+
+    /**
      * This method must be implemented in order to insert an object to the database.
      * This method is called from this class and should not be called from outside.
      * @param objectToInsert The object to insert
@@ -195,7 +202,7 @@ export abstract class AbstractDataAccessObject<t> {
      * This method is called from this class and should not be called from outside.
      * @param objectsToInsert The objects to insert
      */
-    protected abstract insertManyMethod<t>(objectsToInsert: t[]): Promise<any>;
+    protected abstract insertManyMethod<t>(objectsToInsert: t[]): Promise<t>;
 
     /**
      * This method must be implemented in order to perform non database validations before an insert or update,

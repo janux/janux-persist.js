@@ -9,7 +9,7 @@ var config = require('config');
 var AccountEntity = require("../../../dist/index").AccountEntity;
 var lokijs = require('lokijs');
 var AccountDaoLokiJsImpl = require("../../../dist/index").AccountDaoLokiJsImpl;
-var AccountDaoMongoDbImpls = require("../../../dist/index").AccountDaoMongodbImpl;
+var AccountDaoMongoDbImpl = require("../../../dist/index").AccountDaoMongodbImpl;
 var DbEngineUtilLokijs = require("../../../dist/index").DbEngineUtilLokijs;
 var DbEngineUtilMongodb = require("../../../dist/index").DbEngineUtilMongodb;
 var AccountMongoDbSchema = require("../../../dist/index").AccountMongoDbSchema;
@@ -17,11 +17,7 @@ var mongoose = require('mongoose');
 //Config files
 var serverAppContext = config.get("serverAppContext");
 
-const username = "username";
-const password = "password";
-const username2 = "username2";
-const password2 = "password2";
-const id = "313030303030303030303030";
+
 
 
 // Loki js configuration
@@ -33,7 +29,13 @@ var accountDaoLokiJsImpl = new AccountDaoLokiJsImpl(dbEngineUtilLokijs, null);
 mongoose.connect(serverAppContext.db.mongoConnUrl);
 var model = mongoose.model('account-test', AccountMongoDbSchema);
 var dbEngineMongoDb = new DbEngineUtilMongodb(model);
-var accountDaoMongoDbImpl = new AccountDaoMongoDbImpls(dbEngineMongoDb, null);
+var accountDaoMongoDbImpl = new AccountDaoMongoDbImpl(dbEngineMongoDb, null);
+
+const username = "username";
+const password = "password";
+const username2 = "username2";
+const password2 = "password2";
+const id = "313030303030303030303030";
 
 describe("Testing account dao delete methods", function () {
     [accountDaoLokiJsImpl, accountDaoMongoDbImpl].forEach(function (accountDao) {

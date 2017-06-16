@@ -9,6 +9,7 @@ import {IDbEngineUtil} from "../interfaces/db-engine-util-method";
 import Promise = require("bluebird");
 import {IEntityProperties} from "../interfaces/entity-properties";
 import {AbstractDataAccessObject} from "./abstract-data-access-object";
+import {AttributeFilter} from "./attribute-filter";
 /**
  * Tish class, inside their properties,contains a generic interface where the class
  * can perform the basic db operations.
@@ -105,6 +106,14 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     }
 
     /**
+     * Perform a query with then and operator for every attribute and value
+     * @param attributes The attributes to filter
+     */
+    protected findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<t[]> {
+        return this.dbEngineUtil.findAllByAttributesAndOperator(attributes);
+    }
+
+    /**
      * This method must be implemented in order to insert an object to the database.
      * This method is called from this class and should not be called from outside.
      * @param objectToInsert The object to insert
@@ -121,7 +130,6 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     protected  updateMethod<t>(objectToUpdate: t): Promise<t> {
         return this.dbEngineUtil.updateMethod(objectToUpdate);
     }
-
 
     /**
      * This method must be implemented in order to insert several object to the database.

@@ -6,6 +6,7 @@ import * as logger from 'log4js';
 import {IDbEngineUtil} from "../interfaces/db-engine-util-method";
 import {LokiJsUtil} from "../util/lokijs-util";
 import Promise = require("bluebird");
+import {AttributeFilter} from "./attribute-filter";
 
 /**
  * Generic implementation ob lokijs db functions
@@ -80,6 +81,18 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
 
     findAll(): Promise<any[]> {
         this._log.debug("Call to findAll");
-        return LokiJsUtil.findAllByQuery(this.collection,{});
+        return LokiJsUtil.findAllByQuery(this.collection, {});
+    }
+
+    findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<any[]> {
+        const query = {
+            $and: []
+        };
+        for (const attribute of attributes) {
+            const condition = {};
+            condition[attribute.attributeName] = {$eq: attribute.value};
+            query.$and.push(condition);
+        }
+        return LokiJsUtil.findAllByQuery(this.collection, query);
     }
 }
