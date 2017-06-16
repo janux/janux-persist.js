@@ -37,7 +37,7 @@ const newName = "another name";
 
 
 describe("Testing display name dao update", function () {
-    [displayNameDaoMongodb,displayNameDaoLokijs].forEach(function (displayNameDao) {
+    [displayNameDaoMongodb, displayNameDaoLokijs].forEach(function (displayNameDao) {
 
         describe("Given the inserted records", function () {
 
@@ -78,9 +78,9 @@ describe("Testing display name dao update", function () {
                             done();
                         })
                 })
-            })
+            });
 
-            describe("When updating a record", function () {
+            describe("When updating a record with valid values", function () {
                 it("It should not send an error", function (done) {
                     insertedRecord1.displayName = newName;
                     displayNameDao.update(insertedRecord1)
@@ -101,6 +101,22 @@ describe("Testing display name dao update", function () {
                 })
             });
 
+            describe("When updating a record with invalid values", function () {
+                it("The method should send an error", function (done) {
+                    insertedRecord1.displayName = "     ";
+                    displayNameDao.update(insertedRecord1)
+                        .then(function (result) {
+                            expect.fail("The method should have not updated the record");
+                            done();
+                        })
+                        .catch(function (err) {
+                            expect(err.length).eq(1);
+                            expect(err[0].attribute).eq("displayName");
+                            done();
+                        })
+                })
+            });
+
             describe("When updating a record without an id", function () {
                 it("It should return an error", function (done) {
                     var displayName = new DisplayNameEntity();
@@ -112,7 +128,7 @@ describe("Testing display name dao update", function () {
                         }, function (err) {
                             assert("The method sent an error, is ok");
                             done();
-                        })
+                        });
                 })
             });
 

@@ -33,7 +33,6 @@ var displayNameDaoMongodb = new DisplayNameDaoMongodbImpl(dbEngineMongoDb, null)
 
 const name = "a name";
 const name2 = "a name 2";
-const anotherName = "another name";
 
 describe("Testing display name dao insert", function () {
 
@@ -118,7 +117,25 @@ describe("Testing display name dao insert", function () {
                         done();
                     });
             })
-        })
+        });
+
+        describe("When inserting a record with empty name", function () {
+            it("The method should return an error", function (done) {
+                var displayName = new DisplayNameEntity();
+                displayName.displayName = "     ";
+                displayNameDao.insert(displayName)
+                    .then(function (result) {
+                        expect.fail("The method should not have inserted the record");
+                        done();
+                    })
+                    .catch(function (err) {
+                        assert("The method sent an error, is Ok");
+                        expect(err.length).eq(1);
+                        expect(err[0].attribute).eq("displayName");
+                        done();
+                    });
+            });
+        });
 
     })
 });

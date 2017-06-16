@@ -12,7 +12,7 @@ export class DisplayNameValidator {
         this._log.debug("Call to validateDisplayName with displayName: %", displayName);
         const errors: ValidationError[] = [];
         if (isBlank(displayName.displayName)) {
-            errors.push(new ValidationError("name", "Name is empty", ""));
+            errors.push(new ValidationError("displayName", "Name is empty", ""));
         }
         return errors;
     }

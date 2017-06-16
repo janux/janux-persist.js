@@ -45,7 +45,9 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     }
 
     /**
-     * This method must be implemented in order to delete an record to the database.
+     * WARNING: This method IS NOT protected by any relational integrity rule because
+     * noSql databases doesn't have this feature. Be VERY, VERY careful when calling this method.
+     * Nothing (you, the db engine or anything else) will stop the operation once called.
      * @param objectToDelete The object to delete
      */
     public remove<t>(objectToDelete: t): Promise<any> {
@@ -68,7 +70,11 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     }
 
     /**
-     * Delete all records
+     * Delete all records.
+     * WARNING: This method IS NOT protected by any relational integrity rule because
+     * noSql databases doesn't have this feature. Be VERY, VERY careful when calling this method,
+     * you can destroy your database data integrity so easily.
+     * Nothing (you, the db engine or anything else) will stop the operation once called.
      */
     public  deleteAll(): Promise<any> {
         return this.dbEngineUtil.deleteAll();
