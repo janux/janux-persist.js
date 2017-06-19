@@ -36,7 +36,7 @@ describe("Testing account role dao update methods", function () {
 
         describe("Given the inserted record", function () {
 
-            var insertedRecord=null;
+            var insertedRecord = null;
 
             beforeEach(function (done) {
                 accountRoleDao.deleteAll()
@@ -57,8 +57,8 @@ describe("Testing account role dao update methods", function () {
             });
 
             describe("When updating a record", function () {
-                it("The should always send an error",function (done) {
-                    insertedRecord.accountId=id3;
+                it("The should always send an error", function (done) {
+                    insertedRecord.accountId = id3;
                     accountRoleDao.update(insertedRecord)
                         .then(function (result) {
                             assert.fail("The method should not have updated the record");

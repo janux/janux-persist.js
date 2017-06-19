@@ -3,6 +3,7 @@
  * Created by ernesto on 6/13/17.
  */
 
+import * as _ from "lodash";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {AccountDao} from "../account-dao";
 import Promise = require("bluebird");
@@ -34,9 +35,10 @@ export class AccountDaoLokiJsImpl extends AccountDao {
 
     protected validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<IValidationError[]> {
         const id = "id";
+        const idValue = _.toNumber(objectToUpdate[id]);
         const query = {
             $and: [
-                {$loki: {$ne: objectToUpdate[id]}},
+                {$loki: {$ne: idValue}},
                 {username: {$eq: objectToUpdate.username}}
             ]
         };

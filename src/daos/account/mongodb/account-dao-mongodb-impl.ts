@@ -4,8 +4,8 @@
  */
 import {IEntityProperties} from "../../../index";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {AccountEntity} from "../account-entity";
 import {AccountDao} from "../account-dao";
+import {AccountEntity} from "../account-entity";
 import Promise = require("bluebird");
 import {Model} from "mongoose";
 import {DbEngineUtilMongodb} from "../../../persistence/impl/db-engine-util-mongodb";

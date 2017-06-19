@@ -48,8 +48,8 @@ describe("Testing role dao update", function () {
             beforeEach(function (done) {
                 roleDao.deleteAll()
                     .then(function () {
-                        var role = new RoleEntity(name, description, true);
-                        var role2 = new RoleEntity(name2, description2, true);
+                        var role = new RoleEntity(name, description, true, false, undefined);
+                        var role2 = new RoleEntity(name2, description2, true, false, undefined);
                         return roleDao.insertMany([role, role2])
                     })
                     .then(function (result) {
@@ -109,7 +109,7 @@ describe("Testing role dao update", function () {
 
             describe("When updating a record without an id", function () {
                 it("The method should send an error", function (done) {
-                    var role = new RoleEntity(name, description, false);
+                    var role = new RoleEntity(name, description, false, false, undefined);
                     roleDao.update(role)
                         .then(function (result) {
                             expect.fail("The method should not have updated the record");

@@ -1,10 +1,13 @@
 /**
  * Project janux-persistence
- * Created by ernesto on 6/16/17.
+ * Created by ernesto on 6/19/17.
+ */
+/**
+ * Project janux-persistence
+ * Created by ernesto on 6/15/17.
  */
 import * as mongoose from 'mongoose';
-
-export const RoleMongoDbSchema = new mongoose.Schema({
+export const AuthContextSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -13,15 +16,12 @@ export const RoleMongoDbSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    hasParentRole: {
-        type: Boolean,
+    sortOrder: {
+        type: Number,
         required: true
     },
-    idParentRole: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: false
-    },
     enabled: {
-        type: Boolean
+        type: Boolean,
+        required: true
     }
 });

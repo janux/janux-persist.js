@@ -2,6 +2,7 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
+import * as _ from "lodash";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {ExampleUser} from "../example-user";
 import {ExampleUserDao} from "../example-user-dao";
@@ -46,7 +47,7 @@ export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
         const id = 'id';
         const query = {
             $and: [
-                {$loki: {$ne: objectToUpdate[id]}},
+                {$loki: {$ne: _.toNumber(objectToUpdate[id])}},
                 {email: {$eq: objectToUpdate.email}}
             ]
         };

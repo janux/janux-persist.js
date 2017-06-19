@@ -18,8 +18,6 @@ var mongoose = require('mongoose');
 var serverAppContext = config.get("serverAppContext");
 
 
-
-
 // Loki js configuration
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
 var dbEngineUtilLokijs = new DbEngineUtilLokijs('account-test', lokiDatabase);

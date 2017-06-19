@@ -9,7 +9,7 @@ export function isValidId(value: any): boolean {
 
     if (_.isNull(value)) {
         result = false;
-    } else if(_.isUndefined(value)){
+    } else if (_.isUndefined(value)) {
         result = false;
     } else if (_.isNumber(value) && value <= 0) {
         result = false;

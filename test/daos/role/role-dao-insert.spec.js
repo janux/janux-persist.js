@@ -50,13 +50,15 @@ describe("Testing role dao insert", function () {
 
         describe("When inserting a valid entity", function () {
             it("The entity should exits in the database", function (done) {
-                var role = new RoleEntity(name, description, true);
+                var role = new RoleEntity(name, description, true, false, undefined);
                 roleDao.insert(role)
                     .then(function (result) {
                         expect(result.id).not.to.be.null;
                         expect(result.name).eq(name);
                         expect(result.description).eq(description);
                         expect(result.enabled).eq(true);
+                        expect(result.hasParentRole).eq(false);
+                        expect(result.idParentRole).to.be.undefined;
                         return roleDao.findOneById(result.id);
                     })
                     .then(function (resultQuery) {
@@ -70,8 +72,8 @@ describe("Testing role dao insert", function () {
 
         describe("When inserting many records", function () {
             it("The method should have inserted the records", function (done) {
-                var role = new RoleEntity(name, description, true);
-                var role2 = new RoleEntity(name2, description2, true);
+                var role = new RoleEntity(name, description, true, false, undefined);
+                var role2 = new RoleEntity(name2, description2, true, false, undefined);
                 roleDao.insertMany([role, role2])
                     .then(function (result) {
                         expect(result.length).eq(2);
@@ -92,7 +94,7 @@ describe("Testing role dao insert", function () {
 
         describe("When inserting an invalid record", function () {
             it("The method should return an error", function (done) {
-                var role = new RoleEntity(name, "   ", true);
+                var role = new RoleEntity(name, "   ", true, false, undefined);
                 roleDao.insert(role)
                     .then(function (result) {
                         expect.fail("The system should not have inserted the record");
@@ -108,10 +110,10 @@ describe("Testing role dao insert", function () {
 
         describe("When inserting a duplicated record", function () {
             it("The method should return an error", function (done) {
-                var role = new RoleEntity(name, description, true);
+                var role = new RoleEntity(name, description, true, false, undefined);
                 roleDao.insert(role)
                     .then(function (result) {
-                        var role2 = new RoleEntity(name, description2, true);
+                        var role2 = new RoleEntity(name, description2, true, false, undefined);
                         return roleDao.insert(role2);
                     })
                     .then(function (result) {
@@ -125,6 +127,43 @@ describe("Testing role dao insert", function () {
                     });
             });
         });
-    })
+
+
+        describe("When inserting a record with a idParentRole that does no exits in the database", function () {
+            it("The method should return an error", function (done) {
+                var role = new RoleEntity(name, description, true, true, "313030303030303030303030");
+                roleDao.insert(role)
+                    .then(function (result) {
+                        expect.fail("The method should have not inserted the method");
+                        done();
+                    })
+                    .catch(function (err) {
+                        assert("The method sent a error, is OK");
+                        expect(err.length).eq(1);
+                        expect(err[0].attribute).eq("idParentRole");
+                        done();
+                    })
+            })
+        });
+
+        describe("When inserting a record with a idParentRole that does exits in the database", function () {
+            it("The method should not return an error", function (done) {
+                var parentRole = new RoleEntity(name, description, true, false, undefined);
+                roleDao.insert(parentRole)
+                    .then(function (resultInsert) {
+                        var role2 = new RoleEntity(name2, description2, true, true, resultInsert.id);
+                        roleDao.insert(role2)
+                            .then(function (resultSecondInsert) {
+                                expect(resultSecondInsert.idParentRole).eq(resultInsert.id);
+                                done();
+                            })
+                            .catch(function (err) {
+                                expect.fail("The method should have inserted the record");
+                                done();
+                            })
+                    });
+            });
+        });
+    });
 });
 

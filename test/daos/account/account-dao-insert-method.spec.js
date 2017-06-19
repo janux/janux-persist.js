@@ -38,7 +38,7 @@ var accountDaoMongoDbImpl = new AccountDaoMongoDbImpls(dbEngineMongoDb, null);
 
 
 describe("Testing account dao insert methods", function () {
-    [accountDaoLokiJsImpl,accountDaoMongoDbImpl].forEach(function (accountDao) {
+    [accountDaoLokiJsImpl, accountDaoMongoDbImpl].forEach(function (accountDao) {
         beforeEach(function (done) {
             accountDao.deleteAll()
                 .then(function () {

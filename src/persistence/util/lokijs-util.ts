@@ -3,6 +3,7 @@
  * Created by ernesto on 5/30/17.
  */
 
+import * as _ from 'lodash';
 import Promise = require('bluebird');
 import * as logger from 'log4js';
 
@@ -10,16 +11,20 @@ import * as logger from 'log4js';
  * Lokijs db functions util
  */
 export class LokiJsUtil {
-    public static findOneById(collection, id): Promise<any> {
+    public static findOneById(collection: any, id: any): Promise<any> {
         this._log.debug('Call to findOneById with ', id);
-        const result = collection.get(id);
+        const result = collection.get(_.toNumber(id));
         this._log.debug('Result id %j', result);
         return Promise.resolve(result);
     }
 
     public static findAllByIds(collection, arrayOfIds: any[]): Promise<any> {
         this._log.debug('Call to findAllByIds with collection: %j , arrayOfIds: %j', collection.name, arrayOfIds);
-        return this.findAllByAttributeNameIn(collection, '$loki', arrayOfIds);
+        const ids: number[] = [];
+        for (const obj of arrayOfIds) {
+            ids.push(Number(obj));
+        }
+        return this.findAllByAttributeNameIn(collection, '$loki', ids);
     }
 
     public static count(collection): Promise<any> {
@@ -42,7 +47,9 @@ export class LokiJsUtil {
     }
 
     public static findAllByQuery(collection: any, query: any): Promise<any> {
+        this._log.debug("Call to findAllByQuery with collection: %j, query: %j", collection.name, query);
         const result = collection.find(query);
+        this._log.debug('Result %j', result);
         return Promise.resolve(result);
     }
 
@@ -83,7 +90,7 @@ export class LokiJsUtil {
             const result = collection.insert(objectTOInsert);
             this._log.debug('Result before insert %j', result);
             db.saveDatabase(() => {
-                objectTOInsert.id = result.$loki;
+                objectTOInsert.id = result.$loki.toString();
                 resolve(objectTOInsert);
             });
         });
@@ -105,7 +112,7 @@ export class LokiJsUtil {
             const results = collection.insert(objectsToInsert);
             db.saveDatabase(() => {
                 for (const user of results) {
-                    user.id = user.$loki;
+                    user.id = user.$loki.toString();
                 }
                 resolve(results);
             });
@@ -115,7 +122,7 @@ export class LokiJsUtil {
     public static update(db: any, collection: any, objectToUpdate: any): Promise<any> {
         this._log.debug('Call to update with collection: %j, objectToUpdate: %j', collection.name, objectToUpdate);
         return new Promise((resolve, reject) => {
-            objectToUpdate.$loki = objectToUpdate.id;
+            objectToUpdate.$loki = Number(objectToUpdate.id);
             collection.update(objectToUpdate);
             db.saveDatabase(() => {
                 resolve(objectToUpdate);

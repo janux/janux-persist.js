@@ -21,6 +21,15 @@ export abstract class RoleDao extends AbstractDataAccessObjectWithEngine<RoleEnt
         this.dbEngineUtilLocal = dbEngineUtil;
     }
 
+    /**
+     * Find all child nodes.
+     * @param idParentRole The id of the parent node.
+     * @return {Promise<any[]>} A promise containing the child nodes.
+     */
+    public findAllChildRoles(idParentRole: string): Promise<RoleEntity[]> {
+        return this.dbEngineUtilLocal.findAllByAttribute("idParentRole", idParentRole);
+    }
+
     public  findOneByName(name: string): Promise<RoleEntity> {
         return this.dbEngineUtilLocal.findOneByAttribute("name", name);
     }
@@ -31,16 +40,28 @@ export abstract class RoleDao extends AbstractDataAccessObjectWithEngine<RoleEnt
 
     protected validateBeforeInsert(objectToInsert: RoleEntity): Promise<IValidationError[]> {
         return this.findOneByName(objectToInsert.name)
-            .then((result) => {
+            .then((result: RoleEntity) => {
                 const errors: ValidationError[] = [];
                 if (result != null) {
-                    errors.push(
-                        new ValidationError(
-                            "name",
-                            "There is another role with the same name",
-                            objectToInsert.name));
+                    errors.push(new ValidationError("name", "There is another role with the same name", ""));
+                    return Promise.resolve(errors);
+                } else {
+                    if (objectToInsert.hasParentRole === true) {
+                        return new Promise<ValidationError[]>((resolve) => {
+                            this.dbEngineUtilLocal.findOneById(objectToInsert.idParentRole)
+                                .then((resultQueryId) => {
+                                    const errorId: ValidationError[] = [];
+                                    if (resultQueryId == null) {
+                                        errorId.push(new ValidationError("idParentRole",
+                                            "idParentRole has an invalid id", objectToInsert.idParentRole));
+                                    }
+                                    resolve(errorId);
+                                });
+                        });
+                    } else {
+                        return Promise.resolve(errors);
+                    }
                 }
-                return Promise.resolve(errors);
             });
     }
 }

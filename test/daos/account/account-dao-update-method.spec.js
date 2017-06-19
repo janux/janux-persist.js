@@ -37,7 +37,7 @@ var dbEngineMongoDb = new DbEngineUtilMongodb(model);
 var accountDaoMongoDbImpl = new AccountDaoMongoDbImpls(dbEngineMongoDb, null);
 
 describe("Testing account dao update methods", function () {
-    [accountDaoLokiJsImpl,accountDaoMongoDbImpl].forEach(function (accountDao) {
+    [accountDaoLokiJsImpl].forEach(function (accountDao) {
 
         describe("Given the inserted records", function () {
 

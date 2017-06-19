@@ -2,6 +2,7 @@
  * Project janux-persistence
  * Created by ernesto on 6/16/17.
  */
+import * as _ from "lodash";
 import {RoleDao} from "../role-dao";
 import Promise = require("bluebird");
 import {IEntityProperties} from "../../../index";
@@ -25,7 +26,7 @@ export class RoleDaoLokiJsImpl extends RoleDao {
         const query = {
             $and: [
                 {name: {$eq: objectToUpdate.name}},
-                {$loki: {$ne: objectToUpdate[id]}}
+                {$loki: {$ne: _.toNumber(objectToUpdate[id])}}
             ]
         };
         return LokiJsUtil.findAllByQuery(this.collection, query)
