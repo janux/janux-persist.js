@@ -13,7 +13,7 @@ export const RoleMongoDbSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    hasParentRole: {
+    isRoot: {
         type: Boolean,
         required: true
     },

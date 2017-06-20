@@ -46,7 +46,7 @@ export abstract class RoleDao extends AbstractDataAccessObjectWithEngine<RoleEnt
                     errors.push(new ValidationError("name", "There is another role with the same name", ""));
                     return Promise.resolve(errors);
                 } else {
-                    if (objectToInsert.hasParentRole === true) {
+                    if (objectToInsert.isRoot === false) {
                         return new Promise<ValidationError[]>((resolve) => {
                             this.dbEngineUtilLocal.findOneById(objectToInsert.idParentRole)
                                 .then((resultQueryId) => {

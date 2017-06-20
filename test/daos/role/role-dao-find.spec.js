@@ -47,8 +47,8 @@ describe("Testing role dao find", function () {
             beforeEach(function (done) {
                 roleDao.deleteAll()
                     .then(function () {
-                        var role = new RoleEntity(name, description, true, false, undefined);
-                        var role2 = new RoleEntity(name2, description2, true, false, undefined);
+                        var role = new RoleEntity(name, description, true, true, undefined);
+                        var role2 = new RoleEntity(name2, description2, true, true, undefined);
                         return roleDao.insertMany([role, role2])
                     })
                     .then(function (result) {

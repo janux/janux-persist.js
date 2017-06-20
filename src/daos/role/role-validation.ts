@@ -18,22 +18,18 @@ export class RoleValidator {
         if (isBlank(role.description)) {
             errors.push(new ValidationError("description", "Description is empty", ""));
         }
-        if (_.isUndefined(role.hasParentRole) || _.isNull(role.hasParentRole)) {
-            errors.push(new ValidationError("hasParentRole", "hasParentRole must be true or false", ""));
+        if (_.isBoolean(role.enabled) === false) {
+            errors.push(new ValidationError("enabled", "enabled must be true or false", ""));
+        }
+        if (_.isBoolean(role.isRoot) === false) {
+            errors.push(new ValidationError("isRoot", "isRoot must be true or false", ""));
         } else {
-            if (role.hasParentRole === true) {
-                if (isBlank(role.idParentRole) === true) {
-                    errors.push(new ValidationError("idParentRole", "idParentRole must not be empty", ""));
-                }
-            } else if (role.hasParentRole === false) {
+            if (role.isRoot === true) {
                 if (_.isUndefined(role.idParentRole) === false) {
-                    errors.push(new ValidationError(
-                        "idParentRole",
-                        "idParentRole must be undefined, null or empty values is not accepted",
-                        ""));
+                    errors.push(new ValidationError("idParentRole", "idParentRole must be undefined", ""));
                 }
-            } else {
-                errors.push(new ValidationError("hasParentRole", "hasParentRole must be true or false", ""));
+            } else if (isBlank(role.idParentRole) === true) {
+                errors.push(new ValidationError("idParentRole", "idParentRole must not be empty", ""));
             }
         }
 
