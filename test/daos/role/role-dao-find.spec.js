@@ -32,8 +32,10 @@ var roleDaoMongodb = new RoleDaoMongoDbImpl(dbEngineMongoDb, null);
 
 var name = "A name";
 var name2 = "A second name";
+var name3 = "A third name";
 var description = "A description";
-var description2 = "A  second description";
+var description2 = "A second description";
+var description3 = "A third description";
 var invalidId1 = "313030303030303030303030";
 var invalidId2 = "313030303030303030303032";
 
@@ -43,6 +45,7 @@ describe("Testing role dao find methods", function () {
 
             var insertedRecord;
             var insertedRecord2;
+            var insertedRecord3;
 
             beforeEach(function (done) {
                 roleDao.deleteAll()
@@ -54,6 +57,11 @@ describe("Testing role dao find methods", function () {
                     .then(function (result) {
                         insertedRecord = result[0];
                         insertedRecord2 = result[1];
+                        var role3 = new RoleEntity(name3, description3, true, false, insertedRecord.id);
+                        return roleDao.insert(role3);
+                    })
+                    .then(function (insertedSubRole) {
+                        insertedRecord3 = insertedSubRole;
                         done();
                     })
                     .catch(function (error) {
@@ -112,7 +120,19 @@ describe("Testing role dao find methods", function () {
                 });
             });
 
-            // TODO: validate findAllChildRoles
+
+            describe("When calling the method findAllChildRoles", function () {
+                it("The method should return one record", function (done) {
+                    roleDao.findAllChildRoles(insertedRecord.id)
+                        .then(function (result) {
+                            expect(result.length).eq(1);
+                            expect(result[0].id).eq(insertedRecord3.id);
+                            expect(result[0].idParentRole).eq(insertedRecord.id);
+                            done();
+                        })
+                });
+            });
+
         });
     });
 });

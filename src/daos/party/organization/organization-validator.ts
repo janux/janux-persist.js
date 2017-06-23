@@ -11,6 +11,7 @@ import {OrganizationEntity} from "./organization-entity";
 export class OrganizationValidator {
 
     public static readonly NAME = "name";
+    public static readonly NAME_DUPLICATED = "There is another organization with the same name";
     public static readonly NAME_EMPTY = "Organization name is empty";
 
     public static validateOrganization(organization: OrganizationEntity): ValidationError[] {

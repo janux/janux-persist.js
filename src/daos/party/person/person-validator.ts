@@ -11,6 +11,8 @@ export class PersonValidator {
 
     public static readonly NAME_FIRST = "name.first";
     public static readonly NAME_MIDDLE = "name.middle";
+    public static readonly NAME = "name";
+    public static readonly PERSON_NAME_DUPLICATED = "There is another person with the same name";
 
     public static validatePerson(person: PersonEntity): ValidationError[] {
         this._log.debug("Call to validatePerson with person: %j", person);

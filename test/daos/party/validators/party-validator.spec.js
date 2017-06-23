@@ -45,6 +45,7 @@ describe("Party validator", function () {
     describe("When validating a organization with correct values", function () {
         it("The method should not return an error", function () {
             var organization = new OrganizationEntity();
+            organization.type = PartyValidator.ORGANIZATION;
             organization.idAccount = undefined;
             organization.name = name;
             organization.contact.emails.push(new EmailAddress(work, true, email));

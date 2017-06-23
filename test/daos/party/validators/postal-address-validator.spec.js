@@ -80,7 +80,7 @@ describe("Testing postal address validator", function () {
         });
     });
 
-    describe("When calling the method with an empty idCountry", function () {
+    describe("When calling the method with an empty isoCountryCode", function () {
         it("The method should return an error", function () {
             var postalAddress = new PostalAddress(
                 home,

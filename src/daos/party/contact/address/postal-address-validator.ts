@@ -14,8 +14,8 @@ export class PostalAddressValidator {
     public static readonly LINE_1_EMPTY = "Line 1 is empty";
     public static readonly POSTAL_CODE = "contacts.addresses.postalCode";
     public static readonly POSTAL_CODE_EMPTY = "Postal code is empty";
-    public static readonly COUNTRY = "idCountry";
-    public static readonly COUNTRY_EMPTY = "idCountry is empty";
+    public static readonly COUNTRY = "isoCountryCode";
+    public static readonly COUNTRY_EMPTY = "isoCountryCode is empty";
     public static readonly STATE_TEXT = "stateText";
     public static readonly STATE_TEXT_EMPTY = "stateText is empty";
     public static readonly STATE_TEXT_NOT_NULL = "stateText must be null";
@@ -40,7 +40,7 @@ export class PostalAddressValidator {
             errors.push(new ValidationError(this.POSTAL_CODE, this.POSTAL_CODE_EMPTY, ""));
         }
 
-        if (isBlank(address.idCountry)) {
+        if (isBlank(address.isoCountryCode)) {
             errors.push(new ValidationError(this.COUNTRY, this.COUNTRY_EMPTY, ""));
         }
 

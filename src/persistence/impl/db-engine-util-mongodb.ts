@@ -91,7 +91,7 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
         return MongoDbUtil.findAllByQuery(this.model, query);
     }
 
-    findAllByAttributesOrOperator(attributes: AttributeFilter[]): Promise<any[]> {
+    public findAllByAttributesOrOperator(attributes: AttributeFilter[]): Promise<any[]> {
         this._log.debug("Call to findAllByAttributesOrOperator with attributes: %j", attributes);
         const query = {
             $or: []
@@ -101,6 +101,11 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
             condition[attribute.attributeName] = {$eq: attribute.value};
             query.$or.push(condition);
         }
+        return MongoDbUtil.findAllByQuery(this.model, query);
+    }
+
+    public findAllByQuery(query: any): Promise<any[]> {
+        this._log.debug("Call to findAllByQuery with query: %j", query);
         return MongoDbUtil.findAllByQuery(this.model, query);
     }
 }

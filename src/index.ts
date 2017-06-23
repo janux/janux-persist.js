@@ -62,6 +62,7 @@ export  * from "./daos/city/lokijs/city-dao-lokijs-impl";
 export  * from "./daos/city/mongodb/city-dao-mongodb-impl";
 export  * from "./daos/city/mongodb/city-mongodb-schema";
 export  * from "./daos/party/party-validator";
+export  * from "./daos/party/party-dao";
 export  * from "./daos/party/person/person-entity";
 export  * from "./daos/party/person/person-validator";
 export  * from "./daos/party/organization/organization-entity";

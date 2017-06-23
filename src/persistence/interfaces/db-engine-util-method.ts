@@ -23,4 +23,5 @@ export interface IDbEngineUtil {
     findAll(): Promise<any[]>;
     findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<any[]>;
     findAllByAttributesOrOperator(attributes: AttributeFilter[]): Promise<any[]>;
+    findAllByQuery(query: any): Promise<any[]>;
 }

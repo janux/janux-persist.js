@@ -19,6 +19,7 @@ import {IPartyEntity} from "./iParty-entity";
 import {OrganizationEntity} from "./organization/organization-entity";
 import {OrganizationValidator} from "./organization/organization-validator";
 import {PersonEntity} from "./person/person-entity";
+import {PersonName} from "./person/person-name";
 import {PersonValidator} from "./person/person-validator";
 
 export class PartyValidator {
@@ -36,6 +37,7 @@ export class PartyValidator {
     public static readonly ID_ACCOUNT = "idAccount";
     public static readonly DUPLICATED_EMAILS = "This party has duplicated email addresses";
     public static readonly ID_ACCOUNT_NOT_UNDEFINED = "idAccount must be undefined or not empty";
+    public static readonly ID_ACCOUNT_DUPLICATE = "There is another record with the same idAccount";
 
     public static validateParty(party: IPartyEntity): ValidationError[] {
         this._log.debug("Call to validateParty with party: %j", party);
@@ -59,6 +61,71 @@ export class PartyValidator {
             errors.push(new ValidationError(this.ID_ACCOUNT, this.ID_ACCOUNT_NOT_UNDEFINED, party.idAccount));
         }
         this._log.debug("Returning: %j", errors);
+        return errors;
+    }
+
+    public static validateDuplicatedRecords(resultQuery: IPartyEntity[], emailAddressesToLookFor: string[], reference: IPartyEntity): ValidationError[] {
+        this._log.debug(
+            "Call to validateDuplicatedRecords with resultQuery: %j  emailAddressesToLookFor: %j reference : %j",
+            resultQuery,
+            emailAddressesToLookFor,
+            resultQuery);
+        const errors: ValidationError[] = [];
+        let person: PersonEntity;
+        let organization: OrganizationEntity;
+        let personReference: PersonEntity;
+        let organizationReference: OrganizationEntity;
+        if (reference.type === this.PERSON) {
+            personReference = reference as PersonEntity;
+        } else {
+            organizationReference = reference as OrganizationEntity;
+        }
+        // Validating duplicated emails
+        const potentialDuplicatedEmailRecords: string[] = _.flatMap(resultQuery, (record) => {
+            return record.contact.emails.map((value, index, array) => value.address);
+        });
+        const duplicatedEmails: string [] = _.intersection(emailAddressesToLookFor, potentialDuplicatedEmailRecords);
+        for (const obj of duplicatedEmails) {
+            errors.push(new ValidationError(
+                "contact.emails",
+                "There is another record with the same email address",
+                obj));
+        }
+
+        // Validate duplicated name
+        for (const element of resultQuery) {
+
+            // Validate duplicated idAccount
+            if (element.idAccount === reference.idAccount && isBlank(element.idAccount) === false) {
+                errors.push(new ValidationError(
+                    this.ID_ACCOUNT,
+                    this.ID_ACCOUNT_DUPLICATE,
+                    reference.idAccount
+                ));
+            }
+
+            if (element.type === PartyValidator.PERSON && reference.type === element.type) {
+                // Validate duplicated person name
+                person = element as PersonEntity;
+                if (PersonName.validateSameName(person.name, personReference.name) === true) {
+                    errors.push(new ValidationError(
+                        PersonValidator.NAME,
+                        PersonValidator.PERSON_NAME_DUPLICATED,
+                        JSON.stringify(person.name)));
+                }
+            } else if (element.type === PartyValidator.ORGANIZATION && reference.type === element.type) {
+                // Validate duplicated organization name
+                organization = element as OrganizationEntity;
+                if (organization.name === organizationReference.name) {
+                    errors.push(new ValidationError(
+                        OrganizationValidator.NAME,
+                        OrganizationValidator.NAME_DUPLICATED,
+                        organization.name));
+                }
+            }
+        }
+
+        this._log.debug("Retuning errors: %j", errors);
         return errors;
     }
 
@@ -132,4 +199,5 @@ export class PartyValidator {
         }
         return errors;
     }
+
 }

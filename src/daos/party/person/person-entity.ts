@@ -8,8 +8,10 @@ import {IPartyEntity} from "../iParty-entity";
 import {PersonName} from "./person-name";
 
 export class PersonEntity implements IPartyEntity {
+
     public idAccount: string;
-    public type: string = "person";
+    public type: string;
     public name: PersonName = new PersonName();
+
     public contact: Contact = new Contact();
 }

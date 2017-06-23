@@ -6,8 +6,7 @@
 import * as mongoose from 'mongoose';
 export const PartyMongoDbSchema = new mongoose.Schema({
     idAccount: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
+        type: mongoose.Schema.Types.ObjectId
     },
     type: {
         type: String,
