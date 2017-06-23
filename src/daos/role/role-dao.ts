@@ -3,6 +3,7 @@
  * Created by ernesto on 6/16/17.
  */
 
+import * as _ from 'lodash';
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
 import {RoleEntity} from "./role-entity";
@@ -46,22 +47,35 @@ export abstract class RoleDao extends AbstractDataAccessObjectWithEngine<RoleEnt
                     errors.push(new ValidationError("name", "There is another role with the same name", ""));
                     return Promise.resolve(errors);
                 } else {
-                    if (objectToInsert.isRoot === false) {
-                        return new Promise<ValidationError[]>((resolve) => {
-                            this.dbEngineUtilLocal.findOneById(objectToInsert.idParentRole)
-                                .then((resultQueryId) => {
-                                    const errorId: ValidationError[] = [];
-                                    if (resultQueryId == null) {
-                                        errorId.push(new ValidationError("idParentRole",
-                                            "idParentRole has an invalid id", objectToInsert.idParentRole));
-                                    }
-                                    resolve(errorId);
-                                });
-                        });
-                    } else {
-                        return Promise.resolve(errors);
-                    }
+                    return this.validateParentRole(objectToInsert);
                 }
             });
+    }
+
+    protected validateParentRole(reference: RoleEntity): Promise<any> {
+        if (reference.isRoot === false) {
+            return new Promise<ValidationError[]>((resolve) => {
+                this.dbEngineUtilLocal.findOneById(reference.idParentRole)
+                    .then((resultQueryId: RoleEntity) => {
+                        const errorId: ValidationError[] = [];
+                        if (resultQueryId == null) {
+                            errorId.push(new ValidationError(
+                                "idParentRole",
+                                "idParentRole has an invalid id",
+                                reference.idParentRole));
+                        } else {
+                            if (resultQueryId.isRoot === false || _.isUndefined(resultQueryId.idParentRole) === false) {
+                                errorId.push(new ValidationError(
+                                    "idParentRole",
+                                    "idParentRole is not a root role",
+                                    reference.idParentRole));
+                            }
+                        }
+                        resolve(errorId);
+                    });
+            });
+        } else {
+            return Promise.resolve([]);
+        }
     }
 }

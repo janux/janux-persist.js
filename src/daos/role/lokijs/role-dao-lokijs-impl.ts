@@ -37,8 +37,10 @@ export class RoleDaoLokiJsImpl extends RoleDao {
                         "name",
                         "There is another role with the same name",
                         objectToUpdate.name));
+                    return Promise.resolve(errors);
+                } else {
+                    return this.validateParentRole(objectToUpdate);
                 }
-                return Promise.resolve(errors);
             });
     }
 }

@@ -40,7 +40,7 @@ const description2 = "A description 2";
 const position2 = 1;
 const idAuthContext2 = "313030303030303030303031";
 
-describe("Testing permission bit find methods", function () {
+describe("Testing permission bit delete methods", function () {
 
     [permissionBitDaoLokijs, permissionBitDaoMongodb].forEach(function (permissionBitDao) {
 

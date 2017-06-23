@@ -36,7 +36,7 @@ export abstract class AbstractDataAccessObject<t> {
         if (entityErrors.length === 0) {
             // Call validateBeforeInsert in order to validate the entity against the database.
             return this.validateBeforeInsert(objectToInsert).then((validations: IValidationError[]) => {
-                this._log.debug("Returned errors from validateBeforeUpdate %j: ", validations);
+                this._log.debug("Returned errors from validateBeforeInsert %j: ", validations);
                 if (validations.length === 0) {
                     // Generate the timestamp
                     TimeStampGenerator.generateTimeStampForInsert(this.entityProperties, objectToInsert);
@@ -185,10 +185,16 @@ export abstract class AbstractDataAccessObject<t> {
     protected abstract findAllByAttributeNameIn(attributeName: string, values: any[]): Promise<t[]>;
 
     /**
-     * Perform a query with then and operator for every attribute and value
+     * Perform a query with the and operator for every attribute and value
      * @param attributes The attributes to filter
      */
     protected abstract findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<t[]>;
+
+    /**
+     * Perform a query with the or operator for every attribute and value
+     * @param attributes The attributes to filter
+     */
+    protected abstract findAllByAttributesOrOperator(attributes: AttributeFilter[]): Promise<t[]>;
 
     /**
      * This method must be implemented in order to insert an object to the database.

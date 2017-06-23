@@ -37,7 +37,7 @@ var description2 = "A  second description";
 var invalidId1 = "313030303030303030303030";
 var invalidId2 = "313030303030303030303032";
 
-describe("Testing role dao find", function () {
+describe("Testing role dao find methods", function () {
     [roleDaoLokijs, roleDaoMongodb].forEach(function (roleDao) {
         describe("Given the inserted records", function () {
 

@@ -19,11 +19,7 @@ var mongoose = require('mongoose');
 //Config files
 var serverAppContext = config.get("serverAppContext");
 
-const username = "username";
-const password = "password";
-const username2 = "username2";
-const password2 = "password2";
-const id = "313030303030303030303030";
+
 
 // Loki js configuration
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
@@ -36,6 +32,12 @@ var model = mongoose.model('account-test', AccountMongoDbSchema);
 var dbEngineMongoDb = new DbEngineUtilMongodb(model);
 var accountDaoMongoDbImpl = new AccountDaoMongoDbImpls(dbEngineMongoDb, null);
 
+const username = "username";
+const password = "password";
+const username2 = "username2";
+const password2 = "password2";
+const id = "313030303030303030303030";
+const id2 = "313030303030303030303031";
 
 describe("Testing account dao insert methods", function () {
     [accountDaoLokiJsImpl, accountDaoMongoDbImpl].forEach(function (accountDao) {
@@ -83,7 +85,7 @@ describe("Testing account dao insert methods", function () {
             }
         });
 
-        describe("When inserting a duplicated record", function () {
+        describe("When inserting a record with a duplicated username", function () {
             it("The method should send an error", function (done) {
                 var account = new AccountEntity();
                 account.username = username;
@@ -94,10 +96,10 @@ describe("Testing account dao insert methods", function () {
                         var account2 = new AccountEntity();
                         account2.username = username;
                         account2.password = password;
-                        account2.contactId = id;
+                        account2.contactId = id2;
                         accountDao.insert(account2)
                             .then(function (result) {
-                                assert.fail("The method should have returned an error");
+                                assert.fail("The method should not have returned an error");
                                 done();
                             }, function (error) {
                                 expect(error.length).eq(1);
@@ -107,6 +109,34 @@ describe("Testing account dao insert methods", function () {
                     });
             });
         });
+
+        describe("When inserting a record with a duplicated contactId", function () {
+            it("The method should send an error", function (done) {
+                var account = new AccountEntity();
+                account.username = username;
+                account.password = password;
+                account.contactId = id;
+                accountDao.insert(account)
+                    .then(function (result) {
+                        var account2 = new AccountEntity();
+                        account2.username = username2;
+                        account2.password = password2;
+                        account2.contactId = id;
+                        accountDao.insert(account2)
+                            .then(function (result) {
+                                assert.fail("The method should not have returned an error");
+                                done();
+                            }, function (error) {
+                                expect(error.length).eq(1);
+                                expect(error[0].attribute).eq("contactId");
+                                done();
+                            })
+                    });
+            });
+        });
+
+
+
 
         describe("When inserting many records", function () {
             it("The method should have inserted the records", function (done) {

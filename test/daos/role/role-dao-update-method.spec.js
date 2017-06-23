@@ -38,12 +38,22 @@ var description2 = "A  second description";
 var name3 = "A third name";
 var description3 = "A third description";
 
+var subName = "a sub role";
+var subDescription = "a description";
 
-describe("Testing role dao update", function () {
+var subName2 = "a second sub role";
+var subDescription2 = "a second description";
+
+var invalidId = "313030303030303030303031";
+
+
+describe("Testing role dao update methods", function () {
     [roleDaoLokijs, roleDaoMongodb].forEach(function (roleDao) {
         describe("Given the inserted records", function () {
             var insertedRecord;
             var insertedRecord2;
+            var insertedRecord3;
+            var insertedRecord4;
 
             beforeEach(function (done) {
                 roleDao.deleteAll()
@@ -55,6 +65,13 @@ describe("Testing role dao update", function () {
                     .then(function (result) {
                         insertedRecord = result[0];
                         insertedRecord2 = result[1];
+                        var role3 = new RoleEntity(subName, subDescription, true, false, insertedRecord.id);
+                        var role4 = new RoleEntity(subName2, subDescription2, true, false, insertedRecord2.id);
+                        return roleDao.insertMany([role3, role4]);
+                    })
+                    .then(function (resultInsertSubRole) {
+                        insertedRecord3 = resultInsertSubRole[0];
+                        insertedRecord4 = resultInsertSubRole[1];
                         done();
                     })
                     .catch(function (error) {
@@ -123,6 +140,38 @@ describe("Testing role dao update", function () {
             });
 
 
+            describe("When updating a role with an idParentRole that does not exists", function () {
+                it("The method should return an error", function (done) {
+                    insertedRecord3.idParentRole = invalidId;
+                    roleDao.update(insertedRecord3)
+                        .then(function (result) {
+                            expect.fail("The method should not have updated the record");
+                            done();
+                        })
+                        .catch(function (err) {
+                            expect(err.length).eq(1);
+                            expect(err[0].attribute).eq("idParentRole");
+                            done();
+                        })
+                });
+            });
+
+
+            describe("When updating a role with an idParentRole that is not a root role", function () {
+                it("The method should return an error", function (done) {
+                    insertedRecord3.idParentRole = insertedRecord4.id;
+                    roleDao.update(insertedRecord3)
+                        .then(function (result) {
+                            expect.fail("The method should not have updated the record");
+                            done();
+                        })
+                        .catch(function (err) {
+                            expect(err.length).eq(1);
+                            expect(err[0].attribute).eq("idParentRole");
+                            done();
+                        })
+                });
+            });
         });
     });
 });

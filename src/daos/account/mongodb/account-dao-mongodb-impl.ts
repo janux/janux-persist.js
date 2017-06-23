@@ -21,7 +21,12 @@ export class AccountDaoMongodbImpl extends AccountDao {
     }
 
     protected validateBeforeInsert(objectToInsert: AccountEntity): Promise<IValidationError[]> {
-        const query = {username: objectToInsert.username};
+        const query = {
+            $or: [
+                {username: {$eq: objectToInsert.username}},
+                {contactId: {$eq: objectToInsert.contactId}}
+            ]
+        };
         return MongoDbUtil.findAllByQuery(this.model, query)
             .then((result) => {
                 return Promise.resolve(AccountValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
@@ -33,7 +38,12 @@ export class AccountDaoMongodbImpl extends AccountDao {
         const query = {
             $and: [
                 {_id: {$ne: objectToUpdate[id]}},
-                {username: {$eq: objectToUpdate.username}}
+                {
+                    $or: [
+                        {username: {$eq: objectToUpdate.username}},
+                        {contactId: {$eq: objectToUpdate.contactId}}
+                    ]
+                }
             ]
         };
         return MongoDbUtil.findAllByQuery(this.model, query)

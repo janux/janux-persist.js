@@ -36,7 +36,7 @@ var description = "A description";
 var description2 = "A  second description";
 
 
-describe("Testing role dao delete", function () {
+describe("Testing role dao delete methods", function () {
     [roleDaoLokijs, roleDaoMongodb].forEach(function (roleDao) {
         describe("Given the inserted records", function () {
             var insertedRecord;

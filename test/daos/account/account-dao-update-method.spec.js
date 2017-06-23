@@ -22,6 +22,7 @@ const password = "password";
 const username2 = "username2";
 const password2 = "password2";
 const id = "313030303030303030303030";
+const id2 = "313030303030303030303031";
 
 const newPassword = "newPassword";
 
@@ -37,7 +38,7 @@ var dbEngineMongoDb = new DbEngineUtilMongodb(model);
 var accountDaoMongoDbImpl = new AccountDaoMongoDbImpls(dbEngineMongoDb, null);
 
 describe("Testing account dao update methods", function () {
-    [accountDaoLokiJsImpl].forEach(function (accountDao) {
+    [accountDaoMongoDbImpl,accountDaoLokiJsImpl].forEach(function (accountDao) {
 
         describe("Given the inserted records", function () {
 
@@ -54,7 +55,7 @@ describe("Testing account dao update methods", function () {
                         var account2 = new AccountEntity();
                         account2.username = username2;
                         account2.password = password2;
-                        account2.contactId = id;
+                        account2.contactId = id2;
                         return accountDao.insertMany([account1, account2])
                     })
                     .then(function (result) {
@@ -110,6 +111,24 @@ describe("Testing account dao update methods", function () {
                             done();
                         }, function (err) {
                             assert("The method sent an error, is ok", err);
+                            expect(err.length).eq(1);
+                            expect(err[0].attribute).eq("username");
+                            done();
+                        });
+                })
+            });
+
+            describe("When updating a record with a duplicated contactId", function () {
+                it("It should send an error", function (done) {
+                    insertedAccount1.contactId = id2;
+                    accountDao.update(insertedAccount1)
+                        .then(function (res) {
+                            assert.fail("The method should not have updated the record");
+                            done();
+                        }, function (err) {
+                            assert("The method sent an error, is ok", err);
+                            expect(err.length).eq(1);
+                            expect(err[0].attribute).eq("contactId");
                             done();
                         });
                 })

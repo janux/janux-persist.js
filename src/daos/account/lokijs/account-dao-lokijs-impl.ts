@@ -24,9 +24,11 @@ export class AccountDaoLokiJsImpl extends AccountDao {
 
     protected validateBeforeInsert(objectToInsert: AccountEntity): Promise<IValidationError[]> {
         const query = {
-            username: objectToInsert.username
+            $or: [
+                {username: {$eq: objectToInsert.username}},
+                {contactId: {$eq: objectToInsert.contactId}}
+            ]
         };
-
         return LokiJsUtil.findAllByQuery(this.lokijsCollection, query)
             .then((result) => {
                 return Promise.resolve(AccountValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
@@ -39,7 +41,12 @@ export class AccountDaoLokiJsImpl extends AccountDao {
         const query = {
             $and: [
                 {$loki: {$ne: idValue}},
-                {username: {$eq: objectToUpdate.username}}
+                {
+                    $or: [
+                        {username: {$eq: objectToUpdate.username}},
+                        {contactId: {$eq: objectToUpdate.contactId}}
+                    ]
+                }
             ]
         };
         return LokiJsUtil.findAllByQuery(this.lokijsCollection, query)

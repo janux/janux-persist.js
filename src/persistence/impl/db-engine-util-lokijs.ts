@@ -85,6 +85,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
     }
 
     findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<any[]> {
+        this._log.debug("Call to findAllByAttributesAndOperator with attributes: %j", attributes);
         const query = {
             $and: []
         };
@@ -92,6 +93,19 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
             const condition = {};
             condition[attribute.attributeName] = {$eq: attribute.value};
             query.$and.push(condition);
+        }
+        return LokiJsUtil.findAllByQuery(this.collection, query);
+    }
+
+    findAllByAttributesOrOperator(attributes: AttributeFilter[]): Promise<any[]> {
+        this._log.debug("Call to findAllByAttributesOrOperator with attributes: %j", attributes);
+        const query = {
+            $or: []
+        };
+        for (const attribute of attributes) {
+            const condition = {};
+            condition[attribute.attributeName] = {$eq: attribute.value};
+            query.$or.push(condition);
         }
         return LokiJsUtil.findAllByQuery(this.collection, query);
     }

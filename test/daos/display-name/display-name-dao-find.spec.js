@@ -108,7 +108,7 @@ describe("Testing display name dao find", function () {
             });
 
 
-            describe("When calling findOneBy", function () {
+            describe("When calling findOneById", function () {
                 it("It should return a record", function (done) {
                     displayNameDao.findOneById(insertedRecord1.id)
                         .then(function (result) {
@@ -119,8 +119,8 @@ describe("Testing display name dao find", function () {
                 })
             });
 
-            describe("When calling findOneBy with an invalid id", function () {
-                it("It should return a record", function (done) {
+            describe("When calling findOneById with an invalid id", function () {
+                it("It should return a null", function (done) {
                     displayNameDao.findOneById(id)
                         .then(function (result) {
                             expect(result).to.be.null;

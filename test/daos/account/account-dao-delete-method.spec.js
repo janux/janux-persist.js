@@ -17,7 +17,6 @@ var mongoose = require('mongoose');
 //Config files
 var serverAppContext = config.get("serverAppContext");
 
-
 // Loki js configuration
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
 var dbEngineUtilLokijs = new DbEngineUtilLokijs('account-test', lokiDatabase);
@@ -34,6 +33,7 @@ const password = "password";
 const username2 = "username2";
 const password2 = "password2";
 const id = "313030303030303030303030";
+const id2 = "313030303030303030303031";
 
 describe("Testing account dao delete methods", function () {
     [accountDaoLokiJsImpl, accountDaoMongoDbImpl].forEach(function (accountDao) {
@@ -51,7 +51,7 @@ describe("Testing account dao delete methods", function () {
                 var account2 = new AccountEntity();
                 account2.username = username2;
                 account2.password = password2;
-                account2.contactId = id;
+                account2.contactId = id2;
                 accountDao.insertMany([account1, account2])
                     .then(function (res) {
                         insertedRecord1 = res[0];

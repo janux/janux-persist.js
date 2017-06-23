@@ -79,6 +79,7 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
     }
 
     public findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<any[]> {
+        this._log.debug("Call to findAllByAttributesAndOperator with attributes: %j", attributes);
         const query = {
             $and: []
         };
@@ -90,4 +91,16 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
         return MongoDbUtil.findAllByQuery(this.model, query);
     }
 
+    findAllByAttributesOrOperator(attributes: AttributeFilter[]): Promise<any[]> {
+        this._log.debug("Call to findAllByAttributesOrOperator with attributes: %j", attributes);
+        const query = {
+            $or: []
+        };
+        for (const attribute of attributes) {
+            const condition = {};
+            condition[attribute.attributeName] = {$eq: attribute.value};
+            query.$or.push(condition);
+        }
+        return MongoDbUtil.findAllByQuery(this.model, query);
+    }
 }

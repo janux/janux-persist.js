@@ -23,6 +23,7 @@ const username2 = "username2";
 const password2 = "password2";
 const username3 = "IDoNotExits";
 const id = "313030303030303030303030";
+const id2 = "313030303030303030303031";
 const invalidId = "313030303030303030300000";
 
 // Loki js configuration
@@ -55,7 +56,7 @@ describe("Testing account dao find methods", function () {
                         var account2 = new AccountEntity();
                         account2.username = username2;
                         account2.password = password2;
-                        account2.contactId = id;
+                        account2.contactId = id2;
                         return accountDao.insertMany([account1, account2])
                     })
                     .then(function (result) {

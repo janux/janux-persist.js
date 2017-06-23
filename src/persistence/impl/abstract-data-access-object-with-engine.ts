@@ -112,11 +112,19 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     }
 
     /**
-     * Perform a query with then and operator for every attribute and value
+     * Perform a query with the and operator for every attribute and value
      * @param attributes The attributes to filter
      */
     protected findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<t[]> {
         return this.dbEngineUtil.findAllByAttributesAndOperator(attributes);
+    }
+
+    /**
+     * Perform a query with the or operator for every attribute and value
+     * @param attributes The attributes to filter
+     */
+    protected findAllByAttributesOrOperator(attributes: AttributeFilter[]): Promise<t[]> {
+        return this.dbEngineUtil.findAllByAttributesOrOperator(attributes);
     }
 
     /**

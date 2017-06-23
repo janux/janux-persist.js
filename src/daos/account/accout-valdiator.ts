@@ -10,9 +10,8 @@ import {AccountEntity} from "./account-entity";
 
 export class AccountValidator {
 
-    public static ANOTHER_USER: string = "There is another user with the same username";
-    public static PERSON_TYPE: string = "person";
-    public static ORGANIZATION_TYPE: string = "organization";
+    public static ANOTHER_USER: string = "There is another account with the same username";
+    public static ANOTHER_CONTACT: string = "There is another account with the same contactId";
 
     /**
      * Validate the accountEntity
@@ -38,16 +37,24 @@ export class AccountValidator {
     }
 
     public static validateResultQueryBeforeBdOperation(accounts: AccountEntity[],
-                                                       objectToInsert: AccountEntity): ValidationError[] {
-        this._log.debug("Call to validateResultQueryBeforeBdOperation with accounts: %j objectToInsert: %j",
-            accounts, objectToInsert);
+                                                       reference: AccountEntity): ValidationError[] {
+        this._log.debug("Call to validateResultQueryBeforeBdOperation with accounts: %j reference: %j",
+            accounts, reference);
         const errors: ValidationError[] = [];
         if (accounts.length > 0) {
-            errors.push(
-                new ValidationError(
-                    "username",
-                    this.ANOTHER_USER,
-                    objectToInsert.username));
+            if (accounts[0].username === reference.username) {
+                errors.push(
+                    new ValidationError(
+                        "username",
+                        this.ANOTHER_USER,
+                        reference.username));
+            } else {
+                errors.push(
+                    new ValidationError(
+                        "contactId",
+                        this.ANOTHER_CONTACT,
+                        reference.username));
+            }
         }
         this._log.debug("Returning %j", errors);
         return errors;

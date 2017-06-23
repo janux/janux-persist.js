@@ -32,11 +32,14 @@ var roleDaoMongodb = new RoleDaoMongoDbImpl(dbEngineMongoDb, null);
 
 var name = "A name";
 var name2 = "A second name";
+var name3 = "A third name";
 var description = "A description";
-var description2 = "A  second description";
+var description2 = "A second description";
+var description3 = "A third description";
 
+var invalidId = "313030303030303030303031";
 
-describe("Testing role dao insert", function () {
+describe("Testing role dao insert methods", function () {
     [roleDaoLokijs, roleDaoMongodb].forEach(function (roleDao) {
         beforeEach(function (done) {
             roleDao.deleteAll()
@@ -129,9 +132,9 @@ describe("Testing role dao insert", function () {
         });
 
 
-        describe("When inserting a record with a idParentRole that does no exits in the database", function () {
+        describe("When inserting a record with a idParentRole that does not exist in the database", function () {
             it("The method should return an error", function (done) {
-                var role = new RoleEntity(name, description, true, false, "313030303030303030303030");
+                var role = new RoleEntity(name, description, true, false, invalidId);
                 roleDao.insert(role)
                     .then(function (result) {
                         expect.fail("The method should have not inserted the method");
@@ -146,7 +149,7 @@ describe("Testing role dao insert", function () {
             })
         });
 
-        describe("When inserting a record with a idParentRole that does exits in the database", function () {
+        describe("When inserting a record with a idParentRole that does exist in the database", function () {
             it("The method should not return an error", function (done) {
                 var parentRole = new RoleEntity(name, description, true, true, undefined);
                 roleDao.insert(parentRole)
@@ -159,6 +162,31 @@ describe("Testing role dao insert", function () {
                             })
                             .catch(function (err) {
                                 expect.fail("The method should have inserted the record");
+                                done();
+                            })
+                    });
+            });
+        });
+
+        describe("When inserting a record with a idParentRole that does exist in the database, but it is not a root role", function () {
+            it("The method should return an error", function (done) {
+                var parentRole = new RoleEntity(name, description, true, true, undefined);
+                roleDao.insert(parentRole)
+                    .then(function (resultInsert) {
+                        var role2 = new RoleEntity(name2, description2, true, false, resultInsert.id);
+                        roleDao.insert(role2)
+                            .then(function (resultSecondInsert) {
+                                expect(resultSecondInsert.idParentRole).eq(resultInsert.id);
+                                var role3 = new RoleEntity(name3, description3, true, false, resultSecondInsert.id);
+                                return roleDao.insert(role3);
+                            })
+                            .then(function (result) {
+                                expect.fail("The method should have not inserted the record");
+                                done();
+                            })
+                            .catch(function (err) {
+                                expect(err.length).eq(1);
+                                expect(err[0].attribute).eq("idParentRole");
                                 done();
                             })
                     });

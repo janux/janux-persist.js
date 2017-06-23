@@ -40,7 +40,7 @@ var description2 = "A description 2";
 var sortOrder2 = 2;
 
 var enabled2 = true;
-describe("Testing auth context dao find methods", function () {
+describe("Testing auth context dao delete methods", function () {
     [authContextDaoLokijs, authContextDaoMongodb].forEach(function (authContextDao) {
         describe("Given the inserted records", function () {
 

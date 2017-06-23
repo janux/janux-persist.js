@@ -22,4 +22,5 @@ export interface IDbEngineUtil {
     insertManyMethod(objectsToInsert: any[]): Promise<any>;
     findAll(): Promise<any[]>;
     findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<any[]>;
+    findAllByAttributesOrOperator(attributes: AttributeFilter[]): Promise<any[]>;
 }
