@@ -6,6 +6,7 @@ import * as Promise from "bluebird";
 import * as logger from 'log4js';
 import * as loki from 'lokijs';
 import * as mongoose from "mongoose";
+import {Persistence} from "../../daos/persistence";
 import {isBlank} from "../../util/blank-string-validator";
 import {BootstrapLokiJsDaos} from "./bootatrap-lokijs";
 import {BootStrapMongoDbDaos} from "./bootstrap-mongodb";
@@ -13,7 +14,10 @@ export class BootstrapService {
 
     public static readonly MONGODB: string = "mongodb";
     public static readonly LOKIJS: string = "lokijs";
+    public static readonly DB_PARAMS_EMPTY = "dbParams is empty";
+    public static readonly DB_ENGINE_EMPTY = "dbEngine is empty";
     public static serviceStarted: boolean = false;
+    public static DB_ENGINE_INVALID = "dbEngine is invalid";
 
     /**
      * Starts the janux persistence modules.
@@ -25,37 +29,66 @@ export class BootstrapService {
     public static start(dbEngine: string, dbParams: string): Promise<any> {
         this._log.info("Call to start with dbEngine: %j dbParams: %j", dbEngine, dbParams);
 
+        if (isBlank(dbParams)) {
+            return Promise.reject(this.DB_PARAMS_EMPTY);
+        }
+        if (isBlank(dbEngine)) {
+            return Promise.reject(this.DB_ENGINE_EMPTY);
+        }
         if (this.serviceStarted === true) {
             return Promise.resolve("Service already started");
         }
-        if (isBlank(dbParams)) {
-            return Promise.reject("dbParams is empty");
-        }
-        if (isBlank(dbEngine)) {
-            return Promise.reject("dbEngine is empty");
-        }
 
-        if (dbEngine !== this.MONGODB || dbEngine !== this.LOKIJS) {
-            return Promise.reject("dbEngine is not " + this.LOKIJS + " or " + this.MONGODB);
+        if (dbEngine !== this.MONGODB && dbEngine !== this.LOKIJS) {
+            return Promise.reject(this.DB_ENGINE_INVALID);
         } else {
             if (dbEngine === this.MONGODB) {
                 return this.connectToMongodbDatabase(dbParams)
                     .then((mongoose) => {
                         BootStrapMongoDbDaos.initMongoDbDaos(mongoose);
+                        this.mongoose = mongoose;
                         this.serviceStarted = true;
+                        this.dbEngineUsed = this.MONGODB;
                         return Promise.resolve();
                     });
             } else {
                 return this.connectToLokiDatabase(dbParams)
                     .then((lokiDb) => {
                         BootstrapLokiJsDaos.initLokiJsDaos(lokiDb);
+                        this.lokiDb = lokiDb;
                         this.serviceStarted = true;
+                        this.dbEngineUsed = this.LOKIJS;
                         Promise.resolve();
                     });
             }
         }
     }
 
+    /**
+     * Close the persistence module
+     */
+    public static stop(): Promise<any> {
+        if (this.serviceStarted === true) {
+            if (this.dbEngineUsed === this.MONGODB) {
+                mongoose.disconnect();
+                this.cleanPersistence();
+                this.serviceStarted = false;
+                return Promise.resolve();
+            } else {
+                this.lokiDb.close();
+                this.serviceStarted = false;
+                this.cleanPersistence();
+                return Promise.resolve();
+            }
+        } else {
+            this._log.debug("Service not started");
+            return Promise.resolve();
+        }
+    }
+
+    private static dbEngineUsed: string;
+    private static mongoose: any;
+    private static lokiDb: any;
     private static _log = logger.getLogger("BootstrapService");
 
     private static connectToMongodbDatabase(mongoConnUrl: string): Promise<any> {
@@ -66,7 +99,7 @@ export class BootstrapService {
             mongoose.connect(mongoConnUrl, (err) => {
                 if (err) {
                     if (err.message === "Trying to open unclosed connection.") {
-                        resolve();
+                        resolve(mongoose);
                     } else {
                         this._log.fatal("Error connecting to mongodb database %j ", err);
                         reject(err);
@@ -85,5 +118,19 @@ export class BootstrapService {
         this._log.info("Connecting to lokijs database");
         const db = new loki(lokiJsDBPath);
         return Promise.resolve(db);
+    }
+
+    private static cleanPersistence() {
+        Persistence.accountDao = undefined;
+        Persistence.accountRoleDao = undefined;
+        Persistence.displayNameDao = undefined;
+        Persistence.authContextDao = undefined;
+        Persistence.permissionBitDao = undefined;
+        Persistence.roleDao = undefined;
+        Persistence.rolePermissionBitDao = undefined;
+        Persistence.countryDao = undefined;
+        Persistence.stateProvinceDao = undefined;
+        Persistence.partyDao = undefined;
+        Persistence.cityDao = undefined;
     }
 }

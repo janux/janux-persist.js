@@ -70,6 +70,8 @@ const invalidEmail = "email.com";
                 userDao.update(user)
                     .then(function (result) {
                         //Perform a query
+                        expect(result.id).not.to.be.null;
+                        expect(result.lastUpdate).to.be.a("Date");
                         userDao.findOneById(id)
                             .then(function (queryResult) {
                                 expect(queryResult.id).eq(id);
