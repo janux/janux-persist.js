@@ -36,8 +36,7 @@ export class AccountDaoLokiJsImpl extends AccountDao {
     }
 
     protected validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<IValidationError[]> {
-        const id = "id";
-        const idValue = _.toNumber(objectToUpdate[id]);
+        const idValue = _.toNumber(objectToUpdate.id);
         const query = {
             $and: [
                 {$loki: {$ne: idValue}},

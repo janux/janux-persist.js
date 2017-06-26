@@ -22,7 +22,7 @@ const phone = "55-55-55-55";
 const phone2 = "55-55-55-56";
 const cityText = "Mexico city";
 const stateText = "CDMX";
-const idCountry = "313030303030303030303032";
+const countryIsoCode = "MX";
 const address = "An address";
 const postalCode = "05000";
 
@@ -225,7 +225,7 @@ describe("Party validator", function () {
                 postalCode,
                 stateText,
                 null,
-                idCountry));
+                countryIsoCode));
             person.contact.addresses.push(new PostalAddress(
                 work,
                 false,
@@ -237,7 +237,7 @@ describe("Party validator", function () {
                 postalCode,
                 stateText,
                 null,
-                idCountry));
+                countryIsoCode));
             var errors = PartyValidator.validateParty(person);
             expect(errors.length).eq(1);
             expect(errors[0].attribute).eq(PartyValidator.CONTACT_ADDRESSES);
@@ -264,7 +264,7 @@ describe("Party validator", function () {
                 postalCode,
                 stateText,
                 null,
-                idCountry));
+                countryIsoCode));
             person.contact.addresses.push(new PostalAddress(
                 work,
                 true,
@@ -276,7 +276,7 @@ describe("Party validator", function () {
                 postalCode,
                 stateText,
                 null,
-                idCountry));
+                countryIsoCode));
             var errors = PartyValidator.validateParty(person);
             expect(errors.length).eq(1);
             expect(errors[0].attribute).eq(PartyValidator.CONTACT_ADDRESSES);

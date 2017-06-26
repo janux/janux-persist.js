@@ -87,6 +87,7 @@ export class MongoDbUtil {
                 for (const element of result) {
                     this.cleanObjectIds(element);
                 }
+                this._log.debug("Returning %j records", result.length);
                 resolve(result);
             });
         });

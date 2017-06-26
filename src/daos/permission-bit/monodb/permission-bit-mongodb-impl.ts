@@ -23,10 +23,9 @@ export class PermissionBitMongodbImpl extends PermissionBitDao {
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: PermissionBitEntity): Promise<IValidationError[]> {
-        const id = "id";
         const query = {
             $and: [
-                {_id: {$ne: objectToUpdate[id]}},
+                {_id: {$ne: objectToUpdate.id}},
                 {name: {$eq: objectToUpdate.name}},
                 {idAuthContext: {$eq: objectToUpdate.idAuthContext}}
             ]

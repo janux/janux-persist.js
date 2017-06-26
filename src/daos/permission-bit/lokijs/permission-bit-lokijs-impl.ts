@@ -23,10 +23,9 @@ export class PermissionBitLokijsImpl extends PermissionBitDao {
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: PermissionBitEntity): Promise<IValidationError[]> {
-        const id = "id";
         const query = {
             $and: [
-                {$loki: {$ne: _.toNumber(objectToUpdate[id])}},
+                {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
                 {name: {$eq: objectToUpdate.name}},
                 {idAuthContext: {$eq: objectToUpdate.idAuthContext}}
             ]

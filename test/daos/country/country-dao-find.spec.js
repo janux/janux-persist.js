@@ -85,6 +85,17 @@ describe("Testing country dao find methods", function () {
                 });
             });
 
+            describe("When calling findOneByIsoCode", function () {
+                it("The method should return a record", function (done) {
+                    countryDao.findOneByIsoCode(isoCode2)
+                        .then(function (result) {
+                            expect(result).not.to.be.null;
+                            expect(result.isoCode).eq(isoCode2);
+                            done();
+                        });
+                });
+            });
+
             describe("When calling findOneById with invalid id", function () {
                 it("The method should return null", function (done) {
                     countryDao.findOneById(invalidId)

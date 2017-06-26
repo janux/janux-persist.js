@@ -22,11 +22,10 @@ export class RoleDaoLokiJsImpl extends RoleDao {
     }
 
     protected validateBeforeUpdate(objectToUpdate: RoleEntity): Promise<IValidationError[]> {
-        const id = "id";
         const query = {
             $and: [
                 {name: {$eq: objectToUpdate.name}},
-                {$loki: {$ne: _.toNumber(objectToUpdate[id])}}
+                {$loki: {$ne: _.toNumber(objectToUpdate.id)}}
             ]
         };
         return LokiJsUtil.findAllByQuery(this.collection, query)

@@ -32,7 +32,6 @@ export class PartyDaoMongoDbImpl extends PartyDao {
     }
 
     protected validateDuplicated(objectToUpdate: IPartyEntity): Promise<IValidationError[]> {
-        const id: string = "id";
         let emailAddressesToLookFor: string[];
         emailAddressesToLookFor = objectToUpdate.contact.emails.map((value, index, array) => value.address);
         let personReference: PersonEntity;
@@ -42,7 +41,7 @@ export class PartyDaoMongoDbImpl extends PartyDao {
             personReference = objectToUpdate as PersonEntity;
             query = {
                 $and: [
-                    {_id: {$ne: objectToUpdate[id]}},
+                    {_id: {$ne: objectToUpdate.id}},
                     {
                         $or: [
                             {"contact.emails.address": {$in: emailAddressesToLookFor}},
@@ -63,7 +62,7 @@ export class PartyDaoMongoDbImpl extends PartyDao {
             organizationReference = objectToUpdate as OrganizationEntity;
             query = {
                 $and: [
-                    {_id: {$ne: objectToUpdate[id]}},
+                    {_id: {$ne: objectToUpdate.id}},
                     {
                         $or: [
                             {"contact.emails.address": {$in: emailAddressesToLookFor}},

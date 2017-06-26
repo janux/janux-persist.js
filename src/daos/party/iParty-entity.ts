@@ -1,10 +1,12 @@
-import {Contact} from "./contact/contact";
 /**
  * Project janux-persistence
  * Created by ernesto on 6/20/17.
  */
 
-export  interface IPartyEntity {
+import {IEntity} from "../../persistence/interfaces/entity";
+import {Contact} from "./contact/contact";
+
+export  interface IPartyEntity extends IEntity {
 
     // Could be person or organization
     type: string;

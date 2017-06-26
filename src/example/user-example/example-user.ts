@@ -3,10 +3,13 @@
  * Created by ernesto on 6/12/17.
  */
 
+import {IEntity} from "../../persistence/interfaces/entity";
 /**
  * This is the entity
  */
-export class ExampleUser {
+export class ExampleUser implements IEntity {
+
+    public id: string;
     public name: string;
     public lastName: string;
     public email: string;

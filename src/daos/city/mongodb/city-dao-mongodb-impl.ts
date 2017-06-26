@@ -23,10 +23,9 @@ export class CityDaoMongoDbImpl extends CityDao {
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: CityEntity): Promise<IValidationError[]> {
-        const id    = "id";
         const query = {
             $and: [
-                {_id: {$ne: objectToUpdate[id]}},
+                {_id: {$ne: objectToUpdate.id}},
                 {code: {$eq: objectToUpdate.code}},
                 {idStateProvince: {$eq: objectToUpdate.idStateProvince}},
             ]

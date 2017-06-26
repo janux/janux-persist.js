@@ -61,7 +61,7 @@ describe("Testing state province insert methods", function () {
                         expect(resultInsert.id).not.to.be.null;
                         expect(resultInsert.name).eq(name);
                         expect(resultInsert.code).eq(code);
-                        expect(resultInsert.idCountry).eq(id);
+                        expect(resultInsert.countryIsoCode).eq(id);
                         expect(resultInsert.sortOrder).eq(sortOrder);
                         return stateProvinceDao.findOneById(resultInsert.id);
                     })
@@ -69,7 +69,7 @@ describe("Testing state province insert methods", function () {
                         expect(resultQuery.id).not.to.be.null;
                         expect(resultQuery.name).eq(name);
                         expect(resultQuery.code).eq(code);
-                        expect(resultQuery.idCountry).eq(id);
+                        expect(resultQuery.countryIsoCode).eq(id);
                         expect(resultQuery.sortOrder).eq(sortOrder);
                         done();
                     });

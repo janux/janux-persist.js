@@ -24,10 +24,9 @@ export class DisplayNameDaoMongodbImpl extends DisplayNameDao {
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: DisplayNameEntity): Promise<IValidationError[]> {
-        const id = 'id';
         const query = {
             $and: [
-                {_id: {$ne: objectToUpdate[id]}},
+                {_id: {$ne: objectToUpdate.id}},
                 {displayName: {$eq: objectToUpdate.displayName}}
             ]
         };

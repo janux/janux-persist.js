@@ -22,10 +22,9 @@ export class DisplayNameDaoLokijsImpl extends DisplayNameDao {
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: DisplayNameEntity): Promise<IValidationError[]> {
-        const id = "id";
         const query = {
             $and: [
-                {$loki: {$ne: _.toNumber(objectToUpdate[id])}},
+                {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
                 {displayName: {$eq: objectToUpdate.displayName}}
             ]
         };

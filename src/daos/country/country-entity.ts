@@ -1,8 +1,12 @@
+import {IEntity} from "../../persistence/interfaces/entity";
 /**
  * Project janux-persistence
  * Created by ernesto on 6/20/17.
  */
-export class CountryEntity {
+export class CountryEntity implements IEntity {
+
+    public id: string;
+
     /** the International Code used to place a telephone call in this Country */
     public name: string;
 

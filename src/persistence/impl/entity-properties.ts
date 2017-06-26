@@ -5,7 +5,10 @@ import {IEntityProperties} from "../interfaces/entity-properties";
  */
 export class EntityProperties implements IEntityProperties {
 
+    // Generates an automatic uuid string
     public identifiable: boolean;
+
+    // Generates date for inserted record date and last modified date.
     public timeStamp: boolean;
 
     constructor(identifiable: boolean, timeStamp: boolean) {

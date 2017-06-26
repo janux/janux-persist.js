@@ -23,10 +23,9 @@ export class CityDaoLokiJsImpl extends CityDao {
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: CityEntity): Promise<IValidationError[]> {
-        const id = "id";
         const query = {
             $and: [
-                {$loki: {$ne: _.toNumber(objectToUpdate[id])}},
+                {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
                 {code: {$eq: objectToUpdate.code}},
                 {idStateProvince: {$eq: objectToUpdate.idStateProvince}},
             ]

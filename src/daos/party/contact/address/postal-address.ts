@@ -23,9 +23,9 @@ export class PostalAddress implements IContactMethod {
     public idStateProvince: string;
 
     // Iso country code
-    public isoCountryCode: string;
+    public countryIsoCode: string;
 
-    constructor(type: string, primary: boolean, line1: string, line2: string, line3: string, cityText: string, idCity: string, postalCode: string, stateText: string, idStateProvince: string, isoCountryCode: string) {
+    constructor(type: string, primary: boolean, line1: string, line2: string, line3: string, cityText: string, idCity: string, postalCode: string, stateText: string, idStateProvince: string, countryIsoCode: string) {
         this.type = type;
         this.primary = primary;
         this.line1 = line1;
@@ -36,6 +36,6 @@ export class PostalAddress implements IContactMethod {
         this.idCity = idCity;
         this.stateText = stateText;
         this.idStateProvince = idStateProvince;
-        this.isoCountryCode = isoCountryCode;
+        this.countryIsoCode = countryIsoCode;
     }
 }

@@ -23,10 +23,9 @@ export class AuthContextLokijsImpl extends AuthContextDao {
     }
 
     protected validateBeforeUpdate(objectToUpdate: AuthContextEntity): Promise<IValidationError[]> {
-        const id = "id";
         const query = {
             $and: [
-                {$loki: {$ne: _.toNumber(objectToUpdate[id])}},
+                {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
                 {name: {$eq: objectToUpdate.name}}
             ]
         };

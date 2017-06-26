@@ -23,12 +23,11 @@ export class StateProvinceDaoMongoDbImpl extends StateProvinceDao {
     }
 
     protected validateBeforeUpdate(objectToUpdate: StateProvinceEntity): Bluebird<IValidationError[]> {
-        const id = "id";
         const query = {
             $and: [
-                {_id: {$ne: objectToUpdate[id]}},
+                {_id: {$ne: objectToUpdate.id}},
                 {code: {$eq: objectToUpdate.code}},
-                {idCountry: {$eq: objectToUpdate.idCountry}},
+                {countryIsoCode: {$eq: objectToUpdate.countryIsoCode}},
             ]
         };
         return MongoDbUtil.findAllByQuery(this.model, query)

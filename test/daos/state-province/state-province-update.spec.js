@@ -30,8 +30,7 @@ var model = mongoose.model('state-province-test', StateProvinceMongoDbSchema);
 var dbEngineMongoDb = new DbEngineUtilMongodb(model);
 var stateProvinceDaoMongoDbImpl = new StateProvinceDaoMongoDbImpl(dbEngineMongoDb, null);
 
-const id = "313030303030303030303030";
-const id2 = "313030303030303030303031";
+const countryIsoCode1 = "MX";
 var code = "CDMX";
 var name = "Mexico city";
 var sortOrder = 1;
@@ -39,13 +38,14 @@ var sortOrder = 1;
 var code2 = "CDMX2";
 var name2 = "Mexico city 2";
 var sortOrder2 = 2;
+const countryIsoCode2 = "USA";
 
 var code3 = "CDMX3";
 var name3 = "Mexico city 3";
 var sortOrder3 = 3;
 
 describe("Testing state province update methods", function () {
-    [stateProvinceDaoLokijs, stateProvinceDaoMongoDbImpl].forEach(function (stateProvinceDao) {
+    [stateProvinceDaoMongoDbImpl, stateProvinceDaoLokijs].forEach(function (stateProvinceDao) {
 
         var insertedRecord1;
         var insertedRecord2;
@@ -53,8 +53,8 @@ describe("Testing state province update methods", function () {
         beforeEach(function (done) {
             stateProvinceDao.deleteAll()
                 .then(function () {
-                    var stateProvince = new StateProvinceEntity(name, code, id, sortOrder);
-                    var stateProvince2 = new StateProvinceEntity(name2, code2, id2, sortOrder2);
+                    var stateProvince = new StateProvinceEntity(name, code, countryIsoCode1, sortOrder);
+                    var stateProvince2 = new StateProvinceEntity(name2, code2, countryIsoCode2, sortOrder2);
                     return stateProvinceDao.insertMany([stateProvince, stateProvince2])
                 })
                 .then(function (insertedRecords) {
@@ -72,14 +72,14 @@ describe("Testing state province update methods", function () {
                 insertedRecord1.name = name3;
                 insertedRecord1.code = code3;
                 insertedRecord1.sortOrder = sortOrder3;
-                insertedRecord1.idCountry = id2;
+                insertedRecord1.countryIsoCode = countryIsoCode2;
                 stateProvinceDao.update(insertedRecord1)
                     .then(function (resultUpdate) {
                         expect(resultUpdate.id).not.to.be.null;
                         expect(resultUpdate.name).eq(name3);
                         expect(resultUpdate.code).eq(code3);
                         expect(resultUpdate.sortOrder).eq(sortOrder3);
-                        expect(resultUpdate.idCountry).eq(id2);
+                        expect(resultUpdate.countryIsoCode).eq(countryIsoCode2);
                         return stateProvinceDao.findOneById(resultUpdate.id);
                     })
                     .then(function (resultQuery) {
@@ -87,7 +87,7 @@ describe("Testing state province update methods", function () {
                         expect(resultQuery.name).eq(name3);
                         expect(resultQuery.code).eq(code3);
                         expect(resultQuery.sortOrder).eq(sortOrder3);
-                        expect(resultQuery.idCountry).eq(id2);
+                        expect(resultQuery.countryIsoCode).eq(countryIsoCode2);
                         done();
                     })
                     .catch(function (err) {
@@ -113,10 +113,10 @@ describe("Testing state province update methods", function () {
             });
         });
 
-        describe("When updating the code and idCountry in order to have a duplicated pair", function () {
-            it("The method should return an error",function (done) {
-                insertedRecord1.code=code2;
-                insertedRecord1.idCountry=id2;
+        describe("When updating the code and countryIsoCode in order to have a duplicated pair", function () {
+            it("The method should return an error", function (done) {
+                insertedRecord1.code = code2;
+                insertedRecord1.countryIsoCode = countryIsoCode2;
                 stateProvinceDao.update(insertedRecord1)
                     .then(function (resultUpdate) {
                         expect.fail("The method should not have updated the record");

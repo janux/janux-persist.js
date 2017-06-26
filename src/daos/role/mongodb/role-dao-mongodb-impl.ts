@@ -22,11 +22,10 @@ export class RoleDaoMongoDbImpl extends RoleDao {
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: RoleEntity): Promise<IValidationError[]> {
-        const id = "id";
         const query = {
             $and: [
                 {name: {$eq: objectToUpdate.name}},
-                {_id: {$ne: objectToUpdate[id]}}
+                {_id: {$ne: objectToUpdate.id}}
             ]
         };
         return MongoDbUtil.findAllByQuery(this.model, query)

@@ -9,7 +9,7 @@ import Promise = require("bluebird");
 import {AttributeFilter} from "./attribute-filter";
 
 /**
- * Generic implementation ob lokijs db functions
+ * Generic implementation of lokijs db functions
  * When calling this method. Make sure params has the
  * correct db property and the correct collection property
  */

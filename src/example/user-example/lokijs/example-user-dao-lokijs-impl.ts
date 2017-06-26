@@ -44,10 +44,9 @@ export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
      */
     protected validateBeforeUpdate<t>(objectToUpdate: ExampleUser): Promise<any> {
         const errors: ValidationError[] = [];
-        const id = 'id';
         const query = {
             $and: [
-                {$loki: {$ne: _.toNumber(objectToUpdate[id])}},
+                {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
                 {email: {$eq: objectToUpdate.email}}
             ]
         };

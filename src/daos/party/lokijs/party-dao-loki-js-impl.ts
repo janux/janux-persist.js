@@ -31,7 +31,6 @@ export class PartyDaoLokiJsImpl extends PartyDao {
     }
 
     private validateDuplicated<t>(objectToUpdate: IPartyEntity): Promise<IValidationError[]> {
-        const id: string = "id";
         let emailAddressesToLookFor: string[];
         emailAddressesToLookFor = objectToUpdate.contact.emails.map((value, index, array) => value.address);
         let personReference: PersonEntity;
@@ -41,7 +40,7 @@ export class PartyDaoLokiJsImpl extends PartyDao {
             personReference = objectToUpdate as PersonEntity;
             query = {
                 $and: [
-                    {$loki: {$ne: _.toNumber(objectToUpdate[id])}},
+                    {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
                     {
                         $or: [
                             {"contact.emails.address": {$in: emailAddressesToLookFor}},
@@ -62,7 +61,7 @@ export class PartyDaoLokiJsImpl extends PartyDao {
             organizationReference = objectToUpdate as OrganizationEntity;
             query = {
                 $and: [
-                    {$loki: {$ne: _.toNumber(objectToUpdate[id])}},
+                    {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
                     {
                         $or: [
                             {"contact.emails.address": {$in: emailAddressesToLookFor}},

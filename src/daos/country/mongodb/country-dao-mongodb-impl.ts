@@ -23,11 +23,10 @@ export class CountryDaoMongoDbImpl extends CountryDao {
     }
 
     protected validateBeforeUpdate(objectToUpdate: CountryEntity): Promise<IValidationError[]> {
-        const id = "id";
 
         const query = {
             $and: [
-                {_id: {$ne: objectToUpdate[id]}},
+                {_id: {$ne: objectToUpdate.id}},
                 {
                     $or: [
                         {name: {$eq: objectToUpdate.name}},

@@ -22,8 +22,8 @@ export abstract class StateProvinceDao extends AbstractDataAccessObjectWithEngin
         this.dbEngineUtilLocal = dbEngineUtil;
     }
 
-    public findAllByIdCountry(idCountry: string) {
-        return this.dbEngineUtilLocal.findAllByAttribute("idCountry", idCountry);
+    public findAllByIdCountry(countryIsoCode: string) {
+        return this.dbEngineUtilLocal.findAllByAttribute("countryIsoCode", countryIsoCode);
     }
 
     protected validateEntity<t>(objectToValidate: StateProvinceEntity): IValidationError[] {
@@ -32,7 +32,7 @@ export abstract class StateProvinceDao extends AbstractDataAccessObjectWithEngin
 
     protected validateBeforeInsert<t>(objectToInsert: StateProvinceEntity): Promise<IValidationError[]> {
         const filter: AttributeFilter[] = [
-            new AttributeFilter("idCountry", objectToInsert.idCountry),
+            new AttributeFilter("countryIsoCode", objectToInsert.countryIsoCode),
             new AttributeFilter("code", objectToInsert.code)
         ];
         return this.dbEngineUtilLocal.findAllByAttributesAndOperator(filter)

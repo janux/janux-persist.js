@@ -8,7 +8,7 @@ import {IPartyEntity} from "../iParty-entity";
 import {PersonName} from "./person-name";
 
 export class PersonEntity implements IPartyEntity {
-
+    public id: string;
     public idAccount: string;
     public type: string;
     public name: PersonName = new PersonName();

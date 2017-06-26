@@ -23,10 +23,9 @@ export class AuthContextMongoDbImpl extends AuthContextDao {
     }
 
     protected validateBeforeUpdate(objectToUpdate: AuthContextEntity): Promise<IValidationError[]> {
-        const id = 'id';
         const query = {
             $and: [
-                {_id: {$ne: objectToUpdate[id]}},
+                {_id: {$ne: objectToUpdate.id}},
                 {name: {$eq: objectToUpdate.name}}
             ]
         };

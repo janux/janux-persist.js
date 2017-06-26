@@ -12,8 +12,8 @@ export const StateProvinceMongoDbSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    idCountry: {
-        type: mongoose.Schema.Types.ObjectId,
+    countryIsoCode: {
+        type: String,
         required: true
     },
     sortOrder: {

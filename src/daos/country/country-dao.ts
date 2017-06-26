@@ -21,6 +21,10 @@ export abstract class CountryDao extends AbstractDataAccessObjectWithEngine<Coun
         this.dbEngineLocal = dbEngineUtil;
     }
 
+    public findOneByIsoCode(isoCode: string) {
+        return this.dbEngineLocal.findOneByAttribute("isoCode", isoCode);
+    }
+
     protected validateEntity<t>(objectToValidate: CountryEntity): IValidationError[] {
         return CountryValidator.validateCountry(objectToValidate);
     }

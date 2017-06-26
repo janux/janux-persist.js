@@ -7,6 +7,7 @@ import {Contact} from "../contact/contact";
 import {IPartyEntity} from "../iParty-entity";
 
 export class OrganizationEntity implements IPartyEntity {
+    public id: string;
     public idAccount: string;
     public type: string;
     public name: string;

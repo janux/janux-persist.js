@@ -2,7 +2,11 @@
  * Project janux-persistence
  * Created by ernesto on 6/21/17.
  */
-export class CityEntity {
+
+import {IEntity} from "../../persistence/interfaces/entity";
+
+export class CityEntity implements IEntity {
+    public id: string;
     public name: string;
     public code: string;
     public idStateProvince: string;

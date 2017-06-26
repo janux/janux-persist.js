@@ -34,10 +34,9 @@ export class AccountDaoMongodbImpl extends AccountDao {
     }
 
     protected validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<IValidationError[]> {
-        const id = 'id';
         const query = {
             $and: [
-                {_id: {$ne: objectToUpdate[id]}},
+                {_id: {$ne: objectToUpdate.id}},
                 {
                     $or: [
                         {username: {$eq: objectToUpdate.username}},

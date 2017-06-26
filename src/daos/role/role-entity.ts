@@ -1,8 +1,11 @@
+import {IEntity} from "../../persistence/interfaces/entity";
 /**
  * Project janux-persistence
  * Created by ernesto on 6/16/17.
  */
-export class RoleEntity {
+export class RoleEntity implements IEntity {
+
+    public id: string;
 
     /** a unique short-hand name for this role */
     public name: string;

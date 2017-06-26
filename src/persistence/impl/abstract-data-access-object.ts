@@ -7,27 +7,27 @@ import * as logger from 'log4js';
 import uuid = require("uuid");
 import Promise = require("bluebird");
 import {isValidId} from "../../util/id_validator";
+import {IEntity} from "../interfaces/entity";
 import {IEntityProperties} from "../interfaces/entity-properties";
 import {IValidationError} from "../interfaces/validation-error";
 import {TimeStampGenerator} from "../util/TimeStampGenerator";
 import {UuidGenerator} from "../util/UuidGenerator";
 import {AttributeFilter} from "./attribute-filter";
 
-export abstract class AbstractDataAccessObject<t> {
+export abstract class AbstractDataAccessObject<t extends IEntity> {
 
     protected entityProperties: IEntityProperties;
     private readonly _log = logger.getLogger("AbstractDataAccessObject");
-    private readonly ID_PROPERTY = "id";
 
     constructor(entityProperties: IEntityProperties) {
         this.entityProperties = entityProperties;
     }
 
-    public insert<t>(objectToInsert: t): Promise<t | IValidationError[]> {
+    public insert(objectToInsert: t): Promise<t | IValidationError[]> {
         this._log.debug('Call to insert with %j', objectToInsert);
         let entityErrors: IValidationError[];
         // Check for an null id
-        if (objectToInsert[this.ID_PROPERTY] != null) {
+        if (objectToInsert.id != null) {
             this._log.error('%j has an id', objectToInsert);
             return Promise.reject('Object has a defined id');
         }
@@ -60,12 +60,11 @@ export abstract class AbstractDataAccessObject<t> {
      * @param objectsToInsert The object to insert
      * @returns {any} A promise containing the inserted objects, a rejected promise if something went wrong
      */
-    public insertMany<t>(objectsToInsert: t[]): Promise<any> {
+    public insertMany(objectsToInsert: t[]): Promise<any> {
         this._log.debug('Call to insertMany with %j', objectsToInsert.length);
-        const id = 'id';
         let entityErrors: IValidationError[];
         for (const obj of objectsToInsert) {
-            if (obj[id] != null) {
+            if (obj.id != null) {
                 this._log.error('%j has an id', obj);
                 return Promise.reject('Object has a defined id');
             }
@@ -93,11 +92,11 @@ export abstract class AbstractDataAccessObject<t> {
      * @param objectToUpdate The object to update
      * @returns {any} A promise containing the updated object or a reject if something went wrong.
      */
-    public update<t>(objectToUpdate: t): Promise<t | IValidationError[]> {
+    public update(objectToUpdate: t): Promise<t | IValidationError[]> {
         this._log.debug('Call to update with %j', objectToUpdate);
 
         let entityErrors: IValidationError[];
-        if (!isValidId(objectToUpdate[this.ID_PROPERTY])) {
+        if (!isValidId(objectToUpdate.id)) {
             this._log.error('%j does not have an id', objectToUpdate);
             return Promise.reject('Object does not have an id');
         }

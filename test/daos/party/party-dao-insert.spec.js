@@ -54,7 +54,7 @@ const areaCode = "55";
 const countryCode = "52";
 const cityText = "Mexico city";
 const stateText = "CDMX";
-const isoCountryCode = "MX";
+const countryIsoCode = "MX";
 const line1Address = "Line 1 address";
 const line2Address = "Line 2 address";
 const line3Address = "Line 3 address";
@@ -96,7 +96,7 @@ describe("Testing party dao insert methods", function () {
                     home, true, line1Address,
                     line2Address, line3Address, cityText,
                     null, postalCode, stateText, null,
-                    isoCountryCode));
+                    countryIsoCode));
                 person.contact.phones.push(new PhoneNumber(
                     work,
                     true,
@@ -144,7 +144,7 @@ describe("Testing party dao insert methods", function () {
                 expect(record.contact.addresses[0].postalCode).eq(postalCode);
                 expect(record.contact.addresses[0].stateText).eq(stateText);
                 expect(record.contact.addresses[0].idStateProvince).eq(null);
-                expect(record.contact.addresses[0].isoCountryCode).eq(isoCountryCode);
+                expect(record.contact.addresses[0].countryIsoCode).eq(countryIsoCode);
                 expect(record.contact.phones.length).eq(1);
                 expect(record.contact.phones[0].type).eq(work);
                 expect(record.contact.phones[0].primary).eq(true);

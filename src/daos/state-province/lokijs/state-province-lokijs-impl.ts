@@ -23,12 +23,11 @@ export class StateProvinceDaoLokiJsImpl extends StateProvinceDao {
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: StateProvinceEntity): Bluebird<IValidationError[]> {
-        const id = "id";
         const query = {
             $and: [
-                {$loki: {$ne: _.toNumber(objectToUpdate[id])}},
+                {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
                 {code: {$eq: objectToUpdate.code}},
-                {idCountry: {$eq: objectToUpdate.idCountry}},
+                {countryIsoCode: {$eq: objectToUpdate.countryIsoCode}},
             ]
         };
         return LokiJsUtil.findAllByQuery(this.collection, query)

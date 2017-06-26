@@ -23,11 +23,10 @@ export class CountryDaoLokiJsImpl extends CountryDao {
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: CountryEntity): Promise<IValidationError[]> {
-        const id = "id";
 
         const query = {
             $and: [
-                {$loki: {$ne: _.toNumber(objectToUpdate[id])}},
+                {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
                 {
                     $or: [
                         {name: {$eq: objectToUpdate.name}},

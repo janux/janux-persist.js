@@ -3,8 +3,11 @@
  * Created by ernesto on 6/13/17.
  */
 
-export class AccountEntity {
+import {IEntity} from "../../persistence/interfaces/entity";
 
+export class AccountEntity implements IEntity {
+
+    public id: string;
     public username: string;
     public password: string;
     public enabled: boolean;

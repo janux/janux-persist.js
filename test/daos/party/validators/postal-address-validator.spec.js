@@ -15,7 +15,7 @@ const cityText = "Mexico city";
 const idCity = "313030303030303030303031";
 const postalCode = "05000";
 const stateText = "CDMX";
-const idCountry = "313030303030303030303032";
+const countryIsoCode = "US";
 const idStateProvince = "313030303030303030303031";
 
 describe("Testing postal address validator", function () {
@@ -32,7 +32,7 @@ describe("Testing postal address validator", function () {
                 postalCode,
                 stateText,
                 null,
-                idCountry);
+                countryIsoCode);
             var error = PostalAddressValidator.validatePostalAddress(postalAddress);
             expect(error.length).eq(0);
         });
@@ -51,7 +51,7 @@ describe("Testing postal address validator", function () {
                 postalCode,
                 stateText,
                 null,
-                idCountry);
+                countryIsoCode);
             var error = PostalAddressValidator.validatePostalAddress(postalAddress);
             expect(error.length).eq(1);
             expect(error[0].attribute).eq(PostalAddressValidator.LINE_1);
@@ -72,7 +72,7 @@ describe("Testing postal address validator", function () {
                 "  ",
                 stateText,
                 null,
-                idCountry);
+                countryIsoCode);
             var error = PostalAddressValidator.validatePostalAddress(postalAddress);
             expect(error.length).eq(1);
             expect(error[0].attribute).eq(PostalAddressValidator.POSTAL_CODE);
@@ -80,7 +80,7 @@ describe("Testing postal address validator", function () {
         });
     });
 
-    describe("When calling the method with an empty isoCountryCode", function () {
+    describe("When calling the method with an empty countryIsoCode", function () {
         it("The method should return an error", function () {
             var postalAddress = new PostalAddress(
                 home,
@@ -115,7 +115,7 @@ describe("Testing postal address validator", function () {
                 postalCode,
                 "  ",
                 null,
-                idCountry);
+                countryIsoCode);
             var error = PostalAddressValidator.validatePostalAddress(postalAddress);
             expect(error.length).eq(1);
             expect(error[0].attribute).eq(PostalAddressValidator.STATE_TEXT);
@@ -136,7 +136,7 @@ describe("Testing postal address validator", function () {
                 postalCode,
                 undefined,
                 idStateProvince,
-                idCountry);
+                countryIsoCode);
             var error = PostalAddressValidator.validatePostalAddress(postalAddress);
             expect(error.length).eq(1);
             expect(error[0].attribute).eq(PostalAddressValidator.STATE_TEXT);
@@ -157,7 +157,7 @@ describe("Testing postal address validator", function () {
                 postalCode,
                 stateText,
                 undefined,
-                idCountry);
+                countryIsoCode);
             var error = PostalAddressValidator.validatePostalAddress(postalAddress);
             expect(error.length).eq(1);
             expect(error[0].attribute).eq(PostalAddressValidator.ID_STATE_PROVINCE);
@@ -178,7 +178,7 @@ describe("Testing postal address validator", function () {
                 postalCode,
                 stateText,
                 null,
-                idCountry);
+                countryIsoCode);
             var error = PostalAddressValidator.validatePostalAddress(postalAddress);
             expect(error.length).eq(1);
             expect(error[0].attribute).eq(PostalAddressValidator.CITY_TEXT);
@@ -199,7 +199,7 @@ describe("Testing postal address validator", function () {
                 postalCode,
                 stateText,
                 null,
-                idCountry);
+                countryIsoCode);
             var error = PostalAddressValidator.validatePostalAddress(postalAddress);
             expect(error.length).eq(1);
             expect(error[0].attribute).eq(PostalAddressValidator.ID_CITY);
@@ -220,7 +220,7 @@ describe("Testing postal address validator", function () {
                 postalCode,
                 stateText,
                 null,
-                idCountry);
+                countryIsoCode);
             var error = PostalAddressValidator.validatePostalAddress(postalAddress);
             expect(error.length).eq(1);
             expect(error[0].attribute).eq(PostalAddressValidator.CITY_TEXT);

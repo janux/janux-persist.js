@@ -22,8 +22,8 @@ export class StateProvinceValidator {
         if (_.isNumber(stateProvince.sortOrder) === false) {
             errors.push(new ValidationError("sortOrder", "sortOrder must be a number", ""));
         }
-        if (isBlank(stateProvince.idCountry)) {
-            errors.push(new ValidationError("idCountry", "idCountry is empty", ""));
+        if (isBlank(stateProvince.countryIsoCode)) {
+            errors.push(new ValidationError("countryIsoCode", "countryIsoCode is empty", ""));
         }
         this._log.debug("error: %j", errors);
         return errors;
