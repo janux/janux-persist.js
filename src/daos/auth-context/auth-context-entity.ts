@@ -19,10 +19,14 @@ export class AuthContextEntity implements IEntity {
     /** Determines whether or not this AuthorizationContext is being used */
     enabled: boolean;
 
-    constructor(name: string, description: string, sortOrder: number, enabled: boolean) {
+    /** Id of the associated display name */
+    idDisplayName: string;
+
+    constructor(name: string, description: string, sortOrder: number, enabled: boolean, idDisplayName: string) {
         this.name = name;
         this.description = description;
         this.sortOrder = sortOrder;
         this.enabled = enabled;
+        this.idDisplayName = idDisplayName;
     }
 }

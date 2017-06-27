@@ -38,6 +38,8 @@ var enabled = false;
 var name2 = "A name 2";
 var description2 = "A description 2";
 var sortOrder2 = 2;
+const idDisplayName2 = "313030303030303030303038";
+
 
 var enabled2 = true;
 describe("Testing auth context dao delete methods", function () {
@@ -51,8 +53,8 @@ describe("Testing auth context dao delete methods", function () {
 
                 authContextDao.deleteAll()
                     .then(function () {
-                        var auth1 = new AuthContextEntity(name, description, sortOrder, enabled);
-                        var auth2 = new AuthContextEntity(name2, description2, sortOrder2, enabled2);
+                        var auth1 = new AuthContextEntity(name, description, sortOrder, enabled, idDisplayName2);
+                        var auth2 = new AuthContextEntity(name2, description2, sortOrder2, enabled2, idDisplayName2);
                         authContextDao.insertMany([auth1, auth2])
                             .then(function (res) {
                                 insertedRecord1 = res[0];

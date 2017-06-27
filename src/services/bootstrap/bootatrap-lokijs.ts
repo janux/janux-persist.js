@@ -43,13 +43,13 @@ export class BootstrapLokiJsDaos {
 
         // Auth context
         Persistence.authContextDao = new AuthContextLokijsImpl(
-            new DbEngineUtilLokijs("authorizationContext", loki),
+            new DbEngineUtilLokijs("authorization-context", loki),
             new EntityProperties(false, true)
         );
 
         // Permission bit
         Persistence.permissionBitDao = new PermissionBitLokijsImpl(
-            new DbEngineUtilLokijs("permissionBit", loki),
+            new DbEngineUtilLokijs("permission-bit", loki),
             new EntityProperties(false, true)
         );
 
@@ -61,7 +61,7 @@ export class BootstrapLokiJsDaos {
 
         // Role permission bit
         Persistence.rolePermissionBitDao = new RolePermissionDao(
-            new DbEngineUtilLokijs("rolePermissionBit", loki),
+            new DbEngineUtilLokijs("role-permission-bit", loki),
             new EntityProperties(false, true)
         );
 
@@ -72,7 +72,7 @@ export class BootstrapLokiJsDaos {
 
         // State province
         Persistence.stateProvinceDao = new StateProvinceDaoLokiJsImpl(
-            new DbEngineUtilLokijs("stateProvince", loki), null
+            new DbEngineUtilLokijs("state-province", loki), null
         );
 
         // City
@@ -85,7 +85,6 @@ export class BootstrapLokiJsDaos {
             new DbEngineUtilLokijs("party", loki),
             new EntityProperties(false, true)
         );
-
     }
 
     private static _log = logger.getLogger("BootstrapLokiJsDaos");

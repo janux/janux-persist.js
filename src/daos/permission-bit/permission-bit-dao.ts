@@ -22,7 +22,7 @@ export abstract class PermissionBitDao extends AbstractDataAccessObjectWithEngin
         this.dbEngineUtilLocal = dbEngineUtil;
     }
 
-    public findAllByIdAuthContext(idAuthContext: string) {
+    public findAllByIdAuthContext(idAuthContext: string): Promise<PermissionBitEntity[]> {
         return this.dbEngineUtilLocal.findAllByAttribute("idAuthContext", idAuthContext);
     }
 
@@ -41,7 +41,7 @@ export abstract class PermissionBitDao extends AbstractDataAccessObjectWithEngin
                 if (resultQuery.length > 0) {
                     errors.push(new ValidationError(
                         "name",
-                        "There is a permission bit with the same name an the same auth context.",
+                        "There is a permission bit with the same name and the same auth context.",
                         objectToInsert.name));
                 }
                 return Promise.resolve(errors);

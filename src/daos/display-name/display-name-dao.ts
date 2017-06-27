@@ -24,11 +24,11 @@ export abstract class DisplayNameDao extends AbstractDataAccessObjectWithEngine<
         return this.dbEngineUtilDao.findOneByAttribute("displayName", name);
     }
 
-    protected validateEntity<t>(objectToValidate: DisplayNameEntity): IValidationError[] {
+    protected validateEntity(objectToValidate: DisplayNameEntity): IValidationError[] {
         return DisplayNameValidator.validateDisplayName(objectToValidate);
     }
 
-    protected validateBeforeInsert<t>(objectToInsert: DisplayNameEntity): Promise<IValidationError[]> {
+    protected validateBeforeInsert(objectToInsert: DisplayNameEntity): Promise<IValidationError[]> {
         return this.findOneByAttribute("displayName", objectToInsert.displayName)
             .then((result) => {
                 const errors: ValidationError[] = [];

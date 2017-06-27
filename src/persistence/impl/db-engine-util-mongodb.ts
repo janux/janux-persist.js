@@ -43,6 +43,10 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
         return MongoDbUtil.deleteAll(this.model);
     }
 
+    deleteAllByIds(ids: string[]): Promise<any> {
+        return MongoDbUtil.deleteAllByIds(this.model, ids);
+    }
+
     findOneByAttribute(attributeName: string, value): Promise<any> {
         this._log.debug("Call to findOneByAttribute with attributeName: %j, value: %j", attributeName, value);
         return MongoDbUtil.findOneByAttribute(this.model, attributeName, value);

@@ -13,5 +13,11 @@ export const RolePermissionBitMongoDbSchema = new mongoose.Schema({
     idRole: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
+    },
+    lastUpdate: {
+        type: Date
+    },
+    dateCreated: {
+        type: Date
     }
 });

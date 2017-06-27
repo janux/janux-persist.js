@@ -23,5 +23,15 @@ export const AuthContextSchema = new mongoose.Schema({
     enabled: {
         type: Boolean,
         required: true
+    },
+    idDisplayName: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    lastUpdate: {
+        type: Date
+    },
+    dateCreated: {
+        type: Date
     }
 });

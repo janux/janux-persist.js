@@ -12,6 +12,21 @@ export class PermissionBitValidator {
 
     public static validatePermissionBit(permissionBit: PermissionBitEntity): ValidationError[] {
         this._log.debug("Call to validate with permissionBit: %j", permissionBit);
+        let errors: ValidationError[];
+        errors = this.validatePermissionBitWithNoIdAuthContext(permissionBit);
+        if (isBlank(permissionBit.idAuthContext)) {
+            errors.push(new ValidationError(
+                "idAuthContext",
+                "idAuthContext must not be empty",
+                permissionBit.position.toString()));
+        }
+
+        this._log.debug("Errors: %j", errors);
+        return errors;
+    }
+
+    public static  validatePermissionBitWithNoIdAuthContext(permissionBit: PermissionBitEntity): ValidationError[] {
+        this._log.debug("Call to validatePermissionBitWithNoIdAuthContext with permissionBit: %j", permissionBit);
         const errors: ValidationError[] = [];
         if (isBlank(permissionBit.name)) {
             errors.push(new ValidationError("name", "Name is empty", ""));
@@ -28,13 +43,6 @@ export class PermissionBitValidator {
             errors.push(new ValidationError(
                 "position",
                 "Position must be grater or equal than zero",
-                permissionBit.position.toString()));
-        }
-
-        if (isBlank(permissionBit.idAuthContext)) {
-            errors.push(new ValidationError(
-                "idAuthContext",
-                "idAuthContext must not be empty",
                 permissionBit.position.toString()));
         }
 

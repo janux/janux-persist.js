@@ -32,59 +32,60 @@ import {EntityProperties} from "../../persistence/impl/entity-properties";
 
 export class BootStrapMongoDbDaos {
     public static initMongoDbDaos(mongoose: any) {
+        const persistence = Persistence;
         this._log.debug("Call to initMongoDbDaos");
         // Display name
-        Persistence.displayNameDao = new DisplayNameDaoMongodbImpl(
+        persistence.displayNameDao = new DisplayNameDaoMongodbImpl(
             new DbEngineUtilMongodb(mongoose.model('displayName', DisplayNameMongoDbSchema))
             , null);
 
         // Account dao
-        Persistence.accountDao = new AccountDaoMongodbImpl(
+        persistence.accountDao = new AccountDaoMongodbImpl(
             new DbEngineUtilMongodb(mongoose.model('account', AccountMongoDbSchema)),
             new EntityProperties(false, true));
 
         // Account role
-        Persistence.accountRoleDao = new AccountRoleDao(
+        persistence.accountRoleDao = new AccountRoleDao(
             new DbEngineUtilMongodb(mongoose.model('accountRole', AccountRoleMongoDbSchema)),
             new EntityProperties(false, true));
 
         // Auth context
-        Persistence.authContextDao = new AuthContextMongoDbImpl(
-            new DbEngineUtilMongodb(mongoose.model('authorizationContext', AuthContextSchema)),
+        persistence.authContextDao = new AuthContextMongoDbImpl(
+            new DbEngineUtilMongodb(mongoose.model('authorization-context', AuthContextSchema)),
             new EntityProperties(false, true));
 
         // Permission bit
-        Persistence.permissionBitDao = new PermissionBitMongodbImpl(
-            new DbEngineUtilMongodb(mongoose.model('permissionBit', PermissionBitMongoDbSchema)),
+        persistence.permissionBitDao = new PermissionBitMongodbImpl(
+            new DbEngineUtilMongodb(mongoose.model('permission-bit', PermissionBitMongoDbSchema)),
             new EntityProperties(false, true));
 
         // Role dao
-        Persistence.roleDao = new RoleDaoMongoDbImpl(
+        persistence.roleDao = new RoleDaoMongoDbImpl(
             new DbEngineUtilMongodb(mongoose.model('role', RoleMongoDbSchema)),
             new EntityProperties(false, true));
 
         // Role permissionBit
-        Persistence.rolePermissionBitDao = new RolePermissionDao(
-            new DbEngineUtilMongodb(mongoose.model('rolePermissionBit', RolePermissionBitMongoDbSchema)),
+        persistence.rolePermissionBitDao = new RolePermissionDao(
+            new DbEngineUtilMongodb(mongoose.model('role-permission-bit', RolePermissionBitMongoDbSchema)),
             new EntityProperties(false, true));
 
         // Country
-        Persistence.countryDao = new CountryDaoMongoDbImpl(
+        persistence.countryDao = new CountryDaoMongoDbImpl(
             new DbEngineUtilMongodb(mongoose.model('country', CountryMongoDbSchema)), null
         );
 
         // State province
-        Persistence.stateProvinceDao = new StateProvinceDaoMongoDbImpl(
-            new DbEngineUtilMongodb(mongoose.model('stateProvince', StateProvinceMongoDbSchema)), null
+        persistence.stateProvinceDao = new StateProvinceDaoMongoDbImpl(
+            new DbEngineUtilMongodb(mongoose.model('state-province', StateProvinceMongoDbSchema)), null
         );
 
         // City
-        Persistence.cityDao = new CityDaoMongoDbImpl(
+        persistence.cityDao = new CityDaoMongoDbImpl(
             new DbEngineUtilMongodb(mongoose.model('city', CityMongoDbSchema)), null
         );
 
         // Party
-        Persistence.partyDao = new PartyDaoMongoDbImpl(
+        persistence.partyDao = new PartyDaoMongoDbImpl(
             new DbEngineUtilMongodb(mongoose.model('party', PartyMongoDbSchema)), null
         );
     }

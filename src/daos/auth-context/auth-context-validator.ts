@@ -26,6 +26,9 @@ export class AuthContextValidator {
         if (_.isBoolean(authContext.enabled) === false) {
             errors.push(new ValidationError("enabled", "Enabled must be a boolean", ""));
         }
+        if (isBlank(authContext.idDisplayName)) {
+            errors.push(new ValidationError("idDisplayName", "idDisplayName must not be empty", ""));
+        }
         this._log.debug("Returning %j", errors);
         return errors;
     }

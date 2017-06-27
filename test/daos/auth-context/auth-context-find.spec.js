@@ -41,6 +41,9 @@ var sortOrder2 = 2;
 
 var anotherName = "A new name";
 const id = "100000000000";
+const idDisplayName = "313030303030303030303038";
+const idDisplayName2 = "313030303030303030303032";
+
 
 
 var enabled2 = true;
@@ -55,8 +58,8 @@ describe("Testing auth context dao find methods", function () {
 
                 authContextDao.deleteAll()
                     .then(function () {
-                        var auth1 = new AuthContextEntity(name, description, sortOrder, enabled);
-                        var auth2 = new AuthContextEntity(name2, description2, sortOrder2, enabled2);
+                        var auth1 = new AuthContextEntity(name, description, sortOrder, enabled,idDisplayName);
+                        var auth2 = new AuthContextEntity(name2, description2, sortOrder2, enabled2,idDisplayName2);
                         authContextDao.insertMany([auth1, auth2])
                             .then(function (res) {
                                 insertedRecord1 = res[0];
@@ -140,6 +143,17 @@ describe("Testing auth context dao find methods", function () {
                         .then(function (result) {
                             expect(result.length).eq(1);
                             expect(result[0].id).eq(insertedRecord1.id);
+                            done();
+                        })
+                })
+            })
+
+            describe("When calling findAllByIds", function () {
+                it("It should return an array with one record", function (done) {
+                    authContextDao.findAllByidDisplayName(idDisplayName2)
+                        .then(function (result) {
+                            expect(result.length).eq(1);
+                            expect(result[0].idDisplayName).eq(idDisplayName2);
                             done();
                         })
                 })

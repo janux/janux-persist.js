@@ -28,5 +28,11 @@ export const AccountMongoDbSchema = new mongoose.Schema({
     contactId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
+    },
+    lastUpdate: {
+        type: Date
+    },
+    dateCreated: {
+        type: Date
     }
 });

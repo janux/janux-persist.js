@@ -14,7 +14,7 @@ import Promise = require('bluebird');
 export class MongoDbUtil {
 
     public static findOneById(model: Model<any>, id: any): Promise<any> {
-        this._log.debug('Call to findOneById with id: %j ', id);
+        this._log.debug('Call to findOneById with model: %j id: %j ', model.modelName, id);
         return new Promise((resolve, reject) => {
             const query = {_id: mongoose.Types.ObjectId(id)};
             model.findOne(query).lean().exec((err, result: any) => {
@@ -28,7 +28,7 @@ export class MongoDbUtil {
     }
 
     public static findAllByIds(model: Model<any>, arrayOfIds: any[]): Promise<any> {
-        this._log.debug('Call to findAllByIds with arrayOfIds: %j ', arrayOfIds);
+        this._log.debug('Call to findAllByIds with model: %j, arrayOfIds: %j ', model.modelName, arrayOfIds);
         const query = {
             _id: {$in: arrayOfIds}
         };
@@ -47,7 +47,7 @@ export class MongoDbUtil {
     }
 
     public static findOneByAttribute(model: Model<any>, attributeName: string, value: any): Promise<any> {
-        this._log.debug("Call to findOneByAttribute with attributeName: %j + value: %j", attributeName, value);
+        this._log.debug("Call to findOneByAttribute with model: %j, attributeName: %j , value: %j", model.modelName, attributeName, value);
         return new Promise((resolve, reject) => {
             const query = {};
             query[attributeName] = value;
@@ -67,7 +67,7 @@ export class MongoDbUtil {
     }
 
     public static findAllByAttribute(model: Model<any>, attributeName: string, value: any): Promise<any> {
-        this._log.debug("Call to findAllByAttribute with attributeName: %j , value: %j", attributeName, value);
+        this._log.debug("Call to findAllByAttribute with model: %j, attributeName: %j , value: %j", model.modelName, attributeName, value);
         const query = {};
         query[attributeName] = value;
         return this.findAllByQuery(model, query);
@@ -80,7 +80,7 @@ export class MongoDbUtil {
      * @return {Promise} a promise with the result
      */
     public static  findAllByQuery(model: Model<any>, query: any): Promise<any> {
-        this._log.debug("call to findAllByQuery with query: %j", query);
+        this._log.debug("call to findAllByQuery with model: %j, query: %j", model.modelName, query);
         return new Promise((resolve, reject) => {
             model.find(query).lean().exec((err, result: any[]) => {
                 if (err) throw err;
@@ -101,14 +101,14 @@ export class MongoDbUtil {
      * @return {Promise<any>} The records that matches with the query
      */
     public static findAllByAttributeNameIn(model: Model<any>, attributeName: string, values: any[]): Promise<any> {
-        this._log.debug("Call to findAllByAttributeNameIn attributeName: %j values: ", attributeName, values);
+        this._log.debug("Call to findAllByAttributeNameIn model: %j, attributeName: %j values: ", model.modelName, attributeName, values);
         const query = {};
         query[attributeName] = {$in: values};
         return this.findAllByQuery(model, query);
     }
 
     public static deleteAll(model: Model<any>): Promise<any> {
-        this._log.debug("Call to delete all");
+        this._log.debug("Call to delete all with model: %j", model.modelName);
         return new Promise((resolve, reject) => {
             model.remove({}, (err) => {
                 if (err) throw err;
@@ -117,20 +117,34 @@ export class MongoDbUtil {
         });
     }
 
+    public static deleteAllByIds(model: Model<any>, ids: string[]) {
+        this._log.debug("Call to deleteAllByIds with model: %j, ids: %j", model.modelName, ids);
+        return new Promise((resolve, reject) => {
+            const query = {
+                _id: {$in: ids}
+            };
+            model.remove(query).lean().exec((err, result) => {
+                if (err) throw err;
+                resolve(result);
+            });
+        });
+    }
+
     public static insert(model: Model<any>, objectToInsert: any): Promise<any> {
-        this._log.debug("Call to insert with objectToInsert: %j", objectToInsert);
+        this._log.debug("Call to insert with model: %j, objectToInsert: %j", model.modelName, objectToInsert);
         return new Promise((resolve, reject) => {
             const newObject = new model(objectToInsert);
             newObject.save((err, result: any) => {
                 if (err) throw err;
                 result = this.cleanObjectIds(result._doc);
+                this._log.debug("Returning result after insert %j", result);
                 resolve(result);
             });
         });
     }
 
     public static insertMany(model: Model<any>, objectsToInsert: any[]): Promise<any> {
-        this._log.debug("Call to insertMany with objectsToInsert %j", objectsToInsert);
+        this._log.debug("Call to insertMany with model: %j, objectsToInsert %j", model.modelName, objectsToInsert);
         return new Promise((resolve, reject) => {
             model.insertMany(objectsToInsert, (err, values) => {
                 const result = [];
@@ -145,7 +159,7 @@ export class MongoDbUtil {
     }
 
     public static update(model: Model<any>, objectToUpdate: any): Promise<any> {
-        this._log.debug("Call to update with objectToUpdate: %j", objectToUpdate);
+        this._log.debug("Call to update with model %j objectToUpdate: %j", model.modelName, objectToUpdate);
         return new Promise((resolve, reject) => {
             const query = {_id: objectToUpdate.id};
             const values = {$set: objectToUpdate};
@@ -155,14 +169,14 @@ export class MongoDbUtil {
             model.findOneAndUpdate(query, values, options).lean().exec((err, result: any) => {
                 if (err) throw err;
                 result = this.cleanObjectIds(result);
-                this._log.debug("Returning %j", result);
+                this._log.debug("Returning result after update %j", result);
                 resolve(result);
             });
         });
     }
 
     public static remove(model: Model<any>, objectToDelete: any): Promise<any> {
-        this._log.debug("Call to remove with objectToDelete: %j", objectToDelete);
+        this._log.debug("Call to remove with model: %j, objectToDelete: %j", model.modelName, objectToDelete);
         return new Promise((resolve, reject) => {
             const query = {_id: objectToDelete.id};
             model.remove(query).lean().exec((err, result) => {

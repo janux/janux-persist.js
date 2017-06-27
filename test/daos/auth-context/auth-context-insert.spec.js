@@ -9,6 +9,7 @@ var config = require('config');
 var lokijs = require('lokijs');
 var mongoose = require('mongoose');
 
+
 var AuthContextEntity = require("../../../dist/index").AuthContextEntity;
 var AuthContextLokijsImpl = require("../../../dist/index").AuthContextLokijsImpl;
 var AuthContextMongoDbImpl = require("../../../dist/index").AuthContextMongoDbImpl;
@@ -39,6 +40,7 @@ var name2 = "A name 2";
 var description2 = "A description 2";
 var sortOrder2 = 2;
 var enabled2 = true;
+const idDisplayName = "313030303030303030303038";
 
 describe("Testing display name dao insert", function () {
     [authContextDaoLokijs, authContextDaoMongodb].forEach(function (authContextDao) {
@@ -54,7 +56,7 @@ describe("Testing display name dao insert", function () {
 
         describe("When inserting a valid entity", function () {
             it("The entity should exits in the database", function (done) {
-                var auth1 = new AuthContextEntity(name, description, sortOrder, enabled);
+                var auth1 = new AuthContextEntity(name, description, sortOrder, enabled, idDisplayName);
                 authContextDao.insert(auth1)
                     .then(function (result) {
                         expect(result.id).not.to.be.null;
@@ -62,6 +64,11 @@ describe("Testing display name dao insert", function () {
                         expect(result.description).eq(description);
                         expect(result.sortOrder).eq(sortOrder);
                         expect(result.enabled).eq(enabled);
+                        expect(result.idDisplayName).eq(idDisplayName);
+                        return authContextDao.findOneById(result.id);
+                    })
+                    .then(function (resultQuery) {
+                        expect(resultQuery.idDisplayName).eq(idDisplayName);
                         done();
                     })
                     .catch(function (error) {
@@ -74,8 +81,8 @@ describe("Testing display name dao insert", function () {
 
         describe("When inserting many records", function () {
             it("The method should have inserted the record", function (done) {
-                var auth1 = new AuthContextEntity(name, description, sortOrder, enabled);
-                var auth2 = new AuthContextEntity(name2, description2, sortOrder2, enabled2);
+                var auth1 = new AuthContextEntity(name, description, sortOrder, enabled, idDisplayName);
+                var auth2 = new AuthContextEntity(name2, description2, sortOrder2, enabled2, idDisplayName);
                 authContextDao.insertMany([auth1, auth2])
                     .then(function (result) {
                         expect(result.length).eq(2);
@@ -95,10 +102,10 @@ describe("Testing display name dao insert", function () {
 
         describe("When inserting a duplicated record", function () {
             it("The method should return an error", function (done) {
-                var auth1 = new AuthContextEntity(name, description, sortOrder, enabled);
+                var auth1 = new AuthContextEntity(name, description, sortOrder, enabled, idDisplayName);
                 authContextDao.insert(auth1)
                     .then(function (result) {
-                        var auth2 = new AuthContextEntity(name, description, sortOrder, enabled);
+                        var auth2 = new AuthContextEntity(name, description, sortOrder, enabled, idDisplayName);
                         return authContextDao.insert(auth2)
                     })
                     .then(function (resultInsert) {
@@ -115,7 +122,7 @@ describe("Testing display name dao insert", function () {
 
         describe("When inserting a record with empty description", function () {
             it("The method should return an error", function (done) {
-                var auth1 = new AuthContextEntity(name, "   ", sortOrder, enabled);
+                var auth1 = new AuthContextEntity(name, "   ", sortOrder, enabled, idDisplayName);
                 authContextDao.insert(auth1)
                     .then(function (result) {
                         expect.fail("The method should have not inserted the record");

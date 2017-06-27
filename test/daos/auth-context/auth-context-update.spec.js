@@ -40,6 +40,8 @@ var description2 = "A description 2";
 var sortOrder2 = 2;
 
 var newName = "A new name";
+const idDisplayName = "313030303030303030303038";
+
 
 var enabled2 = true;
 describe("Testing auth context dao update methods", function () {
@@ -53,8 +55,8 @@ describe("Testing auth context dao update methods", function () {
 
                 authContextDao.deleteAll()
                     .then(function () {
-                        var auth1 = new AuthContextEntity(name, description, sortOrder, enabled);
-                        var auth2 = new AuthContextEntity(name2, description2, sortOrder2, enabled2);
+                        var auth1 = new AuthContextEntity(name, description, sortOrder, enabled, idDisplayName);
+                        var auth2 = new AuthContextEntity(name2, description2, sortOrder2, enabled2, idDisplayName);
                         authContextDao.insertMany([auth1, auth2])
                             .then(function (res) {
                                 insertedRecord1 = res[0];
@@ -124,7 +126,7 @@ describe("Testing auth context dao update methods", function () {
 
             describe("When updating a record without an id", function () {
                 it("It should return an error", function (done) {
-                    var authContext = new AuthContextEntity(name, description, sortOrder, enabled);
+                    var authContext = new AuthContextEntity(name, description, sortOrder, enabled, idDisplayName);
                     authContextDao.update(authContext)
                         .then(function (res) {
                             expect.fail("The method should not have updated the record");

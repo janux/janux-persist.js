@@ -19,7 +19,13 @@ export const PermissionBitMongoDbSchema = new mongoose.Schema({
         required: true
     },
     idAuthContext: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true
+    },
+    lastUpdate: {
+        type: Date
+    },
+    dateCreated: {
+        type: Date
     }
 });

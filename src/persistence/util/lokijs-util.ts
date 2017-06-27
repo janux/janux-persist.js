@@ -98,8 +98,22 @@ export class LokiJsUtil {
 
     public static deleteAll(db: any, collection: any): Promise<any> {
         this._log.debug('Call to deleteAll with collection: %j', collection.name);
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             collection.clear();
+            db.saveDatabase(() => {
+                resolve();
+            });
+        });
+    }
+
+    public static deleteAllByIds(db: any, collection: any, ids: string[]): Promise<any> {
+        this._log.debug("Call to deleteAllByIds with collection %j, ids: %j", collection.name, ids);
+        const idsToDelete: number[] = ids.map((value) => Number(value));
+        return new Promise((resolve) => {
+            const query = {
+                $loki: {$in: idsToDelete}
+            };
+            collection.findAndRemove(query);
             db.saveDatabase(() => {
                 resolve();
             });

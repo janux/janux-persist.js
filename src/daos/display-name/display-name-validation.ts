@@ -9,7 +9,7 @@ import {DisplayNameEntity} from "./display-name-entity";
 export class DisplayNameValidator {
 
     public static  validateDisplayName(displayName: DisplayNameEntity): ValidationError[] {
-        this._log.debug("Call to validateDisplayName with displayName: %", displayName);
+        this._log.debug("Call to validateDisplayName with displayName: %j", displayName);
         const errors: ValidationError[] = [];
         if (isBlank(displayName.displayName)) {
             errors.push(new ValidationError("displayName", "Name is empty", ""));

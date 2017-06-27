@@ -6,6 +6,7 @@
 import * as logger from 'log4js';
 import uuid = require("uuid");
 import Promise = require("bluebird");
+import {isBlank} from "../../util/blank-string-validator";
 import {isValidId} from "../../util/id_validator";
 import {IEntity} from "../interfaces/entity";
 import {IEntityProperties} from "../interfaces/entity-properties";
@@ -42,7 +43,7 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
                     TimeStampGenerator.generateTimeStampForInsert(this.entityProperties, objectToInsert);
                     // Generate a unique uuid
                     UuidGenerator.assignUuid(this.entityProperties, objectToInsert);
-                    return this.insertMethod<t>(objectToInsert);
+                    return this.insertMethod(objectToInsert);
                 } else {
                     return Promise.reject(validations);
                 }
@@ -119,10 +120,24 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
     }
 
     /**
+     * Update an object if the object has an id.
+     * Insert a new object if the object does not have an id.
+     * @param object
+     */
+    public updateOrInsert(object: t): Promise<t | IValidationError[]> {
+        this._log.debug("Call to updateOrInsert with object %j", object);
+        if (isBlank(object.id)) {
+            return this.insert(object);
+        } else {
+            return this.update(object);
+        }
+    }
+
+    /**
      * Query an object by the id.
      * @param id The id.
      */
-    public abstract findOneById(id: any): Promise<t>;
+    public abstract findOneById(id: string): Promise<t>;
 
     /**
      * Query several objects by a array of ids.
@@ -152,6 +167,12 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
      * Nothing (you, the db engine or anything else) will stop the operation once called.
      */
     public abstract deleteAll(): Promise<any> ;
+
+    /**
+     * Delete all records that that whose id is in the array.
+     * @param ids The ids to filter.
+     */
+    public abstract deleteAllByIds(ids: string[]): Promise<any>;
 
     /**
      * Return all records
@@ -200,21 +221,21 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
      * This method is called from this class and should not be called from outside.
      * @param objectToInsert The object to insert
      */
-    protected abstract insertMethod<t>(objectToInsert: t): Promise<t>;
+    protected abstract insertMethod(objectToInsert: t): Promise<t>;
 
     /**
      * This method must be implemented in order to update an object to the database.
      * This method is called from this class and should not be called from outside.
      * @param objectToUpdate The object to update
      */
-    protected abstract updateMethod<t>(objectToUpdate: t): Promise<t>;
+    protected abstract updateMethod(objectToUpdate: t): Promise<t>;
 
     /**
      * This method must be implemented in order to insert several object to the database.
      * This method is called from this class and should not be called from outside.
      * @param objectsToInsert The objects to insert
      */
-    protected abstract insertManyMethod<t>(objectsToInsert: t[]): Promise<t>;
+    protected abstract insertManyMethod(objectsToInsert: t[]): Promise<t>;
 
     /**
      * This method must be implemented in order to perform non database validations before an insert or update,
@@ -232,7 +253,7 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
      * @return A promise containing the validation errors. If there are no errors then
      * returns an empty array
      */
-    protected abstract validateBeforeInsert<t>(objectToInsert: t): Promise<IValidationError[]>;
+    protected abstract validateBeforeInsert(objectToInsert: t): Promise<IValidationError[]>;
 
     /**
      * This method must be implemented in order to perform database validations before an update,
@@ -241,5 +262,5 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
      * @return A promise containing the validation errors. If there are no errors then
      * returns an empty array
      */
-    protected abstract validateBeforeUpdate<t>(objectToUpdate: t): Promise<IValidationError[]>;
+    protected abstract validateBeforeUpdate(objectToUpdate: t): Promise<IValidationError[]>;
 }

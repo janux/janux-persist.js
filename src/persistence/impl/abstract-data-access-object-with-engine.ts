@@ -6,8 +6,8 @@
 import * as logger from 'log4js';
 import uuid = require("uuid");
 import {IDbEngineUtil} from "../interfaces/db-engine-util-method";
-import {IEntity} from "../interfaces/entity";
 import Promise = require("bluebird");
+import {IEntity} from "../interfaces/entity";
 import {IEntityProperties} from "../interfaces/entity-properties";
 import {AbstractDataAccessObject} from "./abstract-data-access-object";
 import {AttributeFilter} from "./attribute-filter";
@@ -33,7 +33,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * Query an object by the id.
      * @param id The id.
      */
-    public findOneById(id: any): Promise<t> {
+    public findOneById(id: string): Promise<t> {
         return this.dbEngineUtil.findOneById(id);
     }
 
@@ -51,7 +51,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * Nothing (you, the db engine or anything else) will stop the operation once called.
      * @param objectToDelete The object to delete
      */
-    public remove<t>(objectToDelete: t): Promise<any> {
+    public remove(objectToDelete: t): Promise<any> {
         return this.dbEngineUtil.remove(objectToDelete);
     }
 
@@ -79,6 +79,10 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      */
     public  deleteAll(): Promise<any> {
         return this.dbEngineUtil.deleteAll();
+    }
+
+    public deleteAllByIds(ids: string[]): Promise<any> {
+        return this.dbEngineUtil.deleteAllByIds(ids);
     }
 
     /**
@@ -133,7 +137,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * This method is called from this class and should not be called from outside.
      * @param objectToInsert The object to insert
      */
-    protected insertMethod<t>(objectToInsert: t): Promise<t> {
+    protected insertMethod(objectToInsert: t): Promise<t> {
         return this.dbEngineUtil.insertMethod(objectToInsert);
     }
 
@@ -142,7 +146,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * This method is called from this class and should not be called from outside.
      * @param objectToUpdate The object to update
      */
-    protected  updateMethod<t>(objectToUpdate: t): Promise<t> {
+    protected  updateMethod(objectToUpdate: t): Promise<t> {
         return this.dbEngineUtil.updateMethod(objectToUpdate);
     }
 
@@ -151,7 +155,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * This method is called from this class and should not be called from outside.
      * @param objectsToInsert The objects to insert
      */
-    protected  insertManyMethod<t>(objectsToInsert: t[]): Promise<any> {
+    protected  insertManyMethod(objectsToInsert: t[]): Promise<any> {
         return this.dbEngineUtil.insertManyMethod(objectsToInsert);
     }
 }

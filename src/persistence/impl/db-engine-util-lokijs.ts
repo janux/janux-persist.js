@@ -49,6 +49,10 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
         return LokiJsUtil.deleteAll(this.db, this.collection);
     }
 
+    deleteAllByIds(ids: string[]): Promise<any> {
+        return LokiJsUtil.deleteAllByIds(this.db, this.collection, ids);
+    }
+
     public findOneByAttribute(attributeName: string, value): Promise<any> {
         this._log.debug("Call to findOneByAttribute with attributeName: %j, value: %j", attributeName, value);
         return LokiJsUtil.findOneByAttribute(this.collection, attributeName, value);

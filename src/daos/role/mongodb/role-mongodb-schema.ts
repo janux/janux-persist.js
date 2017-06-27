@@ -23,5 +23,11 @@ export const RoleMongoDbSchema = new mongoose.Schema({
     },
     enabled: {
         type: Boolean
+    },
+    lastUpdate: {
+        type: Date
+    },
+    dateCreated: {
+        type: Date
     }
 });
