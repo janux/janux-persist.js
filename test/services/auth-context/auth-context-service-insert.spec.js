@@ -86,7 +86,9 @@ describe("Testing auth context service insert method", function () {
                     expect(result.enabled).eq(true);
                     expect(result.permissionBits.length).eq(2);
                     expect(result.permissionBits[0].dateCreated).not.to.be.undefined;
+                    expect(result.permissionBits[0].id).not.to.be.undefined;
                     expect(result.permissionBits[1].dateCreated).not.to.be.undefined;
+                    expect(result.permissionBits[1].id).not.to.be.undefined;
                     return Persistence.authContextDao.findAll();
                 })
                 .then(function (resultQueryAuthContext) {

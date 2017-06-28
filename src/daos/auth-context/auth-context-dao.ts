@@ -24,7 +24,7 @@ export abstract class AuthContextDao extends AbstractDataAccessObjectWithEngine<
         return this.dbEngineLocal.findOneByAttribute("name", name);
     }
 
-    public findAllByidDisplayName(idDisplayName: string) {
+    public findAllByIdDisplayName(idDisplayName: string): Promise<AuthContextEntity[]> {
         return this.dbEngineLocal.findAllByAttribute("idDisplayName", idDisplayName);
     }
 

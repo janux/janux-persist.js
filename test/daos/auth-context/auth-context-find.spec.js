@@ -150,7 +150,7 @@ describe("Testing auth context dao find methods", function () {
 
             describe("When calling findAllByIds", function () {
                 it("It should return an array with one record", function (done) {
-                    authContextDao.findAllByidDisplayName(idDisplayName2)
+                    authContextDao.findAllByIdDisplayName(idDisplayName2)
                         .then(function (result) {
                             expect(result.length).eq(1);
                             expect(result[0].idDisplayName).eq(idDisplayName2);

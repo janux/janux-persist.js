@@ -98,4 +98,5 @@ export  * from  "./persistence/util/TimeStampGenerator";
 export  * from  "./persistence/util/UuidGenerator";
 export  * from  "./services/bootstrap/bootstrap-service";
 export  * from  "./services/auht-context/auth-context-service";
+export  * from  "./services/role/role-service";
 export  * from  "./util/blank-string-validator";

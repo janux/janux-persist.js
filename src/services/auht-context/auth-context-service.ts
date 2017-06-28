@@ -7,6 +7,7 @@ import * as Promise from "bluebird";
 import * as _ from "lodash";
 import * as logger from 'log4js';
 import {AuthContextEntity} from "../../daos/auth-context/auth-context-entity";
+import {AuthContextValidator} from "../../daos/auth-context/auth-context-validator";
 import {DisplayNameEntity} from "../../daos/display-name/display-name-entity";
 import {PermissionBitEntity} from "../../daos/permission-bit/permission-bit-entity";
 import {PermissionBitValidator} from "../../daos/permission-bit/permission-bit-validator";
@@ -23,6 +24,10 @@ export class AuthContextService {
     public static PERMISSION_BIT_ASSOCIATED = "The permission bits you are going to delete has a role relation";
     public static ID_DISPLAY_NAME = "idDisplayName";
     public static ID_DISPLAY_NAME_DOES_NOT_EXIST = "idDisplayName does not exits in the database";
+    public static AUTH_CONTEXT = "authContext";
+    public static AUTH_CONTEXT_NOT_IN_DATABASE = "There is no auth context with this id";
+    public static AUTH_CONTEXT_INVALID_ID = "Invalid id";
+    public static AUTH_CONTEXT_LINKED_TO_ROLE = "This auth context has permission bits associated with roles";
 
     /**
      * Insert a new auth context with their permission bits.
@@ -92,6 +97,45 @@ export class AuthContextService {
             });
     }
 
+    public static remove(idAuthContext: string) {
+        let authContextToDelete: AuthContextEntity;
+        let permissionBitsIdsToDelete: string[];
+        if (isBlank(idAuthContext)) {
+            return Promise.reject([
+                new ValidationError(this.AUTH_CONTEXT, this.AUTH_CONTEXT_INVALID_ID, idAuthContext)
+            ]);
+        }
+        return Persistence.authContextDao.findOneById(idAuthContext)
+            .then((auth: AuthContextEntity) => {
+                if (auth == null) {
+                    this._log.warn("Someone was trying to delete an auth context with an invalid id: %j", idAuthContext);
+                    return Promise.reject([
+                        new ValidationError(this.AUTH_CONTEXT, this.AUTH_CONTEXT_NOT_IN_DATABASE, idAuthContext)
+                    ]);
+                } else {
+                    authContextToDelete = auth;
+                    return Persistence.permissionBitDao.findAllByIdAuthContext(authContextToDelete.id);
+                }
+            })
+            .then((permissionBits: PermissionBitEntity[]) => {
+                permissionBitsIdsToDelete = permissionBits.map((value) => value.id);
+                return Persistence.rolePermissionBitDao.findAllByPermissionBitIdsIn(permissionBitsIdsToDelete);
+            })
+            .then((rolePermissionBits: RolePermissionBitEntity[]) => {
+                if (rolePermissionBits.length > 0) {
+                    this._log.warn("Someone was trying to delete an auth linked to a role: %j", idAuthContext);
+                    return Promise.reject([
+                        new ValidationError(this.AUTH_CONTEXT, this.AUTH_CONTEXT_LINKED_TO_ROLE, idAuthContext)
+                    ]);
+                } else {
+                    return Persistence.permissionBitDao.deleteAllByIds(permissionBitsIdsToDelete);
+                }
+            })
+            .then(() => {
+                return Persistence.authContextDao.remove(authContextToDelete);
+            });
+    }
+
     /**
      * Find one auth context and attach their permission bits.
      * @param id
@@ -136,6 +180,25 @@ export class AuthContextService {
             });
     }
 
+    public static findAllByIdDisplayName(idDisplayName: string) {
+        this._log.debug("Call to findAllByIdDisplayName with idDisplayName:%j", idDisplayName);
+        let result: any;
+        return Persistence.authContextDao.findAllByIdDisplayName(idDisplayName)
+            .then((resultQuery: AuthContextEntity[]) => {
+                result = resultQuery;
+                const ids = resultQuery.map((value, index, array) => value.id);
+                return Persistence.permissionBitDao.findAllByIdAuthContextsIn(ids);
+            })
+            .then((resultQueryPermissions: PermissionBitEntity[]) => {
+                for (const auth of result) {
+                    auth.permissionBits = _.filter(resultQueryPermissions, (o) => {
+                        return o.idAuthContext === auth.id;
+                    });
+                }
+                return Promise.resolve(result);
+            });
+    }
+
     private static _log = logger.getLogger("AuthContextService");
 
     /**
@@ -154,6 +217,10 @@ export class AuthContextService {
             object.idDisplayName
         );
         authContextEntity.id = object.id;
+        const errors = AuthContextValidator.validateAuthContext(authContextEntity);
+        if (errors.length > 0) {
+            return Promise.reject(errors);
+        }
         return this.validatePermissionBits(object)
             .then(() => {
                 return Persistence.displayNameDao.findOneById(authContextEntity.idDisplayName);

@@ -22,8 +22,8 @@ export class RolePermissionDao extends AbstractDataAccessObjectWithEngine<RolePe
         this.dbEngineUtilLocal = dbEngineUtil;
     }
 
-    public findAllByRoleId(roleId: string): Promise<RolePermissionBitEntity[]> {
-        return this.dbEngineUtilLocal.findAllByAttribute("idRole", roleId);
+    public findAllByRoleId(idRole: string): Promise<RolePermissionBitEntity[]> {
+        return this.dbEngineUtilLocal.findAllByAttribute("idRole", idRole);
     }
 
     public findAllByPermissionBitId(idPermissionBit: string): Promise<RolePermissionBitEntity[]> {
@@ -36,6 +36,14 @@ export class RolePermissionDao extends AbstractDataAccessObjectWithEngine<RolePe
 
     public findAllByPermissionBitIdsIn(permissionBitIds: string[]): Promise<RolePermissionBitEntity[]> {
         return this.dbEngineUtilLocal.findAllByAttributeNameIn("idPermissionBit", permissionBitIds);
+    }
+
+    public deleteAllByIdRole(idRole: string) {
+        return this.dbEngineUtilLocal.findAllByAttribute("idRole", idRole)
+            .then((bits: RolePermissionBitEntity[]) => {
+                const ids = bits.map((value) => value.id);
+                return this.dbEngineUtilLocal.deleteAllByIds(ids);
+            });
     }
 
     protected validateEntity(objectToValidate: RolePermissionBitEntity): IValidationError[] {

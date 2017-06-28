@@ -26,6 +26,11 @@ export abstract class PermissionBitDao extends AbstractDataAccessObjectWithEngin
         return this.dbEngineUtilLocal.findAllByAttribute("idAuthContext", idAuthContext);
     }
 
+    // TODO: add test.
+    public findAllByIdAuthContextsIn(idsAuthContext: string[]): Promise<PermissionBitEntity[]> {
+        return this.dbEngineUtilLocal.findAllByAttributeNameIn("idAuthContext", idsAuthContext);
+    }
+
     protected validateEntity<t>(objectToValidate: PermissionBitEntity): IValidationError[] {
         return PermissionBitValidator.validatePermissionBit(objectToValidate);
     }

@@ -14,7 +14,7 @@ export class RoleEntity implements IEntity {
     public description: string;
 
     /** whether or not this Role is usable in the system */
-    public enabled: boolean = true;
+    public enabled: boolean;
 
     /**
      * Flag indicating if the role is a root role.
