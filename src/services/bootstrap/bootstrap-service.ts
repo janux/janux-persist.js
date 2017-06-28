@@ -48,7 +48,7 @@ export class BootstrapService {
                         BootStrapMongoDbDaos.initMongoDbDaos(mongoose);
                         this.mongoose = mongoose;
                         this.serviceStarted = true;
-                        this.dbEngineUsed = this.MONGODB;
+                        this._dbEngineUsed = this.MONGODB;
                         return Promise.resolve();
                     });
             } else {
@@ -57,7 +57,7 @@ export class BootstrapService {
                         BootstrapLokiJsDaos.initLokiJsDaos(lokiDb);
                         this.lokiDb = lokiDb;
                         this.serviceStarted = true;
-                        this.dbEngineUsed = this.LOKIJS;
+                        this._dbEngineUsed = this.LOKIJS;
                         Promise.resolve();
                     });
             }
@@ -69,7 +69,7 @@ export class BootstrapService {
      */
     public static stop(): Promise<any> {
         if (this.serviceStarted === true) {
-            if (this.dbEngineUsed === this.MONGODB) {
+            if (this._dbEngineUsed === this.MONGODB) {
                 mongoose.disconnect();
                 this.cleanPersistence();
                 this.serviceStarted = false;
@@ -86,7 +86,11 @@ export class BootstrapService {
         }
     }
 
-    private static dbEngineUsed: string;
+    static get dbEngineUsed(): string {
+        return this._dbEngineUsed;
+    }
+
+    private static _dbEngineUsed: string;
     private static mongoose: any;
     private static lokiDb: any;
     private static _log = logger.getLogger("BootstrapService");
@@ -116,7 +120,9 @@ export class BootstrapService {
 
     private static connectToLokiDatabase(lokiJsDBPath: string): Promise<any> {
         this._log.info("Connecting to lokijs database");
-        const db = new loki(lokiJsDBPath);
+        const db = new loki(lokiJsDBPath, {
+            throttledSaves: false
+        });
         return Promise.resolve(db);
     }
 

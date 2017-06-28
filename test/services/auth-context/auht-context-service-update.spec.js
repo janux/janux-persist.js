@@ -166,7 +166,7 @@ describe("Testing auth context service update method", function () {
                         done();
                     })
                     .catch(function (err) {
-                        expect.fail("The method should have inserted the record");
+                        expect.fail("The method should have updated the record");
                         done();
                     });
             });

@@ -65,6 +65,7 @@ export class LokiJsUtil {
         if (result.length === 0) {
             return Promise.resolve(null);
         } else if (result.length === 1) {
+            this._log.debug("Returning %j", result[0]);
             return Promise.resolve(result[0]);
         } else {
             this._log.warn('The query returned more than one result');
@@ -79,7 +80,9 @@ export class LokiJsUtil {
             values);
         const query = {};
         query[attributeName] = {$in: values};
-        const result = collection.find(query);
+        let result = collection.find(query);
+        result = _.clone(result);
+        this.cleanArray(result);
         this._log.debug('Result %j', result);
         return Promise.resolve(result);
     }
@@ -91,6 +94,10 @@ export class LokiJsUtil {
             this._log.debug('Result before insert %j', result);
             db.saveDatabase(() => {
                 objectTOInsert.id = result.$loki.toString();
+                objectTOInsert.meta = undefined;
+                // Yep, we need to clone it. Because the inserted record is a direct reference to the db data.
+                objectTOInsert = _.clone(objectTOInsert);
+                this._log.debug("returning after insert: %j", objectTOInsert);
                 resolve(objectTOInsert);
             });
         });
@@ -123,7 +130,13 @@ export class LokiJsUtil {
     public static insertMany(db: any, collection: any, objectsToInsert: any[]): Promise<any> {
         this._log.debug('Call to insertMany with collection %j, objectsToInsert: %j', collection.name, objectsToInsert);
         return new Promise((resolve, reject) => {
-            const results = collection.insert(objectsToInsert);
+            let results = collection.insert(objectsToInsert);
+            if (_.isArray(results) === false) {
+                results = [results];
+            }
+            // Yep, we need to clone it. Because the inserted records are a direct reference to the db data.
+            // For some reason if I don't do it. The subsequent queries return horrible results.
+            results = _.clone(results);
             db.saveDatabase(() => {
                 for (const user of results) {
                     user.id = user.$loki.toString();
@@ -136,8 +149,18 @@ export class LokiJsUtil {
     public static update(db: any, collection: any, objectToUpdate: any): Promise<any> {
         this._log.debug('Call to update with collection: %j, objectToUpdate: %j', collection.name, objectToUpdate);
         return new Promise((resolve, reject) => {
-            objectToUpdate.$loki = Number(objectToUpdate.id);
-            collection.update(objectToUpdate);
+            collection.updateWhere(
+                (o) => {
+                    return o.$loki === Number(objectToUpdate.id);
+                },
+                (u) => {
+                    const meta = u.meta;
+                    const loki = u.$loki;
+                    u = objectToUpdate;
+                    u.meta = meta;
+                    u.$loki = loki;
+                    return u;
+                });
             db.saveDatabase(() => {
                 resolve(objectToUpdate);
             });
@@ -156,4 +179,10 @@ export class LokiJsUtil {
     }
 
     private static _log = logger.getLogger('LokiJsUtil');
+
+    private static cleanArray(array: any[]) {
+        for (const obj of array) {
+            obj.meta = undefined;
+        }
+    }
 }

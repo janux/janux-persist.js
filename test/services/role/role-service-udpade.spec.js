@@ -35,7 +35,7 @@ const idParentRole = undefined;
 const invalidId = "313030303030303030303030";
 
 
-/*describe("Testing role service update method", function () {
+describe("Testing role service update method", function () {
 
     var insertedAuthContext;
     var insertedRole;
@@ -103,5 +103,11 @@ const invalidId = "313030303030303030303030";
                 insertedRole = resultInsertedRole;
                 done();
             });
+
+
+
     });
-});*/
+
+
+
+});

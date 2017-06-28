@@ -34,6 +34,7 @@ export class AuthContextService {
      * @param objectToInsert
      */
     public static  insert(objectToInsert: any): Promise<any> {
+        this._log.debug("Call to insert with objectToInsert: %j", objectToInsert);
         let authContextEntity: AuthContextEntity;
         let permissionBits: PermissionBitEntity[];
         let result: any;
@@ -53,6 +54,7 @@ export class AuthContextService {
             .then((insertedPermissionBits: PermissionBitEntity[]) => {
                 result = authContextEntity;
                 result.permissionBits = insertedPermissionBits;
+                this._log.debug("Returning %j", result);
                 return Promise.resolve(result);
             });
     }
@@ -224,7 +226,7 @@ export class AuthContextService {
         return this.validatePermissionBits(object)
             .then(() => {
                 return Persistence.displayNameDao.findOneById(authContextEntity.idDisplayName);
-            })
+    })
             .then((resultQuery: DisplayNameEntity) => {
                 if (resultQuery === null) {
                     this._log.warn("idDisplayName %j does not exist in the database", authContextEntity.idDisplayName);

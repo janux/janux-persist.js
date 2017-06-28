@@ -28,7 +28,9 @@ const permissionBitName2 = "delete";
 const permissionBitDesc1 = "insert operations";
 const permissionBitDesc2 = "delete operations";
 const roleName = "A role name";
+const roleName2 = "A role name 2";
 const roleDescription = "A role description";
+const roleDescription2 = "A role description 2";
 const roleEnabled = true;
 const isRoot = true;
 const idParentRole = undefined;
@@ -131,6 +133,46 @@ describe("Testing role service insert method", function () {
                     done();
                 })
         })
+    });
+
+    describe("When inserting a sub role", function () {
+        var insertedParentRole;
+        it("The method should not return any error", function (done) {
+            var roleToInsert = {
+                name: roleName,
+                description: roleDescription,
+                enabled: roleEnabled,
+                isRoot: isRoot,
+                idParentRole: idParentRole,
+                permissionBits: [
+                    {id: insertedAuthContext.permissionBits[0].id},
+                    {id: insertedAuthContext.permissionBits[1].id}
+                ]
+            };
+            RoleService.insert(roleToInsert)
+                .then(function (insertedRole) {
+                    insertedParentRole = insertedRole;
+                    var secondRole = {
+                        name: roleName2,
+                        description: roleDescription2,
+                        enabled: roleEnabled,
+                        isRoot: false,
+                        idParentRole: insertedRole.id,
+                        permissionBits: [
+                            {id: insertedAuthContext.permissionBits[0].id},
+                            {id: insertedAuthContext.permissionBits[1].id}
+                        ]
+                    };
+                    return RoleService.insert(secondRole)
+                })
+                .then(function (resultSecondInsert) {
+                    expect(resultSecondInsert.idParentRole).eq(insertedParentRole.id);
+                    done();
+                })
+                .catch(function (err) {
+                    expect.fail("The method should not have returned an error");
+                })
+        });
     });
 
     describe("When inserting a role with invalid role info", function () {

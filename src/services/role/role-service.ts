@@ -13,6 +13,7 @@ import {RolePermissionBitEntity} from "../../daos/role-permission-bit/role-permi
 import {RoleEntity} from "../../daos/role/role-entity";
 import {RoleValidator} from "../../daos/role/role-validation";
 import {ValidationError} from "../../persistence/impl/validation-error";
+import {BootstrapService} from "../bootstrap/bootstrap-service";
 
 export class RoleService {
 
@@ -61,7 +62,7 @@ export class RoleService {
             });
     }
 
-    /*public static update(object: any) {
+    public static update(object: any) {
         this._log.debug("Call to update with object: %j", object);
         let result: any;
         return this.validate(object)
@@ -102,7 +103,7 @@ export class RoleService {
                 result.permissionBits = resultRecords;
                 return Promise.resolve(result);
             });
-    }*/
+    }
 
     public static  findOneByName(name: string) {
         this._log.debug("Call to findOne by name:%j", name);
@@ -228,12 +229,13 @@ export class RoleService {
         return Persistence.permissionBitDao.findAllByIds(permissionBitIds)
             .then((resultPermissionBit: PermissionBitEntity[]) => {
                 permissionBits = resultPermissionBit;
-                const authContextIds = resultPermissionBit.map((value) => value.idAuthContext);
+                let authContextIds = resultPermissionBit.map((value) => value.idAuthContext);
+                authContextIds = _.uniq(authContextIds);
                 return Persistence.authContextDao.findAllByIds(authContextIds);
             })
-            .then((resultAuthContexts: AuthContextEntity[]) => {
+            .then((resultAuthContexts: any) => {
                 for (const bit of permissionBits) {
-                    bit.authContext = _.find(resultAuthContexts, (o) => {
+                    bit.authContext = _.find(resultAuthContexts, (o: any) => {
                         return o.id === bit.idAuthContext;
                     });
                 }
