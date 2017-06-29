@@ -155,10 +155,10 @@ describe("Testing auth context service insert method", function () {
                         expect(result.contact.idAccount).eq(result.id);
                         expect(result.contact.contact.emails[0].address).eq(contactEmail);
                         expect(result.roles.length).eq(2);
-                        expect(result.roles[0].idRole).eq(insertedRole1.id);
-                        expect(result.roles[1].idRole).eq(insertedRole2.id);
-                        expect(result.roles[0].idAccount).eq(result.id);
-                        expect(result.roles[1].idAccount).eq(result.id);
+                        expect(result.roles[0].id).eq(insertedRole1.id);
+                        expect(result.roles[1].id).eq(insertedRole2.id);
+                        expect(result.roles[0].name).eq(insertedRole1.name);
+                        expect(result.roles[1].name).eq(insertedRole2.name);
                         temporalAccount = result;
 
                         //Let's check if the party has the associated account.
@@ -182,6 +182,14 @@ describe("Testing auth context service insert method", function () {
                         expect(resultQueryAccount[0].expire).eq(accountExpire);
                         expect(resultQueryAccount[0].expirePassword).eq(accountExpirePassword);
                         expect(resultQueryAccount[0].contactId).eq(temporalAccount.contact.id);
+                        return Persistence.accountRoleDao.findAll()
+                    })
+                    .then(function (accountRoleQueryResult) {
+                        expect(accountRoleQueryResult.length).eq(2);
+                        expect(accountRoleQueryResult[0].idRole).eq(insertedRole1.id);
+                        expect(accountRoleQueryResult[1].idRole).eq(insertedRole2.id);
+                        expect(accountRoleQueryResult[1].idAccount).eq(temporalAccount.id);
+                        expect(accountRoleQueryResult[1].idAccount).eq(temporalAccount.id);
                         done();
                     })
                     .catch(function (erro) {

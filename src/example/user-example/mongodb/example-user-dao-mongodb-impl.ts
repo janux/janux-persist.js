@@ -62,5 +62,4 @@ export class ExampleUserDaoMongoDbImpl extends ExampleUserDao {
                 return Promise.resolve(errors);
             });
     }
-
 }

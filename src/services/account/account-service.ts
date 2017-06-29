@@ -171,7 +171,7 @@ export class AccountService {
             })
             .then((insertedAccountRoles: AccountRoleEntity[]) => {
                 // Associate the party to the account
-                result.roles = insertedAccountRoles;
+                result.roles = associatedRoles;
                 result.contact = associatedParty;
                 this._log.debug("Returning %j", result);
                 return Promise.resolve(result);
