@@ -154,9 +154,8 @@ describe("Testing auth context service update method", function () {
 
         describe("When updating an account", function () {
             it("The method should not return any error", function (done) {
-                var accountToUpdate = {
-
-                }
+                var accountToUpdate = {};
+                done();
             });
         })
     });
