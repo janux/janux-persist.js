@@ -6,7 +6,7 @@
 import * as logger from 'log4js';
 import uuid = require("uuid");
 import Promise = require("bluebird");
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 import {isValidId} from "../../util/id_validator";
 import {IEntity} from "../interfaces/entity";
 import {IEntityProperties} from "../interfaces/entity-properties";
@@ -126,7 +126,7 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
      */
     public updateOrInsert(object: t): Promise<t | IValidationError[]> {
         this._log.debug("Call to updateOrInsert with object %j", object);
-        if (isBlank(object.id)) {
+        if (isBlankString(object.id)) {
             return this.insert(object);
         } else {
             return this.update(object);

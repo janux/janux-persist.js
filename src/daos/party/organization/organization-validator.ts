@@ -5,7 +5,7 @@
 
 import * as logger from 'log4js';
 import {ValidationError} from "../../../persistence/impl/validation-error";
-import {isBlank} from "../../../util/blank-string-validator";
+import {isBlankString} from "../../../util/blank-string-validator";
 import {OrganizationEntity} from "./organization-entity";
 
 export class OrganizationValidator {
@@ -17,7 +17,7 @@ export class OrganizationValidator {
     public static validateOrganization(organization: OrganizationEntity): ValidationError[] {
         this._log.debug("Call to validateOrganization with organization: %j", organization);
         const errors: ValidationError[] = [];
-        if (isBlank(organization.name)) {
+        if (isBlankString(organization.name)) {
             errors.push(new ValidationError(this.NAME, this.NAME_EMPTY, ""));
         }
         this._log.debug("Returning errors: %j", errors);

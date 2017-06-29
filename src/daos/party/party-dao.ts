@@ -10,7 +10,7 @@ import {ValidationError} from "../../persistence/impl/validation-error";
 import {IDbEngineUtil} from "../../persistence/interfaces/db-engine-util-method";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 import {IPartyEntity} from "./iParty-entity";
 import {OrganizationEntity} from "./organization/organization-entity";
 import {PartyValidator} from "./party-validator";
@@ -77,7 +77,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<IParty
 
             };
 
-            if (isBlank(personReference.name.last) === false) {
+            if (isBlankString(personReference.name.last) === false) {
                 query.$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
             }
         } else {

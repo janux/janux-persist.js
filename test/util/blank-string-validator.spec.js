@@ -7,42 +7,42 @@ var expect = chai.expect;
 var config = require('config');
 //Config files
 var serverAppContext = config.get("serverAppContext");
-var isBlank = require("../../dist/index").isBlank;
+var isBlankString = require("../../dist/index").isBlankString;
 
 describe("Testing blank string validator", function () {
     describe("When sending a null value", function () {
         it("The method should return true", function () {
-            expect(isBlank(null)).eq(true);
+            expect(isBlankString(null)).eq(true);
         });
     });
 
     describe("When sending a undefined value", function () {
         it("The method should return true", function () {
-            expect(isBlank(undefined)).eq(true);
+            expect(isBlankString(undefined)).eq(true);
         });
     });
 
     describe("When sending an array", function () {
         it("The method should return true", function () {
-            expect(isBlank([])).eq(true);
+            expect(isBlankString([])).eq(true);
         });
     });
 
     describe("When sending an object", function () {
         it("The method should return true", function () {
-            expect(isBlank({})).eq(true);
+            expect(isBlankString({})).eq(true);
         });
     });
 
     describe("When sending an empty value", function () {
         it("The method should return true", function () {
-            expect(isBlank("")).eq(true);
+            expect(isBlankString("")).eq(true);
         });
     });
 
     describe("When sending an empty value with spaces", function () {
         it("The method should return true", function () {
-            expect(isBlank("   ")).eq(true);
+            expect(isBlankString("   ")).eq(true);
         });
     });
 

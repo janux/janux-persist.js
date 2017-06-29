@@ -38,6 +38,14 @@ export class AccountRoleDao extends AbstractDataAccessObjectWithEngine<AccountRo
         return this.dbEngineLocal.findAllByAttributesAndOperator(filter);
     }
 
+    public deleteAllByIdAccount(idAccount: string) {
+        return this.findAllByAccountId(idAccount)
+            .then((records: AccountRoleEntity[]) => {
+                const ids = records.map((value) => value.id);
+                return this.dbEngineLocal.deleteAllByIds(ids);
+            });
+    }
+
     protected validateEntity<t>(objectToValidate: AccountRoleEntity): IValidationError[] {
         return AccountRoleValidator.validatedAccountRole(objectToValidate);
     }

@@ -6,7 +6,7 @@
 import * as _ from 'lodash';
 import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 import {PermissionBitEntity} from "./permission-bit-entity";
 export class PermissionBitValidator {
 
@@ -14,7 +14,7 @@ export class PermissionBitValidator {
         this._log.debug("Call to validate with permissionBit: %j", permissionBit);
         let errors: ValidationError[];
         errors = this.validatePermissionBitWithNoIdAuthContext(permissionBit);
-        if (isBlank(permissionBit.idAuthContext)) {
+        if (isBlankString(permissionBit.idAuthContext)) {
             errors.push(new ValidationError(
                 "idAuthContext",
                 "idAuthContext must not be empty",
@@ -28,10 +28,10 @@ export class PermissionBitValidator {
     public static  validatePermissionBitWithNoIdAuthContext(permissionBit: PermissionBitEntity): ValidationError[] {
         this._log.debug("Call to validatePermissionBitWithNoIdAuthContext with permissionBit: %j", permissionBit);
         const errors: ValidationError[] = [];
-        if (isBlank(permissionBit.name)) {
+        if (isBlankString(permissionBit.name)) {
             errors.push(new ValidationError("name", "Name is empty", ""));
         }
-        if (isBlank(permissionBit.description)) {
+        if (isBlankString(permissionBit.description)) {
             errors.push(new ValidationError("description", "Name is empty", ""));
         }
         if (_.isNumber(permissionBit.position) === false) {

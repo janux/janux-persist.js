@@ -5,7 +5,7 @@
 import * as _ from 'lodash';
 import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 import {RoleEntity} from "./role-entity";
 export class RoleValidator {
 
@@ -24,10 +24,10 @@ export class RoleValidator {
     public static validateRole(role: RoleEntity): ValidationError[] {
         this._log.debug("Call to validateRole with %j", role);
         const errors: ValidationError[] = [];
-        if (isBlank(role.name)) {
+        if (isBlankString(role.name)) {
             errors.push(new ValidationError(this.NAME, this.NAME_EMPTY, ""));
         }
-        if (isBlank(role.description)) {
+        if (isBlankString(role.description)) {
             errors.push(new ValidationError(this.DESCRIPTION, this.DESCRIPTION_EMPTY, ""));
         }
         if (_.isBoolean(role.enabled) === false) {
@@ -40,7 +40,7 @@ export class RoleValidator {
                 if (_.isUndefined(role.idParentRole) === false) {
                     errors.push(new ValidationError(this.ID_PARENT_ROLE, this.ID_PARENT_ROLE_NOT_UNDEFINED, ""));
                 }
-            } else if (isBlank(role.idParentRole) === true) {
+            } else if (isBlankString(role.idParentRole) === true) {
                 errors.push(new ValidationError(this.ID_PARENT_ROLE, this.ID_PARENT_ROLE_EMPTY, ""));
             }
         }

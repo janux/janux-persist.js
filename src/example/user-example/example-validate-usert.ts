@@ -5,7 +5,7 @@
 import * as EmailValidator from "email-validator";
 import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 import {ExampleUser} from "./example-user";
 
 /**
@@ -18,12 +18,12 @@ export function validateExampleUser(exampleUser: ExampleUser): ValidationError[]
     const errors: ValidationError[] = [];
     log.debug("Call to validateExampleUser with exampleUser:%j", exampleUser);
     // Validating name not empty
-    if (isBlank(exampleUser.name)) {
+    if (isBlankString(exampleUser.name)) {
         errors.push(new ValidationError("name", "Empty name", exampleUser.name));
     }
 
     // Validating email not empty
-    if (isBlank(exampleUser.email)) {
+    if (isBlankString(exampleUser.email)) {
         errors.push(new ValidationError("email", "Empty email", exampleUser.email));
     } else {
         // Validating email is valid

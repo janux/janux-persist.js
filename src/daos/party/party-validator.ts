@@ -6,7 +6,7 @@
 import * as _ from 'lodash';
 import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 import {PostalAddress} from "./contact/address/postal-address";
 import {PostalAddressValidator} from "./contact/address/postal-address-validator";
 import {IContactMethod} from "./contact/contact-method";
@@ -38,16 +38,18 @@ export class PartyValidator {
     public static readonly DUPLICATED_EMAILS = "This party has duplicated email addresses";
     public static readonly ID_ACCOUNT_NOT_UNDEFINED = "idAccount must be undefined or not empty";
     public static readonly ID_ACCOUNT_DUPLICATE = "There is another record with the same idAccount";
+    public static TYPE_NOT_PERSON_OR_ORGANIZATION = "Type is not person or organization";
+    public static THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL = "There is another record with the same email address";
 
     public static validateParty(party: IPartyEntity): ValidationError[] {
         this._log.debug("Call to validateParty with party: %j", party);
         let errors: ValidationError[] = [];
-        if (isBlank(party.type)) {
+        if (isBlankString(party.type)) {
             errors.push(new ValidationError(this.TYPE, this.TYPE_EMPTY, ""));
         } else if (party.type !== this.PERSON && party.type !== this.ORGANIZATION) {
             errors.push(new ValidationError(
                 this.TYPE,
-                "Type is not " + this.PERSON + " or " + this.ORGANIZATION,
+                this.TYPE_NOT_PERSON_OR_ORGANIZATION,
                 ""));
         } else {
             errors = errors.concat(this.validateContactData(party));
@@ -57,7 +59,7 @@ export class PartyValidator {
                 errors = errors.concat(OrganizationValidator.validateOrganization(party as OrganizationEntity));
             }
         }
-        if (_.isUndefined(party.idAccount) === false && isBlank(party.idAccount) === true) {
+        if (_.isUndefined(party.idAccount) === false && isBlankString(party.idAccount) === true) {
             errors.push(new ValidationError(this.ID_ACCOUNT, this.ID_ACCOUNT_NOT_UNDEFINED, party.idAccount));
         }
         this._log.debug("Returning: %j", errors);
@@ -87,8 +89,8 @@ export class PartyValidator {
         const duplicatedEmails: string [] = _.intersection(emailAddressesToLookFor, potentialDuplicatedEmailRecords);
         for (const obj of duplicatedEmails) {
             errors.push(new ValidationError(
-                "contact.emails",
-                "There is another record with the same email address",
+                this.CONTACTS_EMAILS,
+                this.THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL,
                 obj));
         }
 
@@ -96,7 +98,7 @@ export class PartyValidator {
         for (const element of resultQuery) {
 
             // Validate duplicated idAccount
-            if (element.idAccount === reference.idAccount && isBlank(element.idAccount) === false) {
+            if (element.idAccount === reference.idAccount && isBlankString(element.idAccount) === false) {
                 errors.push(new ValidationError(
                     this.ID_ACCOUNT,
                     this.ID_ACCOUNT_DUPLICATE,
@@ -134,7 +136,7 @@ export class PartyValidator {
     private static validateContactData(party: IPartyEntity) {
         let errors: ValidationError[] = [];
         // Check there is at least one primary email
-        if (party.contact.emails.length === 0) {
+        if (_.isArray(party.contact.emails) === false || party.contact.emails.length === 0) {
             errors.push(new ValidationError(this.CONTACTS_EMAILS, this.AT_LEAST_ONE_EMAIL, ""));
         } else {
             errors = errors.concat(this.validateEmailAddresses(party.contact.emails));
@@ -161,6 +163,9 @@ export class PartyValidator {
 
     private static validatePhoneNumbers(phones: PhoneNumber[]) {
         let errors: ValidationError[] = [];
+        if (_.isArray(phones) === false) {
+            return errors;
+        }
         if (phones.length > 0) {
             errors = errors.concat(this.checkOnlyOnePrimaryContact(this.CONTACT_PHONE_NUMBER, phones));
             for (const phone of phones) {
@@ -173,6 +178,9 @@ export class PartyValidator {
 
     private static validatePostalAddresses(addresses: PostalAddress[]) {
         let errors: ValidationError[] = [];
+        if (_.isArray(addresses) === false) {
+            return errors;
+        }
         if (addresses.length > 0) {
             errors = errors.concat(this.checkOnlyOnePrimaryContact(this.CONTACT_ADDRESSES, addresses));
             for (const address of addresses) {

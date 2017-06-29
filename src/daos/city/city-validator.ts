@@ -4,7 +4,7 @@
  */
 import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 import {CityEntity} from "./city-entity";
 
 export class CityValidator {
@@ -12,13 +12,13 @@ export class CityValidator {
     public static validateCity(city: CityEntity): ValidationError[] {
         this._log.debug("Call to validateCity with city: %j", city);
         const errors: ValidationError[] = [];
-        if (isBlank(city.code)) {
+        if (isBlankString(city.code)) {
             errors.push(new ValidationError("code", "code must not be empty", ""));
         }
-        if (isBlank(city.name)) {
+        if (isBlankString(city.name)) {
             errors.push(new ValidationError("name", "name must not be empty", ""));
         }
-        if (isBlank(city.idStateProvince)) {
+        if (isBlankString(city.idStateProvince)) {
             errors.push(new ValidationError("idStateProvince", "idStateProvince must not be empty", ""));
         }
         this._log.debug("Result: ", errors);

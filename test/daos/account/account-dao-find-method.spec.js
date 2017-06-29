@@ -146,11 +146,21 @@ describe("Testing account dao find methods", function () {
                 })
             });
 
-            describe("When calling findAll", function () {
-                it("Should return all records", function (done) {
-                    accountDao.findAll()
+            describe("When calling findOneByContactId", function () {
+                it("Should return one record", function (done) {
+                    accountDao.findOneByContactId(id2)
                         .then(function (result) {
-                            expect(result.length).eq(2);
+                            expect(result.contactId).eq(id2);
+                            done();
+                        })
+                })
+            });
+
+            describe("When calling findOneByContactId with invalid id", function () {
+                it("Should return null", function (done) {
+                    accountDao.findOneByContactId(invalidId)
+                        .then(function (result) {
+                            expect(result).to.be.null;
                             done();
                         })
                 })

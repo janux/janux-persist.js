@@ -7,7 +7,7 @@ import * as logger from 'log4js';
 import * as loki from 'lokijs';
 import * as mongoose from "mongoose";
 import {Persistence} from "../../daos/persistence";
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 import {BootstrapLokiJsDaos} from "./bootatrap-lokijs";
 import {BootStrapMongoDbDaos} from "./bootstrap-mongodb";
 export class BootstrapService {
@@ -29,10 +29,10 @@ export class BootstrapService {
     public static start(dbEngine: string, dbParams: string): Promise<any> {
         this._log.info("Call to start with dbEngine: %j dbParams: %j", dbEngine, dbParams);
 
-        if (isBlank(dbParams)) {
+        if (isBlankString(dbParams)) {
             return Promise.reject(this.DB_PARAMS_EMPTY);
         }
-        if (isBlank(dbEngine)) {
+        if (isBlankString(dbEngine)) {
             return Promise.reject(this.DB_ENGINE_EMPTY);
         }
         if (this.serviceStarted === true) {
@@ -84,10 +84,6 @@ export class BootstrapService {
             this._log.debug("Service not started");
             return Promise.resolve();
         }
-    }
-
-    static get dbEngineUsed(): string {
-        return this._dbEngineUsed;
     }
 
     private static _dbEngineUsed: string;

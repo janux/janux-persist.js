@@ -5,7 +5,7 @@
 import * as _ from "lodash";
 import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 import {AuthContextEntity} from "./auth-context-entity";
 
 export class AuthContextValidator {
@@ -13,10 +13,10 @@ export class AuthContextValidator {
     public static  validateAuthContext(authContext: AuthContextEntity): ValidationError[] {
         this._log.debug("Call to validateAuthContext with authContext: %j", authContext);
         const errors: ValidationError[] = [];
-        if (isBlank(authContext.name) === true) {
+        if (isBlankString(authContext.name) === true) {
             errors.push(new ValidationError("name", "Name is empty", ""));
         }
-        if (isBlank(authContext.description) === true) {
+        if (isBlankString(authContext.description) === true) {
             errors.push(new ValidationError("description", "Description is empty", ""));
         }
         if (_.isNumber(authContext.sortOrder) === false) {
@@ -26,7 +26,7 @@ export class AuthContextValidator {
         if (_.isBoolean(authContext.enabled) === false) {
             errors.push(new ValidationError("enabled", "Enabled must be a boolean", ""));
         }
-        if (isBlank(authContext.idDisplayName)) {
+        if (isBlankString(authContext.idDisplayName)) {
             errors.push(new ValidationError("idDisplayName", "idDisplayName must not be empty", ""));
         }
         this._log.debug("Returning %j", errors);

@@ -11,7 +11,7 @@ import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
 import {MongoDbUtil} from "../../../persistence/util/mongodb-util.js";
-import {isBlank} from "../../../util/blank-string-validator";
+import {isBlankString} from "../../../util/blank-string-validator";
 import {IPartyEntity} from "../iParty-entity";
 import {OrganizationEntity} from "../organization/organization-entity";
 import {PartyDao} from "../party-dao";
@@ -55,7 +55,7 @@ export class PartyDaoMongoDbImpl extends PartyDao {
                     }
                 ]
             };
-            if (isBlank(personReference.name.last) === false) {
+            if (isBlankString(personReference.name.last) === false) {
                 query.$and[1].$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
             }
         } else {

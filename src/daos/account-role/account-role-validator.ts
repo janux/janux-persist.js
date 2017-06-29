@@ -4,17 +4,17 @@
  */
 import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 import {AccountRoleEntity} from "./account-role-entity";
 export class AccountRoleValidator {
 
     public static validatedAccountRole(accountRole: AccountRoleEntity): ValidationError[] {
         this._log.debug("Call to validatedAccountRole with accountRole %j", accountRole);
         const errors: ValidationError[] = [];
-        if (isBlank(accountRole.idAccount)) {
+        if (isBlankString(accountRole.idAccount)) {
             errors.push(new ValidationError("idAccount", "idAccount is empty", ""));
         }
-        if (isBlank(accountRole.idRole)) {
+        if (isBlankString(accountRole.idRole)) {
             errors.push(new ValidationError("idRole", "idRole is empty", ""));
         }
         this._log.debug("Returning: %j", errors);

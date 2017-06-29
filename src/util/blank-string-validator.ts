@@ -11,7 +11,7 @@
 
 import * as _ from "lodash";
 
-export function isBlank(value: string) {
+export function isBlankString(value: string) {
     let result: boolean = false;
     if (_.isString(value) === false) {
         result = true;

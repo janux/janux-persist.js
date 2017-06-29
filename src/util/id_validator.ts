@@ -3,7 +3,7 @@
  * Created by ernesto on 6/15/17.
  */
 import * as _ from "lodash";
-import {isBlank} from "./blank-string-validator";
+import {isBlankString} from "./blank-string-validator";
 export function isValidId(value: any): boolean {
     let result = true;
 
@@ -13,7 +13,7 @@ export function isValidId(value: any): boolean {
         result = false;
     } else if (_.isNumber(value) && value <= 0) {
         result = false;
-    } else if (_.isString(value) && isBlank(value)) {
+    } else if (_.isString(value) && isBlankString(value)) {
         result = false;
     }
     return result;

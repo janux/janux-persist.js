@@ -5,7 +5,7 @@
 import * as emailValidator from 'email-validator';
 import * as logger from 'log4js';
 import {ValidationError} from "../../../../persistence/impl/validation-error";
-import {isBlank} from "../../../../util/blank-string-validator";
+import {isBlankString} from "../../../../util/blank-string-validator";
 import {ContactValidator} from "../contact-validator";
 import {EmailAddress} from "./email-address";
 
@@ -19,7 +19,7 @@ export class EmailValidator {
         this._log.debug("Call to validateEmail with email: %j", email);
         let errors: ValidationError[] = [];
         errors = errors.concat(ContactValidator.validateBaseContactInfo("contact.email", email));
-        if (isBlank(email.address)) {
+        if (isBlankString(email.address)) {
             errors.push(new ValidationError(this.EMAIL_ADDRESS, this.EMAIL_EMPTY, ""));
         } else if (emailValidator.validate(email.address) === false) {
             errors.push(new ValidationError(

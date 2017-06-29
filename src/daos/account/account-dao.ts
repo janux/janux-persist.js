@@ -17,6 +17,10 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithEngine<Acco
         super(dbEngineUtil, entityProperties);
     }
 
+    public findOneByContactId(contactId: string) {
+        return this.dbEngineUtil.findOneByAttribute("contactId", contactId);
+    }
+
     public findOneByUserName(username: string): Promise<AccountEntity> {
         return this.findOneByAttribute("username", username);
     }

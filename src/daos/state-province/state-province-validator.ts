@@ -5,7 +5,7 @@
 import * as _ from 'lodash';
 import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 import {StateProvinceEntity} from "./state-province-entity";
 
 export class StateProvinceValidator {
@@ -13,16 +13,16 @@ export class StateProvinceValidator {
     public static  validateStateProvince(stateProvince: StateProvinceEntity): ValidationError[] {
         this._log.debug("Call to validateStateProvince with stateProvince: %j", stateProvince);
         const errors: ValidationError[] = [];
-        if (isBlank(stateProvince.name)) {
+        if (isBlankString(stateProvince.name)) {
             errors.push(new ValidationError("name", "Name is empty", ""));
         }
-        if (isBlank(stateProvince.code)) {
+        if (isBlankString(stateProvince.code)) {
             errors.push(new ValidationError("code", "Code is empty", ""));
         }
         if (_.isNumber(stateProvince.sortOrder) === false) {
             errors.push(new ValidationError("sortOrder", "sortOrder must be a number", ""));
         }
-        if (isBlank(stateProvince.countryIsoCode)) {
+        if (isBlankString(stateProvince.countryIsoCode)) {
             errors.push(new ValidationError("countryIsoCode", "countryIsoCode is empty", ""));
         }
         this._log.debug("error: %j", errors);

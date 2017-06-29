@@ -5,7 +5,7 @@
 
 import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 import {AccountEntity} from "./account-entity";
 
 export class AccountValidator {
@@ -20,16 +20,23 @@ export class AccountValidator {
      */
     public static  validateAccount(accountEntity: AccountEntity): ValidationError[] {
         this._log.debug("Call to validateAccount with accountEntity: %j:", accountEntity);
+        let errors: ValidationError[] = [];
+        errors = errors.concat(this.validateAccountExceptContactId(accountEntity));
+        if (isBlankString(accountEntity.contactId)) {
+            errors.push(new ValidationError("contact", "Contact id is empty", ""));
+        }
+        this._log.debug("Errors: %j", errors);
+        return errors;
+    }
+
+    public static validateAccountExceptContactId(accountEntity: AccountEntity): ValidationError[] {
+        this._log.debug("Call to validateAccountExceptContactId with accountEntity: %j:", accountEntity);
         const errors: ValidationError[] = [];
-        if (isBlank(accountEntity.username)) {
+        if (isBlankString(accountEntity.username)) {
             errors.push(new ValidationError("username", "Username is empty", accountEntity.username));
         }
-        if (isBlank(accountEntity.password)) {
+        if (isBlankString(accountEntity.password)) {
             errors.push(new ValidationError("password", "Password is empty", accountEntity.password));
-        }
-
-        if (isBlank(accountEntity.contactId)) {
-            errors.push(new ValidationError("contact", "Contact id is empty", ""));
         }
 
         this._log.debug("Errors: %j", errors);

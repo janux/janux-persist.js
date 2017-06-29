@@ -13,7 +13,6 @@ import {RolePermissionBitEntity} from "../../daos/role-permission-bit/role-permi
 import {RoleEntity} from "../../daos/role/role-entity";
 import {RoleValidator} from "../../daos/role/role-validation";
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {BootstrapService} from "../bootstrap/bootstrap-service";
 
 export class RoleService {
 
@@ -124,14 +123,29 @@ export class RoleService {
     public static findAll(): Promise<any> {
         this._log.debug("Call to findAll");
         let result;
-        let rolePermissionBits: RolePermissionBitEntity[];
-        let permissionBits: PermissionBitEntity[];
-        let authContexts: AuthContextEntity[];
         return Persistence.roleDao.findAll()
             .then((resultRoles) => {
                 result = resultRoles;
-                return Persistence.rolePermissionBitDao.findAll();
-            })
+                return this.prepareSeveralRecord(result);
+            });
+    }
+
+    public static  findAllByIds(ids: string[]) {
+        this._log.debug("Call to findAllByIds with ids: %j", ids);
+        return Persistence.roleDao.findAllByIds(ids)
+            .then((roles: RoleEntity[]) => {
+                return this.prepareSeveralRecord(roles);
+            });
+    }
+
+    private static _log = logger.getLogger("RoleService");
+
+    private static prepareSeveralRecord(roles: any[]) {
+        const idsRole = roles.map((value, index, array) => value.id);
+        let rolePermissionBits: RolePermissionBitEntity[];
+        let permissionBits: PermissionBitEntity[];
+        let authContexts: AuthContextEntity[];
+        return Persistence.rolePermissionBitDao.findAllByRoleIdsIn(idsRole)
             .then((resultRolePermissionBits: RolePermissionBitEntity[]) => {
                 rolePermissionBits = resultRolePermissionBits;
                 const permissionBitIds = resultRolePermissionBits.map((value) => value.idPermissionBit);
@@ -146,7 +160,7 @@ export class RoleService {
                 authContexts = resultAuthContexts;
                 let roleBits: any;
                 let bit: any;
-                for (const role of result) {
+                for (const role of roles) {
                     const subRolePermissionBit = rolePermissionBits.filter((value) => value.idRole === role.id);
                     roleBits = [];
                     for (const subPermissionBit of subRolePermissionBit) {
@@ -160,11 +174,9 @@ export class RoleService {
                     }
                     role.permissionBits = roleBits;
                 }
-                return Promise.resolve(result);
+                return Promise.resolve(roles);
             });
     }
-
-    private static _log = logger.getLogger("RoleService");
 
     private static prepareOneRecord(role: RoleEntity): Promise<any> {
         let result: any;

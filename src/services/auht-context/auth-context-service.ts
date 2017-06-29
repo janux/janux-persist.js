@@ -14,7 +14,7 @@ import {PermissionBitValidator} from "../../daos/permission-bit/permission-bit-v
 import {Persistence} from "../../daos/persistence";
 import {RolePermissionBitEntity} from "../../daos/role-permission-bit/role-permission-bit-entity";
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {isBlank} from "../../util/blank-string-validator";
+import {isBlankString} from "../../util/blank-string-validator";
 
 export class AuthContextService {
 
@@ -85,7 +85,7 @@ export class AuthContextService {
                 resultUpdate = resultUpdateAuthContest;
                 // Update or insert permission bits.
                 return Promise.map(permissionBits, (element) => {
-                    if (isBlank(element.idAuthContext)) {
+                    if (isBlankString(element.idAuthContext)) {
                         element.idAuthContext = objectToToUpdate.id;
                     }
                     return Persistence.permissionBitDao.updateOrInsert(element);
@@ -102,7 +102,7 @@ export class AuthContextService {
     public static remove(idAuthContext: string) {
         let authContextToDelete: AuthContextEntity;
         let permissionBitsIdsToDelete: string[];
-        if (isBlank(idAuthContext)) {
+        if (isBlankString(idAuthContext)) {
             return Promise.reject([
                 new ValidationError(this.AUTH_CONTEXT, this.AUTH_CONTEXT_INVALID_ID, idAuthContext)
             ]);
@@ -304,7 +304,7 @@ export class AuthContextService {
             authContextEntity,
             permissionBits);
         const idsToPreserve: string[] = permissionBits
-            .filter((value, index, array) => isBlank(value.id) === false)
+            .filter((value, index, array) => isBlankString(value.id) === false)
             .map((value, index, array) => value.id);
 
         // Look for the permission bits that are going to be deleted.

@@ -28,7 +28,9 @@ const permissionBitName2 = "delete";
 const permissionBitDesc1 = "insert operations";
 const permissionBitDesc2 = "delete operations";
 const roleName = "A role name";
+const roleName2 = "A role name 2";
 const roleDescription = "A role description";
+const roleDescription2 = "A role description 2";
 const roleEnabled = true;
 const isRoot = true;
 const idParentRole = undefined;
@@ -101,6 +103,17 @@ describe("Testing role service update method", function () {
             })
             .then(function (resultInsertedRole) {
                 insertedRole = resultInsertedRole;
+                var roleToInsert = {
+                    name: roleName2,
+                    description: roleDescription2,
+                    enabled: roleEnabled,
+                    isRoot: isRoot,
+                    idParentRole: idParentRole,
+                    permissionBits: [
+                        {id: insertedAuthContext.permissionBits[0].id},
+                        {id: insertedAuthContext.permissionBits[1].id}
+                    ]
+                };
                 done();
             });
 
@@ -108,6 +121,9 @@ describe("Testing role service update method", function () {
 
     });
 
-
-
+    describe("When updating a roles",function () {
+        it("The method should not return any error", function (done) {
+            done();
+        });
+    })
 });

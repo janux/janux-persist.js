@@ -5,7 +5,7 @@
 import * as _ from 'lodash';
 import * as logger from 'log4js';
 import {ValidationError} from "../../../persistence/impl/validation-error";
-import {isBlank} from "../../../util/blank-string-validator";
+import {isBlankString} from "../../../util/blank-string-validator";
 import {IContactMethod} from "./contact-method";
 
 export class ContactValidator {
@@ -16,7 +16,7 @@ export class ContactValidator {
         if (_.isBoolean(contact.primary) === false) {
             errors.push(new ValidationError(prefix + ".primary", "primary is not boolean", ""));
         }
-        if (isBlank(contact.type)) {
+        if (isBlankString(contact.type)) {
             errors.push(new ValidationError(prefix + ".type", "type is empty", ""));
         }
         return errors;
