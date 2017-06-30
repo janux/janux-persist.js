@@ -19,7 +19,13 @@ export class RoleService {
     public static ROLE_PERMISSION_BIT = "role.permissionBit";
     public static PERMISSION_BIT_NOT_IN_DATABASE = "Some permission bit ids does not exits in the database";
     public static ROLE_PERMISSION_BITS_EMPTY = "permissionBits is not an array or is empty";
+    public static PERMISSION_BITS_INVALID = "The parameters does not have a valid permission bits data";
 
+    /**
+     * Insert a role an associate the permission bits to the role.
+     * @param object
+     * @return {Bluebird<any>}
+     */
     public static  insert(object: any): Promise<any> {
         this._log.debug("Call to insert with object %j ", object);
         let result: any;
@@ -61,26 +67,32 @@ export class RoleService {
             });
     }
 
-    public static update(object: any) {
+    /**
+     * Update the role.
+     * @param object
+     * @return {Promise<any>}
+     */
+    public static update(object: any): Promise<any> {
         this._log.debug("Call to update with object: %j", object);
         let result: any;
         return this.validate(object)
             .then(() => {
-                const role: RoleEntity = new RoleEntity(
+                const role: any = new RoleEntity(
                     object.name,
                     object.description,
                     object.enabled,
                     object.isRoot,
                     object.idParentRole
                 );
+                role.dateCreated = object.dateCreated;
                 role.id = object.id;
                 return Persistence.roleDao.update(role);
             })
-            .then(() => {
-                return Persistence.rolePermissionBitDao.deleteAllByIdRole(object.id);
-            })
             .then((updatedRole: RoleEntity) => {
                 result = updatedRole;
+                return Persistence.rolePermissionBitDao.deleteAllByIdRole(object.id);
+            })
+            .then(() => {
                 let idsPermissionBits = _.map(object.permissionBits, (o: any) => {
                     return o.id;
                 });
@@ -88,7 +100,7 @@ export class RoleService {
                 const associationsToInsert: RolePermissionBitEntity[] = [];
                 for (const id of idsPermissionBits) {
                     associationsToInsert.push(new RolePermissionBitEntity(
-                        updatedRole.id,
+                        result.id,
                         id
                     ));
                 }
@@ -100,6 +112,7 @@ export class RoleService {
             })
             .then((resultRecords) => {
                 result.permissionBits = resultRecords;
+                this._log.debug("Returning %j", result);
                 return Promise.resolve(result);
             });
     }
@@ -203,7 +216,7 @@ export class RoleService {
             object.idParentRole
         );
         errors = RoleValidator.validateRole(role);
-        const permissionBits = object.permissionBits;
+        const permissionBits: any[] = object.permissionBits;
         if (_.isArray(permissionBits) === false || permissionBits.length === 0) {
             // Rejecting early in order to avoid runtime errors.
             return Promise.reject([
@@ -211,6 +224,16 @@ export class RoleService {
                     this.ROLE_PERMISSION_BITS_EMPTY,
                     "")
             ]);
+        }
+        const ids = permissionBits.map((value) => value.id);
+        const rejected = _.filter(ids, (o) => {
+            return _.isString(o) === false;
+        });
+        if (rejected.length > 0) {
+            errors.push(
+                new ValidationError(this.ROLE_PERMISSION_BIT,
+                    this.PERMISSION_BITS_INVALID,
+                    ""));
         }
         if (errors.length > 0) {
             return Promise.reject(errors);

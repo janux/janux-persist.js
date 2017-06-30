@@ -250,6 +250,32 @@ describe("Testing role service insert method", function () {
         })
     });
 
+    describe("When inserting a role with invalid permission bit content", function () {
+        it("The method should return an error", function (done) {
+            var roleToInsert = {
+                name: roleName,
+                description: roleDescription,
+                enabled: roleEnabled,
+                isRoot: isRoot,
+                idParentRole: idParentRole,
+                permissionBits: [
+                    {}
+                ]
+            };
+            RoleService.insert(roleToInsert)
+                .then(function (result) {
+                    expect.fail("The method should not have inserted the record");
+                    done();
+                })
+                .catch(function (err) {
+                    expect(err.length).eq(1);
+                    expect(err[0].attribute).eq(RoleService.ROLE_PERMISSION_BIT);
+                    expect(err[0].message).eq(RoleService.PERMISSION_BITS_INVALID);
+                    done();
+                });
+        })
+    });
+
     describe("When inserting a role with permission bit ids that does not exist in the database.", function () {
         it("The method should return an error", function (done) {
             var roleToInsert = {
