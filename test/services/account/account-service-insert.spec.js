@@ -146,11 +146,13 @@ describe("Testing auth context service insert method", function () {
                     .then(function (result) {
                         expect(result.id).not.to.be.undefined;
                         expect(result.username).eq(accountUsername);
+                        expect(result.dateCreated).not.to.be.undefined;
                         expect(result.password).eq(accountPassword);
                         expect(result.enabled).eq(accountEnabled);
                         expect(result.locked).eq(accountLocked);
                         expect(result.expire).eq(accountExpire);
                         expect(result.expirePassword).eq(accountExpirePassword);
+                        expect(result.contactId).eq(insertedParty1.id);
                         expect(result.contact.id).eq(insertedParty1.id);
                         expect(result.contact.idAccount).eq(result.id);
                         expect(result.contact.contact.emails[0].address).eq(contactEmail);
@@ -302,6 +304,13 @@ describe("Testing auth context service insert method", function () {
                 };
                 AccountService.insert(account)
                     .then(function (result) {
+                        expect(result.dateCreated).not.to.be.null;
+                        return Persistence.partyDao.findOneById(result.contactId);
+
+                    })
+                    .then(function (resultQuery) {
+                        expect(resultQuery).not.to.be.null;
+                        expect(resultQuery.dateCreated).not.to.be.undefined;
                         done();
                     })
                     .catch(function (err) {

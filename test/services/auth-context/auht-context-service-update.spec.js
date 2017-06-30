@@ -139,16 +139,19 @@ describe("Testing auth context service update method", function () {
                     .then(function (result) {
                         expect(result.name).eq(authContextName2);
                         expect(result.description).eq(authContextDescription2);
+                        expect(result.dateCreated).not.to.be.undefined;
                         expect(result.lastUpdate).not.to.be.undefined;
                         expect(result.sortOrder).eq(1);
                         expect(result.enabled).eq(false);
                         expect(result.permissionBits.length).eq(2);
                         expect(result.permissionBits[0].id).not.to.be.undefined;
+                        expect(result.permissionBits[0].dateCreated).not.to.be.undefined;
                         expect(result.permissionBits[0].lastUpdate).not.to.be.undefined;
                         expect(result.permissionBits[0].name).eq(permissionBitName2);
                         expect(result.permissionBits[0].description).eq(permissionBitDesc2);
                         expect(result.permissionBits[0].position).eq(1);
                         expect(result.permissionBits[1].id).not.to.be.undefined;
+                        expect(result.permissionBits[1].dateCreated).not.to.be.undefined;
                         expect(result.permissionBits[1].lastUpdate).to.be.undefined;
                         expect(result.permissionBits[1].name).eq(permissionBitName3);
                         expect(result.permissionBits[1].description).eq(permissionBitDesc3);
@@ -157,12 +160,14 @@ describe("Testing auth context service update method", function () {
                     })
                     .then(function (resultAuthQuery) {
                         expect(resultAuthQuery.lastUpdate).not.to.be.undefined;
+                        expect(resultAuthQuery.dateCreated).not.to.be.undefined;
                         return Persistence.permissionBitDao.findAllByIdAuthContext(resultAuthQuery.id);
                     })
                     .then(function (resultQueryBits) {
                         expect(resultQueryBits.length).eq(2);
                         expect(resultQueryBits[0].lastUpdate).not.to.be.undefined;
-                        expect(resultQueryBits[1].lastUpdate).to.be.undefined;
+                        expect(resultQueryBits[0].dateCreated).not.to.be.undefined;
+                        expect(resultQueryBits[1].dateCreated).not.to.be.undefined;
                         done();
                     })
                     .catch(function (err) {

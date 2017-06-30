@@ -211,7 +211,7 @@ export class AuthContextService {
     private static validate(object: any): Promise<any> {
         this._log.debug("Call to validate with object %j", object);
         const permissionBits: PermissionBitEntity[] = [];
-        const authContextEntity = new AuthContextEntity(
+        const authContextEntity: any = new AuthContextEntity(
             object.name,
             object.description,
             object.sortOrder,
@@ -219,6 +219,7 @@ export class AuthContextService {
             object.idDisplayName
         );
         authContextEntity.id = object.id;
+        authContextEntity.dateCreated = object.dateCreated;
         const errors = AuthContextValidator.validateAuthContext(authContextEntity);
         if (errors.length > 0) {
             return Promise.reject(errors);
@@ -226,7 +227,7 @@ export class AuthContextService {
         return this.validatePermissionBits(object)
             .then(() => {
                 return Persistence.displayNameDao.findOneById(authContextEntity.idDisplayName);
-    })
+            })
             .then((resultQuery: DisplayNameEntity) => {
                 if (resultQuery === null) {
                     this._log.warn("idDisplayName %j does not exist in the database", authContextEntity.idDisplayName);
@@ -238,7 +239,7 @@ export class AuthContextService {
                     ]);
                 } else {
                     for (const bit of object.permissionBits) {
-                        const permissionBit: PermissionBitEntity = new PermissionBitEntity(
+                        const permissionBit: any = new PermissionBitEntity(
                             bit.name,
                             bit.description,
                             bit.position,
@@ -246,6 +247,7 @@ export class AuthContextService {
                         );
                         permissionBit.id = bit.id;
                         permissionBits.push(permissionBit);
+                        permissionBit.dateCreated = bit.dateCreated;
                     }
                     // Everything is correct, return the records to insert.
                     return Promise.resolve({

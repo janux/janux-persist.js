@@ -86,7 +86,8 @@ export class BootStrapMongoDbDaos {
 
         // Party
         persistence.partyDao = new PartyDaoMongoDbImpl(
-            new DbEngineUtilMongodb(mongoose.model('party', PartyMongoDbSchema)), null
+            new DbEngineUtilMongodb(mongoose.model('party', PartyMongoDbSchema)),
+            new EntityProperties(false, true)
         );
     }
 

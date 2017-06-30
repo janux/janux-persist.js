@@ -28,19 +28,13 @@ const roleDescription2 = "A role description 2";
 
 const organizationName = "Glarus";
 const organizationContactEmail = "sales@glarus.com";
+const organizationContactType = "work";
 
 const personName = "John";
 const personMiddleName = "Doe";
 const personLastName = "Doe";
 const contactEmail = "dev@glarus.com";
 const contactType = "work";
-
-const personName2 = "Jane";
-const personMiddleName2 = "Doe";
-const personLastName2 = "Doe";
-const contactEmail2 = "test@glarus.com";
-const contactType2 = "work";
-
 
 const accountUsername = "username";
 const accountPassword = "password";
@@ -135,9 +129,9 @@ describe("Testing auth context service update method", function () {
                             name: organizationName,
                             contact: {
                                 emails: [{
-                                    type: contactType2,
+                                    type: organizationContactType,
                                     primary: true,
-                                    address: contactEmail2
+                                    address: organizationContactEmail
                                 }]
                             }
                         },
@@ -154,7 +148,6 @@ describe("Testing auth context service update method", function () {
 
         describe("When updating an account", function () {
             it("The method should not return any error", function (done) {
-                var accountToUpdate = {};
                 done();
             });
         })

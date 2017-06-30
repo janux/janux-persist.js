@@ -19,5 +19,11 @@ export const PartyMongoDbSchema = new mongoose.Schema({
     contact: {
         type: mongoose.Schema.Types.Mixed,
         required: true
+    },
+    lastUpdate: {
+        type: Date
+    },
+    dateCreated: {
+        type: Date
     }
 });
