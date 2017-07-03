@@ -6,6 +6,7 @@
 import * as Promise from "bluebird";
 import * as _ from "lodash";
 import * as logger from 'log4js';
+import {AccountRoleEntity} from "../../daos/account-role/account-role-entity";
 import {AuthContextEntity} from "../../daos/auth-context/auth-context-entity";
 import {PermissionBitEntity} from "../../daos/permission-bit/permission-bit-entity";
 import {Persistence} from "../../daos/persistence";
@@ -20,6 +21,8 @@ export class RoleService {
     public static PERMISSION_BIT_NOT_IN_DATABASE = "Some permission bit ids does not exits in the database";
     public static ROLE_PERMISSION_BITS_EMPTY = "permissionBits is not an array or is empty";
     public static PERMISSION_BITS_INVALID = "The parameters does not have a valid permission bits data";
+    public static ACCOUNT = "account";
+    public static ROLE_ASSOCIATED_WITH_ACCOUNT = "This role is associated with one or more account";
 
     /**
      * Insert a role an associate the permission bits to the role.
@@ -148,6 +151,29 @@ export class RoleService {
         return Persistence.roleDao.findAllByIds(ids)
             .then((roles: RoleEntity[]) => {
                 return this.prepareSeveralRecord(roles);
+            });
+    }
+
+    public static remove(role: any, force: boolean): Promise<any> {
+        // Validate if the role is associated with users.
+        return Persistence.accountRoleDao.findAllByRoleId(role.id)
+            .then((accountRoles: AccountRoleEntity[]) => {
+                if (accountRoles.length > 0 && force === false) {
+                    return Promise.reject([
+                        new ValidationError(this.ACCOUNT, this.ROLE_ASSOCIATED_WITH_ACCOUNT, "")
+                    ]);
+                } else {
+                    const ids = accountRoles.map((value) => value.id);
+                    return Persistence.accountRoleDao.deleteAllByIds(ids);
+                }
+            })
+            .then(() => {
+                // Delete the associated permission bit.
+                return Persistence.rolePermissionBitDao.deleteAllByIdRole(role.id);
+            })
+            .then(() => {
+                // Delete the role.
+                return Persistence.roleDao.removeById(role.id);
             });
     }
 

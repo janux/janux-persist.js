@@ -194,7 +194,7 @@ describe("Testing auth context service insert method", function () {
                         expect(accountRoleQueryResult[1].idAccount).eq(temporalAccount.id);
                         done();
                     })
-                    .catch(function (erro) {
+                    .catch(function (err) {
                         expect.fail("The method should have inserted the record");
                         done();
                     })
@@ -299,8 +299,7 @@ describe("Testing auth context service insert method", function () {
                             }]
                         }
                     },
-                    roles: [
-                        insertedRole1]
+                    roles: [insertedRole1]
                 };
                 AccountService.insert(account)
                     .then(function (result) {

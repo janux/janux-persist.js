@@ -12,6 +12,7 @@ export interface IDbEngineUtil {
     findOneById(id): Promise<any>;
     findAllByIds(arrayOfIds: any[]): Promise<any>;
     remove(objectToDelete: any): Promise<any>;
+    removeById(id: string): Promise<any>;
     count(): Promise<number>;
     deleteAll(): Promise<any>;
     deleteAllByIds(ids: string[]): Promise<any>;

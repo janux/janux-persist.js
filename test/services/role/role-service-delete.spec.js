@@ -1,6 +1,6 @@
 /**
  * Project janux-persistence
- * Created by ernesto on 6/28/17.
+ * Created by ernesto on 6/30/17.
  */
 var chai = require('chai');
 var expect = chai.expect;
@@ -10,6 +10,8 @@ var AuthContextService = require("../../../dist/index").AuthContextService;
 var RoleService = require("../../../dist/index").RoleService;
 var Persistence = require("../../../dist/index").Persistence;
 var DisplayNameEntity = require("../../../dist/index").DisplayNameEntity;
+var PartyValidator = require("../../../dist/index").PartyValidator;
+var AccountService = require("../../../dist/index").AccountService;
 
 //Config files
 var serverAppContext = config.get("serverAppContext");
@@ -31,14 +33,23 @@ const roleName = "A role name";
 const roleName2 = "A role name 2";
 const roleDescription = "A role description";
 const roleDescription2 = "A role description 2";
+const personName1 = "John";
+const personMiddleName1 = "Doe";
+const personLastName1 = "Doe";
 const roleEnabled = true;
 const isRoot = true;
+const contactType1 = "work";
+const contactEmail1 = "dev@glarus.com";
 
-const roleName3 = "A role name 3";
-const roleDescription3 = "A role description 3";
-const roleEnabled3 = false;
 
-describe("Testing role service update method", function () {
+const accountUsername1 = "username2";
+const accountPassword1 = "password2";
+const accountEnabled1 = true;
+const accountLocked1 = false;
+const accountExpire1 = undefined;
+const accountExpirePassword1 = undefined;
+
+describe("Testing role service delete method", function () {
 
     var insertedAuthContext;
     var insertedRole;
@@ -46,6 +57,15 @@ describe("Testing role service update method", function () {
 
     beforeEach(function (done) {
         BootstrapService.start(dbEngine, dbParams)
+            .then(function () {
+                return Persistence.accountDao.deleteAll();
+            })
+            .then(function () {
+                return Persistence.accountRoleDao.deleteAll();
+            })
+            .then(function () {
+                return Persistence.partyDao.deleteAll();
+            })
             .then(function () {
                 return Persistence.roleDao.deleteAll();
             })
@@ -124,96 +144,86 @@ describe("Testing role service update method", function () {
             })
             .then(function (resultInsertedRole) {
                 insertedRole2 = resultInsertedRole;
+                var account = {
+                    username: accountUsername1,
+                    password: accountPassword1,
+                    enabled: accountEnabled1,
+                    locked: accountLocked1,
+                    expire: accountExpire1,
+                    expirePassword: accountExpirePassword1,
+                    contact: {
+                        type: PartyValidator.PERSON,
+                        name: {
+                            first: personName1,
+                            middle: personMiddleName1,
+                            last: personLastName1
+                        },
+                        contact: {
+                            emails: [{
+                                type: contactType1,
+                                primary: true,
+                                address: contactEmail1
+                            }]
+                        }
+                    },
+                    roles: [insertedRole2]
+                };
+                return AccountService.insert(account);
+            })
+            .then(function (insertedAccount) {
                 done();
             });
     });
 
-    describe("When updating a roles", function () {
+    describe("When deleting the role", function () {
         it("The method should not return any error", function (done) {
-            insertedRole.name = roleName3;
-            insertedRole.description = roleDescription3;
-            insertedRole.enabled = roleEnabled3;
-            insertedRole.permissionBits = [
-                insertedAuthContext.permissionBits[0],
-                insertedAuthContext.permissionBits[1],
-                insertedAuthContext.permissionBits[2]
-            ];
-            RoleService.update(insertedRole)
-                .then(function (result) {
-                    expect(result.name).eq(roleName3);
-                    expect(result.dateCreated).not.to.be.undefined;
-                    expect(result.lastUpdate).not.to.be.undefined;
-                    expect(result.description).eq(roleDescription3);
-                    expect(result.enabled).eq(roleEnabled3);
-                    expect(result.permissionBits.length).eq(3);
-                    expect(result.permissionBits[0]).id = insertedAuthContext.permissionBits[0].id;
-                    expect(result.permissionBits[0]).name = insertedAuthContext.permissionBits[0].name;
-                    expect(result.permissionBits[0]).description = insertedAuthContext.permissionBits[0].description;
-                    expect(result.permissionBits[1]).id = insertedAuthContext.permissionBits[1].id;
-                    expect(result.permissionBits[1]).name = insertedAuthContext.permissionBits[1].name;
-                    expect(result.permissionBits[1]).description = insertedAuthContext.permissionBits[1].description;
-                    expect(result.permissionBits[2]).id = insertedAuthContext.permissionBits[2].id;
-                    expect(result.permissionBits[2]).name = insertedAuthContext.permissionBits[2].name;
-                    expect(result.permissionBits[2]).description = insertedAuthContext.permissionBits[2].description;
+            RoleService.remove(insertedRole, false)
+                .then(function () {
+                    return Persistence.roleDao.count();
+                })
+                .then(function (count) {
+                    expect(count).eq(1);
                     done();
                 })
                 .catch(function (err) {
-                    expect.fail("The method should not have sent an error");
-                    done();
-                });
-        });
-    });
-
-    describe("When updating a role with null permission bits", function () {
-        it("The method should send an error", function (done) {
-            insertedRole.permissionBits = null;
-            RoleService.update(insertedRole)
-                .then(function (result) {
-                    expect.fail("Method should have sent en error");
-                    done();
-                })
-                .catch(function (err) {
-                    expect(err.length).eq(1);
-                    expect(err[0].attribute).eq(RoleService.ROLE_PERMISSION_BIT);
-                    expect(err[0].message).eq(RoleService.ROLE_PERMISSION_BITS_EMPTY);
-                    done();
-                })
-        })
-    });
-
-    describe("When updating a role with undefined permission bits", function () {
-        it("The method should send an error", function (done) {
-            insertedRole.permissionBits = undefined;
-            RoleService.update(insertedRole)
-                .then(function (result) {
-                    expect.fail("Method should have sent en error");
-                    done();
-                })
-                .catch(function (err) {
-                    expect(err.length).eq(1);
-                    expect(err[0].attribute).eq(RoleService.ROLE_PERMISSION_BIT);
-                    expect(err[0].message).eq(RoleService.ROLE_PERMISSION_BITS_EMPTY);
-                    done();
-                })
-        })
-    });
-
-    describe("When updating a role with invalid permission bits content", function () {
-        it("The method should send an error", function (done) {
-            insertedRole.permissionBits = [
-                {id: null}
-            ];
-            RoleService.update(insertedRole)
-                .then(function (result) {
-                    expect.fail("Method should have sent en error");
-                    done();
-                })
-                .catch(function (err) {
-                    expect(err.length).eq(1);
-                    expect(err[0].attribute).eq(RoleService.ROLE_PERMISSION_BIT);
-                    expect(err[0].message).eq(RoleService.PERMISSION_BITS_INVALID);
+                    expect.fail("the method should not have returned an error");
                     done();
                 })
         });
     });
+
+
+    describe("When deleting a role with forceDelete as false and the role has account associations", function () {
+        it("The method should return an error", function (done) {
+            RoleService.remove(insertedRole2, false)
+                .then(function () {
+                    expect.fail("The method should return an error");
+                    done();
+                })
+                .catch(function (err) {
+                    expect(err.length).eq(1);
+                    expect(err[0].attribute).eq(RoleService.ACCOUNT);
+                    expect(err[0].message).eq(RoleService.ROLE_ASSOCIATED_WITH_ACCOUNT);
+                    done();
+                })
+        });
+    });
+
+    describe("When deleting a role with forceDelete as false and the role has account associations", function () {
+        it("The method should not return an error and the role must be removed", function (done) {
+            RoleService.remove(insertedRole2, true)
+                .then(function () {
+                    return Persistence.roleDao.count();
+                })
+                .then(function (count) {
+                    expect(count).eq(1);
+                    done();
+                })
+                .catch(function (err) {
+                    expect.fail("the method should not have returned an error");
+                    done();
+                })
+        });
+    });
+
 });

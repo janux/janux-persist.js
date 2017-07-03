@@ -18,8 +18,8 @@ export class RoleEntity implements IEntity {
 
     /**
      * Flag indicating if the role is a root role.
-     * If the role is root, the idParentRole must be undefined.
-     * If the role is nor root, then idParent role must have the reference
+     * If the role is root, then idParentRole must be undefined.
+     * If the role is not root, then idParent role must have the reference
      * of the root role.
      */
     public isRoot: boolean;

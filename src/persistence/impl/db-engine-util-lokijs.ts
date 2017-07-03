@@ -118,4 +118,9 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
         this._log.debug("Call to findAllByQuery with query: %j", query);
         return LokiJsUtil.findAllByQuery(this.collection, query);
     }
+
+    public removeById(id: string): Promise<any> {
+        this._log.debug("Call to removeById with id: %j", id);
+        return LokiJsUtil.removeById(this.db, this.collection, id);
+    }
 }

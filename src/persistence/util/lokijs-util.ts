@@ -89,7 +89,7 @@ export class LokiJsUtil {
 
     public static insert(db: any, collection: any, objectTOInsert: any): Promise<any> {
         this._log.debug('Call to insert with collection: %j, objectTOInsert: %j', collection.name, objectTOInsert);
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const result = collection.insert(objectTOInsert);
             this._log.debug('Result before insert %j', result);
             db.saveDatabase(() => {
@@ -129,7 +129,7 @@ export class LokiJsUtil {
 
     public static insertMany(db: any, collection: any, objectsToInsert: any[]): Promise<any> {
         this._log.debug('Call to insertMany with collection %j, objectsToInsert: %j', collection.name, objectsToInsert);
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             let results = collection.insert(objectsToInsert);
             if (_.isArray(results) === false) {
                 results = [results];
@@ -148,7 +148,7 @@ export class LokiJsUtil {
 
     public static update(db: any, collection: any, objectToUpdate: any): Promise<any> {
         this._log.debug('Call to update with collection: %j, objectToUpdate: %j', collection.name, objectToUpdate);
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             collection.updateWhere(
                 (o) => {
                     return o.$loki === Number(objectToUpdate.id);
@@ -169,11 +169,24 @@ export class LokiJsUtil {
 
     public static remove(db: any, collection: any, objectToDelete: any): Promise<any> {
         this._log.debug('Call to remove with collection: %j, objectToDelete: %j', collection.name, objectToDelete);
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             objectToDelete.$loki = objectToDelete.id;
             collection.remove(objectToDelete);
             db.saveDatabase(() => {
                 resolve(objectToDelete);
+            });
+        });
+    }
+
+    public static removeById(db: any, collection: any, id: string) {
+        this._log.debug('Call to removeById with collection: %j, id: %j', collection.name, id);
+        return new Promise((resolve) => {
+            const query = {
+                $loki: {$eq: Number(id)}
+            };
+            collection.findAndRemove(query);
+            db.saveDatabase(() => {
+                resolve();
             });
         });
     }

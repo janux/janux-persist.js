@@ -186,6 +186,17 @@ export class MongoDbUtil {
         });
     }
 
+    public static removeById(model: Model<any>, id: string): Promise<any> {
+        this._log.debug("Call to removeById by id: %j", id);
+        return new Promise((resolve, reject) => {
+            const query = {_id: id};
+            model.remove(query).lean().exec((err, result) => {
+                if (err) throw err;
+                resolve(result);
+            });
+        });
+    }
+
     private static _log = logger.getLogger('MongoDbUtil');
 
     private static cleanObjectIds(object: any) {

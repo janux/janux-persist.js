@@ -274,7 +274,7 @@ export class AuthContextService {
             return Promise.reject(errors);
         }
 
-        // Check if each permission bit is valid
+        // Check if each permission bit is valid.
         for (const bit of object.permissionBits) {
             errors = errors.concat(PermissionBitValidator.validatePermissionBitWithNoIdAuthContext(bit));
         }

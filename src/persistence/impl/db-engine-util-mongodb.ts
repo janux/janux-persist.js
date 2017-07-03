@@ -112,4 +112,9 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
         this._log.debug("Call to findAllByQuery with query: %j", query);
         return MongoDbUtil.findAllByQuery(this.model, query);
     }
+
+    public removeById(id: string): Promise<any> {
+        this._log.debug("Call to removeById with id: %j", id);
+        return MongoDbUtil.removeById(this.model, id);
+    }
 }

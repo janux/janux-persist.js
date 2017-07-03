@@ -56,6 +56,15 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
     }
 
     /**
+     * Same as remove. But you send an id.
+     * @param id
+     * @return {Promise<any>}
+     */
+    public removeById(id: string): Promise<any> {
+        return this.dbEngineUtil.removeById(id);
+    }
+
+    /**
      * Returns the amount of records that has the entity
      */
     public  count(): Promise<number> {

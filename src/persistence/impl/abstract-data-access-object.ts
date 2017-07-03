@@ -155,6 +155,12 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
     public abstract remove<t>(objectToDelete: t): Promise<any>;
 
     /**
+     * Same as remove. Instead of sending the object, you send the id.
+     * @param id
+     */
+    public abstract removeById(id: string): Promise<any>;
+
+    /**
      * Returns the amount of records that has the entity
      */
     public abstract count(): Promise<number> ;
