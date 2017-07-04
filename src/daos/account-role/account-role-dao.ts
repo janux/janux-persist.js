@@ -26,6 +26,10 @@ export class AccountRoleDao extends AbstractDataAccessObjectWithEngine<AccountRo
         return this.dbEngineLocal.findAllByAttribute("idAccount", idAccount);
     }
 
+    public findAllByRoleIdsIn(idsRole: string[]): Promise<AccountRoleEntity[]> {
+        return this.dbEngineLocal.findAllByAttributeNameIn("idRole", idsRole);
+    }
+
     public findAllByRoleId(idRole: string): Promise<AccountRoleEntity[]> {
         return this.dbEngineLocal.findAllByAttribute("idRole", idRole);
     }

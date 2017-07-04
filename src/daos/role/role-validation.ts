@@ -49,5 +49,21 @@ export class RoleValidator {
         return errors;
     }
 
+    public static validateRoleExceptChildParentRelation(role: RoleEntity): ValidationError[] {
+        this._log.debug("Call to validateRole with %j", role);
+        const errors: ValidationError[] = [];
+        if (isBlankString(role.name)) {
+            errors.push(new ValidationError(this.NAME, this.NAME_EMPTY, ""));
+        }
+        if (isBlankString(role.description)) {
+            errors.push(new ValidationError(this.DESCRIPTION, this.DESCRIPTION_EMPTY, ""));
+        }
+        if (_.isBoolean(role.enabled) === false) {
+            errors.push(new ValidationError(this.ENABLED, this.ENABLED_NOT_BOOLEAN, ""));
+        }
+        this._log.debug("Returning %j", errors);
+        return errors;
+    }
+
     private static _log = logger.getLogger("RoleValidator");
 }

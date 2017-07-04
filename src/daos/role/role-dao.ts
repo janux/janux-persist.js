@@ -31,8 +31,17 @@ export abstract class RoleDao extends AbstractDataAccessObjectWithEngine<RoleEnt
         return this.dbEngineUtilLocal.findAllByAttribute("idParentRole", idParentRole);
     }
 
+    /**
+     * Find one role by name
+     * @param name
+     * @return {Promise<RoleEntity>}
+     */
     public  findOneByName(name: string): Promise<RoleEntity> {
         return this.dbEngineUtilLocal.findOneByAttribute("name", name);
+    }
+
+    public findAllByNamesIn(names: string[]): Promise<RoleEntity[]> {
+        return this.dbEngineUtilLocal.findAllByAttributeNameIn("name", names);
     }
 
     protected validateEntity(objectToValidate: RoleEntity): IValidationError[] {

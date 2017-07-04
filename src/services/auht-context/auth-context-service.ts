@@ -140,7 +140,7 @@ export class AuthContextService {
 
     /**
      * Find one auth context and attach their permission bits.
-     * @param id
+     * @param id The id of the auth context
      * @return {Bluebird<any>} The auth context.
      */
     public static findOneById(id: string): Promise<any> {
@@ -161,6 +161,49 @@ export class AuthContextService {
     }
 
     /**
+     * Find one auth context and attach their permission bits.
+     * @param authContextName The authContextName of the auth context
+     * @return {Bluebird<any>} The auth context.
+     */
+    public static findOneByName(authContextName: string): Promise<any> {
+        this._log.debug("Call to findOneByName with authContextName: %j", authContextName);
+        let result: any;
+        return Persistence.authContextDao.findOneByName(authContextName)
+            .then((value: AuthContextEntity) => {
+                if (value === null) {
+                    return Promise.resolve(null);
+                }
+                result = value as any;
+                return Persistence.permissionBitDao.findAllByIdAuthContext(value.id);
+            })
+            .then((resultQuery: PermissionBitEntity[]) => {
+                result.permissionBits = resultQuery;
+                return Promise.resolve(result);
+            });
+    }
+
+    /**
+     * Find all auth contexts ( and their permission bits). Whose name belongs
+     * in one of the array input
+     * @param authContextNames. The names to look for.
+     */
+    public static findAllByNamesIn(authContextNames: string[]): Promise<any> {
+        this._log.debug("Call to findAllByNamesIn with authContextNames: %j", authContextNames);
+        return Persistence.authContextDao.findAllByNamesIn(authContextNames)
+            .then((resultQuery: AuthContextEntity[]) => {
+                return this.populateData(resultQuery);
+            });
+    }
+
+    public static findAllByIdDisplayName(idDisplayName: string) {
+        this._log.debug("Call to findAllByIdDisplayName with idDisplayName:%j", idDisplayName);
+        return Persistence.authContextDao.findAllByIdDisplayName(idDisplayName)
+            .then((resultQuery: AuthContextEntity[]) => {
+                return this.populateData(resultQuery);
+            });
+    }
+
+    /**
      * Find all auth context and attach their permission bits.
      * @return {Bluebird<any[]>} The auth contexts.
      */
@@ -174,34 +217,31 @@ export class AuthContextService {
             })
             .then((resultQueryPermissions: PermissionBitEntity[]) => {
                 for (const auth of result) {
-                    auth.permissionBits = _.filter(resultQueryPermissions, (o) => {
-                        return o.idAuthContext === auth.id;
-                    });
-                }
-                return Promise.resolve(result);
-            });
-    }
-
-    public static findAllByIdDisplayName(idDisplayName: string) {
-        this._log.debug("Call to findAllByIdDisplayName with idDisplayName:%j", idDisplayName);
-        let result: any;
-        return Persistence.authContextDao.findAllByIdDisplayName(idDisplayName)
-            .then((resultQuery: AuthContextEntity[]) => {
-                result = resultQuery;
-                const ids = resultQuery.map((value, index, array) => value.id);
-                return Persistence.permissionBitDao.findAllByIdAuthContextsIn(ids);
-            })
-            .then((resultQueryPermissions: PermissionBitEntity[]) => {
-                for (const auth of result) {
-                    auth.permissionBits = _.filter(resultQueryPermissions, (o) => {
-                        return o.idAuthContext === auth.id;
-                    });
+                    auth.permissionBits = resultQueryPermissions.filter((value) =>
+                    value.idAuthContext === auth.id);
                 }
                 return Promise.resolve(result);
             });
     }
 
     private static _log = logger.getLogger("AuthContextService");
+
+    /**
+     * Get the permission bits for each auth context
+     * @param authContexts
+     * @return {Bluebird<any>}
+     */
+    private static populateData(authContexts: AuthContextEntity[]): Promise<any> {
+        const idsAuthContext = authContexts.map((value) => value.id);
+        const result: any = authContexts;
+        return Persistence.permissionBitDao.findAllByIdAuthContextsIn(idsAuthContext)
+            .then((resultQuery: PermissionBitEntity[]) => {
+                for (const auth of result) {
+                    auth.permissionBits = resultQuery.filter((value) => value.idAuthContext === auth.id);
+                }
+                return Promise.resolve(result);
+            });
+    }
 
     /**
      * Validate the data before insert or update.

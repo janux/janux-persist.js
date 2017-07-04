@@ -25,6 +25,9 @@ const permissionBitName2 = "delete";
 const permissionBitDesc1 = "insert operations";
 const permissionBitDesc2 = "delete operations";
 const idRole = "313030303030303030303031";
+const displayName1 = "displayName1";
+const displayName2 = "displayName2";
+const invalidName = "invalidName";
 
 var correctAuthContest = {
     name: authContextName,
@@ -63,7 +66,8 @@ describe("Testing auth context service find methods", function () {
 
     describe("Given the inserted records", function () {
 
-        var displayNameRecord;
+        var displayNameRecord1;
+        var displayNameRecord2;
         var insertedAuthContext;
         var insertedAuthContext2;
 
@@ -83,19 +87,25 @@ describe("Testing auth context service find methods", function () {
                 })
                 .then(function () {
                     var displayNameEntity = new DisplayNameEntity();
-                    displayNameEntity.displayName = "a name";
+                    displayNameEntity.displayName = displayName1;
                     return Persistence.displayNameDao.insert(displayNameEntity);
                 })
-                .then(function (inserted) {
-                    displayNameRecord = inserted;
+                .then(function (insertedDisplayName1) {
+                    displayNameRecord1 = insertedDisplayName1;
+                    var displayNameEntity2 = new DisplayNameEntity();
+                    displayNameEntity2.displayName = displayName2;
+                    return Persistence.displayNameDao.insert(displayNameEntity2);
+                })
+                .then(function (insertedDisplayName2) {
+                    displayNameRecord2 = insertedDisplayName2;
                     var auth = correctAuthContest;
-                    auth.idDisplayName = displayNameRecord.id;
+                    auth.idDisplayName = displayNameRecord1.id;
                     return AuthContextService.insert(auth);
                 })
                 .then(function (resultInsert) {
                     insertedAuthContext = resultInsert;
                     var auth2 = correctAuthContest2;
-                    auth2.idDisplayName = displayNameRecord.id;
+                    auth2.idDisplayName = displayNameRecord2.id;
                     return AuthContextService.insert(auth2);
                 })
                 .then(function (resultInsert2) {
@@ -158,5 +168,38 @@ describe("Testing auth context service find methods", function () {
                     })
             })
         });
+
+        describe("When calling findAllByIdDisplayName", function () {
+            it("The method should retrieve one record", function (done) {
+                AuthContextService.findAllByIdDisplayName(displayNameRecord2.id)
+                    .then(function (result) {
+                        expect(result.length).eq(1);
+                        expect(result[0].name).eq(insertedAuthContext2.name);
+                        done();
+                    })
+                    .catch(function (err) {
+                        expect.fail("The method should not have sent an error");
+                        done();
+                    })
+            });
+
+
+            describe("When calling findAllByNamesIn", function () {
+                it("The method should retrieve one record", function (done) {
+                    AuthContextService.findAllByNamesIn([insertedAuthContext.name, invalidName])
+                        .then(function (result) {
+                            expect(result.length).eq(1);
+                            expect(result[0].name).eq(insertedAuthContext.name);
+                            done();
+                        })
+                        .catch(function (err) {
+                            expect.fail("The method should not have sent an error");
+                            done();
+                        })
+                })
+            })
+        })
+
+
     });
 });

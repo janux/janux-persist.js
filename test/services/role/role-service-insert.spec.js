@@ -4,7 +4,6 @@
  */
 var chai = require('chai');
 var expect = chai.expect;
-var assert = chai.assert;
 var config = require('config');
 var BootstrapService = require("../../../dist/index").BootstrapService;
 var AuthContextService = require("../../../dist/index").AuthContextService;
@@ -91,7 +90,7 @@ describe("Testing role service insert method", function () {
             });
     });
 
-    describe("When inserting a role with valid content", function () {
+    describe("When inserting a role with valid content and no child", function () {
         it("The method should not return an error", function (done) {
             var roleToInsert = {
                 name: roleName,
@@ -135,7 +134,7 @@ describe("Testing role service insert method", function () {
         })
     });
 
-    describe("When inserting a sub role", function () {
+    describe("When inserting a sub role in an independent way", function () {
         var insertedParentRole;
         it("The method should not return any error", function (done) {
             var roleToInsert = {
@@ -175,6 +174,56 @@ describe("Testing role service insert method", function () {
         });
     });
 
+
+    describe("When inserting a role with a duplicated name", function () {
+        var insertedParentRole;
+        it("The method should return an error", function (done) {
+            var roleToInsert = {
+                name: roleName,
+                description: roleDescription,
+                enabled: roleEnabled,
+                isRoot: isRoot,
+                idParentRole: idParentRole,
+                permissionBits: [
+                    {id: insertedAuthContext.permissionBits[0].id},
+                    {id: insertedAuthContext.permissionBits[1].id}
+                ]
+            };
+            RoleService.insert(roleToInsert)
+                .then(function (insertedRole) {
+                    insertedParentRole = insertedRole;
+                    var secondRole = {
+                        name: roleName,
+                        description: roleDescription2,
+                        enabled: roleEnabled,
+                        isRoot: true,
+                        idParentRole: undefined,
+                        permissionBits: [
+                            {id: insertedAuthContext.permissionBits[0].id},
+                            {id: insertedAuthContext.permissionBits[1].id}
+                        ]
+                    };
+                    return RoleService.insert(secondRole)
+                })
+                .then(function () {
+                    expect.fail("The method should not have inserted the role");
+                    done();
+                })
+                .catch(function (err) {
+                    expect(err.length).eq(1);
+                    return Persistence.roleDao.count()
+                        .then(function (roleCount) {
+                            expect(roleCount).eq(1);
+                            return Persistence.rolePermissionBitDao.count();
+                        })
+                        .then(function (rolePermissionBitCount) {
+                            expect(rolePermissionBitCount).eq(2);
+                            done();
+                        })
+                })
+        });
+    });
+
     describe("When inserting a role with invalid role info", function () {
         it("The method should return an error", function (done) {
             var roleToInsert = {
@@ -197,12 +246,20 @@ describe("Testing role service insert method", function () {
                     expect(err.length).eq(1);
                     expect(err[0].attribute).eq(RoleValidator.NAME);
                     expect(err[0].message).eq(RoleValidator.NAME_EMPTY);
-                    done();
+                    return Persistence.roleDao.count()
+                        .then(function (roleCount) {
+                            expect(roleCount).eq(0);
+                            return Persistence.rolePermissionBitDao.count();
+                        })
+                        .then(function (rolePermissionBitCount) {
+                            expect(rolePermissionBitCount).eq(0);
+                            done();
+                        });
                 });
         })
     });
 
-    describe("When inserting a role with invalid permission bit info", function () {
+    describe("When inserting a role with undefined permission bit info", function () {
         it("The method should return an error", function (done) {
             var roleToInsert = {
                 name: roleName,
@@ -221,12 +278,20 @@ describe("Testing role service insert method", function () {
                     expect(err.length).eq(1);
                     expect(err[0].attribute).eq(RoleService.ROLE_PERMISSION_BIT);
                     expect(err[0].message).eq(RoleService.ROLE_PERMISSION_BITS_EMPTY);
-                    done();
+                    return Persistence.roleDao.count()
+                        .then(function (roleCount) {
+                            expect(roleCount).eq(0);
+                            return Persistence.rolePermissionBitDao.count();
+                        })
+                        .then(function (rolePermissionBitCount) {
+                            expect(rolePermissionBitCount).eq(0);
+                            done();
+                        });
                 });
         })
     });
 
-    describe("When inserting a role with invalid permission bit info", function () {
+    describe("When inserting a role with empty permission bit info", function () {
         it("The method should return an error", function (done) {
             var roleToInsert = {
                 name: roleName,
@@ -245,7 +310,15 @@ describe("Testing role service insert method", function () {
                     expect(err.length).eq(1);
                     expect(err[0].attribute).eq(RoleService.ROLE_PERMISSION_BIT);
                     expect(err[0].message).eq(RoleService.ROLE_PERMISSION_BITS_EMPTY);
-                    done();
+                    return Persistence.roleDao.count()
+                        .then(function (roleCount) {
+                            expect(roleCount).eq(0);
+                            return Persistence.rolePermissionBitDao.count();
+                        })
+                        .then(function (rolePermissionBitCount) {
+                            expect(rolePermissionBitCount).eq(0);
+                            done();
+                        });
                 });
         })
     });
@@ -271,7 +344,15 @@ describe("Testing role service insert method", function () {
                     expect(err.length).eq(1);
                     expect(err[0].attribute).eq(RoleService.ROLE_PERMISSION_BIT);
                     expect(err[0].message).eq(RoleService.PERMISSION_BITS_INVALID);
-                    done();
+                    return Persistence.roleDao.count()
+                        .then(function (roleCount) {
+                            expect(roleCount).eq(0);
+                            return Persistence.rolePermissionBitDao.count();
+                        })
+                        .then(function (rolePermissionBitCount) {
+                            expect(rolePermissionBitCount).eq(0);
+                            done();
+                        });
                 });
         })
     });
@@ -298,7 +379,15 @@ describe("Testing role service insert method", function () {
                     expect(err.length).eq(1);
                     expect(err[0].attribute).eq(RoleService.ROLE_PERMISSION_BIT);
                     expect(err[0].message).eq(RoleService.PERMISSION_BIT_NOT_IN_DATABASE);
-                    done();
+                    return Persistence.roleDao.count()
+                        .then(function (roleCount) {
+                            expect(roleCount).eq(0);
+                            return Persistence.rolePermissionBitDao.count();
+                        })
+                        .then(function (rolePermissionBitCount) {
+                            expect(rolePermissionBitCount).eq(0);
+                            done();
+                        });
                 });
         })
     });

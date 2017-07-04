@@ -45,7 +45,6 @@ const idDisplayName = "313030303030303030303038";
 const idDisplayName2 = "313030303030303030303032";
 
 
-
 var enabled2 = true;
 describe("Testing auth context dao find methods", function () {
     [authContextDaoLokijs, authContextDaoMongodb].forEach(function (authContextDao) {
@@ -58,8 +57,8 @@ describe("Testing auth context dao find methods", function () {
 
                 authContextDao.deleteAll()
                     .then(function () {
-                        var auth1 = new AuthContextEntity(name, description, sortOrder, enabled,idDisplayName);
-                        var auth2 = new AuthContextEntity(name2, description2, sortOrder2, enabled2,idDisplayName2);
+                        var auth1 = new AuthContextEntity(name, description, sortOrder, enabled, idDisplayName);
+                        var auth2 = new AuthContextEntity(name2, description2, sortOrder2, enabled2, idDisplayName2);
                         authContextDao.insertMany([auth1, auth2])
                             .then(function (res) {
                                 insertedRecord1 = res[0];
@@ -116,7 +115,18 @@ describe("Testing auth context dao find methods", function () {
                 })
             });
 
-            describe("When calling findOneBy", function () {
+            describe("When calling findOneByName", function () {
+                it("It should return a record", function (done) {
+                    authContextDao.findOneByName(insertedRecord2.name)
+                        .then(function (result) {
+                            expect(result).not.to.be.null;
+                            expect(result.name).eq(insertedRecord2.name);
+                            done();
+                        });
+                })
+            });
+
+            describe("When calling findOneById", function () {
                 it("It should return a record", function (done) {
                     authContextDao.findOneById(insertedRecord1.id)
                         .then(function (result) {
@@ -127,7 +137,7 @@ describe("Testing auth context dao find methods", function () {
                 })
             });
 
-            describe("When calling findOneBy with an invalid id", function () {
+            describe("When calling findOneById with an invalid id", function () {
                 it("It should return a record", function (done) {
                     authContextDao.findOneById(id)
                         .then(function (result) {
@@ -146,18 +156,18 @@ describe("Testing auth context dao find methods", function () {
                             done();
                         })
                 })
-            })
+            });
 
-            describe("When calling findAllByIds", function () {
+            describe("When calling findAllByNamesIn", function () {
                 it("It should return an array with one record", function (done) {
-                    authContextDao.findAllByIdDisplayName(idDisplayName2)
+                    authContextDao.findAllByNamesIn([insertedRecord1.name, anotherName])
                         .then(function (result) {
                             expect(result.length).eq(1);
-                            expect(result[0].idDisplayName).eq(idDisplayName2);
+                            expect(result[0].name).eq(insertedRecord1.name);
                             done();
                         })
                 })
-            })
+            });
         });
     });
 });

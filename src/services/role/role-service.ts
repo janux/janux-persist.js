@@ -12,8 +12,8 @@ import {PermissionBitEntity} from "../../daos/permission-bit/permission-bit-enti
 import {Persistence} from "../../daos/persistence";
 import {RolePermissionBitEntity} from "../../daos/role-permission-bit/role-permission-bit-entity";
 import {RoleEntity} from "../../daos/role/role-entity";
-import {RoleValidator} from "../../daos/role/role-validation";
 import {ValidationError} from "../../persistence/impl/validation-error";
+import {RoleServiceValidator} from "./role-service-validator";
 
 export class RoleService {
 
@@ -23,6 +23,11 @@ export class RoleService {
     public static PERMISSION_BITS_INVALID = "The parameters does not have a valid permission bits data";
     public static ACCOUNT = "account";
     public static ROLE_ASSOCIATED_WITH_ACCOUNT = "This role is associated with one or more account";
+    public static SUB_ROLES_NAMES = "subRoles.name";
+    public static SUB_ROLES_DUPLICATED_NAMES = "Sub roles has duplicated role names";
+    public static SUB_ROLES_DUPLICATED_NAMES_IN_DATABASE = "There are role in the database with the same name as the sub roles";
+    public static PARENT_ROLE_DATA_NOT_VALID: "The parent role does not have the correct info ( isRoot is not true or idParent role is different than undefined";
+    public static ROLE: string = "Role";
 
     /**
      * Insert a role an associate the permission bits to the role.
@@ -32,7 +37,7 @@ export class RoleService {
     public static  insert(object: any): Promise<any> {
         this._log.debug("Call to insert with object %j ", object);
         let result: any;
-        return this.validate(object)
+        return RoleServiceValidator.validate(object)
             .then(() => {
                 // Insert the role
                 const role: RoleEntity = new RoleEntity(
@@ -66,19 +71,20 @@ export class RoleService {
             })
             .then((resultData) => {
                 result.permissionBits = resultData;
-                return Promise.resolve(result);
+                return this.insertSubRoles(result, object.subRoles);
             });
     }
 
     /**
      * Update the role.
-     * @param object
+     * @param object The role to update
+     * @param forceDelete Force to delete the sub roles associations with accounts.
      * @return {Promise<any>}
      */
-    public static update(object: any): Promise<any> {
+    public static update(object: any, forceDelete: boolean = false): Promise<any> {
         this._log.debug("Call to update with object: %j", object);
         let result: any;
-        return this.validate(object)
+        return RoleServiceValidator.validate(object)
             .then(() => {
                 const role: any = new RoleEntity(
                     object.name,
@@ -142,7 +148,7 @@ export class RoleService {
         return Persistence.roleDao.findAll()
             .then((resultRoles) => {
                 result = resultRoles;
-                return this.prepareSeveralRecord(result);
+                return this.prepareSeveralRecords(result);
             });
     }
 
@@ -150,21 +156,50 @@ export class RoleService {
         this._log.debug("Call to findAllByIds with ids: %j", ids);
         return Persistence.roleDao.findAllByIds(ids)
             .then((roles: RoleEntity[]) => {
-                return this.prepareSeveralRecord(roles);
+                return this.prepareSeveralRecords(roles);
             });
     }
 
+    /* public static  hasPermissions(roleId: string, permissionBitNames: string[], authContextName: string): Promise<boolean> {
+     this._log.debug("Call to hasPermissions with roleId: %j permissionBitNames: %j authContextName: %j", roleId, permissionBitNames, authContextName);
+
+     return AuthContextService.findOneByName(authContextName)
+     .then((result: any) => {
+     if (result.enabled === false) {
+     return Promise.resolve(false);
+     }
+     const permissionBitsToLookFor: any[] = _.filter(result.permissionBits, (o: any) => {
+     return permissionBitNames.indexOf(o.name) >= 0;
+     });
+     const permissionBitIdsToValidate = permissionBitsToLookFor.map((value) => value.id);
+     // return Persistence.rolePermissionBitDao.findAllByPermissionBitIdsIn(permissionBitsIdToValidate);
+     return Promise.resolve(false);
+     });
+     }
+
+     public static  hasPermission(role: any, permissionBitName: string[], authContextName: string): Promise<boolean> {
+     return AuthContextService.findOneByName(authContextName)
+     .then((result: any) => {
+     if (result.enabled === false) {
+     return Promise.resolve(false);
+     }
+     const availablePermissionBitNames = _.map(result.permissionBits, (o: any) => {
+     return o.name;
+     });
+     return Promise.resolve(availablePermissionBitNames.indexOf(permissionBitName) >= 0);
+     });
+     }*/
+
     public static remove(role: any, force: boolean): Promise<any> {
+        this._log.debug("Call to remove with role: %j, force: %j", role, force);
         // Validate if the role is associated with users.
-        return Persistence.accountRoleDao.findAllByRoleId(role.id)
-            .then((accountRoles: AccountRoleEntity[]) => {
-                if (accountRoles.length > 0 && force === false) {
-                    return Promise.reject([
-                        new ValidationError(this.ACCOUNT, this.ROLE_ASSOCIATED_WITH_ACCOUNT, "")
-                    ]);
-                } else {
-                    const ids = accountRoles.map((value) => value.id);
+        return this.validateForDelete([role.id], force)
+            .then((accountsRoles: AccountRoleEntity[]) => {
+                if (force === true) {
+                    const ids = accountsRoles.map((value) => value.id);
                     return Persistence.accountRoleDao.deleteAllByIds(ids);
+                } else {
+                    return Promise.resolve();
                 }
             })
             .then(() => {
@@ -172,15 +207,30 @@ export class RoleService {
                 return Persistence.rolePermissionBitDao.deleteAllByIdRole(role.id);
             })
             .then(() => {
-                // Delete the role.
                 return Persistence.roleDao.removeById(role.id);
             });
     }
 
-    private static _log = logger.getLogger("RoleService");
+    public static validateForDelete(roleIds: string[], force: boolean) {
+        return Persistence.accountRoleDao.findAllByRoleIdsIn(roleIds)
+            .then((resultQuery: AccountRoleEntity[]) => {
+                if (resultQuery.length > 0 && force === false) {
+                    return Promise.reject([
+                        new ValidationError(this.ACCOUNT, this.ROLE_ASSOCIATED_WITH_ACCOUNT, "")
+                    ]);
+                } else {
+                    return Promise.resolve(resultQuery);
 
-    private static prepareSeveralRecord(roles: any[]) {
+                }
+            });
+    }
+
+    private static _log = logger.getLogger("RoleServiceValidator");
+
+    private static prepareSeveralRecords(roles: RoleEntity[]) {
+        this._log.debug("Call to prepareSeveralRecords");
         const idsRole = roles.map((value, index, array) => value.id);
+        const result: any = roles;
         let rolePermissionBits: RolePermissionBitEntity[];
         let permissionBits: PermissionBitEntity[];
         let authContexts: AuthContextEntity[];
@@ -199,7 +249,7 @@ export class RoleService {
                 authContexts = resultAuthContexts;
                 let roleBits: any;
                 let bit: any;
-                for (const role of roles) {
+                for (const role of result) {
                     const subRolePermissionBit = rolePermissionBits.filter((value) => value.idRole === role.id);
                     roleBits = [];
                     for (const subPermissionBit of subRolePermissionBit) {
@@ -213,11 +263,73 @@ export class RoleService {
                     }
                     role.permissionBits = roleBits;
                 }
-                return Promise.resolve(roles);
+                return Promise.map(result, (element: any) => {
+                    if (element.isRoot === false) {
+                        return Promise.resolve(element);
+                    } else {
+                        return new Promise((resolve) => {
+                            return Persistence.roleDao.findAllChildRoles(element.id)
+                                .then((childRoles: RoleEntity[]) => {
+                                    return this.findAllByIds(childRoles.map((value) => value.id))
+                                        .then((resultChildRoles) => {
+                                            element.subRoles = resultChildRoles;
+                                            resolve(element);
+                                        });
+                                });
+                        });
+                    }
+                });
+            });
+    }
+
+    private static insertSubRoles(rootRole: any, subRoles: any): Promise<any> {
+        this._log.debug("Call to insertSubRoles with rootRole: %j subRoles: %j", rootRole, subRoles);
+        if (_.isArray(subRoles) === false || subRoles.length === 0 || rootRole.isRoot === false) {
+            return Promise.resolve(rootRole);
+        }
+        return Promise.map(subRoles, (subRoleElement: any) => {
+            let result: any;
+            const subRole: RoleEntity = new RoleEntity(
+                subRoleElement.name,
+                subRoleElement.description,
+                subRoleElement.enabled,
+                false,
+                rootRole.id
+            );
+            return Persistence.roleDao.insert(subRole)
+                .then((insertedSubRole: RoleEntity) => {
+                    result = insertedSubRole;
+                    let idsPermissionBits = _.map(subRoleElement.permissionBits, (o: any) => {
+                        return o.id;
+                    });
+                    idsPermissionBits = _.uniq(idsPermissionBits);
+                    const associationsToInsert: RolePermissionBitEntity[] = [];
+                    for (const id of idsPermissionBits) {
+                        associationsToInsert.push(new RolePermissionBitEntity(
+                            insertedSubRole.id,
+                            id
+                        ));
+                    }
+                    return Persistence.rolePermissionBitDao.insertMany(associationsToInsert);
+                })
+                .then((insertedBits: RolePermissionBitEntity[]) => {
+                    const permissionBitIds = insertedBits.map((value) => value.idPermissionBit);
+                    // return Promise.resolve(result);
+                    return this.populateData(permissionBitIds);
+                })
+                .then((resultData) => {
+                    result.permissionBits = resultData;
+                    return Promise.resolve(result);
+                });
+        })
+            .then((insertedSubRoles: any) => {
+                rootRole.subRoles = insertedSubRoles;
+                return Promise.resolve(rootRole);
             });
     }
 
     private static prepareOneRecord(role: RoleEntity): Promise<any> {
+        this._log.debug("Call to prepareOneRecord with role: %j", role);
         let result: any;
         result = role;
         return Persistence.rolePermissionBitDao.findAllByRoleId(role.id)
@@ -227,65 +339,23 @@ export class RoleService {
             })
             .then((resultData) => {
                 result.permissionBits = resultData;
-                return Promise.resolve(result);
-            });
-    }
-
-    private static  validate(object: any): Promise<any> {
-        this._log.debug("Call to validate");
-        let errors: ValidationError[];
-        const role: RoleEntity = new RoleEntity(
-            object.name,
-            object.description,
-            object.enabled,
-            object.isRoot,
-            object.idParentRole
-        );
-        errors = RoleValidator.validateRole(role);
-        const permissionBits: any[] = object.permissionBits;
-        if (_.isArray(permissionBits) === false || permissionBits.length === 0) {
-            // Rejecting early in order to avoid runtime errors.
-            return Promise.reject([
-                new ValidationError(this.ROLE_PERMISSION_BIT,
-                    this.ROLE_PERMISSION_BITS_EMPTY,
-                    "")
-            ]);
-        }
-        const ids = permissionBits.map((value) => value.id);
-        const rejected = _.filter(ids, (o) => {
-            return _.isString(o) === false;
-        });
-        if (rejected.length > 0) {
-            errors.push(
-                new ValidationError(this.ROLE_PERMISSION_BIT,
-                    this.PERMISSION_BITS_INVALID,
-                    ""));
-        }
-        if (errors.length > 0) {
-            return Promise.reject(errors);
-        } else {
-            let idPermissionBits = _.map(permissionBits, (o: any) => o.id);
-            idPermissionBits = _.uniq(idPermissionBits);
-            return this.validatePermissionBitsIds(idPermissionBits);
-        }
-    }
-
-    private static validatePermissionBitsIds(ids: string[]): Promise<any> {
-        return Persistence.permissionBitDao.findAllByIds(ids)
-            .then((resultQuery: PermissionBitEntity[]) => {
-                if (resultQuery.length !== ids.length) {
-                    this._log.warn("Someone was trying to insert role-permission with an invalid permission bit id");
-                    return Promise.reject([new ValidationError(
-                        this.ROLE_PERMISSION_BIT, this.PERMISSION_BIT_NOT_IN_DATABASE,
-                        ""
-                    )]);
+                if (role.isRoot === true) {
+                    return Persistence.roleDao.findAllChildRoles(role.id)
+                        .then((childRoles: RoleEntity[]) => {
+                            return this.findAllByIds(childRoles.map((value) => value.id));
+                        })
+                        .then((resultChildRoes: any) => {
+                            result.subRoles = resultChildRoes;
+                            return Promise.resolve(result);
+                        });
                 } else {
-                    return Promise.resolve();
+                    return Promise.resolve(result);
                 }
             });
     }
 
     private static populateData(permissionBitIds: string[]): Promise<any> {
+        this._log.debug("Call to populateData");
         let permissionBits: any;
         return Persistence.permissionBitDao.findAllByIds(permissionBitIds)
             .then((resultPermissionBit: PermissionBitEntity[]) => {

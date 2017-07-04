@@ -28,6 +28,14 @@ export abstract class AuthContextDao extends AbstractDataAccessObjectWithEngine<
         return this.dbEngineLocal.findAllByAttribute("idDisplayName", idDisplayName);
     }
 
+    /**
+     * Find all auth context whose name belongs to the list
+     * @param names
+     */
+    public findAllByNamesIn(names: string[]): Promise<AuthContextEntity[]> {
+        return this.dbEngineLocal.findAllByAttributeNameIn("name", names);
+    }
+
     protected  validateBeforeInsert(objectToInsert: AuthContextEntity): Promise<IValidationError[]> {
         return this.dbEngineLocal.findOneByAttribute("name", objectToInsert.name)
             .then((result) => {
