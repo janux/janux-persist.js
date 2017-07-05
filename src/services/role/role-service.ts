@@ -12,7 +12,7 @@ import {PermissionBitEntity} from "../../daos/permission-bit/permission-bit-enti
 import {Persistence} from "../../daos/persistence";
 import {RolePermissionBitEntity} from "../../daos/role-permission-bit/role-permission-bit-entity";
 import {RoleEntity} from "../../daos/role/role-entity";
-import {ValidationError} from "../../persistence/impl/validation-error";
+import {isBlankString} from "../../util/blank-string-validator";
 import {RoleServiceValidator} from "./role-service-validator";
 
 export class RoleService {
@@ -71,7 +71,7 @@ export class RoleService {
             })
             .then((resultData) => {
                 result.permissionBits = resultData;
-                return this.insertSubRoles(result, object.subRoles);
+                return this.insertOrUpdateSubRoles(result, object.subRoles);
             });
     }
 
@@ -84,7 +84,7 @@ export class RoleService {
     public static update(object: any, forceDelete: boolean = false): Promise<any> {
         this._log.debug("Call to update with object: %j", object);
         let result: any;
-        return RoleServiceValidator.validate(object)
+        return RoleServiceValidator.validate(object, forceDelete)
             .then(() => {
                 const role: any = new RoleEntity(
                     object.name,
@@ -121,8 +121,10 @@ export class RoleService {
             })
             .then((resultRecords) => {
                 result.permissionBits = resultRecords;
-                this._log.debug("Returning %j", result);
-                return Promise.resolve(result);
+                return this.removeSubRolesNotUsed(result, object.subRoles);
+            })
+            .then(() => {
+                return this.insertOrUpdateSubRoles(result, object.subRoles);
             });
     }
 
@@ -193,7 +195,7 @@ export class RoleService {
     public static remove(role: any, force: boolean): Promise<any> {
         this._log.debug("Call to remove with role: %j, force: %j", role, force);
         // Validate if the role is associated with users.
-        return this.validateForDelete([role.id], force)
+        return RoleServiceValidator.validateForDelete([role.id], force)
             .then((accountsRoles: AccountRoleEntity[]) => {
                 if (force === true) {
                     const ids = accountsRoles.map((value) => value.id);
@@ -211,21 +213,7 @@ export class RoleService {
             });
     }
 
-    public static validateForDelete(roleIds: string[], force: boolean) {
-        return Persistence.accountRoleDao.findAllByRoleIdsIn(roleIds)
-            .then((resultQuery: AccountRoleEntity[]) => {
-                if (resultQuery.length > 0 && force === false) {
-                    return Promise.reject([
-                        new ValidationError(this.ACCOUNT, this.ROLE_ASSOCIATED_WITH_ACCOUNT, "")
-                    ]);
-                } else {
-                    return Promise.resolve(resultQuery);
-
-                }
-            });
-    }
-
-    private static _log = logger.getLogger("RoleServiceValidator");
+    private static _log = logger.getLogger("RoleService");
 
     private static prepareSeveralRecords(roles: RoleEntity[]) {
         this._log.debug("Call to prepareSeveralRecords");
@@ -282,8 +270,8 @@ export class RoleService {
             });
     }
 
-    private static insertSubRoles(rootRole: any, subRoles: any): Promise<any> {
-        this._log.debug("Call to insertSubRoles with rootRole: %j subRoles: %j", rootRole, subRoles);
+    private static insertOrUpdateSubRoles(rootRole: any, subRoles: any): Promise<any> {
+        this._log.debug("Call to insertOrUpdateSubRoles with rootRole: %j subRoles: %j", rootRole, subRoles);
         if (_.isArray(subRoles) === false || subRoles.length === 0 || rootRole.isRoot === false) {
             return Promise.resolve(rootRole);
         }
@@ -296,7 +284,8 @@ export class RoleService {
                 false,
                 rootRole.id
             );
-            return Persistence.roleDao.insert(subRole)
+            subRole.id = subRoleElement.id;
+            return Persistence.roleDao.updateOrInsert(subRole)
                 .then((insertedSubRole: RoleEntity) => {
                     result = insertedSubRole;
                     let idsPermissionBits = _.map(subRoleElement.permissionBits, (o: any) => {
@@ -325,6 +314,38 @@ export class RoleService {
             .then((insertedSubRoles: any) => {
                 rootRole.subRoles = insertedSubRoles;
                 return Promise.resolve(rootRole);
+            });
+    }
+
+    private static removeSubRolesNotUsed(rootRole: any, subRoles: any) {
+        if (isBlankString(rootRole.id) === true)  return Promise.resolve();
+        return Persistence.roleDao.findAllChildRoles(rootRole.id)
+            .then((existingSubRoles: RoleEntity[]) => {
+                const existingIds: string[] = existingSubRoles.map((value) => value.id);
+                let idsToDelete: string[];
+                if (_.isArray(subRoles) && subRoles.length > 0) {
+                    const idsSubRoles: string[] = subRoles.filter((value: any) => isBlankString(value) === false)
+                        .map((value: any) => value.id);
+                    idsToDelete = _.xor(idsSubRoles, existingIds);
+                } else {
+                    idsToDelete = existingIds;
+                }
+                // There are no sub roles that needs to be removed.
+                if (idsToDelete.length === 0) return Promise.resolve();
+                // Look for account associations
+                return Persistence.accountRoleDao.findAllByRoleIdsIn(idsToDelete)
+                    .then((accountRoles: AccountRoleEntity[]) => {
+                        const ids = accountRoles.map((value) => value.id);
+                        return Persistence.accountRoleDao.deleteAllByIds(ids);
+                    })
+                    .then(() => {
+                        return Promise.map(idsToDelete, (element) => {
+                            return Persistence.rolePermissionBitDao.deleteAllByIdRole(element);
+                        });
+                    })
+                    .then(() => {
+                        return Persistence.roleDao.deleteAllByIds(idsToDelete);
+                    });
             });
     }
 

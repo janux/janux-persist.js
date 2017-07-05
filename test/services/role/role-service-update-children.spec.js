@@ -131,9 +131,13 @@ describe("Testing role service insert method with children", function () {
     });
 
 
-    describe("When updating a role", function () {
+    /*describe("When updating a role", function () {
         it("The method should not return an error", function (done) {
+            insertedRole.name = roleName2;
+            insertedRole.description = roleDescription2;
+            insertedRole.enabled = false;
+
             done();
         });
-    })
+    })*/
 });

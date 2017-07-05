@@ -152,7 +152,7 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
      * Nothing (you, the db engine or anything else) will stop the operation once called.
      * @param objectToDelete The object to delete
      */
-    public abstract remove<t>(objectToDelete: t): Promise<any>;
+    public abstract remove(objectToDelete: t): Promise<any>;
 
     /**
      * Same as remove. Instead of sending the object, you send the id.
@@ -250,7 +250,7 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
      * @return An array containing the validation errors. If there are no errors then
      * returns an empty array
      */
-    protected abstract validateEntity<t>(objectToValidate: t): IValidationError[];
+    protected abstract validateEntity(objectToValidate: t): IValidationError[];
 
     /**
      * This method must be implemented in order to perform database validations before an insert,

@@ -11,6 +11,8 @@ export  interface IPartyEntity extends IEntity {
     // Could be person or organization
     type: string;
 
+    // displayName: string;
+
     // Contact data
     contact: Contact;
 

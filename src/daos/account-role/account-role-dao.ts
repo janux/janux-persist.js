@@ -50,7 +50,7 @@ export class AccountRoleDao extends AbstractDataAccessObjectWithEngine<AccountRo
             });
     }
 
-    protected validateEntity<t>(objectToValidate: AccountRoleEntity): IValidationError[] {
+    protected validateEntity(objectToValidate: AccountRoleEntity): IValidationError[] {
         return AccountRoleValidator.validatedAccountRole(objectToValidate);
     }
 
