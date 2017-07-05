@@ -12,7 +12,7 @@ export const PartyMongoDbSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    displayName:{
+    displayName: {
         type: String,
         required: true
     },
