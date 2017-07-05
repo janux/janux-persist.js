@@ -3,7 +3,9 @@
  * Created by ernesto on 6/20/17.
  */
 
-import {Contact} from "../contact/contact";
+import {PostalAddress} from "../contact/address/postal-address";
+import {EmailAddress} from "../contact/email/email-address";
+import {PhoneNumber} from "../contact/phone/phone-number";
 import {IPartyEntity} from "../iParty-entity";
 
 export class OrganizationEntity implements IPartyEntity {
@@ -11,5 +13,8 @@ export class OrganizationEntity implements IPartyEntity {
     public idAccount: string;
     public type: string;
     public name: string;
-    public contact: Contact = new Contact();
+    public displayName: string;
+    public phones: PhoneNumber[] = [];
+    public emails: EmailAddress[] = [];
+    public addresses: PostalAddress[] = [];
 }

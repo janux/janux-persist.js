@@ -36,7 +36,7 @@ describe("Party validator", function () {
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
-            person.contact.emails.push(new EmailAddress(work, true, email));
+            person.emails.push(new EmailAddress(work, true, email));
             var errors = PartyValidator.validateParty(person);
             expect(errors.length).eq(0);
         })
@@ -48,7 +48,7 @@ describe("Party validator", function () {
             organization.type = PartyValidator.ORGANIZATION;
             organization.idAccount = undefined;
             organization.name = name;
-            organization.contact.emails.push(new EmailAddress(work, true, email));
+            organization.emails.push(new EmailAddress(work, true, email));
             var errors = PartyValidator.validateParty(organization);
             expect(errors.length).eq(0);
         })
@@ -61,7 +61,7 @@ describe("Party validator", function () {
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
-            person.contact.emails.push(new EmailAddress(work, true, email));
+            person.emails.push(new EmailAddress(work, true, email));
             var errors = PartyValidator.validateParty(person);
             expect(errors.length).eq(1);
             expect(errors[0].attribute).eq(PartyValidator.ID_ACCOUNT);
@@ -76,7 +76,7 @@ describe("Party validator", function () {
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
-            person.contact.emails.push(new EmailAddress(work, true, email));
+            person.emails.push(new EmailAddress(work, true, email));
             var errors = PartyValidator.validateParty(person);
             expect(errors.length).eq(1);
             expect(errors[0].attribute).eq(PartyValidator.ID_ACCOUNT);
@@ -105,8 +105,8 @@ describe("Party validator", function () {
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
-            person.contact.emails.push(new EmailAddress(work, true, email));
-            person.contact.emails.push(new EmailAddress(home, false, email));
+            person.emails.push(new EmailAddress(work, true, email));
+            person.emails.push(new EmailAddress(home, false, email));
             var errors = PartyValidator.validateParty(person);
             expect(errors.length).eq(1);
             expect(errors[0].attribute).eq(PartyValidator.CONTACTS_EMAILS);
@@ -145,8 +145,8 @@ describe("Party validator", function () {
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
-            person.contact.emails.push(new EmailAddress(work, false, email));
-            person.contact.emails.push(new EmailAddress(home, false, email2));
+            person.emails.push(new EmailAddress(work, false, email));
+            person.emails.push(new EmailAddress(home, false, email2));
             var errors = PartyValidator.validateParty(person);
             expect(errors.length).eq(1);
             expect(errors[0].attribute).eq(PartyValidator.CONTACTS_EMAILS);
@@ -161,8 +161,8 @@ describe("Party validator", function () {
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
-            person.contact.emails.push(new EmailAddress(work, true, email));
-            person.contact.emails.push(new EmailAddress(home, true, email2));
+            person.emails.push(new EmailAddress(work, true, email));
+            person.emails.push(new EmailAddress(home, true, email2));
             var errors = PartyValidator.validateParty(person);
             expect(errors.length).eq(1);
             expect(errors[0].attribute).eq(PartyValidator.CONTACTS_EMAILS);
@@ -178,9 +178,9 @@ describe("Party validator", function () {
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
-            person.contact.emails.push(new EmailAddress(work, true, email));
-            person.contact.phones.push(new PhoneNumber(home, false, phone, "", "", ""));
-            person.contact.phones.push(new PhoneNumber(work, false, phone2, "", "", ""));
+            person.emails.push(new EmailAddress(work, true, email));
+            person.phones.push(new PhoneNumber(home, false, phone, "", "", ""));
+            person.phones.push(new PhoneNumber(work, false, phone2, "", "", ""));
             var errors = PartyValidator.validateParty(person);
             expect(errors.length).eq(1);
             expect(errors[0].attribute).eq(PartyValidator.CONTACT_PHONE_NUMBER);
@@ -195,9 +195,9 @@ describe("Party validator", function () {
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
-            person.contact.emails.push(new EmailAddress(work, true, email));
-            person.contact.phones.push(new PhoneNumber(home, true, phone, "", "", ""));
-            person.contact.phones.push(new PhoneNumber(work, true, phone2, "", "", ""));
+            person.emails.push(new EmailAddress(work, true, email));
+            person.phones.push(new PhoneNumber(home, true, phone, "", "", ""));
+            person.phones.push(new PhoneNumber(work, true, phone2, "", "", ""));
             var errors = PartyValidator.validateParty(person);
             expect(errors.length).eq(1);
             expect(errors[0].attribute).eq(PartyValidator.CONTACT_PHONE_NUMBER);
@@ -213,8 +213,8 @@ describe("Party validator", function () {
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
-            person.contact.emails.push(new EmailAddress(work, true, email));
-            person.contact.addresses.push(new PostalAddress(
+            person.emails.push(new EmailAddress(work, true, email));
+            person.addresses.push(new PostalAddress(
                 home,
                 false,
                 address,
@@ -226,7 +226,7 @@ describe("Party validator", function () {
                 stateText,
                 null,
                 countryIsoCode));
-            person.contact.addresses.push(new PostalAddress(
+            person.addresses.push(new PostalAddress(
                 work,
                 false,
                 address,
@@ -252,8 +252,8 @@ describe("Party validator", function () {
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
-            person.contact.emails.push(new EmailAddress(work, true, email));
-            person.contact.addresses.push(new PostalAddress(
+            person.emails.push(new EmailAddress(work, true, email));
+            person.addresses.push(new PostalAddress(
                 home,
                 true,
                 address,
@@ -265,7 +265,7 @@ describe("Party validator", function () {
                 stateText,
                 null,
                 countryIsoCode));
-            person.contact.addresses.push(new PostalAddress(
+            person.addresses.push(new PostalAddress(
                 work,
                 true,
                 address,

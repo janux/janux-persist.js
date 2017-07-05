@@ -76,26 +76,26 @@ describe("Testing party dao update methods", function () {
                         organization.idAccount = idAccount;
                         organization.name = organizationName;
                         organization.type = PartyValidator.ORGANIZATION;
-                        organization.contact.emails.push(new EmailAddress(work, true, email));
-                        organization.contact.emails.push(new EmailAddress(home, false, email2));
+                        organization.emails.push(new EmailAddress(work, true, email));
+                        organization.emails.push(new EmailAddress(home, false, email2));
 
                         var person = new PersonEntity();
                         person.name.first = firstName;
                         person.name.middle = middleName;
                         person.name.last = lastName;
                         person.type = PartyValidator.PERSON;
-                        person.contact.emails.push(new EmailAddress(work, true, email3));
+                        person.emails.push(new EmailAddress(work, true, email3));
 
                         var organization2 = new OrganizationEntity();
                         organization2.name = organizationName2;
                         organization2.type = PartyValidator.ORGANIZATION;
-                        organization2.contact.emails.push(new EmailAddress(work, true, email4));
+                        organization2.emails.push(new EmailAddress(work, true, email4));
 
                         var person2 = new PersonEntity();
                         person2.name.first = name2;
                         person2.name.middle = middleName2;
                         person2.type = PartyValidator.PERSON;
-                        person2.contact.emails.push(new EmailAddress(work, true, email5));
+                        person2.emails.push(new EmailAddress(work, true, email5));
 
 
                         return partyDao.insertMany([organization, person, organization2, person2])
@@ -116,7 +116,7 @@ describe("Testing party dao update methods", function () {
 
             describe("When updating a party with a duplicated email", function () {
                 it("The method should return an error", function (done) {
-                    insertedRecordPerson.contact.emails.push(new EmailAddress(home, false, email));
+                    insertedRecordPerson.emails.push(new EmailAddress(home, false, email));
                     partyDao.update(insertedRecordPerson)
                         .then(function (updatedRecord) {
                             expect.fail("The method should not have updated the record");
@@ -149,7 +149,7 @@ describe("Testing party dao update methods", function () {
 
             describe("When updating a party with invalid info", function () {
                 it("The method should return an error", function (done) {
-                    insertedRecordPerson.contact.emails.push(new EmailAddress(work, true, invalidEmail));
+                    insertedRecordPerson.emails.push(new EmailAddress(work, true, invalidEmail));
                     partyDao.update(insertedRecordPerson)
                         .then(function (updatedRecord) {
                             expect.fail("The method should not have updated the record");
@@ -202,10 +202,10 @@ describe("Testing party dao update methods", function () {
 
             describe("When updating a party with the correct info", function () {
                 it("The method should not return an error", function (done) {
-                    insertedRecordPerson2.contact.phones.push(new PhoneNumber(work, true, phone, "", "", ""));
+                    insertedRecordPerson2.phones.push(new PhoneNumber(work, true, phone, "", "", ""));
                     partyDao.update(insertedRecordPerson2)
                         .then(function (result) {
-                            expect(result.contact.phones.length).eq(1);
+                            expect(result.phones.length).eq(1);
                             done();
                         })
                         .catch(function (err) {

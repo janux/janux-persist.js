@@ -3,18 +3,12 @@
  * Created by ernesto on 6/29/17.
  */
 var chai = require('chai');
-var expect = chai.expect;
-var assert = chai.assert;
 var config = require('config');
 var BootstrapService = require("../../../dist/index").BootstrapService;
 var AccountService = require("../../../dist/index").AccountService;
-var AccountValidator = require("../../../dist/index").AccountValidator;
 var Persistence = require("../../../dist/index").Persistence;
 var RoleEntity = require("../../../dist/index").RoleEntity;
-var PersonEntity = require("../../../dist/index").PersonEntity;
-var EmailAddress = require("../../../dist/index").EmailAddress;
 var PartyValidator = require("../../../dist/index").PartyValidator;
-var OrganizationEntity = require("../../../dist/index").OrganizationEntity;
 var serverAppContext = config.get("serverAppContext");
 var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
 var mongoConnUrl = serverAppContext.db.mongoConnUrl;
@@ -103,13 +97,11 @@ describe("Testing auth context service update method", function () {
                                 middle: personMiddleName,
                                 last: personLastName
                             },
-                            contact: {
-                                emails: [{
-                                    type: contactType,
-                                    primary: true,
-                                    address: contactEmail
-                                }]
-                            }
+                            emails: [{
+                                type: contactType,
+                                primary: true,
+                                address: contactEmail
+                            }]
                         },
                         roles: [insertedRole1]
                     };
@@ -127,13 +119,11 @@ describe("Testing auth context service update method", function () {
                         contact: {
                             type: PartyValidator.ORGANIZATION,
                             name: organizationName,
-                            contact: {
-                                emails: [{
-                                    type: organizationContactType,
-                                    primary: true,
-                                    address: organizationContactEmail
-                                }]
-                            }
+                            emails: [{
+                                type: organizationContactType,
+                                primary: true,
+                                address: organizationContactEmail
+                            }]
                         },
                         roles: [insertedRole1]
                     };
@@ -145,11 +135,5 @@ describe("Testing auth context service update method", function () {
                 })
         });
 
-
-        describe("When updating an account", function () {
-            it("The method should not return any error", function (done) {
-                done();
-            });
-        })
     });
 });

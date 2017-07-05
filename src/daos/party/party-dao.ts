@@ -61,12 +61,12 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<IParty
         let personReference: PersonEntity;
         let organizationReference: OrganizationEntity;
         let query: any;
-        emailAddressesToLookFor = objectToInsert.contact.emails.map((value, index, array) => value.address);
+        emailAddressesToLookFor = objectToInsert.emails.map((value, index, array) => value.address);
         if (objectToInsert.type === PartyValidator.PERSON) {
             personReference = objectToInsert as PersonEntity;
             query = {
                 $or: [
-                    {"contact.emails.address": {$in: emailAddressesToLookFor}},
+                    {"emails.address": {$in: emailAddressesToLookFor}},
                     {
                         $and: [
                             {"name.first": {$eq: personReference.name.first}},
@@ -84,7 +84,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<IParty
             organizationReference = objectToInsert as OrganizationEntity;
             query = {
                 $or: [
-                    {"contact.emails.address": {$in: emailAddressesToLookFor}},
+                    {"emails.address": {$in: emailAddressesToLookFor}},
                     {name: {$eq: organizationReference.name}}
                 ]
             };

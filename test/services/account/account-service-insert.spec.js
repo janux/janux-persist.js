@@ -100,7 +100,7 @@ describe("Testing auth context service insert method", function () {
                     person.name.first = personName;
                     person.name.middle = personMiddleName;
                     person.name.last = personLastName;
-                    person.contact.emails.push(new EmailAddress(contactType, true, contactEmail));
+                    person.emails.push(new EmailAddress(contactType, true, contactEmail));
                     return Persistence.partyDao.insert(person);
                 })
                 .then(function (insertedPerson) {
@@ -109,7 +109,7 @@ describe("Testing auth context service insert method", function () {
                     var organization = new OrganizationEntity();
                     organization.type = PartyValidator.ORGANIZATION;
                     organization.name = organizationName;
-                    organization.contact.emails.push(new EmailAddress(contactType, true, organizationContactEmail));
+                    organization.emails.push(new EmailAddress(contactType, true, organizationContactEmail));
                     return Persistence.partyDao.insert(organization);
                 })
                 .then(function (insertedOrganization) {
@@ -155,7 +155,7 @@ describe("Testing auth context service insert method", function () {
                         expect(result.contactId).eq(insertedParty1.id);
                         expect(result.contact.id).eq(insertedParty1.id);
                         expect(result.contact.idAccount).eq(result.id);
-                        expect(result.contact.contact.emails[0].address).eq(contactEmail);
+                        expect(result.contact.emails[0].address).eq(contactEmail);
                         expect(result.roles.length).eq(2);
                         expect(result.roles[0].id).eq(insertedRole1.id);
                         expect(result.roles[1].id).eq(insertedRole2.id);
@@ -169,10 +169,10 @@ describe("Testing auth context service insert method", function () {
                     .then(function (resultQueryPart) {
                         expect(resultQueryPart.id).eq(insertedParty1.id);
                         expect(resultQueryPart.idAccount).eq(temporalAccount.id);
-                        expect(resultQueryPart.contact.emails.length).eq(1);
-                        expect(resultQueryPart.contact.emails[0].address).eq(contactEmail);
-                        expect(resultQueryPart.contact.emails[0].type).eq(contactType);
-                        expect(resultQueryPart.contact.emails[0].primary).eq(true);
+                        expect(resultQueryPart.emails.length).eq(1);
+                        expect(resultQueryPart.emails[0].address).eq(contactEmail);
+                        expect(resultQueryPart.emails[0].type).eq(contactType);
+                        expect(resultQueryPart.emails[0].primary).eq(true);
                         return Persistence.accountDao.findAll()
                     })
                     .then(function (resultQueryAccount) {
@@ -291,13 +291,12 @@ describe("Testing auth context service insert method", function () {
                             middle: personMiddleName2,
                             last: personLastName2
                         },
-                        contact: {
-                            emails: [{
-                                type: contactType2,
-                                primary: true,
-                                address: contactEmail2
-                            }]
-                        }
+                        emails: [{
+                            type: contactType2,
+                            primary: true,
+                            address: contactEmail2
+                        }]
+
                     },
                     roles: [insertedRole1]
                 };
@@ -334,8 +333,7 @@ describe("Testing auth context service insert method", function () {
                             first: personName2,
                             middle: personMiddleName2,
                             last: personLastName2
-                        },
-                        contact: {}
+                        }
                     },
                     roles: [
                         insertedRole1,
@@ -387,13 +385,11 @@ describe("Testing auth context service insert method", function () {
                                     middle: personMiddleName2,
                                     last: personLastName2
                                 },
-                                contact: {
-                                    emails: [{
-                                        type: contactType,
-                                        primary: true,
-                                        address: contactEmail
-                                    }]
-                                }
+                                emails: [{
+                                    type: contactType,
+                                    primary: true,
+                                    address: contactEmail
+                                }]
                             },
                             roles: [insertedRole1]
                         };
@@ -442,13 +438,11 @@ describe("Testing auth context service insert method", function () {
                                     middle: personMiddleName2,
                                     last: personLastName2
                                 },
-                                contact: {
-                                    emails: [{
-                                        type: contactType,
-                                        primary: true,
-                                        address: contactEmail2
-                                    }]
-                                }
+                                emails: [{
+                                    type: contactType,
+                                    primary: true,
+                                    address: contactEmail2
+                                }]
                             },
                             roles: [insertedRole1]
                         };

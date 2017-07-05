@@ -70,27 +70,27 @@ describe("Testing party dao find  methods", function () {
                         organization.idAccount = idAccount;
                         organization.name = organizationName;
                         organization.type = PartyValidator.ORGANIZATION;
-                        organization.contact.emails.push(new EmailAddress(work, true, email));
-                        organization.contact.emails.push(new EmailAddress(home, false, email2));
+                        organization.emails.push(new EmailAddress(work, true, email));
+                        organization.emails.push(new EmailAddress(home, false, email2));
 
                         var person = new PersonEntity();
                         person.name.first = firstName;
                         person.name.middle = middleName;
                         person.name.last = lastName;
                         person.type = PartyValidator.PERSON;
-                        person.contact.emails.push(new EmailAddress(work, true, email3));
+                        person.emails.push(new EmailAddress(work, true, email3));
 
                         var organization2 = new OrganizationEntity();
                         organization2.name = organizationName2;
                         organization2.type = PartyValidator.ORGANIZATION;
-                        organization2.contact.emails.push(new EmailAddress(work, true, email4));
+                        organization2.emails.push(new EmailAddress(work, true, email4));
 
                         var person2 = new PersonEntity();
                         person2.idAccount = idAccount2;
                         person2.name.first = name2;
                         person2.name.middle = middleName2;
                         person2.type = PartyValidator.PERSON;
-                        person2.contact.emails.push(new EmailAddress(work, true, email5));
+                        person2.emails.push(new EmailAddress(work, true, email5));
 
 
                         return partyDao.insertMany([organization, person, organization2, person2])

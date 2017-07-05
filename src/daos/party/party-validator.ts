@@ -84,7 +84,7 @@ export class PartyValidator {
         }
         // Validating duplicated emails
         const potentialDuplicatedEmailRecords: string[] = _.flatMap(resultQuery, (record) => {
-            return record.contact.emails.map((value, index, array) => value.address);
+            return record.emails.map((value, index, array) => value.address);
         });
         const duplicatedEmails: string [] = _.intersection(emailAddressesToLookFor, potentialDuplicatedEmailRecords);
         for (const obj of duplicatedEmails) {
@@ -136,12 +136,12 @@ export class PartyValidator {
     private static validateContactData(party: IPartyEntity) {
         let errors: ValidationError[] = [];
         // Check there is at least one primary email
-        if (_.isArray(party.contact.emails) === false || party.contact.emails.length === 0) {
+        if (_.isArray(party.emails) === false || party.emails.length === 0) {
             errors.push(new ValidationError(this.CONTACTS_EMAILS, this.AT_LEAST_ONE_EMAIL, ""));
         } else {
-            errors = errors.concat(this.validateEmailAddresses(party.contact.emails));
-            errors = errors.concat(this.validatePhoneNumbers(party.contact.phones));
-            errors = errors.concat(this.validatePostalAddresses(party.contact.addresses));
+            errors = errors.concat(this.validateEmailAddresses(party.emails));
+            errors = errors.concat(this.validatePhoneNumbers(party.phones));
+            errors = errors.concat(this.validatePostalAddresses(party.addresses));
         }
         // Check there is only one primary email
         return errors;

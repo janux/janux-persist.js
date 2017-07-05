@@ -199,7 +199,9 @@ export class AccountService {
                 person.name.last = party.name.last;
                 person.name.middle = party.name.middle;
                 person.type = PartyValidator.PERSON;
-                person.contact = party.contact;
+                person.emails = party.emails;
+                person.phones = party.phones;
+                person.addresses = party.addresses;
                 // Insert the person.
                 this._log.debug("Inserting the person %j", person);
                 return Persistence.partyDao.insert(person);
@@ -208,7 +210,9 @@ export class AccountService {
                 organization = new OrganizationEntity();
                 organization.name = party.name;
                 organization.type = PartyValidator.ORGANIZATION;
-                organization.contact = party.contact;
+                organization.emails = party.emails;
+                organization.phones = party.phones;
+                organization.addresses = party.addresses;
                 // Insert the organization.
                 this._log.debug("Inserting the organization %j", organization);
                 return Persistence.partyDao.insert(organization);

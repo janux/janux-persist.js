@@ -16,9 +16,17 @@ export const PartyMongoDbSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Mixed,
         required: true
     },
-    contact: {
+    emails: {
         type: mongoose.Schema.Types.Mixed,
         required: true
+    },
+    phones: {
+        type: mongoose.Schema.Types.Mixed,
+        required: false
+    },
+    addresses: {
+        type: mongoose.Schema.Types.Mixed,
+        required: false
     },
     lastUpdate: {
         type: Date

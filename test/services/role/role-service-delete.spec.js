@@ -158,13 +158,11 @@ describe("Testing role service delete method", function () {
                             middle: personMiddleName1,
                             last: personLastName1
                         },
-                        contact: {
-                            emails: [{
-                                type: contactType1,
-                                primary: true,
-                                address: contactEmail1
-                            }]
-                        }
+                        emails: [{
+                            type: contactType1,
+                            primary: true,
+                            address: contactEmail1
+                        }]
                     },
                     roles: [insertedRole2]
                 };

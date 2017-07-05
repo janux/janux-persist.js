@@ -4,17 +4,22 @@
  */
 
 import {IEntity} from "../../persistence/interfaces/entity";
-import {Contact} from "./contact/contact";
+import {PostalAddress} from "./contact/address/postal-address";
+import {EmailAddress} from "./contact/email/email-address";
+import {PhoneNumber} from "./contact/phone/phone-number";
 
 export  interface IPartyEntity extends IEntity {
 
     // Could be person or organization
     type: string;
 
-    // displayName: string;
+    displayName: string;
 
-    // Contact data
-    contact: Contact;
+    phones: PhoneNumber[];
+
+    emails: EmailAddress[];
+
+    addresses: PostalAddress[];
 
     // Account id
     idAccount: string;
