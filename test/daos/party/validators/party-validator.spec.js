@@ -13,6 +13,7 @@ var PostalAddress = require("../../../../dist/index").PostalAddress;
 
 const idAccount = "313030303030303030303037";
 const name = "John";
+const displayName = "John display";
 const middleName = "Doe";
 const email = "glarus@mail.com";
 const email2 = "glarus_sales@mail.com";
@@ -33,6 +34,7 @@ describe("Party validator", function () {
         it("The method should not return an error", function () {
             var person = new PersonEntity();
             person.idAccount = idAccount;
+            person.displayName = displayName;
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
@@ -46,6 +48,7 @@ describe("Party validator", function () {
         it("The method should not return an error", function () {
             var organization = new OrganizationEntity();
             organization.type = PartyValidator.ORGANIZATION;
+            organization.displayName = displayName;
             organization.idAccount = undefined;
             organization.name = name;
             organization.emails.push(new EmailAddress(work, true, email));
@@ -57,6 +60,7 @@ describe("Party validator", function () {
     describe("When validating a person with empty accountId", function () {
         it("The method should not return an error", function () {
             var person = new PersonEntity();
+            person.displayName = displayName;
             person.idAccount = "   ";
             person.name.first = name;
             person.name.middle = middleName;
@@ -72,6 +76,7 @@ describe("Party validator", function () {
     describe("When validating a person with null accountId", function () {
         it("The method should not return an error", function () {
             var person = new PersonEntity();
+            person.displayName = displayName;
             person.idAccount = null;
             person.name.first = name;
             person.name.middle = middleName;
@@ -88,6 +93,7 @@ describe("Party validator", function () {
         it("The method should return an error", function () {
             var person = new PersonEntity();
             person.idAccount = idAccount;
+            person.displayName = displayName;
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
@@ -102,6 +108,7 @@ describe("Party validator", function () {
         it("The method should return an error", function () {
             var person = new PersonEntity();
             person.idAccount = idAccount;
+            person.displayName = displayName;
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
@@ -118,6 +125,7 @@ describe("Party validator", function () {
         it("The method should return an error", function () {
             var person = new PersonEntity();
             person.idAccount = idAccount;
+            person.displayName = displayName;
             person.name.first = name;
             person.name.middle = middleName;
             person.type = "  ";
@@ -128,6 +136,7 @@ describe("Party validator", function () {
 
             person = new PersonEntity();
             person.idAccount = idAccount;
+            person.displayName = displayName;
             person.name.first = name;
             person.name.middle = middleName;
             person.type = "invalid";
@@ -142,6 +151,7 @@ describe("Party validator", function () {
         it("The method should return an error", function () {
             var person = new PersonEntity();
             person.idAccount = idAccount;
+            person.displayName = displayName;
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
@@ -158,6 +168,7 @@ describe("Party validator", function () {
         it("The method should return an error", function () {
             var person = new PersonEntity();
             person.idAccount = idAccount;
+            person.displayName = displayName;
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
@@ -175,6 +186,7 @@ describe("Party validator", function () {
         it("The method should return an error", function () {
             var person = new PersonEntity();
             person.idAccount = idAccount;
+            person.displayName = displayName;
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
@@ -192,6 +204,7 @@ describe("Party validator", function () {
         it("The method should return an error", function () {
             var person = new PersonEntity();
             person.idAccount = idAccount;
+            person.displayName = displayName;
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
@@ -210,6 +223,7 @@ describe("Party validator", function () {
         it("The method should return an error", function () {
             var person = new PersonEntity();
             person.idAccount = idAccount;
+            person.displayName = displayName;
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;
@@ -249,6 +263,7 @@ describe("Party validator", function () {
         it("The method should return an error", function () {
             var person = new PersonEntity();
             person.idAccount = idAccount;
+            person.displayName = displayName;
             person.name.first = name;
             person.name.middle = middleName;
             person.type = PartyValidator.PERSON;

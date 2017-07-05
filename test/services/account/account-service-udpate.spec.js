@@ -21,6 +21,7 @@ const roleDescription = "A role description";
 const roleDescription2 = "A role description 2";
 
 const organizationName = "Glarus";
+const organizationDisplayName = "Glarus display name";
 const organizationContactEmail = "sales@glarus.com";
 const organizationContactType = "work";
 

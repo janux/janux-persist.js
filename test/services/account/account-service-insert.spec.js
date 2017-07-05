@@ -27,15 +27,18 @@ const roleDescription = "A role description";
 const roleDescription2 = "A role description 2";
 
 const organizationName = "Glarus";
+const organizationDisplayName = "Display name Glarus";
 const organizationContactEmail = "sales@glarus.com";
 
 const personName = "John";
+const displayName = "display name";
 const personMiddleName = "Doe";
 const personLastName = "Doe";
 const contactEmail = "dev@glarus.com";
 const contactType = "work";
 
 const personName2 = "Jane";
+const displayName2 = "display name 2";
 const personMiddleName2 = "Doe";
 const personLastName2 = "Doe";
 const contactEmail2 = "test@glarus.com";
@@ -97,6 +100,7 @@ describe("Testing auth context service insert method", function () {
                     // Inserting one person
                     var person = new PersonEntity();
                     person.type = PartyValidator.PERSON;
+                    person.displayName = displayName;
                     person.name.first = personName;
                     person.name.middle = personMiddleName;
                     person.name.last = personLastName;
@@ -108,6 +112,7 @@ describe("Testing auth context service insert method", function () {
                     //Inserting organization
                     var organization = new OrganizationEntity();
                     organization.type = PartyValidator.ORGANIZATION;
+                    organization.displayName = organizationDisplayName;
                     organization.name = organizationName;
                     organization.emails.push(new EmailAddress(contactType, true, organizationContactEmail));
                     return Persistence.partyDao.insert(organization);
@@ -154,6 +159,7 @@ describe("Testing auth context service insert method", function () {
                         expect(result.expirePassword).eq(accountExpirePassword);
                         expect(result.contactId).eq(insertedParty1.id);
                         expect(result.contact.id).eq(insertedParty1.id);
+                        expect(result.contact.displayName).eq(insertedParty1.displayName);
                         expect(result.contact.idAccount).eq(result.id);
                         expect(result.contact.emails[0].address).eq(contactEmail);
                         expect(result.roles.length).eq(2);
@@ -286,6 +292,7 @@ describe("Testing auth context service insert method", function () {
                     expirePassword: accountExpirePassword2,
                     contact: {
                         type: PartyValidator.PERSON,
+                        displayName: displayName2,
                         name: {
                             first: personName2,
                             middle: personMiddleName2,
@@ -318,7 +325,7 @@ describe("Testing auth context service insert method", function () {
             });
         });
 
-        describe("When inserting an account with new contact info, but invalid invalid info.", function () {
+        describe("When inserting an account with new contact info, but invalid info.", function () {
             it("It should return an error", function (done) {
                 var account = {
                     username: accountUsername2,
@@ -329,6 +336,7 @@ describe("Testing auth context service insert method", function () {
                     expirePassword: accountExpirePassword2,
                     contact: {
                         type: PartyValidator.PERSON,
+                        displayName: displayName2,
                         name: {
                             first: personName2,
                             middle: personMiddleName2,
@@ -380,6 +388,7 @@ describe("Testing auth context service insert method", function () {
                             expirePassword: accountExpirePassword2,
                             contact: {
                                 type: PartyValidator.PERSON,
+                                displayName: displayName2,
                                 name: {
                                     first: personName2,
                                     middle: personMiddleName2,
@@ -433,6 +442,7 @@ describe("Testing auth context service insert method", function () {
                             expirePassword: accountExpirePassword2,
                             contact: {
                                 type: PartyValidator.PERSON,
+                                displayName: displayName2,
                                 name: {
                                     first: personName2,
                                     middle: personMiddleName2,

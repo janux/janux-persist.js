@@ -12,6 +12,10 @@ export const PartyMongoDbSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    displayName:{
+        type: String,
+        required: true
+    },
     name: {
         type: mongoose.Schema.Types.Mixed,
         required: true

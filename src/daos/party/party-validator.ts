@@ -40,6 +40,8 @@ export class PartyValidator {
     public static readonly ID_ACCOUNT_DUPLICATE = "There is another record with the same idAccount";
     public static TYPE_NOT_PERSON_OR_ORGANIZATION = "Type is not person or organization";
     public static THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL = "There is another record with the same email address";
+    public static DISPLAY_NAME: string = "displayName";
+    public static DISPLAY_NAME_EMPTY: string = "Display name is empty";
 
     public static validateParty(party: IPartyEntity): ValidationError[] {
         this._log.debug("Call to validateParty with party: %j", party);
@@ -62,6 +64,13 @@ export class PartyValidator {
         if (_.isUndefined(party.idAccount) === false && isBlankString(party.idAccount) === true) {
             errors.push(new ValidationError(this.ID_ACCOUNT, this.ID_ACCOUNT_NOT_UNDEFINED, party.idAccount));
         }
+        if (isBlankString(party.displayName)) {
+            errors.push(new ValidationError(
+                this.DISPLAY_NAME,
+                this.DISPLAY_NAME_EMPTY,
+                ""));
+        }
+
         this._log.debug("Returning: %j", errors);
         return errors;
     }

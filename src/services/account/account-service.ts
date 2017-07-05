@@ -202,6 +202,7 @@ export class AccountService {
                 person.emails = party.emails;
                 person.phones = party.phones;
                 person.addresses = party.addresses;
+                person.displayName = party.displayName;
                 // Insert the person.
                 this._log.debug("Inserting the person %j", person);
                 return Persistence.partyDao.insert(person);
@@ -213,6 +214,7 @@ export class AccountService {
                 organization.emails = party.emails;
                 organization.phones = party.phones;
                 organization.addresses = party.addresses;
+                organization.displayName = party.displayName;
                 // Insert the organization.
                 this._log.debug("Inserting the organization %j", organization);
                 return Persistence.partyDao.insert(organization);
