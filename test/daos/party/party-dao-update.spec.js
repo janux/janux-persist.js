@@ -39,6 +39,7 @@ var partyDaoMongodb = new PartyDaoMongoDbImpl(dbEngineMongoDb, null);
 const idAccount = "313030303030303030303037";
 const firstName = "John";
 const middleName = "Doe";
+const displayName = "Display name";
 const lastName = "Iglesias";
 const honorificPrefix = "honorificPrefix";
 const honorificSuffix = "honorificSuffix";
@@ -74,12 +75,14 @@ describe("Testing party dao update methods", function () {
                     .then(function () {
                         var organization = new OrganizationEntity();
                         organization.idAccount = idAccount;
+                        organization.displayName = displayName;
                         organization.name = organizationName;
                         organization.type = PartyValidator.ORGANIZATION;
                         organization.emails.push(new EmailAddress(work, true, email));
                         organization.emails.push(new EmailAddress(home, false, email2));
 
                         var person = new PersonEntity();
+                        person.displayName = displayName;
                         person.name.first = firstName;
                         person.name.middle = middleName;
                         person.name.last = lastName;
@@ -87,11 +90,13 @@ describe("Testing party dao update methods", function () {
                         person.emails.push(new EmailAddress(work, true, email3));
 
                         var organization2 = new OrganizationEntity();
+                        organization2.displayName = displayName;
                         organization2.name = organizationName2;
                         organization2.type = PartyValidator.ORGANIZATION;
                         organization2.emails.push(new EmailAddress(work, true, email4));
 
                         var person2 = new PersonEntity();
+                        person2.displayName = displayName;
                         person2.name.first = name2;
                         person2.name.middle = middleName2;
                         person2.type = PartyValidator.PERSON;

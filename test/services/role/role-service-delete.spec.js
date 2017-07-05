@@ -34,6 +34,7 @@ const roleName2 = "A role name 2";
 const roleDescription = "A role description";
 const roleDescription2 = "A role description 2";
 const personName1 = "John";
+const personDisplayName1 = "Display name 1";
 const personMiddleName1 = "Doe";
 const personLastName1 = "Doe";
 const roleEnabled = true;
@@ -153,6 +154,7 @@ describe("Testing role service delete method", function () {
                     expirePassword: accountExpirePassword1,
                     contact: {
                         type: PartyValidator.PERSON,
+                        displayName: personDisplayName1,
                         name: {
                             first: personName1,
                             middle: personMiddleName1,

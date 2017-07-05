@@ -38,10 +38,12 @@ var dbEngineMongoDb = new DbEngineUtilMongodb(model);
 var partyDaoMongodb = new PartyDaoMongoDbImpl(dbEngineMongoDb, null);
 
 const idAccount = "313030303030303030303037";
-const name = "John";
 const organizationName = "Glarus";
+const organizationDisplayName = "organization display name";
+const name = "John";
 const middleName = "Doe";
 const lastName = "Iglesias";
+const displayName = "display name";
 const honorificPrefix = "honorificPrefix";
 const honorificSuffix = "honorificSuffix";
 const email = "glarus@mail.com";
@@ -84,6 +86,7 @@ describe("Testing party dao insert methods", function () {
             it("The entity should exits in the database", function (done) {
                 var person = new PersonEntity();
                 person.idAccount = idAccount;
+                person.displayName = displayName;
                 person.name.first = name;
                 person.name.middle = middleName;
                 person.name.last = lastName;
@@ -120,6 +123,7 @@ describe("Testing party dao insert methods", function () {
 
             function validateRecord(record) {
                 expect(record.idAccount).eq(idAccount);
+                expect(record.displayName).eq(displayName);
                 expect(record.name.first).eq(name);
                 expect(record.name.middle).eq(middleName);
                 expect(record.name.last).eq(lastName);
@@ -159,6 +163,7 @@ describe("Testing party dao insert methods", function () {
         describe("When inserting a valid organization", function () {
             it("The method should insert the record", function (done) {
                 var organization = new OrganizationEntity();
+                organization.displayName = organizationDisplayName;
                 organization.name = organizationName;
                 organization.type = PartyValidator.ORGANIZATION;
                 organization.emails.push(new EmailAddress(work, true, email));
@@ -185,6 +190,7 @@ describe("Testing party dao insert methods", function () {
             it("The entity should insert en error", function (done) {
                 var person = new PersonEntity();
                 person.idAccount = idAccount;
+                person.displayName = displayName;
                 person.name.first = name;
                 person.name.middle = middleName;
                 person.type = PartyValidator.PERSON;
@@ -204,6 +210,7 @@ describe("Testing party dao insert methods", function () {
             it("The entity should send an error", function (done) {
                 var person = new PersonEntity();
                 person.idAccount = idAccount;
+                person.displayName = displayName;
                 person.name.first = name;
                 person.name.middle = middleName;
                 person.type = PartyValidator.PERSON;
@@ -211,6 +218,7 @@ describe("Testing party dao insert methods", function () {
                 partyDao.insert(person)
                     .then(function (insertedRecord) {
                         var person = new PersonEntity();
+                        person.displayName = displayName;
                         person.name.first = name2;
                         person.name.middle = middleName2;
                         person.type = PartyValidator.PERSON;
@@ -236,6 +244,7 @@ describe("Testing party dao insert methods", function () {
             it("The entity should send an error", function (done) {
                 var person = new PersonEntity();
                 person.idAccount = idAccount;
+                person.displayName = displayName;
                 person.name.first = name;
                 person.name.middle = middleName;
                 person.type = PartyValidator.PERSON;
@@ -244,6 +253,7 @@ describe("Testing party dao insert methods", function () {
                 partyDao.insert(person)
                     .then(function (insertedRecord) {
                         var person = new PersonEntity();
+                        person.displayName = displayName;
                         person.name.first = name;
                         person.name.middle = middleName;
                         person.type = PartyValidator.PERSON;
@@ -269,6 +279,7 @@ describe("Testing party dao insert methods", function () {
                 var organization = new OrganizationEntity();
                 organization.idAccount = idAccount;
                 organization.name = organizationName;
+                organization.displayName = organizationDisplayName;
                 organization.type = PartyValidator.ORGANIZATION;
                 organization.emails.push(new EmailAddress(work, true, email));
                 organization.emails.push(new EmailAddress(home, false, email2));
@@ -276,6 +287,7 @@ describe("Testing party dao insert methods", function () {
                     .then(function (insertedRecord) {
                         var organization = new OrganizationEntity();
                         organization.name = organizationName;
+                        organization.displayName = organizationDisplayName;
                         organization.type = PartyValidator.ORGANIZATION;
                         organization.emails.push(new EmailAddress(work, true, email3));
                         return partyDao.insert(organization);
@@ -298,6 +310,7 @@ describe("Testing party dao insert methods", function () {
             it("The entity should send an error", function (done) {
                 var person = new PersonEntity();
                 person.idAccount = idAccount;
+                person.displayName = displayName;
                 person.name.first = name;
                 person.name.middle = middleName;
                 person.type = PartyValidator.PERSON;
@@ -307,6 +320,7 @@ describe("Testing party dao insert methods", function () {
                     .then(function (insertedRecord) {
                         var organization = new OrganizationEntity();
                         organization.name = organizationName;
+                        organization.displayName = displayName;
                         organization.idAccount = idAccount;
                         organization.type = PartyValidator.ORGANIZATION;
                         organization.emails.push(new EmailAddress(work, true, email3));
@@ -332,11 +346,13 @@ describe("Testing party dao insert methods", function () {
             it("The method should have inserted the records", function (done) {
                 var organization = new OrganizationEntity();
                 organization.name = organizationName;
+                organization.displayName = organizationDisplayName;
                 organization.type = PartyValidator.ORGANIZATION;
                 organization.emails.push(new EmailAddress(work, true, email));
                 organization.emails.push(new EmailAddress(home, false, email2));
 
                 var person = new PersonEntity();
+                person.displayName = displayName;
                 person.name.first = name;
                 person.name.middle = middleName;
                 person.name.last = lastName;
@@ -347,8 +363,10 @@ describe("Testing party dao insert methods", function () {
                     .then(function (resultInsert) {
                         expect(resultInsert.length).eq(2);
                         expect(resultInsert[0].name).eq(organizationName);
+                        expect(resultInsert[0].displayName).eq(organizationDisplayName);
                         expect(resultInsert[0].type).eq(PartyValidator.ORGANIZATION);
                         expect(resultInsert[0].emails.length).eq(2);
+                        expect(resultInsert[1].displayName).eq(displayName);
                         expect(resultInsert[1].name.first).eq(name);
                         expect(resultInsert[1].name.middle).eq(middleName);
                         expect(resultInsert[1].name.last).eq(lastName);
