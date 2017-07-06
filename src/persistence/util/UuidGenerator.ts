@@ -9,6 +9,8 @@ import {IEntityProperties} from "../interfaces/entity-properties";
 
 export class UuidGenerator {
 
+    public static UUID_PROPERTY = "uuid";
+
     public static assignUuid(entityProperties: IEntityProperties, objectToInsert: any) {
         this._log.debug("Call to assignUuid with entityProperties: %j, objectToInsert %j:",
             entityProperties,
@@ -20,7 +22,5 @@ export class UuidGenerator {
             this._log.debug("Not inserting uuid");
         }
     }
-
-    private static UUID_PROPERTY = "uuid";
     private static _log = logger.getLogger("UuidGenerator");
 }

@@ -3,6 +3,7 @@
  * Created by ernesto on 6/12/17.
  */
 import * as _ from "lodash";
+import * as logger from 'log4js';
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
 import Promise = require("bluebird");
@@ -16,6 +17,8 @@ import {validateExampleUser} from "./example-validate-usert";
  * This is the base dao class of the entity ExampleUser.
  */
 export abstract class ExampleUserDao extends AbstractDataAccessObjectWithEngine<ExampleUser> {
+
+    private _logExampleUserDao = logger.getLogger("ExampleUserDao");
 
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
@@ -69,4 +72,22 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithEngine<
      * @param objectToUpdate
      */
     protected abstract validateBeforeUpdate<t>(objectToUpdate: ExampleUser): Promise<any>;
+
+    protected convertBeforeSave(object: ExampleUser): any {
+        this._logExampleUserDao.debug("Call to convertBeforeSave with object: %j", object);
+        const result: any = {
+            id: object.id,
+            name: object.name,
+            lastName: object.lastName,
+            email: object.email,
+            typeName: object.typeName
+        };
+        return result;
+    }
+
+    protected convertAfterDbOperation(object: any): ExampleUser {
+        const result = new ExampleUser(object.name, object.lastName, object.email);
+        result.id = object.id;
+        return result;
+    }
 }

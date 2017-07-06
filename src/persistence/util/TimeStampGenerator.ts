@@ -6,6 +6,9 @@ import * as logger from 'log4js';
 import {IEntityProperties} from "../interfaces/entity-properties";
 export class TimeStampGenerator {
 
+    public static DATE_UPDATED_PROPERTY: string = "lastUpdate";
+    public static DATE_CREATED_PROPERTY: string = "dateCreated";
+
     public static generateTimeStampForInsert(entityProperties: IEntityProperties, objectToInsert: any) {
         this._log.debug("generateTimeStampForInsert with entityProperties: %j, objectToInsert:%j"
             , entityProperties,
@@ -19,7 +22,6 @@ export class TimeStampGenerator {
             this._log.debug("Not inserting %j", this.DATE_CREATED_PROPERTY);
         }
     }
-
     public static generateTimeStampForUpdate(entityProperties: IEntityProperties, objectToUpdate: any) {
         this._log.debug("generateTimeStampForUpdate with entityProperties: %j, objectToUpdate %j",
             entityProperties,
@@ -31,8 +33,5 @@ export class TimeStampGenerator {
             this._log.debug("Not inserting %j", this.DATE_UPDATED_PROPERTY);
         }
     }
-
     private static _log = logger.getLogger("TimeStampGenerator");
-    private static DATE_CREATED_PROPERTY: string = "dateCreated";
-    private static DATE_UPDATED_PROPERTY: string = "lastUpdate";
 }

@@ -33,7 +33,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * Query an object by the id.
      * @param id The id.
      */
-    public findOneById(id: string): Promise<t> {
+    public findOneByIdMethod(id: string): Promise<t> {
         return this.dbEngineUtil.findOneById(id);
     }
 
@@ -41,7 +41,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * Query several objects by a array of ids.
      * @param arrayOfIds An array of ids.
      */
-    public  findAllByIds(arrayOfIds: any[]): Promise<t[]> {
+    public  findAllByIdsMethod(arrayOfIds: any[]): Promise<t[]> {
         return this.dbEngineUtil.findAllByIds(arrayOfIds);
     }
 
@@ -75,7 +75,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * Return all records
      * @return {Promise<any[]>}
      */
-    public findAll(): Promise<t[]> {
+    public findAllMethod(): Promise<t[]> {
         return this.dbEngineUtil.findAll();
     }
 
@@ -101,7 +101,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * @param attributeName The attribute to look for.
      * @param value The value to look for.
      */
-    protected findOneByAttribute(attributeName: string, value): Promise<t> {
+    protected findOneByAttributeMethod(attributeName: string, value): Promise<t> {
         return this.dbEngineUtil.findOneByAttribute(attributeName, value);
     }
 
@@ -112,7 +112,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * @param attributeName The attribute to look for.
      * @param value The value to look for.
      */
-    protected findAllByAttribute(attributeName: string, value): Promise<t[]> {
+    protected findAllByAttributeMethod(attributeName: string, value): Promise<t[]> {
         return this.dbEngineUtil.findAllByAttribute(attributeName, value);
     }
 
@@ -121,7 +121,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * @param attributeName The attribute to look for.
      * @param values The list of values to filter.
      */
-    protected findAllByAttributeNameIn(attributeName: string, values: any[]): Promise<t[]> {
+    protected findAllByAttributeNameInMethod(attributeName: string, values: any[]): Promise<t[]> {
         return this.dbEngineUtil.findAllByAttributeNameIn(attributeName, values);
     }
 
@@ -129,7 +129,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * Perform a query with the and operator for every attribute and value
      * @param attributes The attributes to filter
      */
-    protected findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<t[]> {
+    protected findAllByAttributesAndOperatorMethod(attributes: AttributeFilter[]): Promise<t[]> {
         return this.dbEngineUtil.findAllByAttributesAndOperator(attributes);
     }
 
@@ -137,7 +137,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> exte
      * Perform a query with the or operator for every attribute and value
      * @param attributes The attributes to filter
      */
-    protected findAllByAttributesOrOperator(attributes: AttributeFilter[]): Promise<t[]> {
+    protected findAllByAttributesOrOperatorMethod(attributes: AttributeFilter[]): Promise<t[]> {
         return this.dbEngineUtil.findAllByAttributesOrOperator(attributes);
     }
 

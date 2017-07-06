@@ -46,9 +46,8 @@ const lastName2 = "Smith";
 
 const incorrectEmail = "johnSmith.com";
 
-[userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
-
-    describe("Testing user example dao implementation insert", function () {
+describe("Testing user example dao implementation insert", function () {
+    [userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
         beforeEach(function (done) {
             userDao.deleteAll().then(function () {
                 done();
@@ -79,6 +78,8 @@ const incorrectEmail = "johnSmith.com";
                             expect(result.name).eq(name);
                             expect(result.email).eq(email);
                             expect(result.lastName).eq(lastName);
+                            expect(result.typeName).not.to.be.undefined;
+                            expect(result.typeName).not.to.be.null;
                             expect(result).to.have.property('id');
                             expect(result).to.have.property('uuid');
                             expect(result).to.have.property('dateCreated');
@@ -89,6 +90,8 @@ const incorrectEmail = "johnSmith.com";
                                 .then(function (resultQuery) {
                                     expect(resultQuery.name).eq(name);
                                     expect(resultQuery.email).eq(email);
+                                    expect(resultQuery.typeName).not.to.be.undefined;
+                                    expect(resultQuery.typeName).not.to.be.null;
                                     expect(resultQuery.lastName).eq(lastName);
                                     expect(resultQuery.id).eq(result.id);
                                     expect(result).to.have.property('uuid');
@@ -100,7 +103,8 @@ const incorrectEmail = "johnSmith.com";
                                 .catch(function (err) {
                                     assert.fail(err, "The query must not have any error");
                                     done();
-                                });                        } else {
+                                });
+                        } else {
                             assert.fail(true, "Object doesn't have the correct instance");
                             done();
                         }
@@ -115,7 +119,7 @@ const incorrectEmail = "johnSmith.com";
             it("Should the records have been inserted correctly in the database", function (done) {
                 var user = new ExampleUser(name, lastName, email);
                 var user2 = new ExampleUser(name2, lastName2, email2);
-                userDao.insertMany([user,user2])
+                userDao.insertMany([user, user2])
                     .then(function (result) {
                         expect(result.length).eq(2);
                         for (var i = 0; i < result.length; i++) {
@@ -155,4 +159,6 @@ const incorrectEmail = "johnSmith.com";
             })
         });
     });
+
 });
+

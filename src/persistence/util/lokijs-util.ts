@@ -63,6 +63,7 @@ export class LokiJsUtil {
         const result = collection.find(query);
         this._log.debug('Result %j', result);
         if (result.length === 0) {
+            this._log.debug("Returning null");
             return Promise.resolve(null);
         } else if (result.length === 1) {
             this._log.debug("Returning %j", result[0]);

@@ -26,22 +26,22 @@ var serverAppContext = config.get("serverAppContext");
 //lokiJs implementation
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
 var dbEngineUtilLokijs = new DbEngineUtilLokijs('users-example', lokiDatabase);
-var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(dbEngineUtilLokijs, new EntityProperties(true,true));
+var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(dbEngineUtilLokijs, new EntityProperties(true, true));
 
 //Mongodb implementation
 mongoose.connect(serverAppContext.db.mongoConnUrl);
 var model = mongoose.model('users-example', MongoUserSchemaExample);
 var dbEngineUtilMongodb = new DbEngineUtilMongodb(model);
-var userDaoMongoDb = ExampleUserDaoMongoDbImpl.createInstance(dbEngineUtilMongodb, new EntityProperties(true,true));
+var userDaoMongoDb = ExampleUserDaoMongoDbImpl.createInstance(dbEngineUtilMongodb, new EntityProperties(true, true));
 
 const email = "jon@smith.com";
 const email2 = "jane_smith@gmail.com";
 const name = "John";
 const lastName = "Smith";
 
-[userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
-    describe("Testing user dao example find methods", function () {
 
+describe("Testing user dao example find methods", function () {
+    [userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
         var insertedUsers;
 
         before(function (done) {
@@ -171,5 +171,6 @@ const lastName = "Smith";
             });
         })
     });
+
 });
 
