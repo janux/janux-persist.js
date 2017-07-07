@@ -7,7 +7,6 @@ import * as logger from 'log4js';
 import uuid = require("uuid");
 import {IDbEngineUtil} from "../interfaces/db-engine-util-method";
 import Promise = require("bluebird");
-import {IEntity} from "../interfaces/entity";
 import {IEntityProperties} from "../interfaces/entity-properties";
 import {AbstractDataAccessObject} from "./abstract-data-access-object";
 import {AttributeFilter} from "./attribute-filter";
@@ -15,7 +14,7 @@ import {AttributeFilter} from "./attribute-filter";
  * Tish class, inside their properties,contains a generic interface where the class
  * can perform the basic db operations.
  */
-export abstract class AbstractDataAccessObjectWithEngine<t extends IEntity> extends AbstractDataAccessObject<t> {
+export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractDataAccessObject<t> {
 
     // This class holds all common db engine methods
     protected dbEngineUtil: IDbEngineUtil;

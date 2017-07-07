@@ -75,19 +75,18 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithEngine<
 
     protected convertBeforeSave(object: ExampleUser): any {
         this._logExampleUserDao.debug("Call to convertBeforeSave with object: %j", object);
-        const result: any = {
-            id: object.id,
+        return {
+            id: object[this.ID_REFERENCE],
             name: object.name,
             lastName: object.lastName,
             email: object.email,
             typeName: object.typeName
         };
-        return result;
     }
 
     protected convertAfterDbOperation(object: any): ExampleUser {
         const result = new ExampleUser(object.name, object.lastName, object.email);
-        result.id = object.id;
+        result[this.ID_REFERENCE] = object[this.ID_REFERENCE];
         return result;
     }
 }

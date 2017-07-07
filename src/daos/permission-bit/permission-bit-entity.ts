@@ -1,11 +1,11 @@
-import {IEntity} from "../../persistence/interfaces/entity";
 /**
  * Project janux-persistence
  * Created by ernesto on 6/19/17.
  */
-export class PermissionBitEntity implements IEntity {
+export class PermissionBitEntity {
 
     public id: string;
+
     /**
      * Short-hand name  for this iPermissionBit (e.g.: READ),
      * unique in the context of the containing iAuthorizationContext

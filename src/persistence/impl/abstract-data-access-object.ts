@@ -8,16 +8,15 @@ import * as logger from 'log4js';
 import uuid = require("uuid");
 import Promise = require("bluebird");
 import {isBlankString} from "../../util/blank-string-validator";
-import {isValidId} from "../../util/id_validator";
-import {IEntity} from "../interfaces/entity";
 import {IEntityProperties} from "../interfaces/entity-properties";
 import {IValidationError} from "../interfaces/validation-error";
 import {TimeStampGenerator} from "../util/TimeStampGenerator";
 import {UuidGenerator} from "../util/UuidGenerator";
 import {AttributeFilter} from "./attribute-filter";
 
-export abstract class AbstractDataAccessObject<t extends IEntity> {
+export abstract class AbstractDataAccessObject<t> {
 
+    public ID_REFERENCE: string = "id";
     protected entityProperties: IEntityProperties;
     private readonly _log = logger.getLogger("AbstractDataAccessObject");
 
@@ -29,8 +28,8 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
         this._log.debug('Call to insert with %j', objectToInsert);
         let entityErrors: IValidationError[];
         // Check for an null id
-        if (objectToInsert.id != null) {
-            this._log.error('%j has an id', objectToInsert);
+        if (isBlankString(objectToInsert[this.ID_REFERENCE]) === false) {
+            this._log.error('%j has an id', objectToInsert[this.ID_REFERENCE]);
             return Promise.reject('Object has a defined id');
         }
         // Validate the entity information
@@ -72,7 +71,7 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
         const convertedObjectsToInsert: any = [];
         let entityErrors: IValidationError[];
         for (const obj of objectsToInsert) {
-            if (obj.id != null) {
+            if (obj[this.ID_REFERENCE] != null) {
                 this._log.error('%j has an id', obj);
                 return Promise.reject('Object has a defined id');
             }
@@ -108,7 +107,7 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
         this._log.debug('Call to update with %j', objectToUpdate);
 
         let entityErrors: IValidationError[];
-        if (!isValidId(objectToUpdate.id)) {
+        if (isBlankString(objectToUpdate[this.ID_REFERENCE])) {
             this._log.error('%j does not have an id', objectToUpdate);
             return Promise.reject('Object does not have an id');
         }
@@ -142,7 +141,7 @@ export abstract class AbstractDataAccessObject<t extends IEntity> {
      */
     public updateOrInsert(object: t): Promise<t | IValidationError[]> {
         this._log.debug("Call to updateOrInsert with object %j", object);
-        if (isBlankString(object.id)) {
+        if (isBlankString(object[this.ID_REFERENCE])) {
             return this.insert(object);
         } else {
             return this.update(object);

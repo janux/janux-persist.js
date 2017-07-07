@@ -46,7 +46,7 @@ export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
         const errors: ValidationError[] = [];
         const query = {
             $and: [
-                {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
+                {$loki: {$ne: _.toNumber(objectToUpdate[this.ID_REFERENCE])}},
                 {email: {$eq: objectToUpdate.email}}
             ]
         };

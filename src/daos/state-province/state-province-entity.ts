@@ -1,14 +1,10 @@
-import {IEntity} from "../../persistence/interfaces/entity";
 /**
  * Project janux-persistence
  * Created by ernesto on 6/20/17.
  */
-export class StateProvinceEntity implements IEntity {
-
+export class StateProvinceEntity {
     public id: string;
-
     public name: string;
-
     public code: string;
 
     // Iso country id of the sate.

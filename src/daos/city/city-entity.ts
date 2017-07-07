@@ -3,9 +3,7 @@
  * Created by ernesto on 6/21/17.
  */
 
-import {IEntity} from "../../persistence/interfaces/entity";
-
-export class CityEntity implements IEntity {
+export class CityEntity {
     public id: string;
     public name: string;
     public code: string;

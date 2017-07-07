@@ -1,9 +1,8 @@
-import {IEntity} from "../../persistence/interfaces/entity";
 /**
  * Project janux-persistence
  * Created by ernesto on 6/19/17.
  */
-export class AuthContextEntity implements IEntity {
+export class AuthContextEntity {
 
     public id: string;
 

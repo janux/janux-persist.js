@@ -24,7 +24,7 @@
         "max-line-length": [false],
         "curly": false,
         "member-access": [
-            true,
+            false,
             "check-accessor",
             "check-constructor"
         ],

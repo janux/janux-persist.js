@@ -3,9 +3,7 @@
  * Created by ernesto on 6/13/17.
  */
 
-import {IEntity} from "../../persistence/interfaces/entity";
-
-export class AccountEntity implements IEntity {
+export class AccountEntity {
 
     public id: string;
     public username: string;

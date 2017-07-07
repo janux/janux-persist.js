@@ -45,7 +45,7 @@ export class ExampleUserDaoMongoDbImpl extends ExampleUserDao {
     protected validateBeforeUpdate<t>(objectToUpdate: ExampleUser): Promise<any> {
         const query = {
             $and: [
-                {_id: {$ne: objectToUpdate.id}},
+                {_id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
                 {email: {$eq: objectToUpdate.email}}
             ]
         };
