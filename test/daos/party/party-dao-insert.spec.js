@@ -10,13 +10,11 @@ var lokijs = require('lokijs');
 var mongoose = require('mongoose');
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
-var EmailAddress = require("../../../dist/index").EmailAddress;
-var PostalAddress = require("../../../dist/index").PostalAddress;
-var PhoneNumber = require("../../../dist/index").PhoneNumber;
-var PersonEntity = require("../../../dist/index").PersonEntity;
-var PersonValidator = require("../../../dist/index").PersonValidator;
-var OrganizationEntity = require("../../../dist/index").OrganizationEntity;
-var OrganizationValidator = require("../../../dist/index").OrganizationValidator;
+var EmailAddress = require("janux-people.js").EmailAddress;
+var PostalAddress = require("janux-people.js").PostalAddress;
+var PhoneNumber = require("janux-people.js").PhoneNumber;
+var PersonEntity = require("janux-people.js").Person;
+var OrganizationEntity = require("janux-people.js").Organization;
 var PartyDaoLokiJsImpl = require("../../../dist/index").PartyDaoLokiJsImpl;
 var PartyDaoMongoDbImpl = require("../../../dist/index").PartyDaoMongoDbImpl;
 var DbEngineUtilLokijs = require("../../../dist/index").DbEngineUtilLokijs;
@@ -37,13 +35,12 @@ var model = mongoose.model('party-test', PartyMongoDbSchema);
 var dbEngineMongoDb = new DbEngineUtilMongodb(model);
 var partyDaoMongodb = new PartyDaoMongoDbImpl(dbEngineMongoDb, null);
 
-const idAccount = "313030303030303030303037";
 const organizationName = "Glarus";
-const organizationDisplayName = "organization display name";
-const name = "John";
+// const organizationDisplayName = "organization display name";
+const firstName = "John";
 const middleName = "Doe";
 const lastName = "Iglesias";
-const displayName = "display name";
+// const displayName = "display name";
 const honorificPrefix = "honorificPrefix";
 const honorificSuffix = "honorificSuffix";
 const email = "glarus@mail.com";
@@ -70,7 +67,7 @@ const email3 = "glarus_dev@mail.com";
 const invalidEmail = "email.com";
 
 describe("Testing party dao insert methods", function () {
-    [partyDaoLokijs, partyDaoMongodb].forEach(function (partyDao) {
+    [partyDaoLokijs,partyDaoMongodb].forEach(function (partyDao) {
 
         beforeEach(function (done) {
             partyDao.deleteAll()
@@ -85,36 +82,47 @@ describe("Testing party dao insert methods", function () {
         describe("When inserting a valid person", function () {
             it("The entity should exits in the database", function (done) {
                 var person = new PersonEntity();
-                person.idAccount = idAccount;
-                person.displayName = displayName;
-                person.name.first = name;
+                person.name.first = firstName;
                 person.name.middle = middleName;
                 person.name.last = lastName;
                 person.name.honorificPrefix = honorificPrefix;
                 person.name.honorificSuffix = honorificSuffix;
-                person.type = PartyValidator.PERSON;
-                person.emails.push(new EmailAddress(work, true, email));
-                person.emails.push(new EmailAddress(home, false, email2));
-                person.addresses.push(new PostalAddress(
-                    home, true, line1Address,
-                    line2Address, line3Address, cityText,
-                    null, postalCode, stateText, null,
-                    countryIsoCode));
-                person.phones.push(new PhoneNumber(
-                    work,
-                    true,
-                    phone,
-                    extension,
-                    areaCode,
-                    countryCode
-                ));
+
+                var emailObject = new EmailAddress();
+                emailObject.address = email;
+                person.setContactMethod(work, emailObject);
+
+
+                // var email2 = new EmailAddress();
+                // email2.address = email2;
+                // person.setContactMethod(home,email2);
+
+
+                var postalAddressObject = new PostalAddress();
+                postalAddressObject.line1 = line1Address;
+                postalAddressObject.line2 = line2Address;
+                postalAddressObject.line3 = line3Address;
+                postalAddressObject.cityText = cityText;
+                postalAddressObject.postalCode = postalCode;
+                postalAddressObject.stateText = stateText;
+
+                person.setContactMethod(home, postalAddressObject);
+
+
+                var phoneNumberObject = new PhoneNumber();
+                phoneNumberObject.number = phone;
+                phoneNumberObject.extension = extension;
+                phoneNumberObject.areaCode = areaCode;
+                phoneNumberObject.countryCode = countryCode;
+                person.setContactMethod(work, phoneNumberObject);
                 partyDao.insert(person)
                     .then(function (result) {
-                        expect(result.id).not.to.be.null;
+                        expect(result.id).not.to.be.undefined;
                         validateRecord(result);
                         return partyDao.findOneById(result.id);
                     })
                     .then(function (resultQuery) {
+                        expect(resultQuery.id).not.to.be.undefined;
                         validateRecord(resultQuery);
                         done();
                     })
@@ -122,40 +130,36 @@ describe("Testing party dao insert methods", function () {
 
 
             function validateRecord(record) {
-                expect(record.idAccount).eq(idAccount);
-                expect(record.displayName).eq(displayName);
-                expect(record.name.first).eq(name);
+                // expect(record.displayName).eq(displayName);
+                expect(record.name.first).eq(firstName);
                 expect(record.name.middle).eq(middleName);
                 expect(record.name.last).eq(lastName);
                 expect(record.name.honorificPrefix).eq(honorificPrefix);
                 expect(record.name.honorificSuffix).eq(honorificSuffix);
-                expect(record.type).eq(PartyValidator.PERSON);
-                expect(record.emails.length).eq(2);
-                expect(record.emails[0].type).eq(work);
-                expect(record.emails[0].primary).eq(true);
-                expect(record.emails[0].address).eq(email);
-                expect(record.emails[1].type).eq(home);
-                expect(record.emails[1].primary).eq(false);
-                expect(record.emails[1].address).eq(email2);
-                expect(record.addresses.length).eq(1);
-                expect(record.addresses[0].type).eq(home);
-                expect(record.addresses[0].primary).eq(true);
-                expect(record.addresses[0].line1).eq(line1Address);
-                expect(record.addresses[0].line2).eq(line2Address);
-                expect(record.addresses[0].line3).eq(line3Address);
-                expect(record.addresses[0].cityText).eq(cityText);
-                expect(record.addresses[0].idCity).eq(null);
-                expect(record.addresses[0].postalCode).eq(postalCode);
-                expect(record.addresses[0].stateText).eq(stateText);
-                expect(record.addresses[0].idStateProvince).eq(null);
-                expect(record.addresses[0].countryIsoCode).eq(countryIsoCode);
-                expect(record.phones.length).eq(1);
-                expect(record.phones[0].type).eq(work);
-                expect(record.phones[0].primary).eq(true);
-                expect(record.phones[0].number).eq(phone);
-                expect(record.phones[0].extension).eq(extension);
-                expect(record.phones[0].areaCode).eq(areaCode);
-                expect(record.phones[0].countryCode).eq(countryCode);
+                expect(record.typeName).eq(PartyValidator.PERSON);
+                expect(record.emailAddresses(false).length).eq(1);
+                expect(record.emailAddresses(false)[0].type).eq(work);
+                expect(record.emailAddresses(false)[0].primary).eq(true);
+                expect(record.emailAddresses(false)[0].address).eq(email);
+                //expect(record.emailAddresses(false)[1].type).eq(home);
+                //expect(record.emailAddresses(false)[1].primary).eq(false);
+                //expect(record.emailAddresses(false)[1].address).eq(email2);
+                expect(record.postalAddresses(false).length).eq(1);
+                expect(record.postalAddresses(false)[0].type).eq(home);
+                expect(record.postalAddresses(false)[0].primary).eq(true);
+                expect(record.postalAddresses(false)[0].line1).eq(line1Address);
+                expect(record.postalAddresses(false)[0].line2).eq(line2Address);
+                expect(record.postalAddresses(false)[0].line3).eq(line3Address);
+                expect(record.postalAddresses(false)[0].cityText).eq(cityText);
+                expect(record.postalAddresses(false)[0].postalCode).eq(postalCode);
+                expect(record.postalAddresses(false)[0].stateText).eq(stateText);
+                expect(record.phoneNumbers(false).length).eq(1);
+                expect(record.phoneNumbers(false)[0].type).eq(work);
+                expect(record.phoneNumbers(false)[0].primary).eq(true);
+                expect(record.phoneNumbers(false)[0].number).eq(phone);
+                expect(record.phoneNumbers(false)[0].extension).eq(extension);
+                expect(record.phoneNumbers(false)[0].areaCode).eq(areaCode);
+                expect(record.phoneNumbers(false)[0].countryCode).eq(countryCode);
             }
         });
 
@@ -163,214 +167,172 @@ describe("Testing party dao insert methods", function () {
         describe("When inserting a valid organization", function () {
             it("The method should insert the record", function (done) {
                 var organization = new OrganizationEntity();
-                organization.displayName = organizationDisplayName;
+                // organization.displayName = organizationDisplayName;
                 organization.name = organizationName;
-                organization.type = PartyValidator.ORGANIZATION;
-                organization.emails.push(new EmailAddress(work, true, email));
-                organization.emails.push(new EmailAddress(home, false, email2));
+                var emailObject = new EmailAddress();
+                emailObject.address = email;
+                organization.setContactMethod(home, emailObject);
+
                 partyDao.insert(organization)
                     .then(function (result) {
                         expect(result.name).eq(organizationName);
-                        expect(result.type).eq(PartyValidator.ORGANIZATION);
-                        expect(result.emails.length).eq(2);
-                        expect(result.idAccount).to.be.undefined;
+                        expect(result.typeName).eq(PartyValidator.ORGANIZATION);
+                        expect(result.emailAddresses(false).length).eq(1);
                         return partyDao.findOneById(result.id);
                     })
                     .then(function (resultQuery) {
                         expect(resultQuery.name).eq(organizationName);
-                        expect(resultQuery.type).eq(PartyValidator.ORGANIZATION);
-                        expect(resultQuery.emails.length).eq(2);
-                        expect(resultQuery.idAccount).to.be.undefined;
+                        expect(resultQuery.typeName).eq(PartyValidator.ORGANIZATION);
+                        expect(resultQuery.emailAddresses(false).length).eq(1);
                         done();
                     })
             })
         });
 
-        describe("When inserting with invalid data, in this case an invalid email", function () {
-            it("The entity should insert en error", function (done) {
-                var person = new PersonEntity();
-                person.idAccount = idAccount;
-                person.displayName = displayName;
-                person.name.first = name;
-                person.name.middle = middleName;
-                person.type = PartyValidator.PERSON;
-                person.emails.push(new EmailAddress(work, true, invalidEmail));
-                partyDao.insert(person)
-                    .then(function (result) {
-                        expect.fail("The method should not have inserted the record");
-                    })
-                    .catch(function (err) {
-                        expect(err.length).eq(1);
-                        done();
-                    })
-            });
-        });
+        /*describe("When inserting with invalid data, in this case an invalid email", function () {
+         it("The entity should insert en error", function (done) {
+         var person = new PersonEntity();
+         // person.displayName = displayName;
+         person.name.first = firstName;
+         person.name.middle = middleName;
+         person.emails.push(new EmailAddress(work, true, invalidEmail));
+         partyDao.insert(person)
+         .then(function (result) {
+         expect.fail("The method should not have inserted the record");
+         })
+         .catch(function (err) {
+         expect(err.length).eq(1);
+         done();
+         })
+         });
+         });*/
 
-        describe("When inserting a second party with duplicated email addresses", function () {
-            it("The entity should send an error", function (done) {
-                var person = new PersonEntity();
-                person.idAccount = idAccount;
-                person.displayName = displayName;
-                person.name.first = name;
-                person.name.middle = middleName;
-                person.type = PartyValidator.PERSON;
-                person.emails.push(new EmailAddress(work, true, email));
-                partyDao.insert(person)
-                    .then(function (insertedRecord) {
-                        var person = new PersonEntity();
-                        person.displayName = displayName;
-                        person.name.first = name2;
-                        person.name.middle = middleName2;
-                        person.type = PartyValidator.PERSON;
-                        person.emails.push(new EmailAddress(work, true, email));
-                        person.emails.push(new EmailAddress(home, false, email2));
-                        return partyDao.insert(person);
-                    })
-                    .then(function (resultSecondInsert) {
-                        expect.fail("The method should not have inserted the record");
-                        done();
-                    })
-                    .catch(function (err) {
-                        assert("The method sent an error. It is OK");
-                        expect(err.length).eq(1);
-                        expect(err[0].attribute).eq("contact.emails");
-                        expect(err[0].value).eq(email);
-                        done();
-                    })
-            })
-        });
+        // describe("When inserting a second party with duplicated email addresses", function () {
+        //     it("The entity should send an error", function (done) {
+        //         var person = new PersonEntity();
+        //         person.displayName = displayName;
+        //         person.name.first = name;
+        //         person.name.middle = middleName;
+        //         person.type = PartyValidator.PERSON;
+        //         person.emails.push(new EmailAddress(work, true, email));
+        //         partyDao.insert(person)
+        //             .then(function (insertedRecord) {
+        //                 var person = new PersonEntity();
+        //                 person.displayName = displayName;
+        //                 person.name.first = name2;
+        //                 person.name.middle = middleName2;
+        //                 person.type = PartyValidator.PERSON;
+        //                 person.emails.push(new EmailAddress(work, true, email));
+        //                 person.emails.push(new EmailAddress(home, false, email2));
+        //                 return partyDao.insert(person);
+        //             })
+        //             .then(function (resultSecondInsert) {
+        //                 expect.fail("The method should not have inserted the record");
+        //                 done();
+        //             })
+        //             .catch(function (err) {
+        //                 assert("The method sent an error. It is OK");
+        //                 expect(err.length).eq(1);
+        //                 expect(err[0].attribute).eq("contact.emails");
+        //                 expect(err[0].value).eq(email);
+        //                 done();
+        //             })
+        //     })
+        // });
 
-        describe("When inserting a second person with the same name", function () {
-            it("The entity should send an error", function (done) {
-                var person = new PersonEntity();
-                person.idAccount = idAccount;
-                person.displayName = displayName;
-                person.name.first = name;
-                person.name.middle = middleName;
-                person.type = PartyValidator.PERSON;
-                person.emails.push(new EmailAddress(work, true, email));
-                person.emails.push(new EmailAddress(home, false, email2));
-                partyDao.insert(person)
-                    .then(function (insertedRecord) {
-                        var person = new PersonEntity();
-                        person.displayName = displayName;
-                        person.name.first = name;
-                        person.name.middle = middleName;
-                        person.type = PartyValidator.PERSON;
-                        person.emails.push(new EmailAddress(work, true, email3));
-                        return partyDao.insert(person);
-                    })
-                    .then(function (resultSecondInsert) {
-                        expect.fail("The method should not have inserted the record");
-                        done();
-                    })
-                    .catch(function (err) {
-                        assert("The method sent an error. It is OK");
-                        expect(err.length).eq(1);
-                        expect(err[0].attribute).eq(PersonValidator.NAME);
-                        expect(err[0].message).eq(PersonValidator.PERSON_NAME_DUPLICATED);
-                        done();
-                    })
-            })
-        });
+        // describe("When inserting a second person with the same name", function () {
+        //     it("The entity should send an error", function (done) {
+        //         var person = new PersonEntity();
+        //         person.displayName = displayName;
+        //         person.name.first = name;
+        //         person.name.middle = middleName;
+        //         person.type = PartyValidator.PERSON;
+        //         person.emails.push(new EmailAddress(work, true, email));
+        //         person.emails.push(new EmailAddress(home, false, email2));
+        //         partyDao.insert(person)
+        //             .then(function (insertedRecord) {
+        //                 var person = new PersonEntity();
+        //                 person.displayName = displayName;
+        //                 person.name.first = name;
+        //                 person.name.middle = middleName;
+        //                 person.type = PartyValidator.PERSON;
+        //                 person.emails.push(new EmailAddress(work, true, email3));
+        //                 return partyDao.insert(person);
+        //             })
+        //             .then(function (resultSecondInsert) {
+        //                 expect.fail("The method should not have inserted the record");
+        //                 done();
+        //             })
+        //             .catch(function (err) {
+        //                 assert("The method sent an error. It is OK");
+        //                 expect(err.length).eq(1);
+        //                 expect(err[0].attribute).eq(PersonValidator.NAME);
+        //                 expect(err[0].message).eq(PersonValidator.PERSON_NAME_DUPLICATED);
+        //                 done();
+        //             })
+        //     })
+        // });
 
-        describe("When inserting a second organization with the same name", function () {
-            it("The entity should send an error", function (done) {
-                var organization = new OrganizationEntity();
-                organization.idAccount = idAccount;
-                organization.name = organizationName;
-                organization.displayName = organizationDisplayName;
-                organization.type = PartyValidator.ORGANIZATION;
-                organization.emails.push(new EmailAddress(work, true, email));
-                organization.emails.push(new EmailAddress(home, false, email2));
-                partyDao.insert(organization)
-                    .then(function (insertedRecord) {
-                        var organization = new OrganizationEntity();
-                        organization.name = organizationName;
-                        organization.displayName = organizationDisplayName;
-                        organization.type = PartyValidator.ORGANIZATION;
-                        organization.emails.push(new EmailAddress(work, true, email3));
-                        return partyDao.insert(organization);
-                    })
-                    .then(function (resultSecondInsert) {
-                        expect.fail("The method should not have inserted the record");
-                        done();
-                    })
-                    .catch(function (err) {
-                        assert("The method sent an error. It is OK");
-                        expect(err.length).eq(1);
-                        expect(err[0].attribute).eq(OrganizationValidator.NAME);
-                        expect(err[0].message).eq(OrganizationValidator.NAME_DUPLICATED);
-                        done();
-                    })
-            })
-        });
-
-        describe("When inserting a second party with the same idAccount", function () {
-            it("The entity should send an error", function (done) {
-                var person = new PersonEntity();
-                person.idAccount = idAccount;
-                person.displayName = displayName;
-                person.name.first = name;
-                person.name.middle = middleName;
-                person.type = PartyValidator.PERSON;
-                person.emails.push(new EmailAddress(work, true, email));
-                person.emails.push(new EmailAddress(home, false, email2));
-                partyDao.insert(person)
-                    .then(function (insertedRecord) {
-                        var organization = new OrganizationEntity();
-                        organization.name = organizationName;
-                        organization.displayName = displayName;
-                        organization.idAccount = idAccount;
-                        organization.type = PartyValidator.ORGANIZATION;
-                        organization.emails.push(new EmailAddress(work, true, email3));
-                        return partyDao.insert(organization);
-                    })
-                    .then(function (resultSecondInsert) {
-                        expect.fail("The method should not have inserted the record");
-                        done();
-                    })
-                    .catch(function (err) {
-                        assert("The method sent an error. It is OK");
-                        expect(err.length).eq(1);
-                        expect(err[0].attribute).eq(PartyValidator.ID_ACCOUNT);
-                        expect(err[0].message).eq(PartyValidator.ID_ACCOUNT_DUPLICATE);
-                        expect(err[0].value).eq(idAccount);
-                        done();
-                    })
-            })
-        });
-
+        // describe("When inserting a second organization with the same name", function () {
+        //     it("The entity should send an error", function (done) {
+        //         var organization = new OrganizationEntity();
+        //         organization.name = organizationName;
+        //         organization.displayName = organizationDisplayName;
+        //         organization.type = PartyValidator.ORGANIZATION;
+        //         organization.emails.push(new EmailAddress(work, true, email));
+        //         organization.emails.push(new EmailAddress(home, false, email2));
+        //         partyDao.insert(organization)
+        //             .then(function (insertedRecord) {
+        //                 var organization = new OrganizationEntity();
+        //                 organization.name = organizationName;
+        //                 organization.displayName = organizationDisplayName;
+        //                 organization.type = PartyValidator.ORGANIZATION;
+        //                 organization.emails.push(new EmailAddress(work, true, email3));
+        //                 return partyDao.insert(organization);
+        //             })
+        //             .then(function (resultSecondInsert) {
+        //                 expect.fail("The method should not have inserted the record");
+        //                 done();
+        //             })
+        //             .catch(function (err) {
+        //                 assert("The method sent an error. It is OK");
+        //                 expect(err.length).eq(1);
+        //                 expect(err[0].attribute).eq(OrganizationValidator.NAME);
+        //                 expect(err[0].message).eq(OrganizationValidator.NAME_DUPLICATED);
+        //                 done();
+        //             })
+        //     })
+        // });
 
         describe("When inserting many records", function () {
             it("The method should have inserted the records", function (done) {
                 var organization = new OrganizationEntity();
                 organization.name = organizationName;
-                organization.displayName = organizationDisplayName;
-                organization.type = PartyValidator.ORGANIZATION;
-                organization.emails.push(new EmailAddress(work, true, email));
-                organization.emails.push(new EmailAddress(home, false, email2));
+                var emailObject1 = new EmailAddress(email);
+                organization.setContactMethod(home, emailObject1);
+
 
                 var person = new PersonEntity();
-                person.displayName = displayName;
-                person.name.first = name;
+                person.name.first = firstName;
                 person.name.middle = middleName;
                 person.name.last = lastName;
-                person.type = PartyValidator.PERSON;
-                person.emails.push(new EmailAddress(work, true, email3));
+                var emailObject2 = new EmailAddress(email2);
+                person.setContactMethod(work, emailObject2);
+
 
                 partyDao.insertMany([organization, person])
                     .then(function (resultInsert) {
                         expect(resultInsert.length).eq(2);
                         expect(resultInsert[0].name).eq(organizationName);
-                        expect(resultInsert[0].displayName).eq(organizationDisplayName);
-                        expect(resultInsert[0].type).eq(PartyValidator.ORGANIZATION);
-                        expect(resultInsert[0].emails.length).eq(2);
-                        expect(resultInsert[1].displayName).eq(displayName);
-                        expect(resultInsert[1].name.first).eq(name);
+                        // expect(resultInsert[0].displayName).eq(organizationDisplayName);
+                        expect(resultInsert[0].typeName).eq(PartyValidator.ORGANIZATION);
+                        expect(resultInsert[0].emailAddresses(false).length).eq(1);
+                        // expect(resultInsert[1].displayName).eq(displayName);
+                        expect(resultInsert[1].typeName).eq(PartyValidator.PERSON);
+                        expect(resultInsert[1].name.first).eq(firstName);
                         expect(resultInsert[1].name.middle).eq(middleName);
                         expect(resultInsert[1].name.last).eq(lastName);
-                        expect(resultInsert[1].emails.length).eq(1);
+                        expect(resultInsert[1].emailAddresses(false).length).eq(1);
                         done();
                         return partyDao.count();
                     })

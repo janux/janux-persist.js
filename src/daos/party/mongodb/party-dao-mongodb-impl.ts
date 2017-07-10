@@ -4,19 +4,12 @@
  */
 
 import * as Promise from "bluebird";
-import * as _ from 'lodash';
 import {Model} from "mongoose";
 import {DbEngineUtilMongodb} from "../../../persistence/impl/db-engine-util-mongodb";
-import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {MongoDbUtil} from "../../../persistence/util/mongodb-util.js";
-import {isBlankString} from "../../../util/blank-string-validator";
-import {IPartyEntity} from "../iParty-entity";
-import {OrganizationEntity} from "../organization/organization-entity";
 import {PartyDao} from "../party-dao";
-import {PartyValidator} from "../party-validator";
-import {PersonEntity} from "../person/person-entity";
+import JanuxPeople = require("janux-people.js");
 
 export class PartyDaoMongoDbImpl extends PartyDao {
 
@@ -27,21 +20,21 @@ export class PartyDaoMongoDbImpl extends PartyDao {
         this.model = dbEngineUtil.model;
     }
 
-    protected validateBeforeUpdate(objectToUpdate: IPartyEntity): Promise<IValidationError[]> {
+    protected validateBeforeUpdate(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
         return this.validateDuplicated(objectToUpdate);
     }
 
-    protected validateDuplicated(objectToUpdate: IPartyEntity): Promise<IValidationError[]> {
-        let emailAddressesToLookFor: string[];
-        emailAddressesToLookFor = objectToUpdate.emails.map((value, index, array) => value.address);
-        let personReference: PersonEntity;
-        let organizationReference: OrganizationEntity;
+    protected validateDuplicated(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
+        /*let emailAddressesToLookFor: string[];
+        emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value) => value.address);
+        let personReference: JanuxPeople.PersonImpl;
+        let organizationReference: JanuxPeople.OrganizationImpl;
         let query: any;
-        if (objectToUpdate.type === PartyValidator.PERSON) {
-            personReference = objectToUpdate as PersonEntity;
+        if (objectToUpdate.typeName === PartyValidator.PERSON) {
+            personReference = objectToUpdate as JanuxPeople.PersonImpl;
             query = {
                 $and: [
-                    {_id: {$ne: objectToUpdate.id}},
+                    {_id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
                     {
                         $or: [
                             {"emails.address": {$in: emailAddressesToLookFor}},
@@ -59,7 +52,7 @@ export class PartyDaoMongoDbImpl extends PartyDao {
                 query.$and[1].$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
             }
         } else {
-            organizationReference = objectToUpdate as OrganizationEntity;
+            organizationReference = objectToUpdate as JanuxPeople.OrganizationImpl;
             query = {
                 $and: [
                     {_id: {$ne: objectToUpdate.id}},
@@ -79,6 +72,7 @@ export class PartyDaoMongoDbImpl extends PartyDao {
             .then((resultQuery: IPartyEntity[]) => {
                 const errors: ValidationError[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
                 return Promise.resolve(errors);
-            });
+            });*/
+        return Promise.resolve([]);
     }
 }

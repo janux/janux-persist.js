@@ -141,7 +141,7 @@ export class AuthContextService {
     /**
      * Find one auth context and attach their permission bits.
      * @param id The id of the auth context
-     * @return {Bluebird<any>} The auth context.
+     * @return {Promise<any>} The auth context.
      */
     public static findOneById(id: string): Promise<any> {
         this._log.debug("Call to findOneById with id: %j", id);
@@ -163,7 +163,7 @@ export class AuthContextService {
     /**
      * Find one auth context and attach their permission bits.
      * @param authContextName The authContextName of the auth context
-     * @return {Bluebird<any>} The auth context.
+     * @return {Promise<any>} The auth context.
      */
     public static findOneByName(authContextName: string): Promise<any> {
         this._log.debug("Call to findOneByName with authContextName: %j", authContextName);
@@ -205,7 +205,7 @@ export class AuthContextService {
 
     /**
      * Find all auth context and attach their permission bits.
-     * @return {Bluebird<any[]>} The auth contexts.
+     * @return {Promise<any[]>} The auth contexts.
      */
     public static findAll(): Promise<any[]> {
         this._log.debug("Call to findAll");
@@ -229,7 +229,7 @@ export class AuthContextService {
     /**
      * Get the permission bits for each auth context
      * @param authContexts
-     * @return {Bluebird<any>}
+     * @return {Promise<any>}
      */
     private static populateData(authContexts: AuthContextEntity[]): Promise<any> {
         const idsAuthContext = authContexts.map((value) => value.id);
@@ -338,7 +338,7 @@ export class AuthContextService {
      * Validate the records before update
      * @param authContextEntity The auth context.
      * @param permissionBits the permission bits.
-     * @return {Bluebird<Array>} Return a promise indicating the permission bits that are going to be removed.
+     * @return {Promise<Array>} Return a promise indicating the permission bits that are going to be removed.
      */
     private static validatePermissionBitsUpdate(authContextEntity: AuthContextEntity, permissionBits: PermissionBitEntity[]): Promise<any> {
         this._log.debug(

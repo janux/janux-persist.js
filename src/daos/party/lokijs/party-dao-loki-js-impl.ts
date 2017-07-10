@@ -4,18 +4,11 @@
  */
 
 import * as Promise from "bluebird";
-import * as _ from "lodash";
 import {DbEngineUtilLokijs} from "../../../persistence/impl/db-engine-util-lokijs";
-import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {LokiJsUtil} from "../../../persistence/util/lokijs-util";
-import {isBlankString} from "../../../util/blank-string-validator";
-import {IPartyEntity} from "../iParty-entity";
-import {OrganizationEntity} from "../organization/organization-entity";
 import {PartyDao} from "../party-dao";
-import {PartyValidator} from "../party-validator";
-import {PersonEntity} from "../person/person-entity";
+import JanuxPeople = require("janux-people.js");
 
 export class PartyDaoLokiJsImpl extends PartyDao {
 
@@ -26,21 +19,21 @@ export class PartyDaoLokiJsImpl extends PartyDao {
         this.collection = dbEngineUtil.collection;
     }
 
-    protected validateBeforeUpdate<t>(objectToUpdate: IPartyEntity): Promise<IValidationError[]> {
+    protected validateBeforeUpdate<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
         return this.validateDuplicated(objectToUpdate);
     }
 
-    private validateDuplicated<t>(objectToUpdate: IPartyEntity): Promise<IValidationError[]> {
-        let emailAddressesToLookFor: string[];
-        emailAddressesToLookFor = objectToUpdate.emails.map((value, index, array) => value.address);
-        let personReference: PersonEntity;
-        let organizationReference: OrganizationEntity;
+    private validateDuplicated<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
+        /*let emailAddressesToLookFor: string[];
+        emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value, index, array) => value.address);
+        let personReference: JanuxPeople.PersonImpl;
+        let organizationReference: JanuxPeople.OrganizationImpl;
         let query: any;
-        if (objectToUpdate.type === PartyValidator.PERSON) {
-            personReference = objectToUpdate as PersonEntity;
+        if (objectToUpdate.typeName === PartyValidator.PERSON) {
+            personReference = objectToUpdate as JanuxPeople.PersonImpl;
             query = {
                 $and: [
-                    {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
+                    {$loki: {$ne: _.toNumber(objectToUpdate[this.ID_REFERENCE])}},
                     {
                         $or: [
                             {"emails.address": {$in: emailAddressesToLookFor}},
@@ -58,7 +51,7 @@ export class PartyDaoLokiJsImpl extends PartyDao {
                 query.$and[1].$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
             }
         } else {
-            organizationReference = objectToUpdate as OrganizationEntity;
+            organizationReference = objectToUpdate as JanuxPeople.OrganizationImpl;
             query = {
                 $and: [
                     {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
@@ -71,14 +64,13 @@ export class PartyDaoLokiJsImpl extends PartyDao {
                 ]
             };
         }
-        if (_.isUndefined(objectToUpdate.idAccount) === false) {
-            query.$and[1].$or.push({idAccount: {$eq: objectToUpdate.idAccount}});
-        }
         return LokiJsUtil.findAllByQuery(this.collection, query)
             .then((resultQuery: IPartyEntity[]) => {
                 const errors: ValidationError[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
                 return Promise.resolve(errors);
-            });
+            });*/
+
+        return Promise.resolve([]);
     }
 
 }

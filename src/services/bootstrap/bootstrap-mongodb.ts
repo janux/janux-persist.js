@@ -4,10 +4,6 @@
  */
 
 import * as logger from 'log4js';
-import {AccountRoleDao} from "../../daos/account-role/account-role-dao";
-import {AccountRoleMongoDbSchema} from "../../daos/account-role/mongodb/account-role-mongodb-schema";
-import {AccountDaoMongodbImpl} from "../../daos/account/mongodb/account-dao-mongodb-impl";
-import {AccountMongoDbSchema} from "../../daos/account/mongodb/account-mongodb-schema";
 import {AuthContextMongoDbImpl} from "../../daos/auth-context/mongodb/auth-context-dao-mongodb-impl";
 import {AuthContextSchema} from "../../daos/auth-context/mongodb/auth-context-schema";
 import {CityDaoMongoDbImpl} from "../../daos/city/mongodb/city-dao-mongodb-impl";
@@ -27,6 +23,10 @@ import {RoleDaoMongoDbImpl} from "../../daos/role/mongodb/role-dao-mongodb-impl"
 import {RoleMongoDbSchema} from "../../daos/role/mongodb/role-mongodb-schema";
 import {StateProvinceDaoMongoDbImpl} from "../../daos/state-province/mongodb/state-province-mongodb-impl";
 import {StateProvinceMongoDbSchema} from "../../daos/state-province/mongodb/state-province-mongodb-schema";
+import {UserRoleMongoDbSchema} from "../../daos/user-role/mongodb/user-role-mongodb-schema";
+import {UserRoleDao} from "../../daos/user-role/user-role-dao";
+import {UserDaoMongodbImpl} from "../../daos/user/mongodb/user-dao-mongodb-impl";
+import {UserMongoDbSchema} from "../../daos/user/mongodb/user-mongodb-schema";
 import {DbEngineUtilMongodb} from "../../persistence/impl/db-engine-util-mongodb";
 import {EntityProperties} from "../../persistence/impl/entity-properties";
 
@@ -40,13 +40,13 @@ export class BootStrapMongoDbDaos {
             , null);
 
         // Account dao
-        persistence.accountDao = new AccountDaoMongodbImpl(
-            new DbEngineUtilMongodb(mongoose.model('account', AccountMongoDbSchema)),
+        persistence.userDao = new UserDaoMongodbImpl(
+            new DbEngineUtilMongodb(mongoose.model('account', UserMongoDbSchema)),
             new EntityProperties(false, true));
 
         // Account role
-        persistence.accountRoleDao = new AccountRoleDao(
-            new DbEngineUtilMongodb(mongoose.model('accountRole', AccountRoleMongoDbSchema)),
+        persistence.userRoleDao = new UserRoleDao(
+            new DbEngineUtilMongodb(mongoose.model('accountRole', UserRoleMongoDbSchema)),
             new EntityProperties(false, true));
 
         // Auth context

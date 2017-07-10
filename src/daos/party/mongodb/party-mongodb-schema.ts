@@ -8,11 +8,7 @@ export const PartyMongoDbSchema = new mongoose.Schema({
     idAccount: {
         type: mongoose.Schema.Types.ObjectId
     },
-    type: {
-        type: String,
-        required: true
-    },
-    displayName: {
+    typeName: {
         type: String,
         required: true
     },
@@ -22,7 +18,7 @@ export const PartyMongoDbSchema = new mongoose.Schema({
     },
     emails: {
         type: mongoose.Schema.Types.Mixed,
-        required: true
+        required: false
     },
     phones: {
         type: mongoose.Schema.Types.Mixed,

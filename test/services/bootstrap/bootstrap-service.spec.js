@@ -108,8 +108,8 @@ describe("Testing bootstrap service", function () {
     });
 
     function validatePersistenceNotUndefined() {
-        expect(Persistence.accountDao).not.to.be.undefined;
-        expect(Persistence.accountRoleDao).not.to.be.undefined;
+        expect(Persistence.userDao).not.to.be.undefined;
+        expect(Persistence.userRoleDao).not.to.be.undefined;
         expect(Persistence.displayNameDao).not.to.be.undefined;
         expect(Persistence.authContextDao).not.to.be.undefined;
         expect(Persistence.permissionBitDao).not.to.be.undefined;
@@ -122,8 +122,8 @@ describe("Testing bootstrap service", function () {
     }
 
     function validateUndefinedPersistence() {
-        expect(Persistence.accountDao).to.be.undefined;
-        expect(Persistence.accountRoleDao).to.be.undefined;
+        expect(Persistence.userDao).to.be.undefined;
+        expect(Persistence.userRoleDao).to.be.undefined;
         expect(Persistence.displayNameDao).to.be.undefined;
         expect(Persistence.authContextDao).to.be.undefined;
         expect(Persistence.permissionBitDao).to.be.undefined;

@@ -5,11 +5,11 @@
 import * as Promise from "bluebird";
 import * as _ from "lodash";
 import * as logger from 'log4js';
-import {AccountRoleEntity} from "../../daos/account-role/account-role-entity";
 import {PermissionBitEntity} from "../../daos/permission-bit/permission-bit-entity";
 import {Persistence} from "../../daos/persistence";
 import {RoleEntity} from "../../daos/role/role-entity";
 import {RoleValidator} from "../../daos/role/role-validation";
+import {UserRoleEntity} from "../../daos/user-role/user-role-entity";
 import {ValidationError} from "../../persistence/impl/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
 import {RoleService} from "./role-service";
@@ -48,11 +48,11 @@ export class RoleServiceValidator {
      * Validate data before delete
      * @param roleIds
      * @param force
-     * @return {Bluebird<AccountRoleEntity[]>}
+     * @return {Promise<UserRoleEntity[]>}
      */
     public static validateForDelete(roleIds: string[], force: boolean) {
-        return Persistence.accountRoleDao.findAllByRoleIdsIn(roleIds)
-            .then((resultQuery: AccountRoleEntity[]) => {
+        return Persistence.userRoleDao.findAllByRoleIdsIn(roleIds)
+            .then((resultQuery: UserRoleEntity[]) => {
                 if (resultQuery.length > 0 && force === false) {
                     return Promise.reject([
                         new ValidationError(RoleService.ACCOUNT, RoleService.ROLE_ASSOCIATED_WITH_ACCOUNT, "")
@@ -126,8 +126,8 @@ export class RoleServiceValidator {
                 // There are no sub roles that needs to be removed.
                 if (idsToDelete.length === 0) return Promise.resolve();
                 // Look for account associations
-                return Persistence.accountRoleDao.findAllByRoleIdsIn(idsToDelete)
-                    .then((accountRoles: AccountRoleEntity[]) => {
+                return Persistence.userRoleDao.findAllByRoleIdsIn(idsToDelete)
+                    .then((accountRoles: UserRoleEntity[]) => {
                         if (accountRoles.length === 0 || force === true) return Promise.resolve();
                         return Promise.reject([
                             new ValidationError(RoleService.ACCOUNT, RoleService.ROLE_ASSOCIATED_WITH_ACCOUNT, "")

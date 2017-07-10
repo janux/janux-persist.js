@@ -6,18 +6,16 @@
 import * as logger from 'log4js';
 import {ValidationError} from "../../../../persistence/impl/validation-error";
 import {isBlankString} from "../../../../util/blank-string-validator";
-import {ContactValidator} from "../contact-validator";
-import {PhoneNumber} from "./phone-number";
+import JanuxPeople = require("janux-people.js");
 
 export class PhoneNumberValidator {
 
     public static readonly CONTACT_PHONE = "contacts.phone.number";
     public static readonly NUMBER_EMPTY = "The number is empty";
 
-    public static validatePhoneNumber(phone: PhoneNumber): ValidationError[] {
+    public static validatePhoneNumber(phone: JanuxPeople.PhoneNumber): ValidationError[] {
         this._log.debug("Call to validatePhoneNumber with phone: %j", phone);
-        let errors: ValidationError[] = [];
-        errors = errors.concat(ContactValidator.validateBaseContactInfo("contact.phone", phone));
+        const errors: ValidationError[] = [];
         if (isBlankString(phone.number)) {
             errors.push(new ValidationError(this.CONTACT_PHONE, this.NUMBER_EMPTY, ""));
         }

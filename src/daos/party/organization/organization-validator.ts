@@ -6,7 +6,7 @@
 import * as logger from 'log4js';
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {isBlankString} from "../../../util/blank-string-validator";
-import {OrganizationEntity} from "./organization-entity";
+import JanuxPeople = require("janux-people.js");
 
 export class OrganizationValidator {
 
@@ -14,7 +14,7 @@ export class OrganizationValidator {
     public static readonly NAME_DUPLICATED = "There is another organization with the same name";
     public static readonly NAME_EMPTY = "Organization name is empty";
 
-    public static validateOrganization(organization: OrganizationEntity): ValidationError[] {
+    public static validateOrganization(organization: JanuxPeople.Organization): ValidationError[] {
         this._log.debug("Call to validateOrganization with organization: %j", organization);
         const errors: ValidationError[] = [];
         if (isBlankString(organization.name)) {

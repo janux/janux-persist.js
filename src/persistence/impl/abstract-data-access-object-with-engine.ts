@@ -29,22 +29,6 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     }
 
     /**
-     * Query an object by the id.
-     * @param id The id.
-     */
-    public findOneByIdMethod(id: string): Promise<t> {
-        return this.dbEngineUtil.findOneById(id);
-    }
-
-    /**
-     * Query several objects by a array of ids.
-     * @param arrayOfIds An array of ids.
-     */
-    public  findAllByIdsMethod(arrayOfIds: any[]): Promise<t[]> {
-        return this.dbEngineUtil.findAllByIds(arrayOfIds);
-    }
-
-    /**
      * WARNING: This method IS NOT protected by any relational integrity rule because
      * noSql databases doesn't have this feature. Be VERY, VERY careful when calling this method.
      * Nothing (you, the db engine or anything else) will stop the operation once called.
@@ -91,6 +75,22 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
 
     public deleteAllByIds(ids: string[]): Promise<any> {
         return this.dbEngineUtil.deleteAllByIds(ids);
+    }
+
+    /**
+     * Query an object by the id.
+     * @param id The id.
+     */
+    protected findOneByIdMethod(id: string): Promise<t> {
+        return this.dbEngineUtil.findOneById(id);
+    }
+
+    /**
+     * Query several objects by a array of ids.
+     * @param arrayOfIds An array of ids.
+     */
+    protected  findAllByIdsMethod(arrayOfIds: any[]): Promise<t[]> {
+        return this.dbEngineUtil.findAllByIds(arrayOfIds);
     }
 
     /**

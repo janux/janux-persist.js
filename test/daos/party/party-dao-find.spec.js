@@ -10,9 +10,8 @@ var lokijs = require('lokijs');
 var mongoose = require('mongoose');
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
-var EmailAddress = require("../../../dist/index").EmailAddress;
-var PersonEntity = require("../../../dist/index").PersonEntity;
-var OrganizationEntity = require("../../../dist/index").OrganizationEntity;
+var PersonEntity = require("janux-people.js").Person;
+var OrganizationEntity = require("janux-people.js").Organization;
 var PartyDaoLokiJsImpl = require("../../../dist/index").PartyDaoLokiJsImpl;
 var PartyDaoMongoDbImpl = require("../../../dist/index").PartyDaoMongoDbImpl;
 var DbEngineUtilLokijs = require("../../../dist/index").DbEngineUtilLokijs;
@@ -59,7 +58,7 @@ const middleName2 = "Smith";
 var invalidId1 = "313030303030303030303030";
 var invalidId2 = "313030303030303030303032";
 
-describe("Testing party dao find  methods", function () {
+describe("Testing party dao find methods", function () {
     [partyDaoLokijs, partyDaoMongodb].forEach(function (partyDao) {
         describe("Given the inserted records", function () {
 
@@ -72,35 +71,19 @@ describe("Testing party dao find  methods", function () {
                 partyDao.deleteAll()
                     .then(function () {
                         var organization = new OrganizationEntity();
-                        organization.idAccount = idAccount;
                         organization.name = organizationName;
-                        organization.displayName = displayName;
-                        organization.type = PartyValidator.ORGANIZATION;
-                        organization.emails.push(new EmailAddress(work, true, email));
-                        organization.emails.push(new EmailAddress(home, false, email2));
 
                         var person = new PersonEntity();
-                        person.displayName = displayName;
                         person.name.first = firstName;
                         person.name.middle = middleName;
                         person.name.last = lastName;
-                        person.type = PartyValidator.PERSON;
-                        person.emails.push(new EmailAddress(work, true, email3));
 
                         var organization2 = new OrganizationEntity();
-                        organization2.displayName = displayName;
                         organization2.name = organizationName2;
-                        organization2.type = PartyValidator.ORGANIZATION;
-                        organization2.emails.push(new EmailAddress(work, true, email4));
 
                         var person2 = new PersonEntity();
-                        person2.idAccount = idAccount2;
-                        person2.displayName = displayName;
                         person2.name.first = name2;
                         person2.name.middle = middleName2;
-                        person2.type = PartyValidator.PERSON;
-                        person2.emails.push(new EmailAddress(work, true, email5));
-
 
                         return partyDao.insertMany([organization, person, organization2, person2])
                     })
@@ -123,8 +106,10 @@ describe("Testing party dao find  methods", function () {
                     partyDao.findAllPeople()
                         .then(function (result) {
                             expect(result.length).eq(2);
-                            expect(result[0].type).eq(PartyValidator.PERSON);
-                            expect(result[1].type).eq(PartyValidator.PERSON);
+                            expect(result[0].id).not.to.be.undefined;
+                            expect(result[0].typeName).eq(PartyValidator.PERSON);
+                            expect(result[1].id).not.to.be.undefined;
+                            expect(result[1].typeName).eq(PartyValidator.PERSON);
                             done();
                         });
                 })
@@ -135,22 +120,8 @@ describe("Testing party dao find  methods", function () {
                     partyDao.findAllOrganizations()
                         .then(function (result) {
                             expect(result.length).eq(2);
-                            expect(result[0].type).eq(PartyValidator.ORGANIZATION);
-                            expect(result[1].type).eq(PartyValidator.ORGANIZATION);
-                            done();
-                        });
-                })
-            });
-
-            describe("When calling findAllAccounts", function () {
-                it("The method findAllAccounts return 2 records", function (done) {
-                    partyDao.findAllAccounts()
-                        .then(function (result) {
-                            expect(result.length).eq(2);
-                            expect(result[0].idAccount).eq(idAccount);
-                            expect(result[1].idAccount).eq(idAccount2);
-                            expect(result[0].type).eq(PartyValidator.ORGANIZATION);
-                            expect(result[1].type).eq(PartyValidator.PERSON);
+                            expect(result[0].typeName).eq(PartyValidator.ORGANIZATION);
+                            expect(result[1].typeName).eq(PartyValidator.ORGANIZATION);
                             done();
                         });
                 })

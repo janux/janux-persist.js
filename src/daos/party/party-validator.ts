@@ -3,29 +3,17 @@
  * Created by ernesto on 6/21/17.
  */
 
-import * as _ from 'lodash';
 import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
-import {PostalAddress} from "./contact/address/postal-address";
-import {PostalAddressValidator} from "./contact/address/postal-address-validator";
-import {IContactMethod} from "./contact/contact-method";
-import {ContactValidator} from "./contact/contact-validator";
-import {EmailAddress} from "./contact/email/email-address";
-import {EmailValidator} from "./contact/email/email-address-validator";
-import {PhoneNumber} from "./contact/phone/phone-number";
-import {PhoneNumberValidator} from "./contact/phone/phone-number-validator";
-import {IPartyEntity} from "./iParty-entity";
-import {OrganizationEntity} from "./organization/organization-entity";
 import {OrganizationValidator} from "./organization/organization-validator";
-import {PersonEntity} from "./person/person-entity";
-import {PersonName} from "./person/person-name";
 import {PersonValidator} from "./person/person-validator";
+import JanuxPeople = require("janux-people.js");
 
 export class PartyValidator {
 
-    public static readonly PERSON: string = "person";
-    public static readonly ORGANIZATION: string = "organization";
+    public static readonly PERSON: string = "PersonImpl";
+    public static readonly ORGANIZATION: string = "OrganizationImpl";
     public static readonly CONTACTS_EMAILS = "contact.emails";
     public static readonly CONTACT_PHONE_NUMBER = "contacts.phoneNumbers";
     public static readonly TYPE: string = "type";
@@ -43,98 +31,98 @@ export class PartyValidator {
     public static DISPLAY_NAME: string = "displayName";
     public static DISPLAY_NAME_EMPTY: string = "Display name is empty";
 
-    public static validateParty(party: IPartyEntity): ValidationError[] {
+    public static validateParty(party: JanuxPeople.Person | JanuxPeople.Organization): ValidationError[] {
         this._log.debug("Call to validateParty with party: %j", party);
         let errors: ValidationError[] = [];
-        if (isBlankString(party.type)) {
+        if (isBlankString(party.typeName)) {
             errors.push(new ValidationError(this.TYPE, this.TYPE_EMPTY, ""));
-        } else if (party.type !== this.PERSON && party.type !== this.ORGANIZATION) {
+        } else if (party.typeName !== this.PERSON && party.typeName !== this.ORGANIZATION) {
             errors.push(new ValidationError(
                 this.TYPE,
                 this.TYPE_NOT_PERSON_OR_ORGANIZATION,
                 ""));
         } else {
             errors = errors.concat(this.validateContactData(party));
-            if (party.type === this.PERSON) {
-                errors = errors.concat(PersonValidator.validatePerson(party as PersonEntity));
+            if (party.typeName === this.PERSON) {
+                errors = errors.concat(PersonValidator.validatePerson(party as JanuxPeople.Person));
             } else {
-                errors = errors.concat(OrganizationValidator.validateOrganization(party as OrganizationEntity));
+                errors = errors.concat(OrganizationValidator.validateOrganization(party as JanuxPeople.Organization));
             }
         }
-        if (_.isUndefined(party.idAccount) === false && isBlankString(party.idAccount) === true) {
-            errors.push(new ValidationError(this.ID_ACCOUNT, this.ID_ACCOUNT_NOT_UNDEFINED, party.idAccount));
-        }
-        if (isBlankString(party.displayName)) {
-            errors.push(new ValidationError(
-                this.DISPLAY_NAME,
-                this.DISPLAY_NAME_EMPTY,
-                ""));
-        }
+        // TODO: Look for how to validate that.
+        // if (isBlankString(party.displayName)) {
+        //     errors.push(new ValidationError(
+        //         this.DISPLAY_NAME,
+        //         this.DISPLAY_NAME_EMPTY,
+        //         ""));
+        // }
 
         this._log.debug("Returning: %j", errors);
         return errors;
     }
 
-    public static validateDuplicatedRecords(resultQuery: IPartyEntity[], emailAddressesToLookFor: string[], reference: IPartyEntity): ValidationError[] {
+    public static validateDuplicatedRecords(resultQuery: JanuxPeople.Person | JanuxPeople.Organization[],
+                                            emailAddressesToLookFor: string[],
+                                            reference: JanuxPeople.Person | JanuxPeople.Organization): ValidationError[] {
         this._log.debug(
             "Call to validateDuplicatedRecords with resultQuery: %j  emailAddressesToLookFor: %j reference : %j",
             resultQuery,
             emailAddressesToLookFor,
             resultQuery);
         const errors: ValidationError[] = [];
-        let person: PersonEntity;
-        let organization: OrganizationEntity;
-        let personReference: PersonEntity;
-        let organizationReference: OrganizationEntity;
-        if (reference.type === this.PERSON) {
-            personReference = reference as PersonEntity;
-        } else {
-            organizationReference = reference as OrganizationEntity;
-        }
-        // Validating duplicated emails
-        const potentialDuplicatedEmailRecords: string[] = _.flatMap(resultQuery, (record) => {
-            return record.emails.map((value, index, array) => value.address);
-        });
-        const duplicatedEmails: string [] = _.intersection(emailAddressesToLookFor, potentialDuplicatedEmailRecords);
-        for (const obj of duplicatedEmails) {
-            errors.push(new ValidationError(
-                this.CONTACTS_EMAILS,
-                this.THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL,
-                obj));
-        }
+        /*let person: PersonEntity;
+         let organization: OrganizationEntity;
+         let personReference: PersonEntity;
+         let organizationReference: OrganizationEntity;
+         if (reference.type === this.PERSON) {
+         personReference = reference as PersonEntity;
+         } else {
+         organizationReference = reference as OrganizationEntity;
+         }
+         // Validating duplicated emails
+         const potentialDuplicatedEmailRecords: string[] = _.flatMap(resultQuery, (record) => {
+         return record.emails.map((value, index, array) => value.address);
+         });
+         const duplicatedEmails: string [] = _.intersection(emailAddressesToLookFor, potentialDuplicatedEmailRecords);
+         for (const obj of duplicatedEmails) {
+         errors.push(new ValidationError(
+         this.CONTACTS_EMAILS,
+         this.THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL,
+         obj));
+         }
 
-        // Validate duplicated name
-        for (const element of resultQuery) {
+         // Validate duplicated name
+         for (const element of resultQuery) {
 
-            // Validate duplicated idAccount
-            if (element.idAccount === reference.idAccount && isBlankString(element.idAccount) === false) {
-                errors.push(new ValidationError(
-                    this.ID_ACCOUNT,
-                    this.ID_ACCOUNT_DUPLICATE,
-                    reference.idAccount
-                ));
-            }
+         // Validate duplicated idAccount
+         if (element.idAccount === reference.idAccount && isBlankString(element.idAccount) === false) {
+         errors.push(new ValidationError(
+         this.ID_ACCOUNT,
+         this.ID_ACCOUNT_DUPLICATE,
+         reference.idAccount
+         ));
+         }
 
-            if (element.type === PartyValidator.PERSON && reference.type === element.type) {
-                // Validate duplicated person name
-                person = element as PersonEntity;
-                if (PersonName.validateSameName(person.name, personReference.name) === true) {
-                    errors.push(new ValidationError(
-                        PersonValidator.NAME,
-                        PersonValidator.PERSON_NAME_DUPLICATED,
-                        JSON.stringify(person.name)));
-                }
-            } else if (element.type === PartyValidator.ORGANIZATION && reference.type === element.type) {
-                // Validate duplicated organization name
-                organization = element as OrganizationEntity;
-                if (organization.name === organizationReference.name) {
-                    errors.push(new ValidationError(
-                        OrganizationValidator.NAME,
-                        OrganizationValidator.NAME_DUPLICATED,
-                        organization.name));
-                }
-            }
-        }
+         if (element.type === PartyValidator.PERSON && reference.type === element.type) {
+         // Validate duplicated person name
+         person = element as PersonEntity;
+         if (PersonName.validateSameName(person.name, personReference.name) === true) {
+         errors.push(new ValidationError(
+         PersonValidator.NAME,
+         PersonValidator.PERSON_NAME_DUPLICATED,
+         JSON.stringify(person.name)));
+         }
+         } else if (element.type === PartyValidator.ORGANIZATION && reference.type === element.type) {
+         // Validate duplicated organization name
+         organization = element as OrganizationEntity;
+         if (organization.name === organizationReference.name) {
+         errors.push(new ValidationError(
+         OrganizationValidator.NAME,
+         OrganizationValidator.NAME_DUPLICATED,
+         organization.name));
+         }
+         }
+         }*/
 
         this._log.debug("Retuning errors: %j", errors);
         return errors;
@@ -142,78 +130,79 @@ export class PartyValidator {
 
     private static _log = logger.getLogger("PartyValidator");
 
-    private static validateContactData(party: IPartyEntity) {
-        let errors: ValidationError[] = [];
+    private static validateContactData(party: JanuxPeople.Person | JanuxPeople.Organization) {
+        const errors: ValidationError[] = [];
         // Check there is at least one primary email
-        if (_.isArray(party.emails) === false || party.emails.length === 0) {
-            errors.push(new ValidationError(this.CONTACTS_EMAILS, this.AT_LEAST_ONE_EMAIL, ""));
-        } else {
-            errors = errors.concat(this.validateEmailAddresses(party.emails));
-            errors = errors.concat(this.validatePhoneNumbers(party.phones));
-            errors = errors.concat(this.validatePostalAddresses(party.addresses));
-        }
+        /*if (_.isArray(party.emailAddresses) === false || party.emailAddresses.length === 0) {
+         errors.push(new ValidationError(this.CONTACTS_EMAILS, this.AT_LEAST_ONE_EMAIL, ""));
+         } else {
+         errors = errors.concat(this.validateEmailAddresses(party.emailAddresses(false)));
+         errors = errors.concat(this.validatePhoneNumbers(party.phoneNumbers(false)));
+         errors = errors.concat(this.validatePostalAddresses(party.postalAddresses(false)));
+         }*/
         // Check there is only one primary email
         return errors;
     }
 
-    private static validateEmailAddresses(emails: EmailAddress[]): ValidationError[] {
-        let errors: ValidationError[] = [];
-        const addresses: string[] = emails.map((value, index, array) => value.address);
-        const uniqueAddresses: string[] = _.uniq(addresses);
-        if (addresses.length !== uniqueAddresses.length) {
-            errors.push(new ValidationError(this.CONTACTS_EMAILS, this.DUPLICATED_EMAILS, ""));
-        }
-        errors = errors.concat(this.checkOnlyOnePrimaryContact(this.CONTACTS_EMAILS, emails));
-        for (const email of emails) {
-            errors = errors.concat(EmailValidator.validateEmail(email));
-        }
+    private static validateEmailAddresses(emails: JanuxPeople.EmailAddress[]): ValidationError[] {
+        const errors: ValidationError[] = [];
+        /*const addresses: string[] = emails.map((value, index, array) => value.address);
+         const uniqueAddresses: string[] = _.uniq(addresses);
+         if (addresses.length !== uniqueAddresses.length) {
+         errors.push(new ValidationError(this.CONTACTS_EMAILS, this.DUPLICATED_EMAILS, ""));
+         }
+         errors = errors.concat(this.checkOnlyOnePrimaryContact(this.CONTACTS_EMAILS, emails));
+         for (const email of emails) {
+         errors = errors.concat(EmailValidator.validateEmail(email));
+         }*/
         return errors;
     }
 
-    private static validatePhoneNumbers(phones: PhoneNumber[]) {
-        let errors: ValidationError[] = [];
-        if (_.isArray(phones) === false) {
-            return errors;
-        }
-        if (phones.length > 0) {
-            errors = errors.concat(this.checkOnlyOnePrimaryContact(this.CONTACT_PHONE_NUMBER, phones));
-            for (const phone of phones) {
-                errors = errors.concat(ContactValidator.validateBaseContactInfo(this.CONTACT_PHONE_NUMBER, phone));
-                errors = errors.concat(PhoneNumberValidator.validatePhoneNumber(phone));
-            }
-        }
+    private static validatePhoneNumbers(phones: JanuxPeople.PhoneNumber[]) {
+        const errors: ValidationError[] = [];
+        /*if (_.isArray(phones) === false) {
+         return errors;
+         }
+         if (phones.length > 0) {
+         errors = errors.concat(this.checkOnlyOnePrimaryContact(this.CONTACT_PHONE_NUMBER, phones));
+         for (const phone of phones) {
+         errors = errors.concat(ContactValidator.validateBaseContactInfo(this.CONTACT_PHONE_NUMBER, phone));
+         errors = errors.concat(PhoneNumberValidator.validatePhoneNumber(phone));
+         }
+         }*/
         return errors;
     }
 
-    private static validatePostalAddresses(addresses: PostalAddress[]) {
-        let errors: ValidationError[] = [];
-        if (_.isArray(addresses) === false) {
-            return errors;
-        }
-        if (addresses.length > 0) {
-            errors = errors.concat(this.checkOnlyOnePrimaryContact(this.CONTACT_ADDRESSES, addresses));
-            for (const address of addresses) {
-                errors = errors.concat(ContactValidator.validateBaseContactInfo(this.CONTACT_ADDRESSES, address));
-                errors = errors.concat(PostalAddressValidator.validatePostalAddress(address));
-            }
-        }
+    private static validatePostalAddresses(addresses: JanuxPeople.PostalAddress[]) {
+        const errors: ValidationError[] = [];
+        /*if (_.isArray(addresses) === false) {
+         return errors;
+         }
+         if (addresses.length > 0) {
+         errors = errors.concat(this.checkOnlyOnePrimaryContact(this.CONTACT_ADDRESSES, addresses));
+         for (const address of addresses) {
+         errors = errors.concat(ContactValidator.validateBaseContactInfo(this.CONTACT_ADDRESSES, address));
+         errors = errors.concat(PostalAddressValidator.validatePostalAddress(address));
+         }
+         }*/
         return errors;
     }
 
-    private static checkOnlyOnePrimaryContact(prefix: string, contacts: IContactMethod[]): ValidationError[] {
+    private static checkOnlyOnePrimaryContact(prefix: string,
+                                              contacts: JanuxPeople.EmailAddress | JanuxPeople.PhoneNumber | JanuxPeople.PostalAddress): ValidationError[] {
         this._log.debug("Call to checkOnlyOnePrimaryContact with prefix: %j contacts: %j", prefix, contacts);
         const errors: ValidationError[] = [];
-        if (contacts.length > 0) {
-            let primaryRecords: IContactMethod[];
-            primaryRecords = _.filter(contacts, (o) => {
-                return o.primary === true;
-            });
-            if (primaryRecords.length > 1) {
-                errors.push(new ValidationError(prefix, this.MORE_THAN_ONE_PRIMARY_CONTACT, ""));
-            } else if (primaryRecords.length === 0) {
-                errors.push(new ValidationError(prefix, this.NO_PRIMARY_CONTACT, ""));
-            }
-        }
+        /*if (contacts.length > 0) {
+         let primaryRecords: IContactMethod[];
+         primaryRecords = _.filter(contacts, (o) => {
+         return o.primary === true;
+         });
+         if (primaryRecords.length > 1) {
+         errors.push(new ValidationError(prefix, this.MORE_THAN_ONE_PRIMARY_CONTACT, ""));
+         } else if (primaryRecords.length === 0) {
+         errors.push(new ValidationError(prefix, this.NO_PRIMARY_CONTACT, ""));
+         }
+         }*/
         return errors;
     }
 

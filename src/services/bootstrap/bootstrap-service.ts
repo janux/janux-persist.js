@@ -123,8 +123,8 @@ export class BootstrapService {
     }
 
     private static cleanPersistence() {
-        Persistence.accountDao = undefined;
-        Persistence.accountRoleDao = undefined;
+        Persistence.userDao = undefined;
+        Persistence.userRoleDao = undefined;
         Persistence.displayNameDao = undefined;
         Persistence.authContextDao = undefined;
         Persistence.permissionBitDao = undefined;

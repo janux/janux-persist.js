@@ -9,10 +9,8 @@ var config = require('config');
 var lokijs = require('lokijs');
 var mongoose = require('mongoose');
 
-var PartyValidator = require("../../../dist/index").PartyValidator;
-var EmailAddress = require("../../../dist/index").EmailAddress;
-var PersonEntity = require("../../../dist/index").PersonEntity;
-var OrganizationEntity = require("../../../dist/index").OrganizationEntity;
+var PersonEntity = require("janux-people.js").Person;
+var OrganizationEntity = require("janux-people.js").Organization;
 var PartyDaoLokiJsImpl = require("../../../dist/index").PartyDaoLokiJsImpl;
 var PartyDaoMongoDbImpl = require("../../../dist/index").PartyDaoMongoDbImpl;
 var DbEngineUtilLokijs = require("../../../dist/index").DbEngineUtilLokijs;
@@ -55,7 +53,7 @@ const organizationName2 = "Glarus 2";
 const name2 = "Jane";
 const middleName2 = "Smith";
 
-describe("Testing party dao find  methods", function () {
+describe("Testing party dao delete methods", function () {
     [partyDaoLokijs, partyDaoMongodb].forEach(function (partyDao) {
         describe("Given the inserted records", function () {
 
@@ -70,33 +68,18 @@ describe("Testing party dao find  methods", function () {
                         var organization = new OrganizationEntity();
                         organization.idAccount = idAccount;
                         organization.name = organizationName;
-                        organization.displayName = displayName;
-                        organization.type = PartyValidator.ORGANIZATION;
-                        organization.emails.push(new EmailAddress(work, true, email));
-                        organization.emails.push(new EmailAddress(home, false, email2));
 
                         var person = new PersonEntity();
-                        person.displayName = displayName;
                         person.name.first = firstName;
                         person.name.middle = middleName;
                         person.name.last = lastName;
-                        person.type = PartyValidator.PERSON;
-                        person.emails.push(new EmailAddress(work, true, email3));
 
                         var organization2 = new OrganizationEntity();
-                        organization2.displayName = displayName;
                         organization2.name = organizationName2;
-                        organization2.type = PartyValidator.ORGANIZATION;
-                        organization2.emails.push(new EmailAddress(work, true, email4));
 
                         var person2 = new PersonEntity();
-                        person2.idAccount = idAccount2;
-                        person2.displayName = displayName;
                         person2.name.first = name2;
                         person2.name.middle = middleName2;
-                        person2.type = PartyValidator.PERSON;
-                        person2.emails.push(new EmailAddress(work, true, email5));
-
 
                         return partyDao.insertMany([organization, person, organization2, person2])
                     })

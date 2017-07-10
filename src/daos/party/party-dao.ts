@@ -4,20 +4,19 @@
  */
 
 import * as Promise from "bluebird";
-import * as _ from "lodash";
+import * as _ from 'lodash';
+import * as logger from 'log4js';
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
-import {ValidationError} from "../../persistence/impl/validation-error";
 import {IDbEngineUtil} from "../../persistence/interfaces/db-engine-util-method";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
-import {isBlankString} from "../../util/blank-string-validator";
-import {IPartyEntity} from "./iParty-entity";
-import {OrganizationEntity} from "./organization/organization-entity";
 import {PartyValidator} from "./party-validator";
-import {PersonEntity} from "./person/person-entity";
+import JanuxPeople = require("janux-people.js");
+import {CircularReferenceDetector} from "../../util/circular-reference-detector/circular-reference-detector";
 
-export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<IPartyEntity> {
+export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxPeople.Person| JanuxPeople.Organization> {
 
+    private partyDaoLogger = logger.getLogger("PartyDao");
     private localDbEngineUtil: IDbEngineUtil;
 
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
@@ -29,75 +28,84 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<IParty
      * Find all people
      * @return {Promise<any[]>} The records
      */
-    public findAllPeople(): Promise<IPartyEntity[]> {
-        return this.localDbEngineUtil.findAllByAttribute("type", PartyValidator.PERSON);
+    public findAllPeople(): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+        return this.localDbEngineUtil.findAllByAttribute("typeName", PartyValidator.PERSON);
     }
 
     /**
      * Find all organizations
      * @return {Promise<any[]>} The records.
      */
-    public findAllOrganizations(): Promise<IPartyEntity[]> {
-        return this.localDbEngineUtil.findAllByAttribute("type", PartyValidator.ORGANIZATION);
+    public findAllOrganizations(): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+        return this.localDbEngineUtil.findAllByAttribute("typeName", PartyValidator.ORGANIZATION);
     }
 
-    /**
-     * Find both people and organizations that has an accountID
-     * @return {ValidationError[]} The parties that has a defined idAccount.
-     */
-    public findAllAccounts(): Promise<IPartyEntity[]> {
-        const query = {
-            idAccount: {$ne: undefined}
-        };
-        return this.localDbEngineUtil.findAllByQuery(query);
-    }
-
-    protected validateEntity<t>(objectToValidate: IPartyEntity): IValidationError[] {
+    protected validateEntity<t>(objectToValidate: JanuxPeople.Person | JanuxPeople.Organization): IValidationError[] {
         return PartyValidator.validateParty(objectToValidate);
     }
 
-    protected validateBeforeInsert(objectToInsert: IPartyEntity): Promise<IValidationError[]> {
-        let emailAddressesToLookFor: string[];
-        let personReference: PersonEntity;
-        let organizationReference: OrganizationEntity;
-        let query: any;
-        emailAddressesToLookFor = objectToInsert.emails.map((value, index, array) => value.address);
-        if (objectToInsert.type === PartyValidator.PERSON) {
-            personReference = objectToInsert as PersonEntity;
-            query = {
-                $or: [
-                    {"emails.address": {$in: emailAddressesToLookFor}},
-                    {
-                        $and: [
-                            {"name.first": {$eq: personReference.name.first}},
-                            {"name.middle": {$eq: personReference.name.middle}},
-                        ]
-                    }
-                ]
+    protected validateBeforeInsert(objectToInsert: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
+        // let emailAddressesToLookFor: string[];
+        // let personReference: JanuxPeople.PersonImpl;
+        // let organizationReference: JanuxPeople.OrganizationImpl;
+        // let query: any;
+        // emailAddressesToLookFor = objectToInsert.emailAddresses(false).map((value) => value.address);
+        // if (objectToInsert.typeName === PartyValidator.PERSON) {
+        //    personReference = objectToInsert as JanuxPeople.PersonImpl;
+        //    query = {
+        //        $or: [
+        //            {"emails.address": {$in: emailAddressesToLookFor}},
+        //            {
+        //                $and: [
+        //                    {"name.first": {$eq: personReference.name.first}},
+        //                    {"name.middle": {$eq: personReference.name.middle}},
+        //                ]
+        //            }
+        //        ]
+        //
+        //    };
+        //
+        //    if (isBlankString(personReference.name.last) === false) {
+        //        query.$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
+        //    }
+        // } else {
+        //    organizationReference = objectToInsert as JanuxPeople.OrganizationImpl;
+        //    query = {
+        //        $or: [
+        //            {"emails.address": {$in: emailAddressesToLookFor}},
+        //            {name: {$eq: organizationReference.name}}
+        //        ]
+        //    };
+        // }
+        //
+        // return this.dbEngineUtil.findAllByQuery(query)
+        //    .then((resultQuery: IPartyEntity[]) => {
+        //        const errors: ValidationError[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToInsert);
+        //        return Promise.resolve(errors);
+        //    });
+        return Promise.resolve([]);
+    }
 
-            };
+    protected convertBeforeSave(object: JanuxPeople.Person | JanuxPeople.Organization): any {
+        this.partyDaoLogger.debug("Call to convertBeforeSave with object: %j ", object);
+        CircularReferenceDetector.detectCircularReferences(object);
+        let result: any = object.toJSON();
 
-            if (isBlankString(personReference.name.last) === false) {
-                query.$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
-            }
+        // For some reason , PersonImpl an OrganizationImpl has circular references. In order to remove the circular
+        // references we do JSON.parse(JSON.stringify(object)). With this we avoid to crash mongoose.
+        result = JSON.parse(JSON.stringify(result));
+        result.typeName = object.typeName;
+        this.partyDaoLogger.debug("Returning %j", result);
+        return result;
+    }
+
+    protected convertAfterDbOperation(object: any): JanuxPeople.Person | JanuxPeople.Organization {
+        let result: any;
+        if (object.typeName === PartyValidator.PERSON) {
+            result = JanuxPeople.Person.fromJSON(object);
         } else {
-            organizationReference = objectToInsert as OrganizationEntity;
-            query = {
-                $or: [
-                    {"emails.address": {$in: emailAddressesToLookFor}},
-                    {name: {$eq: organizationReference.name}}
-                ]
-            };
+            result = JanuxPeople.Organization.fromJSON(object);
         }
-
-        if (_.isUndefined(objectToInsert.idAccount) === false) {
-            query.$or.push({idAccount: {$eq: objectToInsert.idAccount}});
-        }
-
-        return this.dbEngineUtil.findAllByQuery(query)
-            .then((resultQuery: IPartyEntity[]) => {
-                const errors: ValidationError[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToInsert);
-                return Promise.resolve(errors);
-            });
+        return result;
     }
 }

@@ -9,7 +9,7 @@
 module.exports = {
     serverAppContext: {
         db: {
-            dbEngine: "mongodb",
+            dbEngine: "lokijs",
             mongoConnUrl: "mongodb://localhost/janux-persistence-test",
             lokiJsDBPath: "./janux-persistence-test.db"
         }

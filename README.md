@@ -13,6 +13,8 @@ Mongo db version 3.4
 
 **Install**
 
+Before installing the dependencies. Make sure there is a reference of the project janux-people in the  "vendor" directory.
+
 After cloning the project you need to do `npm install` in order to install the dependencies.
  
 
@@ -37,3 +39,7 @@ This project use the config project where some settings are defined. Por example
  test.js
  
  For example, when you execute `gulp test` , the system gets the settings from test.js. 
+ 
+ **Extra tasks**
+ 
+ running `npm run generateUsers` generated sample user data in a lokijs or mongodb database (based on the info retrieved from config).

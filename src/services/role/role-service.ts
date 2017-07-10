@@ -6,12 +6,12 @@
 import * as Promise from "bluebird";
 import * as _ from "lodash";
 import * as logger from 'log4js';
-import {AccountRoleEntity} from "../../daos/account-role/account-role-entity";
 import {AuthContextEntity} from "../../daos/auth-context/auth-context-entity";
 import {PermissionBitEntity} from "../../daos/permission-bit/permission-bit-entity";
 import {Persistence} from "../../daos/persistence";
 import {RolePermissionBitEntity} from "../../daos/role-permission-bit/role-permission-bit-entity";
 import {RoleEntity} from "../../daos/role/role-entity";
+import {UserRoleEntity} from "../../daos/user-role/user-role-entity";
 import {isBlankString} from "../../util/blank-string-validator";
 import {RoleServiceValidator} from "./role-service-validator";
 
@@ -32,7 +32,7 @@ export class RoleService {
     /**
      * Insert a role an associate the permission bits to the role.
      * @param object
-     * @return {Bluebird<any>}
+     * @return {Promise<any>}
      */
     public static  insert(object: any): Promise<any> {
         this._log.debug("Call to insert with object %j ", object);
@@ -196,10 +196,10 @@ export class RoleService {
         this._log.debug("Call to remove with role: %j, force: %j", role, force);
         // Validate if the role is associated with users.
         return RoleServiceValidator.validateForDelete([role.id], force)
-            .then((accountsRoles: AccountRoleEntity[]) => {
+            .then((accountsRoles: UserRoleEntity[]) => {
                 if (force === true) {
                     const ids = accountsRoles.map((value) => value.id);
-                    return Persistence.accountRoleDao.deleteAllByIds(ids);
+                    return Persistence.userRoleDao.deleteAllByIds(ids);
                 } else {
                     return Promise.resolve();
                 }
@@ -333,10 +333,10 @@ export class RoleService {
                 // There are no sub roles that needs to be removed.
                 if (idsToDelete.length === 0) return Promise.resolve();
                 // Look for account associations
-                return Persistence.accountRoleDao.findAllByRoleIdsIn(idsToDelete)
-                    .then((accountRoles: AccountRoleEntity[]) => {
+                return Persistence.userRoleDao.findAllByRoleIdsIn(idsToDelete)
+                    .then((accountRoles: UserRoleEntity[]) => {
                         const ids = accountRoles.map((value) => value.id);
-                        return Persistence.accountRoleDao.deleteAllByIds(ids);
+                        return Persistence.userRoleDao.deleteAllByIds(ids);
                     })
                     .then(() => {
                         return Promise.map(idsToDelete, (element) => {
