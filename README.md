@@ -6,7 +6,7 @@ The project `janux-persistence` help to provide auth services to a system.
 
 This project has been tested with the following programs.
 
-Node version 6.
+Node version 4.4.3 (it can work with node version 6).
 
 Mongo db version 3.4
 

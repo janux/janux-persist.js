@@ -166,4 +166,8 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     protected  insertManyMethod(objectsToInsert: t[]): Promise<any> {
         return this.dbEngineUtil.insertManyMethod(objectsToInsert);
     }
+
+    protected findAllByQueryMethod(query: any): Promise<any> {
+        return this.dbEngineUtil.findAllByQuery(query);
+    }
 }

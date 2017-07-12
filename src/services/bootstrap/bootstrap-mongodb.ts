@@ -41,7 +41,7 @@ export class BootStrapMongoDbDaos {
 
         // Account dao
         persistence.userDao = new UserDaoMongodbImpl(
-            new DbEngineUtilMongodb(mongoose.model('account', UserMongoDbSchema)),
+            new DbEngineUtilMongodb(mongoose.model('user', UserMongoDbSchema)),
             new EntityProperties(false, true));
 
         // Account role

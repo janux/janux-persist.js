@@ -20,6 +20,14 @@ export class UserDaoMongodbImpl extends UserDao {
         this.model = dbEngineUtil.model;
     }
 
+    public findAllByUserNameMatch(username: string): Promise<UserEntity[]> {
+        const regexpUsername = new RegExp(username, "i");
+        const query = {
+            username: regexpUsername
+        };
+        return MongoDbUtil.findAllByQuery(this.model, query);
+    }
+
     protected validateBeforeInsert(objectToInsert: UserEntity): Promise<IValidationError[]> {
         const query = {
             $or: [
@@ -27,7 +35,7 @@ export class UserDaoMongodbImpl extends UserDao {
                 {contactId: {$eq: objectToInsert.contactId}}
             ]
         };
-        return MongoDbUtil.findAllByQuery(this.model, query)
+        return this.findAllByQuery(query)
             .then((result) => {
                 return Promise.resolve(UserValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
             });
@@ -49,12 +57,5 @@ export class UserDaoMongodbImpl extends UserDao {
             .then((result: UserEntity[]) => {
                 return Promise.resolve(UserValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
             });
-    }
-
-    protected findAllByUserNameMatch(username: string): Promise<UserEntity> {
-        const query = {
-            username: new RegExp(username, "i")
-        };
-        return null;
     }
 }

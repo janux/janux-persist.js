@@ -119,7 +119,11 @@ export class BootstrapService {
         const db = new loki(lokiJsDBPath, {
             throttledSaves: false
         });
-        return Promise.resolve(db);
+        return new Promise((resolve) => {
+            db.loadDatabase({}, (err, data) => {
+                resolve(db);
+            });
+        });
     }
 
     private static cleanPersistence() {

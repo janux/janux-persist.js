@@ -17,15 +17,23 @@ export abstract class UserDao extends AbstractDataAccessObjectWithEngine<UserEnt
         super(dbEngineUtil, entityProperties);
     }
 
-    public findOneByContactId(contactId: string) {
-        return this.dbEngineUtil.findOneByAttribute("contactId", contactId);
-    }
+    public abstract findAllByUserNameMatch(username: string): Promise<UserEntity[]>;
 
     public findOneByUserName(username: string): Promise<UserEntity> {
         return this.findOneByAttribute("username", username);
     }
 
-    protected abstract findAllByUserNameMatch(username: string): Promise<UserEntity>;
+    public findOneByUserId(userId: string): Promise<UserEntity> {
+        return this.findOneByAttribute("userId", userId);
+    }
+
+    public findOneByContactId(contactId: string) {
+        return this.findOneByAttribute("contactId", contactId);
+    }
+
+    public findAllByContactIdsIn(contactIds: string[]): Promise<UserEntity[]> {
+        return this.findAllByAttributeNameIn("contactId", contactIds);
+    }
 
     protected  validateEntity(objectToValidate: UserEntity): IValidationError[] {
         return UserValidator.validateAccount(objectToValidate);

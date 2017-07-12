@@ -4,7 +4,6 @@
  */
 
 import * as Promise from "bluebird";
-import * as _ from 'lodash';
 import * as logger from 'log4js';
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
 import {IDbEngineUtil} from "../../persistence/interfaces/db-engine-util-method";
@@ -14,14 +13,22 @@ import {PartyValidator} from "./party-validator";
 import JanuxPeople = require("janux-people.js");
 import {CircularReferenceDetector} from "../../util/circular-reference-detector/circular-reference-detector";
 
-export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxPeople.Person| JanuxPeople.Organization> {
+export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxPeople.Person | JanuxPeople.Organization> {
 
     private partyDaoLogger = logger.getLogger("PartyDao");
-    private localDbEngineUtil: IDbEngineUtil;
 
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.localDbEngineUtil = dbEngineUtil;
+    }
+
+    public abstract findAllByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]>;
+
+    public findAllByEmail(email: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+        return this.findAllByAttribute("emails.address", email);
+    }
+
+    public findAllByPhone(phone: string) {
+        return this.findAllByAttribute("phones.number", phone);
     }
 
     /**
@@ -29,7 +36,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
      * @return {Promise<any[]>} The records
      */
     public findAllPeople(): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
-        return this.localDbEngineUtil.findAllByAttribute("typeName", PartyValidator.PERSON);
+        return this.findAllByAttribute("typeName", PartyValidator.PERSON);
     }
 
     /**
@@ -37,7 +44,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
      * @return {Promise<any[]>} The records.
      */
     public findAllOrganizations(): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
-        return this.localDbEngineUtil.findAllByAttribute("typeName", PartyValidator.ORGANIZATION);
+        return this.findAllByAttribute("typeName", PartyValidator.ORGANIZATION);
     }
 
     protected validateEntity<t>(objectToValidate: JanuxPeople.Person | JanuxPeople.Organization): IValidationError[] {
@@ -106,6 +113,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
         } else {
             result = JanuxPeople.Organization.fromJSON(object);
         }
+        result.id = object.id;
         return result;
     }
 }

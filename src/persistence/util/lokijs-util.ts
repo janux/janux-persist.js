@@ -14,6 +14,9 @@ export class LokiJsUtil {
     public static findOneById(collection: any, id: any): Promise<any> {
         this._log.debug('Call to findOneById with ', id);
         const result = collection.get(_.toNumber(id));
+        if (_.isNil(result) === false) {
+            result.id = result.$loki.toString();
+        }
         this._log.debug('Result id %j', result);
         return Promise.resolve(result);
     }
@@ -41,14 +44,22 @@ export class LokiJsUtil {
             value);
         const query = {};
         query[attributeName] = value;
-        const result = collection.find(query);
+        let result = collection.find(query);
+        result = _.clone(result);
+        for (const obj of result) {
+            obj.id = obj.$loki.toString();
+        }
         this._log.debug('Result %j', result);
         return Promise.resolve(result);
     }
 
     public static findAllByQuery(collection: any, query: any): Promise<any> {
         this._log.debug("Call to findAllByQuery with collection: %j, query: %j", collection.name, query);
-        const result = collection.find(query);
+        let result = collection.find(query);
+        result = _.clone(result);
+        for (const obj of result) {
+            obj.id = obj.$loki.toString();
+        }
         this._log.debug('Result %j', result);
         return Promise.resolve(result);
     }
@@ -59,15 +70,18 @@ export class LokiJsUtil {
             attributeName,
             value);
         const query = {};
+        let result: any;
         query[attributeName] = {$eq: value};
-        const result = collection.find(query);
-        this._log.debug('Result %j', result);
-        if (result.length === 0) {
+        const resultQuery = collection.find(query);
+        this._log.debug('Result %j', resultQuery);
+        if (resultQuery.length === 0) {
             this._log.debug("Returning null");
             return Promise.resolve(null);
-        } else if (result.length === 1) {
-            this._log.debug("Returning %j", result[0]);
-            return Promise.resolve(result[0]);
+        } else if (resultQuery.length === 1) {
+            result = _.clone(resultQuery[0]);
+            result.id = result.$loki.toString();
+            this._log.debug("Returning %j", result);
+            return Promise.resolve(result);
         } else {
             this._log.warn('The query returned more than one result');
             return Promise.reject('The system returned more than one record');
@@ -83,6 +97,9 @@ export class LokiJsUtil {
         query[attributeName] = {$in: values};
         let result = collection.find(query);
         result = _.clone(result);
+        for (const obj of result) {
+            obj.id = obj.$loki.toString();
+        }
         this.cleanArray(result);
         this._log.debug('Result %j', result);
         return Promise.resolve(result);

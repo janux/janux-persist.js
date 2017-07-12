@@ -31,7 +31,7 @@ export class BootstrapLokiJsDaos {
 
         // Account dao
         Persistence.userDao = new UserDaoLokiJsImpl(
-            new DbEngineUtilLokijs("account", loki),
+            new DbEngineUtilLokijs("user", loki),
             new EntityProperties(false, true)
         );
 

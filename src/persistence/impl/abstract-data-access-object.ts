@@ -239,6 +239,13 @@ export abstract class AbstractDataAccessObject<t> {
      */
     public abstract deleteAllByIds(ids: string[]): Promise<any>;
 
+    protected findAllByQuery(query: any): Promise<t[]> {
+        return this.findAllByQueryMethod(query)
+            .then((resultQuery: any[]) => {
+                return Promise.resolve(resultQuery.map((value) => this.addExtraValues(this.convertAfterDbOperation(value), value)));
+            });
+    }
+
     /**
      * Return all records
      */
@@ -322,6 +329,8 @@ export abstract class AbstractDataAccessObject<t> {
      * returns an empty array
      */
     protected abstract validateEntity(objectToValidate: t): IValidationError[];
+
+    protected abstract findAllByQueryMethod(query: any): Promise<any>;
 
     /**
      * This method must be implemented in order to perform database validations before an insert,

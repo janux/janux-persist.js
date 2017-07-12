@@ -22,6 +22,13 @@ export class UserDaoLokiJsImpl extends UserDao {
         this.lokijsCollection = dbEngineUtil.collection;
     }
 
+    public findAllByUserNameMatch(username: string): Promise<UserEntity[]> {
+        const query = {
+            username: {$contains: username},
+        };
+        return this.findAllByQuery(query);
+    }
+
     protected validateBeforeInsert(objectToInsert: UserEntity): Promise<IValidationError[]> {
         const query = {
             $or: [
@@ -52,10 +59,5 @@ export class UserDaoLokiJsImpl extends UserDao {
             .then((result: UserEntity[]) => {
                 return Promise.resolve(UserValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
             });
-    }
-
-    protected findAllByUserNameMatch(username: string): Promise<UserEntity> {
-        const query = {username: {$contains: username}};
-        return LokiJsUtil.findAllByQuery(this.lokijsCollection, query);
     }
 }

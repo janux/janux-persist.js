@@ -2,6 +2,7 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
+import * as _ from 'lodash';
 import * as logger from 'log4js';
 import {IDbEngineUtil} from "../interfaces/db-engine-util-method";
 import {LokiJsUtil} from "../util/lokijs-util";
@@ -20,7 +21,10 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
     private _log = logger.getLogger("DbEngineUtilLokijs");
 
     constructor(collectionName: string, db: any) {
-        this.collection = db.addCollection(collectionName);
+        this.collection = db.getCollection(collectionName);
+        if (_.isNil(this.collection)) {
+            this.collection = db.addCollection(collectionName);
+        }
         this.db = db;
     }
 

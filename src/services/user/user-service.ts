@@ -6,6 +6,7 @@
 import * as Promise from "bluebird";
 import * as _ from 'lodash';
 import * as logger from 'log4js';
+import * as uuid from 'uuid';
 import {PartyValidator} from "../../daos/party/party-validator";
 import {Persistence} from "../../daos/persistence";
 import {UserEntity} from "../../daos/user/user-entity";
@@ -23,18 +24,101 @@ export class UserService {
     public static ACCOUNT_NOT_IN_DATABASE = "The account with this id does not exist in the database";
     public static PARTY_TYPE = "party.type";
 
-    public static findAll(): Promise<any> {
+    public static deleteUserByUserId(userId: string): Promise<any> {
+        this._log.debug("Call to deleteUserByUserId with userId: %j", userId);
+        let user: UserEntity;
+        return Persistence.userDao.findOneByUserId(userId)
+            .then((resultQuery: UserEntity) => {
+                user = resultQuery;
+                return Persistence.partyDao.removeById(user.contactId);
+            })
+            .then(() => {
+                return Persistence.userDao.remove(user);
+            });
+    }
+
+    public static saveOrUpdate(object: any): Promise<any> {
+        this._log.debug("Call to saveOrUpdate with object: %j", object);
+        if (isBlankString(object.id)) {
+            return this.insert(object);
+        } else {
+            return this.update(object);
+        }
+    }
+
+    public static findAll(): Promise<any[]> {
         this._log.debug("Call to findAll");
-        let result: any;
         return Persistence.userDao.findAll()
             .then((users: UserEntity[]) => {
-                result = users;
-                const contactIds = users.map((value) => value.contactId);
-                return Persistence.partyDao.findAllByIds(contactIds);
+                return this.populateContactData(users);
+            });
+    }
+
+    public static findOneByUserId(id: string): Promise<any> {
+        this._log.debug("Call to findOneByUserId with id: %j", id);
+        let result: any;
+        return Persistence.userDao.findOneByUserId(id)
+            .then((user: UserEntity) => {
+                if (_.isNil(user)) return Promise.reject("No user with the id " + id);
+                result = user;
+                return Persistence.partyDao.findOneById(user.contactId);
             })
-            .then((contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
-                result = this.mixData(result, contacts);
+            .then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
+                result.contact = contact.toJSON();
+                result.contact.id = contact.id;
+                result.contact.typeName = contact.typeName;
+                this._log.debug("Returning %j", result);
                 return Promise.resolve(result);
+            });
+    }
+
+    public static findOneByUserName(username: string): Promise<any> {
+        this._log.debug("Call to findOneByUserName with username: %j", username);
+        let result: any;
+        return Persistence.userDao.findOneByUserName(username)
+            .then((user: UserEntity) => {
+                if (_.isNil(user)) return Promise.reject("No user with the username " + username);
+                result = user;
+                return Persistence.partyDao.findOneById(user.contactId);
+            })
+            .then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
+                result.contact = contact.toJSON();
+                result.contact.id = contact.id;
+                result.contact.typeName = contact.typeName;
+                this._log.debug("Returning %j", result);
+                return Promise.resolve(result);
+            });
+    }
+
+    public static findAllByUserNameMatch(username: string): Promise<any[]> {
+        this._log.debug("Call to findAllByUserNameMatch with username: %j", username);
+        return Persistence.userDao.findAllByUserNameMatch(username)
+            .then((users: UserEntity[]) => {
+                return this.populateContactData(users);
+            });
+    }
+
+    public static findAllByContactNameMatch(name: string): Promise<any[]> {
+        this._log.debug("Call to findAllByContactNameMatch with name %j", name);
+        return Persistence.partyDao.findAllByName(name)
+            .then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
+                return this.populateUserData(resultQuery);
+            });
+    }
+
+    public static findAllByEmail(email: string): Promise<any[]> {
+        this._log.debug("Call to findAllByEmail with email %j", email);
+        return Persistence.partyDao.findAllByEmail(email)
+            .then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
+                return this.populateUserData(resultQuery);
+            });
+    }
+
+    public static findAllByPhone(phone: string): Promise<any[]> {
+        this._log.debug("Call to findAllByPhone with email %j", phone);
+        return Persistence.partyDao.findAllByPhone(phone)
+            .then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
+                return this.populateUserData(resultQuery);
             });
     }
 
@@ -53,9 +137,9 @@ export class UserService {
         let result: any;
         const user: UserEntity = new UserEntity();
         user.enabled = object.enabled;
-        user.userId = object.userId;
-        user.mdate = object.mdate;
-        user.cdate = object.cdate;
+        user.userId = uuid.v4();
+        user.mdate = new Date();
+        user.cdate = new Date();
         user.username = object.username;
         user.password = object.password;
         user.expirePassword = object.expirePassword;
@@ -70,8 +154,8 @@ export class UserService {
         }
 
         return this.definePartyInfo(object.contact)
-            .then((party: JanuxPeople.Person | JanuxPeople.Organization) => {
-                associatedParty = party;
+            .then((contacts: JanuxPeople.Person | JanuxPeople.Organization) => {
+                associatedParty = contacts;
                 user.contactId = associatedParty[this.ID_REFERENCE];
                 return Persistence.userDao.insert(user);
             })
@@ -134,6 +218,7 @@ export class UserService {
             .then((updatedParty: any) => {
                 result.contact = updatedParty.toJSON();
                 result.contact.typeName = updatedParty.typeName;
+                result.contact.id = updatedParty.id;
                 return Promise.resolve(result);
             });
     }
@@ -141,12 +226,45 @@ export class UserService {
     private static _log = logger.getLogger("UserService");
     private static ID_REFERENCE: string = "id";
 
-    private static mixData(users: any[], contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]) {
+    private static populateUserData(contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]): Promise<any> {
+        this._log.debug("Call to populate populateUserData with contacts: %j", contacts);
+        const ids = _.map(contacts, (o: any) => o.id);
+        let result: any;
+        return Persistence.userDao.findAllByContactIdsIn(ids)
+            .then((users: UserEntity[]) => {
+                result = this.mixData(users, contacts);
+                this._log.debug("populateUserData : returning %j", result);
+                return Promise.resolve(result);
+            });
+    }
+
+    private static populateContactData(users: UserEntity[]) {
+        this._log.debug("Call to populateContactData with users: %j", users);
+        let result: any = users;
+        const contactIds = users.map((value) => value.contactId);
+        return Persistence.partyDao.findAllByIds(contactIds)
+            .then((contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
+                result = this.mixData(result, contacts);
+                this._log.debug("populateContactData : returning %j", result);
+                return Promise.resolve(result);
+            });
+    }
+
+    private static mixData(users: any[], contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]): any[] {
+        this._log.debug("Call to mix data with users: %j contacts %j", users, contacts);
         for (const user of users) {
-            user.contact = _.find(contacts, (o) => {
+            const contact = _.find(contacts, (o) => {
                 return o.id === user.contactId;
             });
+            this._log.debug("Founded contact %j", contact);
+            if (_.isNil(contact)) {
+                this._log.error("NOT CONTACT FOUNDED");
+            }
+            user.contact = contact.toJSON();
+            user.contact.id = contact.id;
+            user.contact.typeName = contact.typeName;
         }
+        this._log.debug("Returning from mixData: %j", users);
         return users;
     }
 
