@@ -14,11 +14,8 @@ import {LokiJsUtil} from "../../../persistence/util/lokijs-util";
 
 export class DisplayNameDaoLokijsImpl extends DisplayNameDao {
 
-    private collection: any;
-
     constructor(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.collection = dbEngineUtil.collection;
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: DisplayNameEntity): Promise<IValidationError[]> {
@@ -28,7 +25,7 @@ export class DisplayNameDaoLokijsImpl extends DisplayNameDao {
                 {displayName: {$eq: objectToUpdate.displayName}}
             ]
         };
-        return LokiJsUtil.findAllByQuery(this.collection, query)
+        return this.findAllByQuery(query)
             .then((result: DisplayNameEntity[]) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

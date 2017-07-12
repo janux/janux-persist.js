@@ -15,23 +15,20 @@ import {UserRoleValidator} from "./user-role-validator";
 
 export class UserRoleDao extends AbstractDataAccessObjectWithEngine<UserRoleEntity> {
 
-    private dbEngineLocal: IDbEngineUtil;
-
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.dbEngineLocal = dbEngineUtil;
     }
 
     public findAllByAccountId(idAccount: string): Promise<UserRoleEntity[]> {
-        return this.dbEngineLocal.findAllByAttribute("idAccount", idAccount);
+        return this.findAllByAttribute("idAccount", idAccount);
     }
 
     public findAllByRoleIdsIn(idsRole: string[]): Promise<UserRoleEntity[]> {
-        return this.dbEngineLocal.findAllByAttributeNameIn("idRole", idsRole);
+        return this.findAllByAttributeNameIn("idRole", idsRole);
     }
 
     public findAllByRoleId(idRole: string): Promise<UserRoleEntity[]> {
-        return this.dbEngineLocal.findAllByAttribute("idRole", idRole);
+        return this.findAllByAttribute("idRole", idRole);
     }
 
     public findAllByAccountIdAndRoleId(idAccount: string, idRole: string): Promise<UserRoleEntity[]> {
@@ -39,14 +36,14 @@ export class UserRoleDao extends AbstractDataAccessObjectWithEngine<UserRoleEnti
             new AttributeFilter("idAccount", idAccount),
             new AttributeFilter("idRole", idRole)
         ];
-        return this.dbEngineLocal.findAllByAttributesAndOperator(filter);
+        return this.findAllByAttributesAndOperator(filter);
     }
 
     public deleteAllByIdAccount(idAccount: string) {
         return this.findAllByAccountId(idAccount)
             .then((records: UserRoleEntity[]) => {
                 const ids = records.map((value) => value.id);
-                return this.dbEngineLocal.deleteAllByIds(ids);
+                return this.deleteAllByIds(ids);
             });
     }
 

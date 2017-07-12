@@ -14,15 +14,12 @@ import {CountryValidator} from "./country-validator";
 
 export abstract class CountryDao extends AbstractDataAccessObjectWithEngine<CountryEntity> {
 
-    private dbEngineLocal: IDbEngineUtil;
-
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.dbEngineLocal = dbEngineUtil;
     }
 
     public findOneByIsoCode(isoCode: string) {
-        return this.dbEngineLocal.findOneByAttribute("isoCode", isoCode);
+        return this.findOneByAttribute("isoCode", isoCode);
     }
 
     protected validateEntity<t>(objectToValidate: CountryEntity): IValidationError[] {
@@ -34,7 +31,7 @@ export abstract class CountryDao extends AbstractDataAccessObjectWithEngine<Coun
             new AttributeFilter("name", objectToInsert.name),
             new AttributeFilter("isoCode", objectToInsert.isoCode),
         ];
-        return this.dbEngineLocal.findAllByAttributesOrOperator(filter)
+        return this.findAllByAttributesOrOperator(filter)
             .then((result: CountryEntity[]) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

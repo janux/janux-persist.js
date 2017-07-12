@@ -15,11 +15,8 @@ import {RoleValidator} from "./role-validation";
 
 export abstract class RoleDao extends AbstractDataAccessObjectWithEngine<RoleEntity> {
 
-    private dbEngineUtilLocal: IDbEngineUtil;
-
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.dbEngineUtilLocal = dbEngineUtil;
     }
 
     /**
@@ -28,7 +25,7 @@ export abstract class RoleDao extends AbstractDataAccessObjectWithEngine<RoleEnt
      * @return {Promise<any[]>} A promise containing the child nodes.
      */
     public findAllChildRoles(idParentRole: string): Promise<RoleEntity[]> {
-        return this.dbEngineUtilLocal.findAllByAttribute("idParentRole", idParentRole);
+        return this.findAllByAttribute("idParentRole", idParentRole);
     }
 
     /**
@@ -37,11 +34,11 @@ export abstract class RoleDao extends AbstractDataAccessObjectWithEngine<RoleEnt
      * @return {Promise<RoleEntity>}
      */
     public  findOneByName(name: string): Promise<RoleEntity> {
-        return this.dbEngineUtilLocal.findOneByAttribute("name", name);
+        return this.findOneByAttribute("name", name);
     }
 
     public findAllByNamesIn(names: string[]): Promise<RoleEntity[]> {
-        return this.dbEngineUtilLocal.findAllByAttributeNameIn("name", names);
+        return this.findAllByAttributeNameIn("name", names);
     }
 
     protected validateEntity(objectToValidate: RoleEntity): IValidationError[] {
@@ -64,7 +61,7 @@ export abstract class RoleDao extends AbstractDataAccessObjectWithEngine<RoleEnt
     protected validateParentRole(reference: RoleEntity): Promise<any> {
         if (reference.isRoot === false) {
             return new Promise<ValidationError[]>((resolve) => {
-                this.dbEngineUtilLocal.findOneById(reference.idParentRole)
+                this.findOneById(reference.idParentRole)
                     .then((resultQueryId: RoleEntity) => {
                         const errorId: ValidationError[] = [];
                         if (resultQueryId == null) {

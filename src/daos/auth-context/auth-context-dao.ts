@@ -13,19 +13,16 @@ import {AuthContextValidator} from "./auth-context-validator";
 
 export abstract class AuthContextDao extends AbstractDataAccessObjectWithEngine<AuthContextEntity> {
 
-    private dbEngineLocal: IDbEngineUtil;
-
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.dbEngineLocal = dbEngineUtil;
     }
 
     public findOneByName(name: string): Promise<AuthContextEntity> {
-        return this.dbEngineLocal.findOneByAttribute("name", name);
+        return this.findOneByAttribute("name", name);
     }
 
     public findAllByIdDisplayName(idDisplayName: string): Promise<AuthContextEntity[]> {
-        return this.dbEngineLocal.findAllByAttribute("idDisplayName", idDisplayName);
+        return this.findAllByAttribute("idDisplayName", idDisplayName);
     }
 
     /**
@@ -33,11 +30,11 @@ export abstract class AuthContextDao extends AbstractDataAccessObjectWithEngine<
      * @param names
      */
     public findAllByNamesIn(names: string[]): Promise<AuthContextEntity[]> {
-        return this.dbEngineLocal.findAllByAttributeNameIn("name", names);
+        return this.findAllByAttributeNameIn("name", names);
     }
 
     protected  validateBeforeInsert(objectToInsert: AuthContextEntity): Promise<IValidationError[]> {
-        return this.dbEngineLocal.findOneByAttribute("name", objectToInsert.name)
+        return this.findOneByAttribute("name", objectToInsert.name)
             .then((result) => {
                 const errors: ValidationError[] = [];
                 if (result != null) {

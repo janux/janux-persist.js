@@ -9,16 +9,12 @@ import {IEntityProperties} from "../../../index";
 import {DbEngineUtilLokijs} from "../../../persistence/impl/db-engine-util-lokijs";
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {LokiJsUtil} from "../../../persistence/util/lokijs-util";
 import {RoleEntity} from "../role-entity";
 
 export class RoleDaoLokiJsImpl extends RoleDao {
 
-    private collection: any;
-
     constructor(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.collection = dbEngineUtil.collection;
     }
 
     protected validateBeforeUpdate(objectToUpdate: RoleEntity): Promise<IValidationError[]> {
@@ -28,7 +24,7 @@ export class RoleDaoLokiJsImpl extends RoleDao {
                 {$loki: {$ne: _.toNumber(objectToUpdate.id)}}
             ]
         };
-        return LokiJsUtil.findAllByQuery(this.collection, query)
+        return this.findAllByQuery(query)
             .then((result: RoleEntity[]) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

@@ -15,15 +15,12 @@ import {StateProvinceValidator} from "./state-province-validator";
 
 export abstract class StateProvinceDao extends AbstractDataAccessObjectWithEngine<StateProvinceEntity> {
 
-    private dbEngineUtilLocal: IDbEngineUtil;
-
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.dbEngineUtilLocal = dbEngineUtil;
     }
 
     public findAllByIdCountry(countryIsoCode: string) {
-        return this.dbEngineUtilLocal.findAllByAttribute("countryIsoCode", countryIsoCode);
+        return this.findAllByAttribute("countryIsoCode", countryIsoCode);
     }
 
     protected validateEntity<t>(objectToValidate: StateProvinceEntity): IValidationError[] {
@@ -35,7 +32,7 @@ export abstract class StateProvinceDao extends AbstractDataAccessObjectWithEngin
             new AttributeFilter("countryIsoCode", objectToInsert.countryIsoCode),
             new AttributeFilter("code", objectToInsert.code)
         ];
-        return this.dbEngineUtilLocal.findAllByAttributesAndOperator(filter)
+        return this.findAllByAttributesAndOperator(filter)
             .then((result) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

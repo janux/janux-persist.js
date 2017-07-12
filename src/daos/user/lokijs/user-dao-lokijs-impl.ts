@@ -9,17 +9,13 @@ import {UserDao} from "../user-dao";
 import Promise = require("bluebird");
 import {DbEngineUtilLokijs} from "../../../persistence/impl/db-engine-util-lokijs";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {LokiJsUtil} from "../../../persistence/util/lokijs-util";
 import {UserEntity} from "../user-entity";
 import {UserValidator} from "../user-valdiator";
 
 export class UserDaoLokiJsImpl extends UserDao {
 
-    private lokijsCollection;
-
     constructor(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.lokijsCollection = dbEngineUtil.collection;
     }
 
     public findAllByUserNameMatch(username: string): Promise<UserEntity[]> {
@@ -36,7 +32,7 @@ export class UserDaoLokiJsImpl extends UserDao {
                 {contactId: {$eq: objectToInsert.contactId}}
             ]
         };
-        return LokiJsUtil.findAllByQuery(this.lokijsCollection, query)
+        return this.findAllByQuery(query)
             .then((result) => {
                 return Promise.resolve(UserValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
             });
@@ -55,7 +51,7 @@ export class UserDaoLokiJsImpl extends UserDao {
                 }
             ]
         };
-        return LokiJsUtil.findAllByQuery(this.lokijsCollection, query)
+        return this.findAllByQuery(query)
             .then((result: UserEntity[]) => {
                 return Promise.resolve(UserValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
             });

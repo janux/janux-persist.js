@@ -4,22 +4,17 @@
  */
 
 import * as Promise from "bluebird";
-import {Model} from "mongoose";
 import {DbEngineUtilMongodb} from "../../../persistence/impl/db-engine-util-mongodb";
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {MongoDbUtil} from "../../../persistence/util/mongodb-util.js";
 import {CountryDao} from "../country-dao";
 import {CountryEntity} from "../country-entity";
 
 export class CountryDaoMongoDbImpl extends CountryDao {
 
-    private model: Model<any>;
-
     constructor(dbEngineUtil: DbEngineUtilMongodb, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.model = dbEngineUtil.model;
     }
 
     protected validateBeforeUpdate(objectToUpdate: CountryEntity): Promise<IValidationError[]> {
@@ -36,7 +31,7 @@ export class CountryDaoMongoDbImpl extends CountryDao {
             ]
         };
 
-        return MongoDbUtil.findAllByQuery(this.model, query)
+        return this.findAllByQuery(query)
             .then((result: CountryEntity[]) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

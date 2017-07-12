@@ -9,17 +9,13 @@ import {DbEngineUtilLokijs} from "../../../persistence/impl/db-engine-util-lokij
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {LokiJsUtil} from "../../../persistence/util/lokijs-util";
 import {StateProvinceDao} from "../state-province-dao";
 import {StateProvinceEntity} from "../state-province-entity";
 
 export class StateProvinceDaoLokiJsImpl extends StateProvinceDao {
 
-    private collection: any;
-
     constructor(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.collection = dbEngineUtil.collection;
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: StateProvinceEntity): Bluebird<IValidationError[]> {
@@ -30,7 +26,7 @@ export class StateProvinceDaoLokiJsImpl extends StateProvinceDao {
                 {countryIsoCode: {$eq: objectToUpdate.countryIsoCode}},
             ]
         };
-        return LokiJsUtil.findAllByQuery(this.collection, query)
+        return this.findAllByQuery(query)
             .then((result: StateProvinceEntity[]) => {
                 const error: ValidationError[] = [];
                 if (result.length > 0) {

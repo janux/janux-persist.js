@@ -4,22 +4,17 @@
  */
 
 import * as Promise from "bluebird";
-import {Model} from "mongoose";
 import {DbEngineUtilMongodb} from "../../../persistence/impl/db-engine-util-mongodb";
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {MongoDbUtil} from "../../../persistence/util/mongodb-util.js";
 import {PermissionBitDao} from "../permission-bit-dao";
 import {PermissionBitEntity} from "../permission-bit-entity";
 
 export class PermissionBitMongodbImpl extends PermissionBitDao {
 
-    private model: Model<any>;
-
     constructor(dbEngineUtil: DbEngineUtilMongodb, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.model = dbEngineUtil.model;
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: PermissionBitEntity): Promise<IValidationError[]> {
@@ -30,7 +25,7 @@ export class PermissionBitMongodbImpl extends PermissionBitDao {
                 {idAuthContext: {$eq: objectToUpdate.idAuthContext}}
             ]
         };
-        return MongoDbUtil.findAllByQuery(this.model, query)
+        return this.findAllByQuery(query)
             .then((result: PermissionBitEntity[]) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

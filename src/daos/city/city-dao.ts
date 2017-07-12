@@ -15,11 +15,8 @@ import {CityValidator} from "./city-validator";
 
 export abstract class CityDao extends AbstractDataAccessObjectWithEngine<CityEntity> {
 
-    private dbEngineUtilLocal: IDbEngineUtil;
-
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.dbEngineUtilLocal = dbEngineUtil;
     }
 
     protected validateEntity<t>(objectToValidate: CityEntity): IValidationError[] {
@@ -31,7 +28,7 @@ export abstract class CityDao extends AbstractDataAccessObjectWithEngine<CityEnt
             new AttributeFilter("code", objectToInsert.code),
             new AttributeFilter("idStateProvince", objectToInsert.idStateProvince)
         ];
-        return this.dbEngineUtilLocal.findAllByAttributesAndOperator(filter)
+        return this.findAllByAttributesAndOperator(filter)
             .then((result) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

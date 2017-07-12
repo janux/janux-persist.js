@@ -15,11 +15,8 @@ import {CityEntity} from "../city-entity";
 
 export class CityDaoLokiJsImpl extends CityDao {
 
-    private collection: any;
-
     constructor(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.collection = dbEngineUtil.collection;
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: CityEntity): Promise<IValidationError[]> {
@@ -30,7 +27,7 @@ export class CityDaoLokiJsImpl extends CityDao {
                 {idStateProvince: {$eq: objectToUpdate.idStateProvince}},
             ]
         };
-        return LokiJsUtil.findAllByQuery(this.collection, query)
+        return this.findAllByQuery(query)
             .then((result) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

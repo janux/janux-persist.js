@@ -15,34 +15,31 @@ import {RolePermissionBitValidator} from "./role-permission-bit-validator";
 
 export class RolePermissionDao extends AbstractDataAccessObjectWithEngine<RolePermissionBitEntity> {
 
-    private dbEngineUtilLocal: IDbEngineUtil;
-
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.dbEngineUtilLocal = dbEngineUtil;
     }
 
     public findAllByRoleId(idRole: string): Promise<RolePermissionBitEntity[]> {
-        return this.dbEngineUtilLocal.findAllByAttribute("idRole", idRole);
+        return this.findAllByAttribute("idRole", idRole);
     }
 
     public findAllByPermissionBitId(idPermissionBit: string): Promise<RolePermissionBitEntity[]> {
-        return this.dbEngineUtilLocal.findAllByAttribute("idPermissionBit", idPermissionBit);
+        return this.findAllByAttribute("idPermissionBit", idPermissionBit);
     }
 
     public findAllByRoleIdsIn(roleIds: string[]): Promise<RolePermissionBitEntity[]> {
-        return this.dbEngineUtilLocal.findAllByAttributeNameIn("idRole", roleIds);
+        return this.findAllByAttributeNameIn("idRole", roleIds);
     }
 
     public findAllByPermissionBitIdsIn(permissionBitIds: string[]): Promise<RolePermissionBitEntity[]> {
-        return this.dbEngineUtilLocal.findAllByAttributeNameIn("idPermissionBit", permissionBitIds);
+        return this.findAllByAttributeNameIn("idPermissionBit", permissionBitIds);
     }
 
     public deleteAllByIdRole(idRole: string) {
-        return this.dbEngineUtilLocal.findAllByAttribute("idRole", idRole)
+        return this.findAllByAttribute("idRole", idRole)
             .then((bits: RolePermissionBitEntity[]) => {
                 const ids = bits.map((value) => value.id);
-                return this.dbEngineUtilLocal.deleteAllByIds(ids);
+                return this.deleteAllByIds(ids);
             });
     }
 
@@ -55,7 +52,7 @@ export class RolePermissionDao extends AbstractDataAccessObjectWithEngine<RolePe
             new AttributeFilter("idRole", objectToInsert.idRole),
             new AttributeFilter("idPermissionBit", objectToInsert.idPermissionBit),
         ];
-        return this.dbEngineUtilLocal.findAllByAttributesAndOperator(filter)
+        return this.findAllByAttributesAndOperator(filter)
             .then((result) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

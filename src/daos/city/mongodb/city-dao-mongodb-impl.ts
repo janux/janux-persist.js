@@ -15,11 +15,8 @@ import {CityEntity} from "../city-entity";
 
 export class CityDaoMongoDbImpl extends CityDao {
 
-    private model: Model<any>;
-
     constructor(dbEngineUtil: DbEngineUtilMongodb, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.model = dbEngineUtil.model;
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: CityEntity): Promise<IValidationError[]> {
@@ -30,7 +27,7 @@ export class CityDaoMongoDbImpl extends CityDao {
                 {idStateProvince: {$eq: objectToUpdate.idStateProvince}},
             ]
         };
-        return MongoDbUtil.findAllByQuery(this.model, query)
+        return this.findAllByQuery(query)
             .then((result) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

@@ -15,20 +15,17 @@ import {PermissionBitValidator} from "./permission-bit-validator";
 
 export abstract class PermissionBitDao extends AbstractDataAccessObjectWithEngine<PermissionBitEntity> {
 
-    private dbEngineUtilLocal: IDbEngineUtil;
-
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.dbEngineUtilLocal = dbEngineUtil;
     }
 
     public findAllByIdAuthContext(idAuthContext: string): Promise<PermissionBitEntity[]> {
-        return this.dbEngineUtilLocal.findAllByAttribute("idAuthContext", idAuthContext);
+        return this.findAllByAttribute("idAuthContext", idAuthContext);
     }
 
     // TODO: add test.
     public findAllByIdAuthContextsIn(idsAuthContext: string[]): Promise<PermissionBitEntity[]> {
-        return this.dbEngineUtilLocal.findAllByAttributeNameIn("idAuthContext", idsAuthContext);
+        return this.findAllByAttributeNameIn("idAuthContext", idsAuthContext);
     }
 
     protected validateEntity<t>(objectToValidate: PermissionBitEntity): IValidationError[] {
@@ -40,7 +37,7 @@ export abstract class PermissionBitDao extends AbstractDataAccessObjectWithEngin
             new AttributeFilter("name", objectToInsert.name),
             new AttributeFilter("idAuthContext", objectToInsert.idAuthContext)
         ];
-        return this.dbEngineUtilLocal.findAllByAttributesAndOperator(filter)
+        return this.findAllByAttributesAndOperator(filter)
             .then((resultQuery) => {
                 const errors: ValidationError[] = [];
                 if (resultQuery.length > 0) {

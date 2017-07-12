@@ -15,11 +15,8 @@ import {AuthContextEntity} from "../auth-context-entity";
 
 export class AuthContextLokijsImpl extends AuthContextDao {
 
-    private collection: any;
-
     constructor(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.collection = dbEngineUtil.collection;
     }
 
     protected validateBeforeUpdate(objectToUpdate: AuthContextEntity): Promise<IValidationError[]> {
@@ -29,7 +26,7 @@ export class AuthContextLokijsImpl extends AuthContextDao {
                 {name: {$eq: objectToUpdate.name}}
             ]
         };
-        return LokiJsUtil.findAllByQuery(this.collection, query)
+        return this.findAllByQuery(query)
             .then((result: AuthContextEntity[]) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

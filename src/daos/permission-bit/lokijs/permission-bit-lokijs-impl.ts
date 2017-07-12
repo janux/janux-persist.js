@@ -9,17 +9,13 @@ import {DbEngineUtilLokijs} from "../../../persistence/impl/db-engine-util-lokij
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {LokiJsUtil} from "../../../persistence/util/lokijs-util";
 import {PermissionBitDao} from "../permission-bit-dao";
 import {PermissionBitEntity} from "../permission-bit-entity";
 
 export class PermissionBitLokijsImpl extends PermissionBitDao {
 
-    private collection: any;
-
     constructor(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.collection = dbEngineUtil.collection;
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: PermissionBitEntity): Promise<IValidationError[]> {
@@ -30,7 +26,7 @@ export class PermissionBitLokijsImpl extends PermissionBitDao {
                 {idAuthContext: {$eq: objectToUpdate.idAuthContext}}
             ]
         };
-        return LokiJsUtil.findAllByQuery(this.collection, query)
+        return this.findAllByQuery(query)
             .then((result: PermissionBitEntity[]) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

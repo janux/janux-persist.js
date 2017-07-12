@@ -21,11 +21,8 @@ export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
 
     private static instance: ExampleUserDaoLokiJsImpl;
 
-    private lokijsCollection;
-
     private constructor(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.lokijsCollection = dbEngineUtil.collection;
     }
 
     /**
@@ -50,13 +47,16 @@ export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
                 {email: {$eq: objectToUpdate.email}}
             ]
         };
-        const result = this.lokijsCollection.find(query);
-        if (result.length > 0) {
-            errors.push(new ValidationError(
-                'email',
-                'There is another user with the same email',
-                objectToUpdate.email));
-        }
-        return Promise.resolve(errors);
+
+        return this.findAllByQuery(query)
+            .then((resultQuery) => {
+                if (resultQuery.length > 0) {
+                    errors.push(new ValidationError(
+                        'email',
+                        'There is another user with the same email',
+                        objectToUpdate.email));
+                }
+                return Promise.resolve(errors);
+            });
     }
 }

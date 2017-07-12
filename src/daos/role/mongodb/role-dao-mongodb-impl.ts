@@ -10,15 +10,11 @@ import {DbEngineUtilMongodb} from "../../../persistence/impl/db-engine-util-mong
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {MongoDbUtil} from "../../../persistence/util/mongodb-util.js";
 
 export class RoleDaoMongoDbImpl extends RoleDao {
 
-    private model;
-
     constructor(dbEngineUtil: DbEngineUtilMongodb, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.model = dbEngineUtil.model;
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: RoleEntity): Promise<IValidationError[]> {
@@ -28,7 +24,7 @@ export class RoleDaoMongoDbImpl extends RoleDao {
                 {_id: {$ne: objectToUpdate.id}}
             ]
         };
-        return MongoDbUtil.findAllByQuery(this.model, query)
+        return this.findAllByQuery(query)
             .then((result: RoleEntity[]) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

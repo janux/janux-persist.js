@@ -5,11 +5,9 @@
 import {ExampleUser} from "../example-user";
 import {ExampleUserDao} from "../example-user-dao";
 import Promise = require("bluebird");
-import {Model} from "mongoose";
 import {DbEngineUtilMongodb} from "../../../persistence/impl/db-engine-util-mongodb";
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
-import {MongoDbUtil} from "../../../persistence/util/mongodb-util.js";
 
 /**
  * this is the implementation for mongodb of ExampleUserDao
@@ -21,11 +19,8 @@ export class ExampleUserDaoMongoDbImpl extends ExampleUserDao {
 
     private static instance: ExampleUserDaoMongoDbImpl;
 
-    private model: Model<any>;
-
     private constructor(dbEngineUtil: DbEngineUtilMongodb, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.model = dbEngineUtil.model;
     }
 
     /**
@@ -50,7 +45,7 @@ export class ExampleUserDaoMongoDbImpl extends ExampleUserDao {
             ]
         };
 
-        return MongoDbUtil.findAllByQuery(this.model, query)
+        return this.findAllByQuery(query)
             .then((result) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {

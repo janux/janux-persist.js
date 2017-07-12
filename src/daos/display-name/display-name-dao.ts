@@ -13,15 +13,12 @@ import {DisplayNameValidator} from "./display-name-validation";
 
 export abstract class DisplayNameDao extends AbstractDataAccessObjectWithEngine<DisplayNameEntity> {
 
-    private dbEngineUtilDao: IDbEngineUtil;
-
     constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.dbEngineUtilDao = this.dbEngineUtil;
     }
 
     public  findOneByName(name: string): Promise<DisplayNameEntity> {
-        return this.dbEngineUtilDao.findOneByAttribute("displayName", name);
+        return this.findOneByAttribute("displayName", name);
     }
 
     protected validateEntity(objectToValidate: DisplayNameEntity): IValidationError[] {

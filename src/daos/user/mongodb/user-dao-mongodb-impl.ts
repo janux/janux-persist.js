@@ -7,17 +7,13 @@ import {IValidationError} from "../../../persistence/interfaces/validation-error
 import {UserDao} from "../user-dao";
 import {UserEntity} from "../user-entity";
 import Promise = require("bluebird");
-import {Model} from "mongoose";
 import {DbEngineUtilMongodb} from "../../../persistence/impl/db-engine-util-mongodb";
-import {MongoDbUtil} from "../../../persistence/util/mongodb-util.js";
 import {UserValidator} from "../user-valdiator";
 
 export class UserDaoMongodbImpl extends UserDao {
-    model: Model<any>;
 
     constructor(dbEngineUtil: DbEngineUtilMongodb, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.model = dbEngineUtil.model;
     }
 
     public findAllByUserNameMatch(username: string): Promise<UserEntity[]> {
@@ -25,7 +21,7 @@ export class UserDaoMongodbImpl extends UserDao {
         const query = {
             username: regexpUsername
         };
-        return MongoDbUtil.findAllByQuery(this.model, query);
+        return this.findAllByQuery(query);
     }
 
     protected validateBeforeInsert(objectToInsert: UserEntity): Promise<IValidationError[]> {
@@ -53,7 +49,7 @@ export class UserDaoMongodbImpl extends UserDao {
                 }
             ]
         };
-        return MongoDbUtil.findAllByQuery(this.model, query)
+        return this.findAllByQuery(query)
             .then((result: UserEntity[]) => {
                 return Promise.resolve(UserValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
             });

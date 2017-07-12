@@ -9,17 +9,13 @@ import {DbEngineUtilLokijs} from "../../../persistence/impl/db-engine-util-lokij
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {LokiJsUtil} from "../../../persistence/util/lokijs-util";
 import {CountryDao} from "../country-dao";
 import {CountryEntity} from "../country-entity";
 
 export class CountryDaoLokiJsImpl extends CountryDao {
 
-    private collection: any;
-
     constructor(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.collection = dbEngineUtil.collection;
     }
 
     protected validateBeforeUpdate<t>(objectToUpdate: CountryEntity): Promise<IValidationError[]> {
@@ -36,7 +32,7 @@ export class CountryDaoLokiJsImpl extends CountryDao {
             ]
         };
 
-        return LokiJsUtil.findAllByQuery(this.collection, query)
+        return this.findAllByQuery(query)
             .then((result: CountryEntity[]) => {
                 const errors: ValidationError[] = [];
                 if (result.length > 0) {
