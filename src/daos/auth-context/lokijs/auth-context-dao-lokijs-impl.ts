@@ -9,7 +9,6 @@ import {DbEngineUtilLokijs} from "../../../persistence/impl/db-engine-util-lokij
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
-import {LokiJsUtil} from "../../../persistence/util/lokijs-util";
 import {AuthContextDao} from "../auth-context-dao";
 import {AuthContextEntity} from "../auth-context-entity";
 

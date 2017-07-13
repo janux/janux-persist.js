@@ -8,12 +8,20 @@ import {ValidationError} from "../../../persistence/impl/validation-error";
 import {isBlankString} from "../../../util/blank-string-validator";
 import JanuxPeople = require("janux-people.js");
 
+/**
+ * Validates the content of the organization.
+ */
 export class OrganizationValidator {
 
     public static readonly NAME = "name";
     public static readonly NAME_DUPLICATED = "There is another organization with the same name";
     public static readonly NAME_EMPTY = "Organization name is empty";
 
+    /**
+     * Validate if the organization content is valid.
+     * @param organization The organization to validate.
+     * @return {ValidationError[]}
+     */
     public static validateOrganization(organization: JanuxPeople.Organization): ValidationError[] {
         this._log.debug("Call to validateOrganization with organization: %j", organization);
         const errors: ValidationError[] = [];

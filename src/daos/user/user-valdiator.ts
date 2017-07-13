@@ -8,6 +8,9 @@ import {ValidationError} from "../../persistence/impl/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
 import {UserEntity} from "./user-entity";
 
+/**
+ * Class that contains the validation methods for the userEntity.
+ */
 export class UserValidator {
 
     public static ANOTHER_USER: string = "There is another account with the same username";
@@ -16,7 +19,7 @@ export class UserValidator {
     /**
      * Validate the accountEntity
      * @param accountEntity UserEntity to be validated
-     * @return {ValidationError[]} A list ov validation errors.
+     * @return {ValidationError[]} A list of validation errors.
      */
     public static  validateAccount(accountEntity: UserEntity): ValidationError[] {
         this._log.debug("Call to validateAccount with accountEntity: %j:", accountEntity);
@@ -29,6 +32,11 @@ export class UserValidator {
         return errors;
     }
 
+    /**
+     * Same as validateAccount, but this method doesn't validate if the "contactId" attribute is empty.
+     * @param accountEntity
+     * @return {ValidationError[]} A list of validation errors.
+     */
     public static validateAccountExceptContactId(accountEntity: UserEntity): ValidationError[] {
         this._log.debug("Call to validateAccountExceptContactId with accountEntity: %j:", accountEntity);
         const errors: ValidationError[] = [];
@@ -43,6 +51,13 @@ export class UserValidator {
         return errors;
     }
 
+    /**
+     * Validate the cause of the duplicated record. Could be a duplicated username or a duplicated
+     * contactId.
+     * @param accounts
+     * @param reference
+     * @return {ValidationError[]}
+     */
     public static validateResultQueryBeforeBdOperation(accounts: UserEntity[],
                                                        reference: UserEntity): ValidationError[] {
         this._log.debug("Call to validateResultQueryBeforeBdOperation with accounts: %j reference: %j",

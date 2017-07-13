@@ -9,9 +9,11 @@ import {IEntityProperties} from "../../../persistence/interfaces/entity-properti
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
 import {PartyDao} from "../party-dao";
 import JanuxPeople = require("janux-people.js");
-import {LokiJsUtil} from "../../../persistence/util/lokijs-util";
 import {PartyValidator} from "../party-validator";
 
+/**
+ * Implementation PartyDao for the lokijs database.
+ */
 export class PartyDaoLokiJsImpl extends PartyDao {
 
     private collection: any;
@@ -21,6 +23,11 @@ export class PartyDaoLokiJsImpl extends PartyDao {
         this.collection = dbEngineUtil.collection;
     }
 
+    /**
+     * Find all record that matches with the name.
+     * @param name the name to look for.
+     * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} The parties that matches with the name.
+     */
     public findAllByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
         const query = {
             $or: [
@@ -47,6 +54,11 @@ export class PartyDaoLokiJsImpl extends PartyDao {
         return this.findAllByQuery(query);
     }
 
+    /**
+     * Validate the object before update to the database.
+     * @param objectToUpdate
+     * @return {Promise<IValidationError[]>}
+     */
     protected validateBeforeUpdate<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
         return this.validateDuplicated(objectToUpdate);
     }

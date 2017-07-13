@@ -29,7 +29,7 @@
         "gulp-mocha": "4.3.1",
         "gulp-sourcemaps": "2.6.0",
         "gulp-tslint": "8.1.0",
-        "gulp-typedoc": "1.2.1",
+        "gulp-typedoc": "2.0.2",
         "gulp-typescript": "3.1.7",
         "janux-people": "file:vendor/janux-people.js",
         "lodash": "4.17.4",

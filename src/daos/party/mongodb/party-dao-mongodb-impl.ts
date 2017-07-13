@@ -10,9 +10,11 @@ import {IEntityProperties} from "../../../persistence/interfaces/entity-properti
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
 import {PartyDao} from "../party-dao";
 import JanuxPeople = require("janux-people.js");
-import {MongoDbUtil} from "../../../persistence/util/mongodb-util.js";
 import {PartyValidator} from "../party-validator";
 
+/**
+ * Implementation of the PartyDao for the mongodb database.
+ */
 export class PartyDaoMongoDbImpl extends PartyDao {
 
     private model: Model<any>;
@@ -22,6 +24,11 @@ export class PartyDaoMongoDbImpl extends PartyDao {
         this.model = dbEngineUtil.model;
     }
 
+    /**
+     * Find all records that matches with the name.
+     * @param name The name to look for.
+     * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} The objects that matches with the name.
+     */
     public findAllByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
         const regexpName = new RegExp(name, "i");
         const query = {

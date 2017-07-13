@@ -13,6 +13,10 @@ import {PartyValidator} from "./party-validator";
 import JanuxPeople = require("janux-people.js");
 import {CircularReferenceDetector} from "../../util/circular-reference-detector/circular-reference-detector";
 
+/**
+ * This is the base class of the partyDao. In this class we define the object we are going to use
+ *  is JanuxPeople.Person or JanuxPeople.Organization.
+ */
 export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxPeople.Person | JanuxPeople.Organization> {
 
     private partyDaoLogger = logger.getLogger("PartyDao");
@@ -21,12 +25,29 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
         super(dbEngineUtil, entityProperties);
     }
 
+    /**
+     * Find all record that matches with the name,
+     * Because this method handles complex queries. This method must be implement per each db engine.
+     * @param name The name to look for.
+     * @return A list of parties that matches with the name.
+     */
     public abstract findAllByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]>;
 
+    /**
+     * Find all records that has the email address.
+     * @param email The email address to look for.
+     * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} A list of parties that matches with the name.
+     */
     public findAllByEmail(email: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
         return this.findAllByAttribute("emails.address", email);
     }
 
+    /**
+     * Find all records that hast the phone number.
+     * @param phone The phone number to look for.
+     * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} A list of parties that matches with the
+     * criteria.
+     */
     public findAllByPhone(phone: string) {
         return this.findAllByAttribute("phones.number", phone);
     }
@@ -47,10 +68,22 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
         return this.findAllByAttribute("typeName", PartyValidator.ORGANIZATION);
     }
 
+    /**
+     * Implementation of the method validateEntity.
+     * @param objectToValidate The object to validate.
+     * @return {ValidationError[]} An array containing the validation errors. If there are no errors then
+     * returns an empty array.
+     */
     protected validateEntity<t>(objectToValidate: JanuxPeople.Person | JanuxPeople.Organization): IValidationError[] {
         return PartyValidator.validateParty(objectToValidate);
     }
 
+    /**
+     * Validate the record is valid before inserting to the database.
+     * @param objectToInsert The object to validate.
+     * @return {Bluebird<Array>} An array containing the validation errors. If there are no errors then
+     * returns an empty array.
+     */
     protected validateBeforeInsert(objectToInsert: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
         // let emailAddressesToLookFor: string[];
         // let personReference: JanuxPeople.PersonImpl;
@@ -93,6 +126,13 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
         return Promise.resolve([]);
     }
 
+    /**
+     * Transforms the object before inserting or updating the database.
+     * In this case JanuxPeople.Person JanuxPeople.Organization has a method called toJSON.
+     * We are going to use this method.
+     * @param object The object to transforms.
+     * @return {any} the transformed object.
+     */
     protected convertBeforeSave(object: JanuxPeople.Person | JanuxPeople.Organization): any {
         this.partyDaoLogger.debug("Call to convertBeforeSave with object: %j ", object);
         CircularReferenceDetector.detectCircularReferences(object);
@@ -106,6 +146,11 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
         return result;
     }
 
+    /**
+     * Convert the object to a JanuxPeople.Person or a JanuxPeople.Organization.
+     * @param object The data retrieved form the database.
+     * @return {any} Ans instance of JanuxPeople.Person or JanuxPeople.Organization.
+     */
     protected convertAfterDbOperation(object: any): JanuxPeople.Person | JanuxPeople.Organization {
         let result: any;
         if (object.typeName === PartyValidator.PERSON) {

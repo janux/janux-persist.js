@@ -7,6 +7,9 @@ import {ValidationError} from "../../../persistence/impl/validation-error";
 import {isBlankString} from "../../../util/blank-string-validator";
 import JanuxPeople = require("janux-people.js");
 
+/**
+ * Validates the content of the person.
+ */
 export class PersonValidator {
 
     public static readonly NAME_FIRST = "name.first";
@@ -14,6 +17,11 @@ export class PersonValidator {
     public static readonly NAME = "name";
     public static readonly PERSON_NAME_DUPLICATED = "There is another person with the same name";
 
+    /**
+     * Validate the content of the person.
+     * @param person
+     * @return {ValidationError[]}
+     */
     public static validatePerson(person: JanuxPeople.PersonImpl): ValidationError[] {
         this._log.debug("Call to validatePerson with person: %j", person);
         const errors: ValidationError[] = [];

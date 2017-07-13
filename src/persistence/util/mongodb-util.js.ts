@@ -9,10 +9,20 @@ import {Model} from 'mongoose';
 import Promise = require('bluebird');
 
 /**
- * Mongodb functions util
+ * Mongoose  db methods util.
+ * Almost all the method has the following responsibilities.
+ * Because mongodb stores an unique id called _id per each document and the attribute is a object, most of the methods
+ * inside this class retrieve the _id attribute and store it inside the "id" attribute as string.
  */
 export class MongoDbUtil {
 
+    /**
+     * Find one record by the id.
+     * @param model The mongoose model to look inside.
+     * @param id The id to look for.
+     * @return {Bluebird<any>} Return the document whose id matches the id. If no record is founded then the method
+     * returns null.
+     */
     public static findOneById(model: Model<any>, id: any): Promise<any> {
         this._log.debug('Call to findOneById with model: %j id: %j ', model.modelName, id);
         return new Promise((resolve, reject) => {
@@ -27,6 +37,13 @@ export class MongoDbUtil {
         });
     }
 
+    /**
+     * Find all the documents inside a model whose ids belongs to the list.
+     * @param model The mongoose model to look inside.
+     * @param arrayOfIds The ids to look for.
+     * @return {Promise<any>} A promise containing the result. If no records are founded, then the method returns
+     * an empty array.
+     */
     public static findAllByIds(model: Model<any>, arrayOfIds: any[]): Promise<any> {
         this._log.debug('Call to findAllByIds with model: %j, arrayOfIds: %j ', model.modelName, arrayOfIds);
         const query = {
@@ -35,6 +52,11 @@ export class MongoDbUtil {
         return this.findAllByQuery(model, query);
     }
 
+    /**
+     * Count all documents in the model.
+     * @param model The model to count.
+     * @return {Bluebird<any>} The amount of documents inside the collection.
+     */
     public static count(model: Model<any>): Promise<any> {
         this._log.debug("Call to count");
         return new Promise((resolve, reject) => {
@@ -46,6 +68,14 @@ export class MongoDbUtil {
         });
     }
 
+    /**
+     * Find one document inside the model that has the attributeName and the value.
+     * @param model The mongoose model to look inside.
+     * @param attributeName The attribute to look for.
+     * @param value The value to compare.
+     * @return {Bluebird<any>} Return the document that matches the criteria. Returns a reject if there are more than
+     * one document that matches the criteria.
+     */
     public static findOneByAttribute(model: Model<any>, attributeName: string, value: any): Promise<any> {
         this._log.debug("Call to findOneByAttribute with model: %j, attributeName: %j , value: %j", model.modelName, attributeName, value);
         return new Promise((resolve, reject) => {
@@ -66,6 +96,14 @@ export class MongoDbUtil {
         });
     }
 
+    /**
+     * Find all the documents inside the model that has the attributeName and the value.
+     * @param model The mongoose model to look inside.
+     * @param attributeName The attribute to look for.
+     * @param value The value to compare.
+     * @return {Bluebird<any>} Return a list of documents that matches the criteria. If no records are founded, then the method
+     * returns an empty array.
+     */
     public static findAllByAttribute(model: Model<any>, attributeName: string, value: any): Promise<any> {
         this._log.debug("Call to findAllByAttribute with model: %j, attributeName: %j , value: %j", model.modelName, attributeName, value);
         const query = {};
@@ -96,8 +134,8 @@ export class MongoDbUtil {
     /**
      * Find all records whose attribute vales matches with any value of the list.
      * @param model The model to looks for
-     * @param attributeName The attribute
-     * @param values The values to match
+     * @param attributeName The attribute to look for.
+     * @param values The values to match.
      * @return {Promise<any>} The records that matches with the query
      */
     public static findAllByAttributeNameIn(model: Model<any>, attributeName: string, values: any[]): Promise<any> {
@@ -107,6 +145,11 @@ export class MongoDbUtil {
         return this.findAllByQuery(model, query);
     }
 
+    /**
+     * Delete all documents inside the model.
+     * @param model The model.
+     * @return {Bluebird} Returns a promise indicating the delete was successful.
+     */
     public static deleteAll(model: Model<any>): Promise<any> {
         this._log.debug("Call to delete all with model: %j", model.modelName);
         return new Promise((resolve, reject) => {
@@ -117,6 +160,12 @@ export class MongoDbUtil {
         });
     }
 
+    /**
+     * Delete all documents inside the model whose ids matches the list.
+     * @param model The mongoose model whose documents are going to be deleted.
+     * @param ids A list of ids.
+     * @return {Bluebird} Returns a promise indicating the delete was successful.
+     */
     public static deleteAllByIds(model: Model<any>, ids: string[]) {
         this._log.debug("Call to deleteAllByIds with model: %j, ids: %j", model.modelName, ids);
         return new Promise((resolve, reject) => {
@@ -130,6 +179,13 @@ export class MongoDbUtil {
         });
     }
 
+    /**
+     * Insert a document inside the collection.
+     * @param model The mongoose model where to insert the document.
+     * @param objectToInsert The data to insert.
+     * @return {Bluebird<any>} The inserted object. The object contains the id generated by mongodb in a
+     * attribute called "id" as string.
+     */
     public static insert(model: Model<any>, objectToInsert: any): Promise<any> {
         this._log.debug("Call to insert with model: %j, objectToInsert: %j", model.modelName, objectToInsert);
         return new Promise((resolve, reject) => {
@@ -143,6 +199,13 @@ export class MongoDbUtil {
         });
     }
 
+    /**
+     * Insert many documents at once inside the collection.
+     * @param model The mongoose model where the data is going to be inserted.
+     * @param objectsToInsert The objects to insert.
+     * @return {Bluebird<any>} Returns a promise containing the inserted objects. Each inserted object
+     * contains the generated id of mongodb inside a attribute called "id" as string.
+     */
     public static insertMany(model: Model<any>, objectsToInsert: any[]): Promise<any> {
         this._log.debug("Call to insertMany with model: %j, objectsToInsert %j", model.modelName, objectsToInsert);
         return new Promise((resolve, reject) => {
@@ -158,6 +221,13 @@ export class MongoDbUtil {
         });
     }
 
+    /**
+     * Update the document info inside the collection.
+     * @param model The mongoose model where the document resides.
+     * @param objectToUpdate The data to update. This object must have an attribute called "id" as string in order
+     * to know which document is going to be updated.
+     * @return {Bluebird<any>} A promise containing the updated object.
+     */
     public static update(model: Model<any>, objectToUpdate: any): Promise<any> {
         this._log.debug("Call to update with model %j objectToUpdate: %j", model.modelName, objectToUpdate);
         return new Promise((resolve, reject) => {
@@ -175,6 +245,13 @@ export class MongoDbUtil {
         });
     }
 
+    /**
+     * Removes a document inside the collection.
+     * @param model The model that has the document to be deleted.
+     * @param objectToDelete The object to delete. This object must contain an attribute called "id" as string in
+     * order to know which document to delete.
+     * @return {Bluebird} a promise indicating the operation was successful.
+     */
     public static remove(model: Model<any>, objectToDelete: any): Promise<any> {
         this._log.debug("Call to remove with model: %j, objectToDelete: %j", model.modelName, objectToDelete);
         return new Promise((resolve, reject) => {
@@ -186,6 +263,12 @@ export class MongoDbUtil {
         });
     }
 
+    /**
+     * Remove a document whose id matches with the id parameter.
+     * @param model The mongoose model that has the document to be deleted.
+     * @param id The id query criteria.
+     * @return {Bluebird} Returns a promise indicating the delete was successful.
+     */
     public static removeById(model: Model<any>, id: string): Promise<any> {
         this._log.debug("Call to removeById by id: %j", id);
         return new Promise((resolve, reject) => {
@@ -199,6 +282,11 @@ export class MongoDbUtil {
 
     private static _log = logger.getLogger('MongoDbUtil');
 
+    /**
+     * Clean the object that are going to be returned to the daos.
+     * @param object The object to ble cleaned.
+     * @return {any} the object cleaned.
+     */
     private static cleanObjectIds(object: any) {
         object.id = object._id.toString();
         Object.keys(object).forEach((key, index) => {

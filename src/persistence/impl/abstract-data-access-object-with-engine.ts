@@ -10,9 +10,10 @@ import Promise = require("bluebird");
 import {IEntityProperties} from "../interfaces/entity-properties";
 import {AbstractDataAccessObject} from "./abstract-data-access-object";
 import {AttributeFilter} from "./attribute-filter";
+
 /**
- * Tish class, inside their properties,contains a generic interface where the class
- * can perform the basic db operations.
+ * This class, inside their properties, contains an object implementing the interface IDbEngineUtil.
+ * The purpose, ideally, is to implement only one extended class from this, and to have as many instances per db engine.
  */
 export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractDataAccessObject<t> {
 
@@ -29,9 +30,11 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     }
 
     /**
+     * Remove an object in the database.
      * WARNING: This method IS NOT protected by any relational integrity rule because
      * noSql databases doesn't have this feature. Be VERY, VERY careful when calling this method.
      * Nothing (you, the db engine or anything else) will stop the operation once called.
+     * The method is removed by calling dbEngineUtil.remove.
      * @param objectToDelete The object to delete
      */
     public remove(objectToDelete: t): Promise<any> {
@@ -50,16 +53,8 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     /**
      * Returns the amount of records that has the entity
      */
-    public  count(): Promise<number> {
+    public count(): Promise<number> {
         return this.dbEngineUtil.count();
-    }
-
-    /**
-     * Return all records
-     * @return {Promise<any[]>}
-     */
-    public findAllMethod(): Promise<t[]> {
-        return this.dbEngineUtil.findAll();
     }
 
     /**
@@ -73,21 +68,38 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
         return this.dbEngineUtil.deleteAll();
     }
 
+    /**
+     * Delete all records whose ids matches the list.
+     * @param ids A list of ids.
+     * @return {Promise<any>} Returns a promise indicating the delete was successful.
+     */
     public deleteAllByIds(ids: string[]): Promise<any> {
         return this.dbEngineUtil.deleteAllByIds(ids);
     }
 
     /**
-     * Query an object by the id.
-     * @param id The id.
+     * Returns all records.
+     * @return {Promise<any[]>}
+     */
+    protected findAllMethod(): Promise<t[]> {
+        return this.dbEngineUtil.findAll();
+    }
+
+    /**
+     * Find one record by the id.
+     * @param id The id to look for.
+     * @return {Promise<any>} Return the document whose id matches the id. If no record is founded then the method
+     * returns null.
      */
     protected findOneByIdMethod(id: string): Promise<t> {
         return this.dbEngineUtil.findOneById(id);
     }
 
     /**
-     * Query several objects by a array of ids.
-     * @param arrayOfIds An array of ids.
+     * Find all the documents inside a model whose ids belongs to the list.
+     * @param arrayOfIds The ids to look for.
+     * @return A promise containing the result. If no records are founded, then the method returns
+     * an empty array.
      */
     protected  findAllByIdsMethod(arrayOfIds: any[]): Promise<t[]> {
         return this.dbEngineUtil.findAllByIds(arrayOfIds);
@@ -141,8 +153,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     }
 
     /**
-     * This method must be implemented in order to insert an object to the database.
-     * This method is called from this class and should not be called from outside.
+     * Inserts an object in the database.
      * @param objectToInsert The object to insert
      */
     protected insertMethod(objectToInsert: t): Promise<t> {
@@ -150,8 +161,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     }
 
     /**
-     * This method must be implemented in order to update an object to the database.
-     * This method is called from this class and should not be called from outside.
+     * Update an object in the database
      * @param objectToUpdate The object to update
      */
     protected  updateMethod(objectToUpdate: t): Promise<t> {
@@ -159,14 +169,18 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     }
 
     /**
-     * This method must be implemented in order to insert several object to the database.
-     * This method is called from this class and should not be called from outside.
+     * Inserts several object to the database at once.
      * @param objectsToInsert The objects to insert
      */
     protected  insertManyMethod(objectsToInsert: t[]): Promise<any> {
         return this.dbEngineUtil.insertManyMethod(objectsToInsert);
     }
 
+    /**
+     * Return the objects that matches the query criteria.
+     * @param query A mongoose like query.
+     * @return {Promise<any[]>}
+     */
     protected findAllByQueryMethod(query: any): Promise<any> {
         return this.dbEngineUtil.findAllByQuery(query);
     }

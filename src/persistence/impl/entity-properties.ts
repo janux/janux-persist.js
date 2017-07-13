@@ -3,6 +3,12 @@ import {IEntityProperties} from "../interfaces/entity-properties";
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
+
+/**
+ * This class helps to define extra properties to the entity.
+ * The purpose to this object is to define the extra properties that
+ * are the same for each every entity.
+ */
 export class EntityProperties implements IEntityProperties {
 
     // Generates an automatic uuid string

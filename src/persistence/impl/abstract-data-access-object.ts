@@ -14,9 +14,18 @@ import {TimeStampGenerator} from "../util/TimeStampGenerator";
 import {UuidGenerator} from "../util/UuidGenerator";
 import {AttributeFilter} from "./attribute-filter";
 
+/**
+ * Base class of a dao.
+ * This class defines the method the extended classes must implement.
+ * This class defines a generic. With this I force all the extended class must defined which object type
+ * is going to be used by the dao.
+ */
 export abstract class AbstractDataAccessObject<t> {
 
+    // It attribute name that has the unique db id.
     public ID_REFERENCE: string = "id";
+
+    // The entity properties.
     protected entityProperties: IEntityProperties;
     private readonly _log = logger.getLogger("AbstractDataAccessObject");
 
@@ -24,6 +33,22 @@ export abstract class AbstractDataAccessObject<t> {
         this.entityProperties = entityProperties;
     }
 
+    /**
+     * Inserts an object in the database.
+     * This method performs the following.
+     * 1.- Validates if the object does not have an id.
+     * 2.- Validate if the entity has the correct values by calling the method validateEntity.
+     * 3.- Validate if the entity is correct against the collection where is going to be inserted by calling the
+     * method validateBeforeInsert.
+     * 4.- Adds the dateCreated attribute by calling TimeStampGenerator.generateTimeStampForInsert().
+     * 5.- Adds the uuid attribute by calling UuidGenerator.assignUuid.
+     * 6.- Insert the object in the database by calling insertMethod (). This method is implemented by the extended classes.
+     * The content to insert can be modified before insert in the database by the method convertBeforeSave.
+     * 7.- Retrieves the content of insertMethod() and calls  the method convertAfterDbOperation.
+     * 8.- Returns the inserted object.
+     * @param objectToInsert
+     * @return {any}
+     */
     public insert(objectToInsert: t): Promise<t | IValidationError[]> {
         this._log.debug('Call to insert with %j', objectToInsert);
         let entityErrors: IValidationError[];
@@ -61,9 +86,17 @@ export abstract class AbstractDataAccessObject<t> {
 
     /**
      * Insert a list of records to the database.
-     * Before insert all records.
+     * This method performs the following.
+     * 1.- Validates if the objects does not have an id.
+     * 2.- Validate if the entities has the correct values by calling the method validateEntity.
+     * 3.- Adds the dateCreated attribute by calling TimeStampGenerator.generateTimeStampForInsert().
+     * 4.- Adds the uuid attribute by calling UuidGenerator.assignUuid.
+     * 5.- Insert the object in the database by calling insertManyMethod(). This method is implemented by the extended classes.
+     * The content to insert can be modified before insert in the database by the method convertBeforeSave.
+     * 6.- Retrieves the content of insertManyMethod() and calls  the method convertAfterDbOperation.
+     * 7.- Returns the inserted objects.
      * This method DOES NOT CHECK DATA CONSISTENCY. The data you are going to insert must be clean.
-     * @param objectsToInsert The object to insert
+     * @param objectsToInsert The objects to insert
      * @returns {any} A promise containing the inserted objects, a rejected promise if something went wrong
      */
     public insertMany(objectsToInsert: t[]): Promise<any> {
@@ -98,8 +131,16 @@ export abstract class AbstractDataAccessObject<t> {
 
     /**
      * Update the object.
-     * Validate the object before update by checking and id attribute and calling
-     * validateEntity and validateBeforeUpdate
+     * The method performs the following tasks.
+     * 1.- Validates if the object does have an id.
+     * 2.- Validate if the entity has the correct values by calling the method validateEntity.
+     * 3.- Validate if the entity is correct against the collection where is going to be inserted by calling the
+     * method validateBeforeUpdate.
+     * 4.- Adds the lastUpdate attribute by calling TimeStampGenerator.generateTimeStampForUpdate().
+     * 5.- Update the object in the database by calling updateMethod (). This method is implemented by the extended classes.
+     * The content to update can be modified before update in the database by the method convertBeforeSave.
+     * 6.- Retrieves the content of updateMethod() and calls  the method convertAfterDbOperation.
+     * 7.- Returns the updated object.
      * @param objectToUpdate The object to update
      * @returns {any} A promise containing the updated object or a reject if something went wrong.
      */
@@ -137,7 +178,7 @@ export abstract class AbstractDataAccessObject<t> {
     /**
      * Update an object if the object has an id.
      * Insert a new object if the object does not have an id.
-     * @param object
+     * @param object The object to insert or update.
      */
     public updateOrInsert(object: t): Promise<t | IValidationError[]> {
         this._log.debug("Call to updateOrInsert with object %j", object);
@@ -148,6 +189,12 @@ export abstract class AbstractDataAccessObject<t> {
         }
     }
 
+    /**
+     * Find one record by the id.
+     * @param id The id to look for.
+     * @return {Bluebird<t>} Return the document whose id matches the id. If no record is founded then the method
+     * returns null.
+     */
     public findOneById(id: string): Promise<t> {
         return this.findOneByIdMethod(id)
             .then((resultQuery: any) => {
@@ -155,6 +202,12 @@ export abstract class AbstractDataAccessObject<t> {
             });
     }
 
+    /**
+     * Find all records inside whose ids belongs to the list.
+     * @param arrayOfIds The ids to look for.
+     * @return {Bluebird<any[]>} A promise containing the result. If no records are founded, then the method returns
+     * an empty array.
+     */
     public findAllByIds(arrayOfIds: any[]): Promise<t[]> {
         return this.findAllByIdsMethod(arrayOfIds)
             .then((resultQuery: any[]) => {
@@ -163,6 +216,7 @@ export abstract class AbstractDataAccessObject<t> {
     }
 
     /**
+     * Remove the object.
      * This method must be implemented in order to delete an record to the database.
      * WARNING: This method IS NOT protected by any relational integrity rule because
      * noSql databases doesn't have this feature. Be VERY, VERY careful when calling this method.
@@ -173,15 +227,20 @@ export abstract class AbstractDataAccessObject<t> {
 
     /**
      * Same as remove. Instead of sending the object, you send the id.
-     * @param id
+     * @param id The id.
      */
     public abstract removeById(id: string): Promise<any>;
 
     /**
-     * Returns the amount of records that has the entity
+     * Returns the amount of records.
      */
     public abstract count(): Promise<number> ;
 
+    /**
+     * Returns all records.
+     * The returned object can be modified if the extended class overrides the method convertAfterDbOperation.
+     * @return {Bluebird<any[]>}
+     */
     public findAll(): Promise<t[]> {
         return this.findAllMethod()
             .then((resultQuery: any[]) => {
@@ -189,6 +248,13 @@ export abstract class AbstractDataAccessObject<t> {
             });
     }
 
+    /**
+     * Find one that has the attributeName and the value.
+     * @param attributeName The attribute to look for.
+     * @param value The value to compare.
+     * @return {Bluebird<t>} Return the document that matches the criteria. Returns a reject if there are more than
+     * one document that matches the criteria.
+     */
     public findOneByAttribute(attributeName: string, value): Promise<t> {
         return this.findOneByAttributeMethod(attributeName, value)
             .then((resultQuery: any) => {
@@ -196,6 +262,13 @@ export abstract class AbstractDataAccessObject<t> {
             });
     }
 
+    /**
+     * Find all the records that has the attributeName and the value.
+     * @param attributeName The attribute to look for.
+     * @param value The value to compare.
+     * @return {Bluebird<any[]>} Return a list of documents that matches the criteria. If no records are founded, then the method
+     * returns an empty array.
+     */
     public findAllByAttribute(attributeName: string, value): Promise<t[]> {
         return this.findAllByAttributeMethod(attributeName, value)
             .then((resultQuery: any[]) => {
@@ -203,6 +276,12 @@ export abstract class AbstractDataAccessObject<t> {
             });
     }
 
+    /**
+     * Find all records whose attribute vales matches with any value of the list.
+     * @param attributeName The attribute to look for.
+     * @param values The values to match.
+     * @return {Bluebird<any[]>}
+     */
     public findAllByAttributeNameIn(attributeName: string, values: any[]): Promise<t[]> {
         return this.findAllByAttributeNameInMethod(attributeName, values)
             .then((resultQuery: any[]) => {
@@ -210,6 +289,11 @@ export abstract class AbstractDataAccessObject<t> {
             });
     }
 
+    /**
+     * Find all the documents that matches all attributes.
+     * @param attributes The attributes-value filters.
+     * @return {Bluebird<any[]>} The objects that matches the criteria.
+     */
     public findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<t[]> {
         return this.findAllByAttributesAndOperatorMethod(attributes)
             .then((resultQuery: any[]) => {
@@ -217,6 +301,10 @@ export abstract class AbstractDataAccessObject<t> {
             });
     }
 
+    /**
+     * Find all the documents that matches only one of the attributes.
+     * @param attributes The attributes-value filters.
+     */
     public findAllByAttributesOrOperator(attributes: AttributeFilter[]): Promise<t[]> {
         return this.findAllByAttributesOrOperatorMethod(attributes)
             .then((resultQuery: any[]) => {
@@ -235,10 +323,20 @@ export abstract class AbstractDataAccessObject<t> {
 
     /**
      * Delete all records that that whose id is in the array.
+     * WARNING: This method IS NOT protected by any relational integrity rule because
+     * noSql databases doesn't have this feature. Be VERY, VERY careful when calling this method,
+     * you can destroy your database data integrity so easily.
+     * Nothing (you, the db engine or anything else) will stop the operation once called.
      * @param ids The ids to filter.
      */
     public abstract deleteAllByIds(ids: string[]): Promise<any>;
 
+    /**
+     * Find all documents that matches with the query criteria. The query for the moment is a mongo-like query object.
+     * @param query The query criteria.
+     * @return {Bluebird<any[]>} The objects that matches the query criteria. If no records are founded, then the method
+     * returns an empty array.
+     */
     protected findAllByQuery(query: any): Promise<t[]> {
         return this.findAllByQueryMethod(query)
             .then((resultQuery: any[]) => {
@@ -247,17 +345,20 @@ export abstract class AbstractDataAccessObject<t> {
     }
 
     /**
-     * Return all records
+     * Return all records.
+     * This method bust be implemented by the extended classes.
      */
     protected abstract findAllMethod(): Promise<t[]>;
 
     /**
+     * This method bust be implemented by the extended classes.
      * Query an object by the id.
      * @param id The id.
      */
     protected abstract findOneByIdMethod(id: string): Promise<t>;
 
     /**
+     * This method bust be implemented by the extended classes.
      * Query several objects by a array of ids.
      * @param arrayOfIds An array of ids.
      */
@@ -330,6 +431,10 @@ export abstract class AbstractDataAccessObject<t> {
      */
     protected abstract validateEntity(objectToValidate: t): IValidationError[];
 
+    /**
+     * This method must be implemented in order to perform a query.
+     * @param query a mongodb like query.
+     */
     protected abstract findAllByQueryMethod(query: any): Promise<any>;
 
     /**
@@ -350,15 +455,39 @@ export abstract class AbstractDataAccessObject<t> {
      */
     protected abstract validateBeforeUpdate(objectToUpdate: t): Promise<IValidationError[]>;
 
+    /**
+     * This method helps to transforms the object before an insert or update.
+     * Sometimes the dao represents an object that is not ready to be inserted or updated in a database as it is. For example, if the object comes from
+     * typescript and has private attributes, mongoose is not going to insert or update the private attributes.
+     * In order to use this method the extended class must override the method.
+     * @param object The object to transform.
+     * @return {t} The transformed object.
+     */
     protected convertBeforeSave(object: t): any {
         this._log.debug("Call to convertBeforeSave abstractDao");
         return object;
     }
 
+    /**
+     * This method helps to transforms the data contained in the database to the object represented in the dao.
+     * This method is called after successful insert, successful update or after every query.
+     * Sometimes the dao represents an object that is not ready to be inserted or updated as it is. For example, if the object comes from
+     * typescript and has private attributes, mongoose is not going to insert or update the private attributes.
+     * In order to use this method the extended class must override the method.
+     * @param object
+     * @return {any}
+     */
     protected convertAfterDbOperation(object: any): t {
         return object;
     }
 
+    /**
+     * Calling  convertBeforeSave() convertAfterDbOperation() erases the uuid, dateCreated and lastUpdate attributes.
+     * This method puts the attributes back to the object.
+     * @param obj
+     * @param reference
+     * @return {any}
+     */
     private addExtraValues(obj: any, reference: any): any {
         const id: string = 'id';
         if (_.isNil(reference[id]) === false) {

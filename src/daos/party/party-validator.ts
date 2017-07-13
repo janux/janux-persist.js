@@ -10,6 +10,9 @@ import {OrganizationValidator} from "./organization/organization-validator";
 import {PersonValidator} from "./person/person-validator";
 import JanuxPeople = require("janux-people.js");
 
+/**
+ * Validates if the party has the correct values.
+ */
 export class PartyValidator {
 
     public static readonly PERSON: string = "PersonImpl";
@@ -31,6 +34,11 @@ export class PartyValidator {
     public static DISPLAY_NAME: string = "displayName";
     public static DISPLAY_NAME_EMPTY: string = "Display name is empty";
 
+    /**
+     * Validate the entity.
+     * @param party
+     * @return {ValidationError[]} A list of errors. If the record is valid. The the method returns an empty array.
+     */
     public static validateParty(party: JanuxPeople.Person | JanuxPeople.Organization): ValidationError[] {
         this._log.debug("Call to validateParty with party: %j", party);
         let errors: ValidationError[] = [];
@@ -61,6 +69,13 @@ export class PartyValidator {
         return errors;
     }
 
+    /**
+     * Validate for duplicated records.
+     * @param resultQuery
+     * @param emailAddressesToLookFor
+     * @param reference
+     * @return {ValidationError[]}
+     */
     public static validateDuplicatedRecords(resultQuery: JanuxPeople.Person | JanuxPeople.Organization[],
                                             emailAddressesToLookFor: string[],
                                             reference: JanuxPeople.Person | JanuxPeople.Organization): ValidationError[] {
@@ -130,6 +145,11 @@ export class PartyValidator {
 
     private static _log = logger.getLogger("PartyValidator");
 
+    /**
+     * Validate phones, postal addresses and emails data.
+     * @param party
+     * @return {ValidationError[]} A list of errors. If the record is valid. The the method returns an empty array.
+     */
     private static validateContactData(party: JanuxPeople.Person | JanuxPeople.Organization) {
         const errors: ValidationError[] = [];
         // Check there is at least one primary email
@@ -144,6 +164,11 @@ export class PartyValidator {
         return errors;
     }
 
+    /**
+     * Validate for valid email address.
+     * @param emails The emails to validate.
+     * @return {ValidationError[]} A list of errors. If the record is valid. The the method returns an empty array.
+     */
     private static validateEmailAddresses(emails: JanuxPeople.EmailAddress[]): ValidationError[] {
         const errors: ValidationError[] = [];
         /*const addresses: string[] = emails.map((value, index, array) => value.address);

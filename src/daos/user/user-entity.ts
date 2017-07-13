@@ -3,6 +3,9 @@
  * Created by ernesto on 6/13/17.
  */
 
+/**
+ * User entity.
+ */
 export class UserEntity {
 
     public id: string;

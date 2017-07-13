@@ -7,10 +7,18 @@ import * as logger from 'log4js';
 import uuid = require("uuid");
 import {IEntityProperties} from "../interfaces/entity-properties";
 
+/**
+ * Generates a uuid to the object before insert it.
+ */
 export class UuidGenerator {
 
     public static UUID_PROPERTY = "uuid";
 
+    /**
+     * Inserts a uuid attribute with a unique value only if entityProperties has the identifiable as true.
+     * @param entityProperties
+     * @param objectToInsert
+     */
     public static assignUuid(entityProperties: IEntityProperties, objectToInsert: any) {
         this._log.debug("Call to assignUuid with entityProperties: %j, objectToInsert %j:",
             entityProperties,
@@ -22,5 +30,6 @@ export class UuidGenerator {
             this._log.debug("Not inserting uuid");
         }
     }
+
     private static _log = logger.getLogger("UuidGenerator");
 }

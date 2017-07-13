@@ -3,8 +3,8 @@
  * Created by ernesto on 6/9/17.
  */
 
-/*
- Base interface for any entity
+/**
+ * Base interface for any entity properties.
  */
 export interface IEntityProperties {
 
@@ -14,5 +14,4 @@ export interface IEntityProperties {
     // If true, the dao adds an lastUpdated attribute and insertDate attribute
     timeStamp: boolean;
 
-    // Todo: add relations.
 }

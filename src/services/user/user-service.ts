@@ -15,6 +15,9 @@ import {ValidationError} from "../../persistence/impl/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
 import JanuxPeople = require("janux-people.js");
 
+/**
+ * This class has basic user service methods.
+ */
 export class UserService {
 
     public static PARTY = "party";
@@ -24,6 +27,11 @@ export class UserService {
     public static ACCOUNT_NOT_IN_DATABASE = "The account with this id does not exist in the database";
     public static PARTY_TYPE = "party.type";
 
+    /**
+     * Delete an users, and it's party info, given the userId.
+     * @param userId The user id.
+     * @return {Bluebird<any>} A promise indicating the operation is executed successfully.
+     */
     public static deleteUserByUserId(userId: string): Promise<any> {
         this._log.debug("Call to deleteUserByUserId with userId: %j", userId);
         let user: UserEntity;
@@ -37,6 +45,11 @@ export class UserService {
             });
     }
 
+    /**
+     * Save or update an users and it's contact info.
+     * @param object
+     * @return {Promise<any>}
+     */
     public static saveOrUpdate(object: any): Promise<any> {
         this._log.debug("Call to saveOrUpdate with object: %j", object);
         if (isBlankString(object.id)) {
@@ -46,6 +59,10 @@ export class UserService {
         }
     }
 
+    /**
+     * Find all users and adds its contact info.
+     * @return {Bluebird<U>}
+     */
     public static findAll(): Promise<any[]> {
         this._log.debug("Call to findAll");
         return Persistence.userDao.findAll()
@@ -54,6 +71,11 @@ export class UserService {
             });
     }
 
+    /**
+     * Find one user by its id.
+     * @param id The id
+     * @return {Bluebird<any>}
+     */
     public static findOneByUserId(id: string): Promise<any> {
         this._log.debug("Call to findOneByUserId with id: %j", id);
         let result: any;
@@ -72,6 +94,11 @@ export class UserService {
             });
     }
 
+    /**
+     * Find one user by its username.
+     * @param username
+     * @return {Bluebird<any>}
+     */
     public static findOneByUserName(username: string): Promise<any> {
         this._log.debug("Call to findOneByUserName with username: %j", username);
         let result: any;
@@ -90,6 +117,11 @@ export class UserService {
             });
     }
 
+    /**
+     * Find all users that matches with the username.
+     * @param username
+     * @return {Bluebird<any[]>}
+     */
     public static findAllByUserNameMatch(username: string): Promise<any[]> {
         this._log.debug("Call to findAllByUserNameMatch with username: %j", username);
         return Persistence.userDao.findAllByUserNameMatch(username)
@@ -98,6 +130,11 @@ export class UserService {
             });
     }
 
+    /**
+     * Find all users whose contact name
+     * @param name
+     * @return {Bluebird<any[]>}
+     */
     public static findAllByContactNameMatch(name: string): Promise<any[]> {
         this._log.debug("Call to findAllByContactNameMatch with name %j", name);
         return Persistence.partyDao.findAllByName(name)

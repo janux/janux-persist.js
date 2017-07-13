@@ -1,14 +1,23 @@
-/**
+/*
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
 import * as logger from 'log4js';
 import {IEntityProperties} from "../interfaces/entity-properties";
+
+/**
+ * This class generates the timestamp values and insert the values inside the object.
+ */
 export class TimeStampGenerator {
 
     public static DATE_UPDATED_PROPERTY: string = "lastUpdate";
     public static DATE_CREATED_PROPERTY: string = "dateCreated";
 
+    /**
+     * Generate a dateCreated attribute and store it in the object.
+     * @param entityProperties This object indicates if this method needs to add the dateCreated attribute.
+     * @param objectToInsert The object to insert in the database.
+     */
     public static generateTimeStampForInsert(entityProperties: IEntityProperties, objectToInsert: any) {
         this._log.debug("generateTimeStampForInsert with entityProperties: %j, objectToInsert:%j"
             , entityProperties,
@@ -22,6 +31,12 @@ export class TimeStampGenerator {
             this._log.debug("Not inserting %j", this.DATE_CREATED_PROPERTY);
         }
     }
+
+    /**
+     * Generate a lastUpdate attribute and store it in the object.
+     * @param entityProperties This object indicates if this method needs to add the lastUpdate attribute.
+     * @param objectToUpdate The object to update in the database.
+     */
     public static generateTimeStampForUpdate(entityProperties: IEntityProperties, objectToUpdate: any) {
         this._log.debug("generateTimeStampForUpdate with entityProperties: %j, objectToUpdate %j",
             entityProperties,
@@ -33,5 +48,6 @@ export class TimeStampGenerator {
             this._log.debug("Not inserting %j", this.DATE_UPDATED_PROPERTY);
         }
     }
+
     private static _log = logger.getLogger("TimeStampGenerator");
 }

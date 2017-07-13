@@ -1,6 +1,10 @@
-/**
+/*
  * Project janux-persistence
  * Created by ernesto on 6/15/17.
+ */
+
+/**
+ * This class helps the make criteria filters.
  */
 export class AttributeFilter {
     public attributeName: string;

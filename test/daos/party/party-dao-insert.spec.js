@@ -88,9 +88,8 @@ describe("Testing party dao insert methods", function () {
                 person.name.honorificPrefix = honorificPrefix;
                 person.name.honorificSuffix = honorificSuffix;
 
-                var emailObject = new EmailAddress();
-                emailObject.address = email;
-                person.setContactMethod(work, emailObject);
+                person.setContactMethod(work, new EmailAddress(email));
+                person.setContactMethod(home, new EmailAddress(email2));
 
 
                 // var email2 = new EmailAddress();
@@ -137,7 +136,7 @@ describe("Testing party dao insert methods", function () {
                 expect(record.name.honorificPrefix).eq(honorificPrefix);
                 expect(record.name.honorificSuffix).eq(honorificSuffix);
                 expect(record.typeName).eq(PartyValidator.PERSON);
-                expect(record.emailAddresses(false).length).eq(1);
+                expect(record.emailAddresses(false).length).eq(2);
                 expect(record.emailAddresses(false)[0].type).eq(work);
                 expect(record.emailAddresses(false)[0].primary).eq(true);
                 expect(record.emailAddresses(false)[0].address).eq(email);
