@@ -109,29 +109,11 @@ describe("Testing bootstrap service", function () {
 
     function validatePersistenceNotUndefined() {
         expect(Persistence.userDao).not.to.be.undefined;
-        expect(Persistence.userRoleDao).not.to.be.undefined;
-        expect(Persistence.displayNameDao).not.to.be.undefined;
-        expect(Persistence.authContextDao).not.to.be.undefined;
-        expect(Persistence.permissionBitDao).not.to.be.undefined;
-        expect(Persistence.roleDao).not.to.be.undefined;
-        expect(Persistence.rolePermissionBitDao).not.to.be.undefined;
-        expect(Persistence.countryDao).not.to.be.undefined;
-        expect(Persistence.stateProvinceDao).not.to.be.undefined;
         expect(Persistence.partyDao).not.to.be.undefined;
-        expect(Persistence.cityDao).not.to.be.undefined;
     }
 
     function validateUndefinedPersistence() {
         expect(Persistence.userDao).to.be.undefined;
-        expect(Persistence.userRoleDao).to.be.undefined;
-        expect(Persistence.displayNameDao).to.be.undefined;
-        expect(Persistence.authContextDao).to.be.undefined;
-        expect(Persistence.permissionBitDao).to.be.undefined;
-        expect(Persistence.roleDao).to.be.undefined;
-        expect(Persistence.rolePermissionBitDao).to.be.undefined;
-        expect(Persistence.countryDao).to.be.undefined;
-        expect(Persistence.stateProvinceDao).to.be.undefined;
         expect(Persistence.partyDao).to.be.undefined;
-        expect(Persistence.cityDao).to.be.undefined;
     }
 });

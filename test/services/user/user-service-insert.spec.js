@@ -8,7 +8,7 @@ var assert = chai.assert;
 var config = require('config');
 var BootstrapService = require("../../../dist/index").BootstrapService;
 var UserService = require("../../../dist/index").UserService;
-var UserValidator = require("../../../dist/index").UserValidator;
+var AccountValidator = require("../../../dist/index").AccountValidator;
 var Persistence = require("../../../dist/index").Persistence;
 var EmailAddress = require("janux-people.js").EmailAddress;
 var Person = require("janux-people.js").Person;
@@ -19,29 +19,17 @@ var mongoConnUrl = serverAppContext.db.mongoConnUrl;
 var dbEngine = serverAppContext.db.dbEngine;
 var dbParams = dbEngine === BootstrapService.LOKIJS ? lokiJsDBPath : mongoConnUrl;
 
-const roleName = "A role name";
-const roleName2 = "A role name 2";
-const roleDescription = "A role description";
-const roleDescription2 = "A role description 2";
-
 const organizationName = "Glarus";
-const organizationDisplayName = "Display name Glarus";
 const organizationContactEmail = "sales@glarus.com";
 
 const personName = "John";
-const displayName = "display name";
 const personMiddleName = "Doe";
 const personLastName = "Doe";
 const contactEmail = "dev@glarus.com";
 const contactType = "work";
 
-const personName2 = "Jane";
-const displayName2 = "display name 2";
-const personMiddleName2 = "Doe";
-const personLastName2 = "Doe";
 const contactEmail2 = "test@glarus.com";
 const contactType2 = "work";
-
 
 const accountUsername = "username";
 const accountPassword = "password";
@@ -410,7 +398,7 @@ describe("Testing user service service insert method", function () {
                     })
                     .catch(function (err) {
                         expect(err.length).eq(1);
-                        expect(err[0].message).eq(UserValidator.ANOTHER_USER);
+                        expect(err[0].message).eq(AccountValidator.ANOTHER_USER);
                         done();
                     });
             })

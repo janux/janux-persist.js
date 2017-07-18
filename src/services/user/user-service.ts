@@ -9,8 +9,8 @@ import * as logger from 'log4js';
 import * as uuid from 'uuid';
 import {PartyValidator} from "../../daos/party/party-validator";
 import {Persistence} from "../../daos/persistence";
-import {UserEntity} from "../../daos/user/user-entity";
-import {UserValidator} from "../../daos/user/user-valdiator";
+import {AccountEntity} from "../../daos/user/account-entity";
+import {AccountValidator} from "../../daos/user/account-valdiator";
 import {ValidationError} from "../../persistence/impl/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
 import JanuxPeople = require("janux-people.js");
@@ -34,9 +34,9 @@ export class UserService {
      */
     public static deleteUserByUserId(userId: string): Promise<any> {
         this._log.debug("Call to deleteUserByUserId with userId: %j", userId);
-        let user: UserEntity;
+        let user: AccountEntity;
         return Persistence.userDao.findOneByUserId(userId)
-            .then((resultQuery: UserEntity) => {
+            .then((resultQuery: AccountEntity) => {
                 user = resultQuery;
                 return Persistence.partyDao.removeById(user.contactId);
             })
@@ -66,7 +66,7 @@ export class UserService {
     public static findAll(): Promise<any[]> {
         this._log.debug("Call to findAll");
         return Persistence.userDao.findAll()
-            .then((users: UserEntity[]) => {
+            .then((users: AccountEntity[]) => {
                 return this.populateContactData(users);
             });
     }
@@ -80,7 +80,7 @@ export class UserService {
         this._log.debug("Call to findOneByUserId with id: %j", id);
         let result: any;
         return Persistence.userDao.findOneByUserId(id)
-            .then((user: UserEntity) => {
+            .then((user: AccountEntity) => {
                 if (_.isNil(user)) return Promise.reject("No user with the id " + id);
                 result = user;
                 return Persistence.partyDao.findOneById(user.contactId);
@@ -103,7 +103,7 @@ export class UserService {
         this._log.debug("Call to findOneByUserName with username: %j", username);
         let result: any;
         return Persistence.userDao.findOneByUserName(username)
-            .then((user: UserEntity) => {
+            .then((user: AccountEntity) => {
                 if (_.isNil(user)) return Promise.reject("No user with the username " + username);
                 result = user;
                 return Persistence.partyDao.findOneById(user.contactId);
@@ -125,7 +125,7 @@ export class UserService {
     public static findAllByUserNameMatch(username: string): Promise<any[]> {
         this._log.debug("Call to findAllByUserNameMatch with username: %j", username);
         return Persistence.userDao.findAllByUserNameMatch(username)
-            .then((users: UserEntity[]) => {
+            .then((users: AccountEntity[]) => {
                 return this.populateContactData(users);
             });
     }
@@ -172,7 +172,7 @@ export class UserService {
         this._log.debug("Call to insert with object %j", object);
         let associatedParty: JanuxPeople.Person | JanuxPeople.Organization;
         let result: any;
-        const user: UserEntity = new UserEntity();
+        const user: AccountEntity = new AccountEntity();
         user.enabled = object.enabled;
         user.userId = uuid.v4();
         user.mdate = new Date();
@@ -185,7 +185,7 @@ export class UserService {
         user.roles = object.roles;
 
         // Validate user
-        const errors = UserValidator.validateAccountExceptContactId(user);
+        const errors = AccountValidator.validateAccountExceptContactId(user);
         if (errors.length > 0) {
             return Promise.reject(errors);
         }
@@ -196,7 +196,7 @@ export class UserService {
                 user.contactId = associatedParty[this.ID_REFERENCE];
                 return Persistence.userDao.insert(user);
             })
-            .then((insertedAccount: UserEntity) => {
+            .then((insertedAccount: AccountEntity) => {
                 result = insertedAccount;
                 result.contact = associatedParty.toJSON();
                 result.contact.id = associatedParty.id;
@@ -215,7 +215,7 @@ export class UserService {
     public static update(object: any): Promise<any> {
         this._log.debug("Call to update with object:%j", object);
         let result: any;
-        const user: UserEntity = new UserEntity();
+        const user: AccountEntity = new AccountEntity();
         // Find the user. This also helps to retrieve the contactId.
         return Persistence.userDao.findOneById(object.id)
             .then((resultQuery) => {
@@ -239,7 +239,7 @@ export class UserService {
                     return Persistence.userDao.update(user);
                 }
             })
-            .then((updatedAccount: UserEntity) => {
+            .then((updatedAccount: AccountEntity) => {
                 result = updatedAccount;
                 // Now update the contact data.
                 const contact: any = object.contact;
@@ -268,14 +268,14 @@ export class UserService {
         const ids = _.map(contacts, (o: any) => o.id);
         let result: any;
         return Persistence.userDao.findAllByContactIdsIn(ids)
-            .then((users: UserEntity[]) => {
+            .then((users: AccountEntity[]) => {
                 result = this.mixData(users, contacts);
                 this._log.debug("populateUserData : returning %j", result);
                 return Promise.resolve(result);
             });
     }
 
-    private static populateContactData(users: UserEntity[]) {
+    private static populateContactData(users: AccountEntity[]) {
         this._log.debug("Call to populateContactData with users: %j", users);
         let result: any = users;
         const contactIds = users.map((value) => value.contactId);
@@ -352,7 +352,7 @@ export class UserService {
                         return Persistence.userDao.findOneByContactId(resultQueryParty[this.ID_REFERENCE]);
                     }
                 })
-                .then((resultQueryAccount: UserEntity) => {
+                .then((resultQueryAccount: AccountEntity) => {
                     if (_.isNull(resultQueryAccount)) {
                         this._log.debug("Returning %j", resultQueryAccount);
                         return Promise.resolve(referenceObject);
