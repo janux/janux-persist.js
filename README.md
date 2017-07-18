@@ -15,14 +15,18 @@ Mongo db version 3.4
 
 **Install**
 
-Before installing the dependencies. Make sure there is a reference of the project janux-people in the  "vendor" directory.
+Before installing the dependencies. Make sure there is a reference of the project janux-people in the  "vendor" directory. In a \*nix system:
 
-After cloning the project you need to do `npm install` in order to install the dependencies.
+  $ mkdir vendor
+  $ cd vendor
+  $ ln -s [path-to]/janux-people.js
+
+After cloning the project you need to do `npm install` in order to install the dependencies.`npm install` will automatically run `gulp` after installing the dependencies and to an initial build of the project by invoking the default gulp target.
  
 
 **Compile**
 
-To compile the project run `gulp`
+To compile the project run `gulp`. To see the other tasks available: `gulp -T`.
 
 
 **Test**
@@ -35,8 +39,8 @@ To generate the doc files run `gulp doc`
 
 **Settings**
 
-This project use the config project where some settings are defined. Por example,
- which mongo db uses the project. 
+This project uses the node-config project where some settings are defined. Por example,
+which mongo db uses the project. 
  
  There are 2 files inside the config directory.
  
@@ -44,8 +48,8 @@ This project use the config project where some settings are defined. Por example
  
  test.js
  
- For example, when you execute `gulp test` , the system gets the settings from test.js. 
+ For example, when you execute `gulp test`, the system gets the settings from test.js. 
  
- **Extra tasks**
+**Extra tasks**
  
- running `npm run generateUsers` generated sample user data in a lokijs or mongodb database (based on the info retrieved from config).
+running `npm run generateUsers` generated sample user data in a lokijs or mongodb database (based on the info retrieved from config).
