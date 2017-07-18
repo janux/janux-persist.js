@@ -8,6 +8,8 @@ This project has been tested with the following programs.
 
 Node version 4.4.3 (it can work with node version 6).
 
+Gulp installed globally.
+
 Mongo db version 3.4
 
 
@@ -26,6 +28,10 @@ To compile the project run `gulp`
 **Test**
 
 To test the project run `gulp test`
+
+**Typedoc**
+
+To generate the doc files run `gulp doc` 
 
 **Settings**
 
