@@ -30,6 +30,7 @@
     "gulp-sourcemaps": "2.6.0",
     "gulp-tslint": "8.1.0",
     "gulp-typescript": "3.1.7",
+    "gulp-typedoc": "2.0.2",
     "janux-people": "file:vendor/janux-people.js",
     "lodash": "4.17.4",
     "log4js": "1.1.1",
@@ -44,7 +45,6 @@
   },
   "devDependencies": {
     "chai": "4.0.2",
-    "gulp-typedoc": "2.0.2",
     "mocha": "3.4.2",
     "typedoc": "0.7.1"
   },
