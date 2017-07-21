@@ -16,11 +16,8 @@ import {PartyValidator} from "../party-validator";
  */
 export class PartyDaoLokiJsImpl extends PartyDao {
 
-    private collection: any;
-
     constructor(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
-        this.collection = dbEngineUtil.collection;
     }
 
     /**

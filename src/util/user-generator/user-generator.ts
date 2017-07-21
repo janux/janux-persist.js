@@ -6,16 +6,24 @@ import * as logger from 'log4js';
 import JanuxPeople = require('janux-people.js');
 import md5 = require('MD5');
 import Promise = require("bluebird");
+import {PartyDao} from "../../daos/party/party-dao";
 import {PartyValidator} from "../../daos/party/party-validator";
+import {AccountDao} from "../../daos/user/account-dao";
+import {DaoFactory} from "../../services/dao-factory/dao-factory-service";
 import {UserService} from "../../services/user/user-service";
 
 export class UserGenerator {
 
-    public static generateUserDateInTheDatabase(): Promise<any> {
+    public static generateUserDateInTheDatabase(dbEngine: string, path: string): Promise<any> {
         this._log.debug("Call to generateUserDateInTheDatabase");
+        let partyDao: PartyDao;
+        let accountDao: AccountDao;
+        partyDao = DaoFactory.createPartyDao(dbEngine, path);
+        accountDao = DaoFactory.createAccountDao(dbEngine, path);
+        const userService: UserService = UserService.createInstance(accountDao, partyDao);
         const usersToInsert = this.generateUserFakeData();
         return Promise.map(usersToInsert, (element) => {
-            return UserService.insert(element);
+            return userService.insert(element);
         })
             .then((insertedUsers: any[]) => {
                 return Promise.resolve(insertedUsers);
@@ -24,7 +32,7 @@ export class UserGenerator {
 
     private static _log = logger.getLogger("UserGenerator");
 
-    private static  generateUserFakeData(): any[] {
+    private static generateUserFakeData(): any[] {
         this._log.debug("Call to generateUserFakeData");
         const UsersGenerator: any = JanuxPeople.UsersGenerator;
         const usersGen = new UsersGenerator();

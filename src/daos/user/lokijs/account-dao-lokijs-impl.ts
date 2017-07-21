@@ -38,7 +38,7 @@ export class AccountDaoLokiJsImpl extends AccountDao {
      * Validate the object before inserting to the database.
      * In this case the method validates for duplicated usernames.
      * @param objectToInsert The object to validate.
-     * @return {Bluebird<IValidationError[]>} A list of validation errors.
+     * @return {Promise<IValidationError[]>} A list of validation errors.
      */
     protected validateBeforeInsert(objectToInsert: AccountEntity): Promise<IValidationError[]> {
         const query = {
@@ -57,7 +57,7 @@ export class AccountDaoLokiJsImpl extends AccountDao {
      * Validate the object before updating to the database.
      * In this case the method validates for duplicated usernames.
      * @param objectToUpdate The object to update.
-     * @return {Bluebird<ValidationError[]>} A list of validation errors.
+     * @return {Promise<ValidationError[]>} A list of validation errors.
      */
     protected validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<IValidationError[]> {
         const idValue = _.toNumber(objectToUpdate.id);

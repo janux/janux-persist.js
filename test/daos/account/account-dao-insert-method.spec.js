@@ -6,31 +6,12 @@ var chai = require('chai');
 var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
-var lokijs = require('lokijs');
 var AccountEntity = require("../../../dist/index").AccountEntity;
-var AccountDaoLokiJsImpl = require("../../../dist/index").AccountDaoLokiJsImpl;
-var AccountDaoMongodbImpl = require("../../../dist/index").AccountDaoMongodbImpl;
-var DbEngineUtilLokijs = require("../../../dist/index").DbEngineUtilLokijs;
-var DbEngineUtilMongodb = require("../../../dist/index").DbEngineUtilMongodb;
-var AccountMongoDbSchema = require("../../../dist/index").AccountMongoDbSchema;
-var mongoose = require('mongoose');
-
+var DaoFactory = require("../../../dist/index").DaoFactory;
+var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 //Config files
 var serverAppContext = config.get("serverAppContext");
-
-
-
-// Loki js configuration
-var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
-var dbEngineUtilLokijs = new DbEngineUtilLokijs('user-test', lokiDatabase);
-var userDaoLokiJsImpl = new AccountDaoLokiJsImpl(dbEngineUtilLokijs, null);
-
-// Mongo db configuration
-mongoose.connect(serverAppContext.db.mongoConnUrl);
-var model = mongoose.model('user-test', AccountMongoDbSchema);
-var dbEngineMongoDb = new DbEngineUtilMongodb(model);
-var userDaoMongoDbImpl = new AccountDaoMongodbImpl(dbEngineMongoDb, null);
 
 const username = "username";
 const password = "password";
@@ -39,15 +20,15 @@ const password2 = "password2";
 const id = "313030303030303030303030";
 const id2 = "313030303030303030303031";
 
-describe("Testing user dao insert methods", function () {
-    [userDaoLokiJsImpl, userDaoMongoDbImpl].forEach(function (accountDao) {
+describe("Testing account dao insert methods", function () {
+    [DataSourceHandler.LOKIJS, DataSourceHandler.MONGODB].forEach(function (dbEngine) {
+        var accountDao;
         beforeEach(function (done) {
+            var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
+            accountDao = DaoFactory.createAccountDao(dbEngine, path)
             accountDao.deleteAll()
                 .then(function () {
                     done();
-                })
-                .catch(function (err) {
-                    assert.fail("Error", err);
                 })
         });
 
@@ -134,8 +115,6 @@ describe("Testing user dao insert methods", function () {
                     });
             });
         });
-
-
 
 
         describe("When inserting many records", function () {

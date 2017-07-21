@@ -16,15 +16,13 @@ import {AttributeFilter} from "./attribute-filter";
  */
 export class DbEngineUtilLokijs implements IDbEngineUtil {
 
-    public collection: any;
-    public db: any;
+    private collectionName;
+    private db: any;
     private _log = logger.getLogger("DbEngineUtilLokijs");
 
     constructor(collectionName: string, db: any) {
-        this.collection = db.getCollection(collectionName);
-        if (_.isNil(this.collection)) {
-            this.collection = db.addCollection(collectionName);
-        }
+        this._log.debug("Call to constructor with collectionName %j", collectionName);
+        this.collectionName = collectionName;
         this.db = db;
     }
 
@@ -36,7 +34,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     public findOneById(id): Promise<any> {
         this._log.debug("Call to findOneById with id: %j", id);
-        return LokiJsUtil.findOneById(this.collection, id);
+        return LokiJsUtil.findOneById(this.getCollection(), id);
     }
 
     /**
@@ -47,7 +45,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     public findAllByIds(arrayOfIds: any[]): Promise<any> {
         this._log.debug("Call to findAllByIds with arrayOfIds: %j", arrayOfIds);
-        return LokiJsUtil.findAllByIds(this.collection, arrayOfIds);
+        return LokiJsUtil.findAllByIds(this.getCollection(), arrayOfIds);
     }
 
     /**
@@ -58,7 +56,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     public remove(objectToDelete: any): Promise<any> {
         this._log.debug("Call to remove with objectToDelete: %j", objectToDelete);
-        return LokiJsUtil.remove(this.db, this.collection, objectToDelete);
+        return LokiJsUtil.remove(this.db, this.getCollection(), objectToDelete);
     }
 
     /**
@@ -67,7 +65,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     public count(): Promise<number> {
         this._log.debug("Call to count.");
-        return LokiJsUtil.count(this.collection);
+        return LokiJsUtil.count(this.getCollection());
     }
 
     /**
@@ -76,7 +74,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     public deleteAll(): Promise<any> {
         this._log.debug("Call to deleteAll.");
-        return LokiJsUtil.deleteAll(this.db, this.collection);
+        return LokiJsUtil.deleteAll(this.db, this.getCollection());
     }
 
     /**
@@ -85,7 +83,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      * @return {Promise<any>} Returns a promise indicating the delete was successful.
      */
     deleteAllByIds(ids: string[]): Promise<any> {
-        return LokiJsUtil.deleteAllByIds(this.db, this.collection, ids);
+        return LokiJsUtil.deleteAllByIds(this.db, this.getCollection(), ids);
     }
 
     /**
@@ -97,7 +95,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     public findOneByAttribute(attributeName: string, value): Promise<any> {
         this._log.debug("Call to findOneByAttribute with attributeName: %j, value: %j", attributeName, value);
-        return LokiJsUtil.findOneByAttribute(this.collection, attributeName, value);
+        return LokiJsUtil.findOneByAttribute(this.getCollection(), attributeName, value);
     }
 
     /**
@@ -110,7 +108,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     public findAllByAttribute(attributeName: string, value): Promise<any[]> {
         this._log.debug("Call to findAllByAttribute with attributeName: %j, value: %j", attributeName, value);
-        return LokiJsUtil.findAllByAttribute(this.collection, attributeName, value);
+        return LokiJsUtil.findAllByAttribute(this.getCollection(), attributeName, value);
     }
 
     /**
@@ -122,7 +120,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     public findAllByAttributeNameIn(attributeName: string, values: any[]): Promise<any> {
         this._log.debug("Call to findAllByAttributeNameIn with attributeName: %j, values: %j", attributeName, values);
-        return LokiJsUtil.findAllByAttributeNameIn(this.collection, attributeName, values);
+        return LokiJsUtil.findAllByAttributeNameIn(this.getCollection(), attributeName, values);
     }
 
     /**
@@ -133,7 +131,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     public insertMethod(objectToInsert: any): Promise<any> {
         this._log.debug("Call to insertMethod with objectToInsert: %j", objectToInsert);
-        return LokiJsUtil.insert(this.db, this.collection, objectToInsert);
+        return LokiJsUtil.insert(this.db, this.getCollection(), objectToInsert);
     }
 
     /**
@@ -144,7 +142,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     public updateMethod(objectToUpdate: any): Promise<any> {
         this._log.debug("Call to updateMethod with objectToUpdate: %j", objectToUpdate);
-        return LokiJsUtil.update(this.db, this.collection, objectToUpdate);
+        return LokiJsUtil.update(this.db, this.getCollection(), objectToUpdate);
     }
 
     /**
@@ -155,7 +153,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     public insertManyMethod(objectsToInsert: any[]): Promise<any> {
         this._log.debug("Call to insertManyMethod with objectsToInsert: %j", objectsToInsert);
-        return LokiJsUtil.insertMany(this.db, this.collection, objectsToInsert);
+        return LokiJsUtil.insertMany(this.db, this.getCollection(), objectsToInsert);
     }
 
     /**
@@ -164,7 +162,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     findAll(): Promise<any[]> {
         this._log.debug("Call to findAll");
-        return LokiJsUtil.findAllByQuery(this.collection, {});
+        return LokiJsUtil.findAllByQuery(this.getCollection(), {});
     }
 
     /**
@@ -182,7 +180,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
             condition[attribute.attributeName] = {$eq: attribute.value};
             query.$and.push(condition);
         }
-        return LokiJsUtil.findAllByQuery(this.collection, query);
+        return LokiJsUtil.findAllByQuery(this.getCollection(), query);
     }
 
     /**
@@ -200,7 +198,7 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
             condition[attribute.attributeName] = {$eq: attribute.value};
             query.$or.push(condition);
         }
-        return LokiJsUtil.findAllByQuery(this.collection, query);
+        return LokiJsUtil.findAllByQuery(this.getCollection(), query);
     }
 
     /**
@@ -211,16 +209,26 @@ export class DbEngineUtilLokijs implements IDbEngineUtil {
      */
     public findAllByQuery(query: any): Promise<any[]> {
         this._log.debug("Call to findAllByQuery with query: %j", query);
-        return LokiJsUtil.findAllByQuery(this.collection, query);
+        return LokiJsUtil.findAllByQuery(this.getCollection(), query);
     }
 
     /**
      * Remove a document whose id matches with the id parameter.
      * @param id The id query criteria.
-     * @return {Bluebird} Returns a promise indicating the delete was successful.
+     * @return {Promise} Returns a promise indicating the delete was successful.
      */
     public removeById(id: string): Promise<any> {
         this._log.debug("Call to removeById with id: %j", id);
-        return LokiJsUtil.removeById(this.db, this.collection, id);
+        return LokiJsUtil.removeById(this.db, this.getCollection(), id);
+    }
+
+    private getCollection(): any {
+        this._log.debug("Call to getCollection");
+        let collection = this.db.getCollection(this.collectionName);
+        if (_.isNil(collection)) {
+            this._log.debug("No collection founded with name %j, adding a new one", this.collectionName);
+            collection = this.db.addCollection(this.collectionName);
+        }
+        return collection;
     }
 }

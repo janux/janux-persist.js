@@ -14,25 +14,11 @@ var EmailAddress = require("janux-people.js").EmailAddress;
 var PhoneNumber = require("janux-people.js").PhoneNumber;
 var PersonEntity = require("janux-people.js").Person;
 var OrganizationEntity = require("janux-people.js").Organization;
-var PartyDaoLokiJsImpl = require("../../../dist/index").PartyDaoLokiJsImpl;
-var PartyDaoMongoDbImpl = require("../../../dist/index").PartyDaoMongoDbImpl;
-var DbEngineUtilLokijs = require("../../../dist/index").DbEngineUtilLokijs;
-var DbEngineUtilMongodb = require("../../../dist/index").DbEngineUtilMongodb;
-var PartyMongoDbSchema = require("../../../dist/index").PartyMongoDbSchema;
+var DaoFactory = require("../../../dist/index").DaoFactory;
+var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 //Config files
 var serverAppContext = config.get("serverAppContext");
-
-// Loki js configuration
-var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath, {throttledSaves: true});
-var dbEngineUtilLokijs = new DbEngineUtilLokijs('party-test', lokiDatabase);
-var partyDaoLokijs = new PartyDaoLokiJsImpl(dbEngineUtilLokijs, null);
-
-// Mongo db configuration
-mongoose.connect(serverAppContext.db.mongoConnUrl);
-var model = mongoose.model('party-test', PartyMongoDbSchema);
-var dbEngineMongoDb = new DbEngineUtilMongodb(model);
-var partyDaoMongodb = new PartyDaoMongoDbImpl(dbEngineMongoDb, null);
 
 const idAccount = "313030303030303030303037";
 const firstName = "John";
@@ -42,7 +28,6 @@ const lastName = "Iglesias";
 const honorificPrefix = "honorificPrefix";
 const honorificSuffix = "honorificSuffix";
 const email = "glarus@mail.com";
-const email2 = "glarus_sales@mail.com";
 const email3 = "glarus_dev@mail.com";
 const email4 = "glarus_sys@mail.com";
 const email5 = "glarus_admin@mail.com";
@@ -56,19 +41,18 @@ const organizationName2 = "Glarus 2";
 const name2 = "Jane";
 const middleName2 = "Smith";
 
-
-const invalidEmail = "email.com";
-
 describe("Testing party dao update methods", function () {
-    [partyDaoLokijs, partyDaoMongodb].forEach(function (partyDao) {
+    [DataSourceHandler.MONGODB, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
         describe("Given the inserted records", function () {
 
             var insertedRecordOrganization;
             var insertedRecordPerson;
             var insertedRecordOrganization2;
             var insertedRecordPerson2;
-
+            var partyDao;
             beforeEach(function (done) {
+                var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
+                partyDao = DaoFactory.createPartyDao(dbEngine, path)
                 partyDao.deleteAll()
                     .then(function () {
                         var organization = new OrganizationEntity();

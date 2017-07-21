@@ -75,7 +75,7 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
     /**
      * Delete all documents inside the model whose ids matches the list.
      * @param ids A list of ids.
-     * @return {Bluebird} Returns a promise indicating the delete was successful.
+     * @return {Promise} Returns a promise indicating the delete was successful.
      */
     deleteAllByIds(ids: string[]): Promise<any> {
         return MongoDbUtil.deleteAllByIds(this.model, ids);

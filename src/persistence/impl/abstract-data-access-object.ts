@@ -226,7 +226,7 @@ export abstract class AbstractDataAccessObject<t> {
     /**
      * Find one record by the id.
      * @param id The id to look for.
-     * @return {Bluebird<t>} Return the document whose id matches the id. If no record is founded then the method
+     * @return {Promise<t>} Return the document whose id matches the id. If no record is founded then the method
      * returns null.
      */
     public findOneById(id: string): Promise<t> {
@@ -239,7 +239,7 @@ export abstract class AbstractDataAccessObject<t> {
     /**
      * Find all records inside whose ids belongs to the list.
      * @param arrayOfIds The ids to look for.
-     * @return {Bluebird<any[]>} A promise containing the result. If no records are founded, then the method returns
+     * @return {Promise<any[]>} A promise containing the result. If no records are founded, then the method returns
      * an empty array.
      */
     public findAllByIds(arrayOfIds: any[]): Promise<t[]> {
@@ -273,7 +273,7 @@ export abstract class AbstractDataAccessObject<t> {
     /**
      * Returns all records.
      * The returned object can be modified if the extended class overrides the method convertAfterDbOperation.
-     * @return {Bluebird<any[]>}
+     * @return {Promise<any[]>}
      */
     public findAll(): Promise<t[]> {
         return this.findAllMethod()
@@ -286,7 +286,7 @@ export abstract class AbstractDataAccessObject<t> {
      * Find one that has the attributeName and the value.
      * @param attributeName The attribute to look for.
      * @param value The value to compare.
-     * @return {Bluebird<t>} Return the document that matches the criteria. Returns a reject if there are more than
+     * @return {Promise<t>} Return the document that matches the criteria. Returns a reject if there are more than
      * one document that matches the criteria.
      */
     public findOneByAttribute(attributeName: string, value): Promise<t> {
@@ -300,7 +300,7 @@ export abstract class AbstractDataAccessObject<t> {
      * Find all the records that has the attributeName and the value.
      * @param attributeName The attribute to look for.
      * @param value The value to compare.
-     * @return {Bluebird<any[]>} Return a list of documents that matches the criteria. If no records are founded, then the method
+     * @return {Promise<any[]>} Return a list of documents that matches the criteria. If no records are founded, then the method
      * returns an empty array.
      */
     public findAllByAttribute(attributeName: string, value): Promise<t[]> {
@@ -314,7 +314,7 @@ export abstract class AbstractDataAccessObject<t> {
      * Find all records whose attribute vales matches with any value of the list.
      * @param attributeName The attribute to look for.
      * @param values The values to match.
-     * @return {Bluebird<any[]>}
+     * @return {Promise<any[]>}
      */
     public findAllByAttributeNameIn(attributeName: string, values: any[]): Promise<t[]> {
         return this.findAllByAttributeNameInMethod(attributeName, values)
@@ -326,7 +326,7 @@ export abstract class AbstractDataAccessObject<t> {
     /**
      * Find all the documents that matches all attributes.
      * @param attributes The attributes-value filters.
-     * @return {Bluebird<any[]>} The objects that matches the criteria.
+     * @return {Promise<any[]>} The objects that matches the criteria.
      */
     public findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<t[]> {
         return this.findAllByAttributesAndOperatorMethod(attributes)
@@ -368,7 +368,7 @@ export abstract class AbstractDataAccessObject<t> {
     /**
      * Find all documents that matches with the query criteria. The query for the moment is a mongo-like query object.
      * @param query The query criteria.
-     * @return {Bluebird<any[]>} The objects that matches the query criteria. If no records are founded, then the method
+     * @return {Promise<any[]>} The objects that matches the query criteria. If no records are founded, then the method
      * returns an empty array.
      */
     protected findAllByQuery(query: any): Promise<t[]> {

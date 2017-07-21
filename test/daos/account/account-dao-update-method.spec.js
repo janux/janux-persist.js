@@ -7,15 +7,8 @@ var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
 var AccountEntity = require("../../../dist/index").AccountEntity;
-var lokijs = require('lokijs');
-var AccountDaoLokiJsImpl = require("../../../dist/index").AccountDaoLokiJsImpl;
-var AccountDaoMongodbImpl = require("../../../dist/index").AccountDaoMongodbImpl;
-var DbEngineUtilLokijs = require("../../../dist/index").DbEngineUtilLokijs;
-var DbEngineUtilMongodb = require("../../../dist/index").DbEngineUtilMongodb;
-var AccountMongoDbSchema = require("../../../dist/index").AccountMongoDbSchema;
-var mongoose = require('mongoose');
-//Config files
-var serverAppContext = config.get("serverAppContext");
+var DaoFactory = require("../../../dist/index").DaoFactory;
+var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 const username = "username";
 const password = "password";
@@ -26,26 +19,20 @@ const id2 = "313030303030303030303031";
 
 const newPassword = "newPassword";
 
-// Loki js configuration
-var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
-var dbEngineUtilLokijs = new DbEngineUtilLokijs('user-test', lokiDatabase);
-var userDaoLokiJsImpl = new AccountDaoLokiJsImpl(dbEngineUtilLokijs, null);
-
-// Mongo db configuration
-mongoose.connect(serverAppContext.db.mongoConnUrl);
-var model = mongoose.model('user-test', AccountMongoDbSchema);
-var dbEngineMongoDb = new DbEngineUtilMongodb(model);
-var userDaoMongoDbImpl = new AccountDaoMongodbImpl(dbEngineMongoDb, null);
+//Config files
+var serverAppContext = config.get("serverAppContext");
 
 describe("Testing user dao update methods", function () {
-    [userDaoMongoDbImpl,userDaoLokiJsImpl].forEach(function (accountDao) {
+    [DataSourceHandler.LOKIJS, DataSourceHandler.MONGODB].forEach(function (dbEngine) {
 
         describe("Given the inserted records", function () {
-
+            var accountDao;
             var insertedRecord1;
             var insertedRecord2;
 
             beforeEach(function (done) {
+                var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
+                accountDao = DaoFactory.createAccountDao(dbEngine, path);
                 accountDao.deleteAll()
                     .then(function () {
                         var account1 = new AccountEntity();

@@ -4,9 +4,9 @@
  */
 var chai = require('chai');
 var config = require('config');
-var BootstrapService = require("../../../dist/index").BootstrapService;
 var UserService = require("../../../dist/index").UserService;
-var Persistence = require("../../../dist/index").Persistence;
+var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
+var DaoFactory = require("../../../dist/index").DaoFactory;
 var serverAppContext = config.get("serverAppContext");
 var EmailAddress = require("janux-people.js").EmailAddress;
 var Person = require("janux-people.js").Person;
@@ -14,7 +14,7 @@ var Organization = require("janux-people.js").Organization;
 var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
 var mongoConnUrl = serverAppContext.db.mongoConnUrl;
 var dbEngine = serverAppContext.db.dbEngine;
-var dbParams = dbEngine === BootstrapService.LOKIJS ? lokiJsDBPath : mongoConnUrl;
+var dbPath = dbEngine === DataSourceHandler.LOKIJS ? lokiJsDBPath : mongoConnUrl;
 
 const organizationName = "Glarus";
 const organizationContactEmail = "sales@glarus.com";
@@ -47,19 +47,25 @@ const personName2 = "Jane";
 const personMiddleName2 = "Smith";
 const contactEmail2 = "dev_full_stack@glarus.com";
 
+
 describe("Testing auth context service find method", function () {
     describe("Given the inserted roles and accounts", function () {
 
+        var partyDao;
+        var accountDao;
+        var userService;
         var insertedUser1;
         var insertedUser2;
 
+
         beforeEach(function (done) {
-            BootstrapService.start(dbEngine, dbParams)
+
+            partyDao = DaoFactory.createPartyDao(dbEngine, dbPath);
+            accountDao = DaoFactory.createAccountDao(dbEngine, dbPath);
+            userService = UserService.createInstance(accountDao, partyDao);
+            accountDao.deleteAll()
                 .then(function () {
-                    return Persistence.userDao.deleteAll();
-                })
-                .then(function () {
-                    return Persistence.partyDao.deleteAll();
+                    return partyDao.deleteAll();
                 })
                 .then(function () {
                     var person = new Person();
@@ -79,7 +85,7 @@ describe("Testing auth context service find method", function () {
                         contact: contactReference,
                         roles: ["admin"]
                     };
-                    return UserService.insert(account)
+                    return userService.insert(account)
                 })
                 .then(function (insertedUser) {
                     insertedUser1 = insertedUser;
@@ -103,16 +109,7 @@ describe("Testing auth context service find method", function () {
                 .then(function (insertedUser) {
                     insertedUser2 = insertedUser;
                     done();
-                })
+                });
         });
-
-        describe("When calling findAllByContactNameMatch with a name that exists in the database",function () {
-            it("The method should return a recird",function (done) {
-                UserService.findAllByContactNameMatch(personName)
-                    .then(function (result) {
-                        done();
-                    });
-            })
-        })
     });
 });

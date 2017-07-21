@@ -81,7 +81,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
     /**
      * Validate the record is valid before inserting to the database.
      * @param objectToInsert The object to validate.
-     * @return {Bluebird<Array>} An array containing the validation errors. If there are no errors then
+     * @return {Promise<Array>} An array containing the validation errors. If there are no errors then
      * returns an empty array.
      */
     protected validateBeforeInsert(objectToInsert: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
