@@ -5,7 +5,7 @@
 import {ExampleUser} from "../example-user";
 import {ExampleUserDao} from "../example-user-dao";
 import Promise = require("bluebird");
-import {DbEngineUtilMongodb} from "../../../persistence/impl/db-engine-util-mongodb";
+import {MongoDbRepository} from "../../../persistence/impl/mongodb-repository";
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 
@@ -13,13 +13,13 @@ import {IEntityProperties} from "../../../persistence/interfaces/entity-properti
  * this is the implementation for mongodb of ExampleUserDao
  */
 export class ExampleUserDaoMongoDbImpl extends ExampleUserDao {
-    public static createInstance(dbEngineUtil: DbEngineUtilMongodb, entityProperties: IEntityProperties) {
+    public static createInstance(dbEngineUtil: MongoDbRepository, entityProperties: IEntityProperties) {
         return this.instance || (this.instance = new this(dbEngineUtil, entityProperties));
     }
 
     private static instance: ExampleUserDaoMongoDbImpl;
 
-    private constructor(dbEngineUtil: DbEngineUtilMongodb, entityProperties: IEntityProperties) {
+    private constructor(dbEngineUtil: MongoDbRepository, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 

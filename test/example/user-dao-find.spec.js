@@ -15,8 +15,8 @@ var ExampleUser = require("../../dist/index").ExampleUser;
 var ExampleUserDaoLokiJsImpl = require("../../dist/index").ExampleUserDaoLokiJsImpl;
 var ExampleUserDaoMongoDbImpl = require("../../dist/index").ExampleUserDaoMongoDbImpl;
 var MongoUserSchemaExample = require("../../dist/index").MongoUserSchemaExample;
-var DbEngineUtilLokijs = require("../../dist/index").DbEngineUtilLokijs;
-var DbEngineUtilMongodb = require("../../dist/index").DbEngineUtilMongodb;
+var LokiJsRepository = require("../../dist/index").LokiJsRepository;
+var MongoDbRepository = require("../../dist/index").MongoDbRepository;
 var EntityProperties = require("../../dist/index").EntityProperties;
 
 
@@ -25,13 +25,13 @@ var serverAppContext = config.get("serverAppContext");
 
 //lokiJs implementation
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
-var dbEngineUtilLokijs = new DbEngineUtilLokijs('users-example', lokiDatabase);
+var dbEngineUtilLokijs = new LokiJsRepository('users-example', lokiDatabase);
 var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(dbEngineUtilLokijs, new EntityProperties(true, true));
 
 //Mongodb implementation
 mongoose.connect(serverAppContext.db.mongoConnUrl);
 var model = mongoose.model('users-example', MongoUserSchemaExample);
-var dbEngineUtilMongodb = new DbEngineUtilMongodb(model);
+var dbEngineUtilMongodb = new MongoDbRepository(model);
 var userDaoMongoDb = ExampleUserDaoMongoDbImpl.createInstance(dbEngineUtilMongodb, new EntityProperties(true, true));
 
 const email = "jon@smith.com";

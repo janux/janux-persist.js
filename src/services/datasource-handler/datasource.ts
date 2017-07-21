@@ -56,13 +56,13 @@ export class DataSource {
     }
 
     private connectToLokiJs(): DataSource {
-        this.log.debug("Connect to lokijs with path %j", this.path);
-        const db = new lokijs(this.path, {throttledSaves: false});
+        this.log.debug("Call to connectToLokiJs", this.path);
+        const db = new lokijs(this.path, {throttledSaves: false, autoload: true});
         this.dbConnection = db;
         this.status = DataSourceStatus.CONNECTED;
-        db.loadDatabase({}, (err, data) => {
-            this.log.info("Connection to the database lokijs %j successful", this.path);
-        });
+        // db.loadDatabase({}, (err, data) => {
+        //    this.log.info("Connection to the database lokijs %j successful", this.path);
+        // });
         return this;
     }
 }

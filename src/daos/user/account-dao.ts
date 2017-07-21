@@ -4,7 +4,7 @@
  */
 
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
-import {IDbEngineUtil} from "../../persistence/interfaces/db-engine-util-method";
+import {ICrudMethods} from "../../persistence/interfaces/crud-methods";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
 import {AccountEntity} from "./account-entity";
@@ -16,7 +16,7 @@ import {AccountValidator} from "./account-valdiator";
  */
 export abstract class AccountDao extends AbstractDataAccessObjectWithEngine<AccountEntity> {
 
-    constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: ICrudMethods, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 

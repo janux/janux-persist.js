@@ -21,11 +21,11 @@ const id = "313030303030303030303030";
 const id2 = "313030303030303030303031";
 
 describe("Testing account dao insert methods", function () {
-    [DataSourceHandler.LOKIJS, DataSourceHandler.MONGODB].forEach(function (dbEngine) {
+    [DataSourceHandler.MONGODB, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
         var accountDao;
         beforeEach(function (done) {
             var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-            accountDao = DaoFactory.createAccountDao(dbEngine, path)
+            accountDao = DaoFactory.createAccountDao(dbEngine, path);
             accountDao.deleteAll()
                 .then(function () {
                     done();

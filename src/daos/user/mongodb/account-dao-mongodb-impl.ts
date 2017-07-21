@@ -7,7 +7,7 @@ import {IValidationError} from "../../../persistence/interfaces/validation-error
 import {AccountDao} from "../account-dao";
 import {AccountEntity} from "../account-entity";
 import Promise = require("bluebird");
-import {DbEngineUtilMongodb} from "../../../persistence/impl/db-engine-util-mongodb";
+import {MongoDbRepository} from "../../../persistence/impl/mongodb-repository";
 import {AccountValidator} from "../account-valdiator";
 
 /**
@@ -15,7 +15,7 @@ import {AccountValidator} from "../account-valdiator";
  */
 export class AccountDaoMongodbImpl extends AccountDao {
 
-    constructor(dbEngineUtil: DbEngineUtilMongodb, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: MongoDbRepository, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 

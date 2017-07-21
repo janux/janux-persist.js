@@ -7,7 +7,7 @@ import {IEntityProperties} from "../../../persistence/interfaces/entity-properti
 import {ExampleUser} from "../example-user";
 import {ExampleUserDao} from "../example-user-dao";
 import Promise = require("bluebird");
-import {DbEngineUtilLokijs} from "../../../persistence/impl/db-engine-util-lokijs";
+import {LokiJsRepository} from "../../../persistence/impl/lokijs-repository";
 import {ValidationError} from "../../../persistence/impl/validation-error";
 
 /**
@@ -15,13 +15,13 @@ import {ValidationError} from "../../../persistence/impl/validation-error";
  */
 export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
 
-    public static createInstance(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
+    public static createInstance(dbEngineUtil: LokiJsRepository, entityProperties: IEntityProperties) {
         return this.instance || (this.instance = new this(dbEngineUtil, entityProperties));
     }
 
     private static instance: ExampleUserDaoLokiJsImpl;
 
-    private constructor(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
+    private constructor(dbEngineUtil: LokiJsRepository, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 

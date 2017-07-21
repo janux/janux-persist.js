@@ -8,7 +8,7 @@ import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstrac
 import {IValidationError} from "../../persistence/interfaces/validation-error";
 import Promise = require("bluebird");
 import {ValidationError} from "../../persistence/impl/validation-error";
-import {IDbEngineUtil} from "../../persistence/interfaces/db-engine-util-method";
+import {ICrudMethods} from "../../persistence/interfaces/crud-methods";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {ExampleUser} from "./example-user";
 import {validateExampleUser} from "./example-validate-usert";
@@ -20,7 +20,7 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithEngine<
 
     private _logExampleUserDao = logger.getLogger("ExampleUserDao");
 
-    constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: ICrudMethods, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 

@@ -9,7 +9,7 @@ import {AttributeFilter} from "../impl/attribute-filter";
  * Interface that defines the basic methods
  * per db engine
  */
-export interface IDbEngineUtil {
+export interface ICrudMethods {
 
     /**
      * Find one document by id.

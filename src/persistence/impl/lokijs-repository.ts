@@ -1,35 +1,40 @@
-/*
+/**
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
+import * as _ from 'lodash';
 import * as logger from 'log4js';
+import {ICrudMethods} from "../interfaces/crud-methods";
+import {LokiJsUtil} from "../util/lokijs-util";
 import Promise = require("bluebird");
-import {Model} from "mongoose";
-import {IDbEngineUtil} from "../interfaces/db-engine-util-method";
-import {MongoDbUtil} from "../util/mongodb-util.js";
 import {AttributeFilter} from "./attribute-filter";
 
 /**
- * this class in an implementation of IDbEngineUtil in order to use mongodb as the db engine.
+ * Generic implementation of lokijs db functions
+ * When calling this method. Make sure params has the
+ * correct db property and the correct collection property
  */
-export class DbEngineUtilMongodb implements IDbEngineUtil {
-    public model: Model<any>;
+export class LokiJsRepository implements ICrudMethods {
 
-    private _log = logger.getLogger("DbEngineUtilMongodb");
+    private collectionName;
+    private db: any;
+    private _log = logger.getLogger("LokiJsRepository");
 
-    constructor(model: Model<any>) {
-        this.model = model;
+    constructor(collectionName: string, db: any) {
+        this._log.debug("Call to constructor with collectionName %j", collectionName);
+        this.collectionName = collectionName;
+        this.db = db;
     }
 
     /**
-     * Find one record by the id.
+     * Find one record by the pid.
      * @param id The id to look for.
      * @return {Promise<any>} Return the document whose id matches the id. If no record is founded then the method
      * returns null.
      */
-    findOneById(id): Promise<any> {
+    public findOneById(id): Promise<any> {
         this._log.debug("Call to findOneById with id: %j", id);
-        return MongoDbUtil.findOneById(this.model, id);
+        return LokiJsUtil.findOneById(this.getCollection(), id);
     }
 
     /**
@@ -38,9 +43,9 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
      * @return {Promise<any>} A promise containing the result. If no records are founded, then the method returns
      * an empty array.
      */
-    findAllByIds(arrayOfIds: any[]): Promise<any> {
+    public findAllByIds(arrayOfIds: any[]): Promise<any> {
         this._log.debug("Call to findAllByIds with arrayOfIds: %j", arrayOfIds);
-        return MongoDbUtil.findAllByIds(this.model, arrayOfIds);
+        return LokiJsUtil.findAllByIds(this.getCollection(), arrayOfIds);
     }
 
     /**
@@ -49,82 +54,84 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
      * order to know which document to delete.
      * @return {Promise<any>} a promise indicating the operation was successful.
      */
-    remove(objectToDelete: any): Promise<any> {
+    public remove(objectToDelete: any): Promise<any> {
         this._log.debug("Call to remove with objectToDelete: %j", objectToDelete);
-        return MongoDbUtil.remove(this.model, objectToDelete);
+        return LokiJsUtil.remove(this.db, this.getCollection(), objectToDelete);
     }
 
     /**
-     * Count all documents in the model.
+     * Count all documents in the collection.
      * @return {Promise<any>} The amount of documents inside the collection.
      */
-    count(): Promise<number> {
+    public count(): Promise<number> {
         this._log.debug("Call to count.");
-        return MongoDbUtil.count(this.model);
+        return LokiJsUtil.count(this.getCollection());
     }
 
     /**
-     * Delete all documents inside the model.
+     * Delete all documents inside the collection.
      * @return {Promise<any>} Returns a promise indicating the delete was successful.
      */
-    deleteAll(): Promise<any> {
+    public deleteAll(): Promise<any> {
         this._log.debug("Call to deleteAll.");
-        return MongoDbUtil.deleteAll(this.model);
+        return LokiJsUtil.deleteAll(this.db, this.getCollection());
     }
 
     /**
-     * Delete all documents inside the model whose ids matches the list.
+     * Delete all documents inside the collections whose ids matches the list.
      * @param ids A list of ids.
-     * @return {Promise} Returns a promise indicating the delete was successful.
+     * @return {Promise<any>} Returns a promise indicating the delete was successful.
      */
     deleteAllByIds(ids: string[]): Promise<any> {
-        return MongoDbUtil.deleteAllByIds(this.model, ids);
+        return LokiJsUtil.deleteAllByIds(this.db, this.getCollection(), ids);
     }
 
     /**
-     * Find one document inside the model that has the attributeName and the value.
+     * Find one document inside the collection that has the attributeName and the value.
      * @param attributeName The attribute to look for.
      * @param value The value to compare.
      * @return {Promise<any>} Return the document that matches the criteria. Returns a reject if there are more than
      * one document that matches the criteria.
      */
-    findOneByAttribute(attributeName: string, value): Promise<any> {
+    public findOneByAttribute(attributeName: string, value): Promise<any> {
         this._log.debug("Call to findOneByAttribute with attributeName: %j, value: %j", attributeName, value);
-        return MongoDbUtil.findOneByAttribute(this.model, attributeName, value);
+        return LokiJsUtil.findOneByAttribute(this.getCollection(), attributeName, value);
     }
 
     /**
-     * Find all the documents inside the model that has the attributeName and the value.
+     * Find all the documents inside the collection that has the attribute defined in the method and whose values
+     * belongs to the list.
      * @param attributeName The attribute to look for.
-     * @param value The value to compare.
-     * @return {Promise<any>} Return a list of documents that matches the criteria. If no records are founded, then the method
+     * @param value The values to compare.
+     * @return {Promise<any>} Return the document that matches the criteria. If no records are founded, then the method
      * returns an empty array.
      */
-    findAllByAttribute(attributeName: string, value): Promise<any[]> {
+    public findAllByAttribute(attributeName: string, value): Promise<any[]> {
         this._log.debug("Call to findAllByAttribute with attributeName: %j, value: %j", attributeName, value);
-        return MongoDbUtil.findAllByAttribute(this.model, attributeName, value);
+        return LokiJsUtil.findAllByAttribute(this.getCollection(), attributeName, value);
     }
 
     /**
-     * Find all records whose attribute vales matches with any value of the list.
+     * Find all the documents inside the collection that has the attribute defined in the method and whose values
+     * belongs to the list.
      * @param attributeName The attribute to look for.
-     * @param values The values to match.
-     * @return {Promise<any>} The records that matches with the query
+     * @param values The values to compare.
+     * @return {Promise<any>}
      */
-    findAllByAttributeNameIn(attributeName: string, values: any[]): Promise<any> {
+    public findAllByAttributeNameIn(attributeName: string, values: any[]): Promise<any> {
         this._log.debug("Call to findAllByAttributeNameIn with attributeName: %j, values: %j", attributeName, values);
-        return MongoDbUtil.findAllByAttributeNameIn(this.model, attributeName, values);
+        return LokiJsUtil.findAllByAttributeNameIn(this.getCollection(), attributeName, values);
     }
 
     /**
-     * Insert a document inside the collection.
-     * @param objectToInsert The data to insert.
-     * @return {Promise<any>} The inserted object. The object contains the id generated by mongodb in a
+     * Insert a document inside a collection.
+     * @param objectToInsert The object to insert.
+     * @return {Promise<any>} The inserted object. The object contains the id generated by lokijs in a
      * attribute called "id" as string.
      */
-    insertMethod(objectToInsert: any): Promise<any> {
+    public insertMethod(objectToInsert: any): Promise<any> {
         this._log.debug("Call to insertMethod with objectToInsert: %j", objectToInsert);
-        return MongoDbUtil.insert(this.model, objectToInsert);
+        return LokiJsUtil.insert(this.db, this.getCollection(), objectToInsert);
     }
 
     /**
@@ -133,37 +140,37 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
      * to know which document is going to be updated.
      * @return {Promise<any>} A promise containing the updated object.
      */
-    updateMethod(objectToUpdate: any): Promise<any> {
+    public updateMethod(objectToUpdate: any): Promise<any> {
         this._log.debug("Call to updateMethod with objectToUpdate: %j", objectToUpdate);
-        return MongoDbUtil.update(this.model, objectToUpdate);
+        return LokiJsUtil.update(this.db, this.getCollection(), objectToUpdate);
     }
 
     /**
      * Insert many documents at once inside the collection.
      * @param objectsToInsert The objects to insert.
      * @return {Promise<any>} Returns a promise containing the inserted objects. Each inserted object
-     * contains the generated id of mongodb inside a attribute called "id" as string.
+     * contains the generated id of lokijs inside a attribute called "id" and the type is string.
      */
-    insertManyMethod(objectsToInsert: any[]): Promise<any> {
+    public insertManyMethod(objectsToInsert: any[]): Promise<any> {
         this._log.debug("Call to insertManyMethod with objectsToInsert: %j", objectsToInsert);
-        return MongoDbUtil.insertMany(this.model, objectsToInsert);
+        return LokiJsUtil.insertMany(this.db, this.getCollection(), objectsToInsert);
     }
 
     /**
-     * Return all objects
-     * @return {Promise<any>} A promise containing all objects.
+     * Find all documents inside the collection.
+     * @return {Promise<any>} Return a promise containing the objects.
      */
     findAll(): Promise<any[]> {
         this._log.debug("Call to findAll");
-        return MongoDbUtil.findAllByQuery(this.model, {});
+        return LokiJsUtil.findAllByQuery(this.getCollection(), {});
     }
 
     /**
      * Find all the documents that matches all attributes.
      * @param attributes The attributes-value filters.
-     * @return {Promise<any>} The objects that matches the criteria.
+     * @return {Promise<any>}
      */
-    public findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<any[]> {
+    findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<any[]> {
         this._log.debug("Call to findAllByAttributesAndOperator with attributes: %j", attributes);
         const query = {
             $and: []
@@ -173,13 +180,13 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
             condition[attribute.attributeName] = {$eq: attribute.value};
             query.$and.push(condition);
         }
-        return MongoDbUtil.findAllByQuery(this.model, query);
+        return LokiJsUtil.findAllByQuery(this.getCollection(), query);
     }
 
     /**
      * Find all the documents that matches only one of the attributes.
      * @param attributes The attributes-value filters.
-     * @return {Promise<any>} The objects that matches the criteria.
+     * @return {Promise<any>}
      */
     public findAllByAttributesOrOperator(attributes: AttributeFilter[]): Promise<any[]> {
         this._log.debug("Call to findAllByAttributesOrOperator with attributes: %j", attributes);
@@ -191,27 +198,37 @@ export class DbEngineUtilMongodb implements IDbEngineUtil {
             condition[attribute.attributeName] = {$eq: attribute.value};
             query.$or.push(condition);
         }
-        return MongoDbUtil.findAllByQuery(this.model, query);
+        return LokiJsUtil.findAllByQuery(this.getCollection(), query);
     }
 
     /**
-     * Find all documents that matches with the query criteria. The query is a mongo-like query object.
+     * Find all documents that matches with the query criteria. The query for the moment is a mongo-like query object.
      * @param query The query criteria.
      * @return {Promise<any>} The objects that matches the query criteria. If no records are founded, then the method
      * returns an empty array.
      */
     public findAllByQuery(query: any): Promise<any[]> {
         this._log.debug("Call to findAllByQuery with query: %j", query);
-        return MongoDbUtil.findAllByQuery(this.model, query);
+        return LokiJsUtil.findAllByQuery(this.getCollection(), query);
     }
 
     /**
      * Remove a document whose id matches with the id parameter.
      * @param id The id query criteria.
-     * @return {Promise<any>} Returns a promise indicating the delete was successful.
+     * @return {Promise} Returns a promise indicating the delete was successful.
      */
     public removeById(id: string): Promise<any> {
         this._log.debug("Call to removeById with id: %j", id);
-        return MongoDbUtil.removeById(this.model, id);
+        return LokiJsUtil.removeById(this.db, this.getCollection(), id);
+    }
+
+    private getCollection(): any {
+        this._log.debug("Call to getCollection with %j", this.collectionName);
+        let collection = this.db.getCollection(this.collectionName);
+        if (_.isNil(collection)) {
+            this._log.debug("No collection founded with name %j, adding a new one", this.collectionName);
+            collection = this.db.addCollection(this.collectionName);
+        }
+        return collection;
     }
 }

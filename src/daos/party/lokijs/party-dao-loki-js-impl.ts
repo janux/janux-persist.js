@@ -4,7 +4,7 @@
  */
 
 import * as Promise from "bluebird";
-import {DbEngineUtilLokijs} from "../../../persistence/impl/db-engine-util-lokijs";
+import {LokiJsRepository} from "../../../persistence/impl/lokijs-repository";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
 import {PartyDao} from "../party-dao";
@@ -16,7 +16,7 @@ import {PartyValidator} from "../party-validator";
  */
 export class PartyDaoLokiJsImpl extends PartyDao {
 
-    constructor(dbEngineUtil: DbEngineUtilLokijs, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: LokiJsRepository, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 

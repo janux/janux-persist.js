@@ -4,25 +4,24 @@
  */
 
 import * as logger from 'log4js';
-import uuid = require("uuid");
-import {IDbEngineUtil} from "../interfaces/db-engine-util-method";
+import {ICrudMethods} from "../interfaces/crud-methods";
 import Promise = require("bluebird");
 import {IEntityProperties} from "../interfaces/entity-properties";
 import {AbstractDataAccessObject} from "./abstract-data-access-object";
 import {AttributeFilter} from "./attribute-filter";
 
 /**
- * This class, inside their properties, contains an object implementing the interface IDbEngineUtil.
+ * This class, inside their properties, contains an object implementing the interface ICrudMethods.
  * The purpose, ideally, is to implement only one extended class from this, and to have as many instances per db engine.
  */
 export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractDataAccessObject<t> {
 
     // This class holds all common db engine methods
-    protected dbEngineUtil: IDbEngineUtil;
+    protected dbEngineUtil: ICrudMethods;
 
     private readonly _logger = logger.getLogger("AbstractDataAccessObjectWithEngine");
 
-    constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: ICrudMethods, entityProperties: IEntityProperties) {
         super(entityProperties);
         this._logger.debug("Calling constructor");
         this.dbEngineUtil = dbEngineUtil;

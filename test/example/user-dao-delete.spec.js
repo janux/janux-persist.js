@@ -16,8 +16,8 @@ var ExampleUser = require("../../dist/index").ExampleUser;
 var ExampleUserDaoLokiJsImpl = require("../../dist/index").ExampleUserDaoLokiJsImpl;
 var ExampleUserDaoMongoDbImpl = require("../../dist/index").ExampleUserDaoMongoDbImpl;
 var MongoUserSchemaExample = require("../../dist/index").MongoUserSchemaExample;
-var DbEngineUtilLokijs = require("../../dist/index").DbEngineUtilLokijs;
-var DbEngineUtilMongodb = require("../../dist/index").DbEngineUtilMongodb;
+var LokiJsRepository = require("../../dist/index").LokiJsRepository;
+var DbEngineUtilMongodb = require("../../dist/index").MongoDbRepository;
 var EntityProperties = require("../../dist/index").EntityProperties;
 
 //Config files
@@ -25,7 +25,7 @@ var serverAppContext = config.get("serverAppContext");
 
 //lokiJs implementation
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
-var dbEngineUtilLokijs = new DbEngineUtilLokijs('users-example', lokiDatabase);
+var dbEngineUtilLokijs = new LokiJsRepository('users-example', lokiDatabase);
 var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(dbEngineUtilLokijs, new EntityProperties(true, true));
 
 //Mongodb implementation

@@ -6,7 +6,7 @@
 import * as Promise from "bluebird";
 import * as logger from 'log4js';
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
-import {IDbEngineUtil} from "../../persistence/interfaces/db-engine-util-method";
+import {ICrudMethods} from "../../persistence/interfaces/crud-methods";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
 import {PartyValidator} from "./party-validator";
@@ -21,7 +21,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
 
     private partyDaoLogger = logger.getLogger("PartyDao");
 
-    constructor(dbEngineUtil: IDbEngineUtil, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: ICrudMethods, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 
