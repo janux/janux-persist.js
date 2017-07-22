@@ -4,12 +4,12 @@
  */
 
 import * as Promise from "bluebird";
+import * as JanuxPeople from "janux-people.js";
 import {Model} from "mongoose";
 import {MongoDbRepository} from "../../../persistence/impl/mongodb-repository";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
 import {PartyDao} from "../party-dao";
-import JanuxPeople = require("janux-people.js");
 import {PartyValidator} from "../party-validator";
 
 /**

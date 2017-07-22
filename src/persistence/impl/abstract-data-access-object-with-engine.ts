@@ -3,9 +3,9 @@
  * Created by ernesto on 6/9/17.
  */
 
+import * as Promise from "bluebird";
 import * as logger from 'log4js';
 import {ICrudMethods} from "../interfaces/crud-methods";
-import Promise = require("bluebird");
 import {IEntityProperties} from "../interfaces/entity-properties";
 import {AbstractDataAccessObject} from "./abstract-data-access-object";
 import {AttributeFilter} from "./attribute-filter";

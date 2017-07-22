@@ -4,7 +4,7 @@
  */
 
 import * as logger from 'log4js';
-import uuid = require("uuid");
+import * as uuid from "uuid";
 import {IEntityProperties} from "../interfaces/entity-properties";
 
 /**

@@ -3,10 +3,9 @@
  * Created by ernesto on 6/9/17.
  */
 
+import * as Promise from "bluebird";
 import * as _ from 'lodash';
 import * as logger from 'log4js';
-import uuid = require("uuid");
-import Promise = require("bluebird");
 import {isBlankString} from "../../util/blank-string-validator";
 import {IEntityProperties} from "../interfaces/entity-properties";
 import {IValidationError} from "../interfaces/validation-error";

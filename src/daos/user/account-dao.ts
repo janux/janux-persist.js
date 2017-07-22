@@ -3,12 +3,12 @@
  * Created by ernesto on 6/13/17.
  */
 
+import * as Promise from "bluebird";
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
 import {ICrudMethods} from "../../persistence/interfaces/crud-methods";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
 import {AccountEntity} from "./account-entity";
-import Promise = require("bluebird");
 import {AccountValidator} from "./account-valdiator";
 
 /**

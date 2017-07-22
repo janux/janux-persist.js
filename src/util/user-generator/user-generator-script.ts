@@ -3,7 +3,7 @@
  * Created by ernesto on 7/10/17.
  */
 
-import config = require('config');
+import * as config from 'config';
 import {DataSourceHandler} from "../../services/datasource-handler/datasource-handler";
 import {UserGenerator} from "./user-generator";
 

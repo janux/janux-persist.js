@@ -2,11 +2,11 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
+import * as Promise from "bluebird";
 import * as _ from 'lodash';
 import * as logger from 'log4js';
 import {ICrudMethods} from "../interfaces/crud-methods";
 import {LokiJsUtil} from "../util/lokijs-util";
-import Promise = require("bluebird");
 import {AttributeFilter} from "./attribute-filter";
 
 /**

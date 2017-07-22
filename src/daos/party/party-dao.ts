@@ -4,14 +4,14 @@
  */
 
 import * as Promise from "bluebird";
+import * as JanuxPeople from "janux-people.js";
 import * as logger from 'log4js';
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
 import {ICrudMethods} from "../../persistence/interfaces/crud-methods";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
-import {PartyValidator} from "./party-validator";
-import JanuxPeople = require("janux-people.js");
 import {CircularReferenceDetector} from "../../util/circular-reference-detector/circular-reference-detector";
+import {PartyValidator} from "./party-validator";
 
 /**
  * This is the base class of the partyDao. In this class we define the object we are going to use

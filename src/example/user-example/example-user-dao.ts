@@ -2,14 +2,14 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
+import * as Promise from "bluebird";
 import * as _ from "lodash";
 import * as logger from 'log4js';
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
-import {IValidationError} from "../../persistence/interfaces/validation-error";
-import Promise = require("bluebird");
 import {ValidationError} from "../../persistence/impl/validation-error";
 import {ICrudMethods} from "../../persistence/interfaces/crud-methods";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
+import {IValidationError} from "../../persistence/interfaces/validation-error";
 import {ExampleUser} from "./example-user";
 import {validateExampleUser} from "./example-validate-usert";
 

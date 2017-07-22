@@ -2,7 +2,7 @@
  * Project janux-persistence
  * Created by ernesto on 6/9/17.
  */
-import Promise = require("bluebird");
+import * as Promise from "bluebird";
 import {AttributeFilter} from "../impl/attribute-filter";
 
 /**

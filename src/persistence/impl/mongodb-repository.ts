@@ -2,8 +2,8 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
+import * as Promise from "bluebird";
 import * as logger from 'log4js';
-import Promise = require("bluebird");
 import {Model} from "mongoose";
 import {ICrudMethods} from "../interfaces/crud-methods";
 import {MongoDbUtil} from "../util/mongodb-util.js";

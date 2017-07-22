@@ -3,12 +3,12 @@
  * Created by ernesto on 6/13/17.
  */
 
+import * as Promise from "bluebird";
 import * as _ from "lodash";
-import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
-import {AccountDao} from "../account-dao";
-import Promise = require("bluebird");
 import {LokiJsRepository} from "../../../persistence/impl/lokijs-repository";
+import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
+import {AccountDao} from "../account-dao";
 import {AccountEntity} from "../account-entity";
 import {AccountValidator} from "../account-valdiator";
 

@@ -2,12 +2,12 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
-import {ExampleUser} from "../example-user";
-import {ExampleUserDao} from "../example-user-dao";
-import Promise = require("bluebird");
+import * as Promise from "bluebird";
 import {MongoDbRepository} from "../../../persistence/impl/mongodb-repository";
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
+import {ExampleUser} from "../example-user";
+import {ExampleUserDao} from "../example-user-dao";
 
 /**
  * this is the implementation for mongodb of ExampleUserDao

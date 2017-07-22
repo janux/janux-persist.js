@@ -3,10 +3,10 @@
  * Created by ernesto on 5/30/17.
  */
 
+import * as Promise from 'bluebird';
 import * as logger from 'log4js';
-import mongoose = require('mongoose');
+import * as mongoose from 'mongoose';
 import {Model} from 'mongoose';
-import Promise = require('bluebird');
 
 /**
  * Mongoose  db methods util.

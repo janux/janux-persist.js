@@ -3,8 +3,8 @@
  * Created by ernesto on 5/30/17.
  */
 
+import * as Promise from 'bluebird';
 import * as _ from 'lodash';
-import Promise = require('bluebird');
 import * as logger from 'log4js';
 
 /**
