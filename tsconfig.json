@@ -1,19 +1,25 @@
 {
     "compilerOptions": {
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
+        "moduleResolution": "node",
         "module": "commonjs",
         "target": "ES5",
-        "outDir": "./dist",
-        "moduleResolution": "node",
-        "rootDir": "./src",
+        "lib": [
+            "es2015",
+            "dom"
+        ],
+        "outDir": "lib",
+        "allowSyntheticDefaultImports": true,
+        "suppressImplicitAnyIndexErrors": true,
         "sourceMap": true,
         "declaration": true,
-        "skipLibCheck": true,
-        "removeComments": true
+        "jsx": "react"
     },
+    "compileOnSave": false,
+    "buildOnSave": false,
+    "files": [
+        "./src/index.ts"
+    ],
     "exclude": [
-        "**/node_modules/*",
         "vendor",
         "dist",
         "gulp",
