@@ -90,7 +90,7 @@ You can use the dependencies exactly as the step 1. However, this project also h
 
     var DaoFactory=require('janux-persistence/lib-esm').DaoFactory;
     
-Last but not least. For pure node typescript project, both step1 and step2 works.
+Last but not least. For pure node typescript projects, both step1 and step2 works.
     
 **Using this project in another browser project**
 
