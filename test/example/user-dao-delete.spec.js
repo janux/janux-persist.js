@@ -12,13 +12,13 @@ var expect = chai.expect;
 var assert = chai.assert;
 var lokijs = require('lokijs');
 var mongoose = require('mongoose');
-var ExampleUser = require("../../dist/index").ExampleUser;
-var ExampleUserDaoLokiJsImpl = require("../../dist/index").ExampleUserDaoLokiJsImpl;
-var ExampleUserDaoMongoDbImpl = require("../../dist/index").ExampleUserDaoMongoDbImpl;
-var MongoUserSchemaExample = require("../../dist/index").MongoUserSchemaExample;
-var LokiJsRepository = require("../../dist/index").LokiJsRepository;
-var DbEngineUtilMongodb = require("../../dist/index").MongoDbRepository;
-var EntityProperties = require("../../dist/index").EntityProperties;
+var ExampleUser = require("../../lib/index").ExampleUser;
+var ExampleUserDaoLokiJsImpl = require("../../lib/index").ExampleUserDaoLokiJsImpl;
+var ExampleUserDaoMongoDbImpl = require("../../lib/index").ExampleUserDaoMongoDbImpl;
+var MongoUserSchemaExample = require("../../lib/index").MongoUserSchemaExample;
+var LokiJsRepository = require("../../lib/index").LokiJsRepository;
+var DbEngineUtilMongodb = require("../../lib/index").MongoDbRepository;
+var EntityProperties = require("../../lib/index").EntityProperties;
 
 //Config files
 var serverAppContext = config.get("serverAppContext");

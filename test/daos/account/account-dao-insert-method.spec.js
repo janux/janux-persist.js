@@ -6,9 +6,9 @@ var chai = require('chai');
 var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
-var AccountEntity = require("../../../dist/index").AccountEntity;
-var DaoFactory = require("../../../dist/index").DaoFactory;
-var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
+var AccountEntity = require("../../../lib/index").AccountEntity;
+var DaoFactory = require("../../../lib/index").DaoFactory;
+var DataSourceHandler = require("../../../lib/index").DataSourceHandler;
 
 //Config files
 var serverAppContext = config.get("serverAppContext");

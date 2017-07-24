@@ -1,5 +1,6 @@
 var path = require("path");
 var webpack = require("webpack");
+const UglifyEsPlugin = require('uglify-es-webpack-plugin');
 
 var PATHS = {
     entryPoint: path.resolve(__dirname, 'src/index.ts'),
@@ -36,15 +37,25 @@ var config = {
     devtool: 'source-map',
     target: "node",
     plugins: [
+
+        // TODO careful, this plugin is new and might generate invalid code.
+        new UglifyEsPlugin({
+            compress: true,
+            sourceMap: true,
+            include: /\.min\.js$/
+        })
+
         // Apply minification only on the second bundle by
         // using a RegEx on the name, which must end with `.min.js`
         // NB: Remember to activate sourceMaps in UglifyJsPlugin
         // since they are disabled by default!
-        // new webpack.optimize.UglifyJsPlugin({
+        // Unfortunately this plugin does no uglify es6 code. And janux-persistence
+        // has deep dependencies that is programmed using es6 code.
+        //new webpack.optimize.UglifyJsPlugin({
         //    minimize: true,
         //    sourceMap: true,
-        //    include: /\.min\.js$/,
-        // })
+        //    include: /\.min\.js$/
+        //})
     ],
     externals: {
         vertx: 'commonjs vertx'

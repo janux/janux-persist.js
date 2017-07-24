@@ -4,9 +4,9 @@
  */
 var chai = require('chai');
 var config = require('config');
-var UserService = require("../../../dist/index").UserService;
-var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var UserService = require("../../../lib/index").UserService;
+var DataSourceHandler = require("../../../lib/index").DataSourceHandler;
+var DaoFactory = require("../../../lib/index").DaoFactory;
 var serverAppContext = config.get("serverAppContext");
 var EmailAddress = require("janux-people.js").EmailAddress;
 var Person = require("janux-people.js").Person;

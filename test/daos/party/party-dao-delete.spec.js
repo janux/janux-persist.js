@@ -11,8 +11,8 @@ var mongoose = require('mongoose');
 
 var PersonEntity = require("janux-people.js").Person;
 var OrganizationEntity = require("janux-people.js").Organization;
-var DaoFactory = require("../../../dist/index").DaoFactory;
-var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
+var DaoFactory = require("../../../lib/index").DaoFactory;
+var DataSourceHandler = require("../../../lib/index").DataSourceHandler;
 
 //Config files
 var serverAppContext = config.get("serverAppContext");

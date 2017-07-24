@@ -6,7 +6,7 @@
 var chai = require('chai');
 var expect = chai.expect;
 var PostalAddress = require("janux-people.js").PostalAddress;
-var PostalAddressValidator = require("../../../../dist/index").PostalAddressValidator;
+var PostalAddressValidator = require("../../../../lib/index").PostalAddressValidator;
 
 const home = "home";
 const work = "work";

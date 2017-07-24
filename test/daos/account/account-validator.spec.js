@@ -7,8 +7,8 @@ var expect = chai.expect;
 var config = require('config');
 //Config files
 var serverAppContext = config.get("serverAppContext");
-var AccountValidator = require("../../../dist/index").AccountValidator;
-var AccountEntity = require("../../../dist/index").AccountEntity;
+var AccountValidator = require("../../../lib/index").AccountValidator;
+var AccountEntity = require("../../../lib/index").AccountEntity;
 
 const username = "userName";
 const password = "password";

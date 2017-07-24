@@ -6,7 +6,7 @@ var chai = require('chai');
 var expect = chai.expect;
 //Config files
 var OrganizationEntity = require("janux-people.js").Organization;
-var OrganizationValidator= require("../../../../dist/index").OrganizationValidator;
+var OrganizationValidator= require("../../../../lib/index").OrganizationValidator;
 
 const name = "Glarus";
 

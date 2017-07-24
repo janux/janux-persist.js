@@ -7,8 +7,8 @@
 var chai = require('chai');
 var expect = chai.expect;
 var config = require('config');
-var UserGenerator = require("../../../dist/index").UserGenerator;
-var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
+var UserGenerator = require("../../../lib/index").UserGenerator;
+var DataSourceHandler = require("../../../lib/index").DataSourceHandler;
 //Config files
 var serverAppContext = config.get("serverAppContext");
 var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;

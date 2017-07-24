@@ -9,14 +9,14 @@ var config = require('config');
 var lokijs = require('lokijs');
 var mongoose = require('mongoose');
 
-var PartyValidator = require("../../../dist/index").PartyValidator;
+var PartyValidator = require("../../../lib/index").PartyValidator;
 var EmailAddress = require("janux-people.js").EmailAddress;
 var PostalAddress = require("janux-people.js").PostalAddress;
 var PhoneNumber = require("janux-people.js").PhoneNumber;
 var PersonEntity = require("janux-people.js").Person;
 var OrganizationEntity = require("janux-people.js").Organization;
-var DaoFactory = require("../../../dist/index").DaoFactory;
-var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
+var DaoFactory = require("../../../lib/index").DaoFactory;
+var DataSourceHandler = require("../../../lib/index").DataSourceHandler;
 
 //Config files
 var serverAppContext = config.get("serverAppContext");

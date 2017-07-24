@@ -13,7 +13,7 @@ var config = require('config');
 //Config files
 var serverAppContext = config.get("serverAppContext");
 var PersonEntity = require("janux-people.js").Person;
-var PersonValidator = require("../../../../dist/index").PersonValidator;
+var PersonValidator = require("../../../../lib/index").PersonValidator;
 
 const honorificPrefix = "Mr.";
 const name = "John";

@@ -6,7 +6,7 @@
 var chai = require('chai');
 var expect = chai.expect;
 var EmailAddress = require("janux-people.js").EmailAddress;
-var EmailValidator = require("../../../../dist/index").EmailValidator;
+var EmailValidator = require("../../../../lib/index").EmailValidator;
 const emailAddress = "glarus@gmail.com";
 
 describe("Testing email address validator", function () {

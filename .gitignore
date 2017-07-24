@@ -6,3 +6,6 @@
 /vendor/
 /janux-persistence-test.db
 /doc/
+/lib/
+/lib-esm/
+/_bundles/

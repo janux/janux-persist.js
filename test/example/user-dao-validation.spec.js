@@ -8,8 +8,8 @@ require('bluebird');
 var chai = require('chai');
 var expect = chai.expect;
 var log4js = require('log4js');
-var ExampleUser = require("../../dist/index").ExampleUser;
-var validateExampleUser = require("../../dist/index").validateExampleUser;
+var ExampleUser = require("../../lib/index").ExampleUser;
+var validateExampleUser = require("../../lib/index").validateExampleUser;
 
 const incorrectEmail = "jonSmith.com";
 const lastName = "Smith";

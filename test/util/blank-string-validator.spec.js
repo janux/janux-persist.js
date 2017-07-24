@@ -7,7 +7,7 @@ var expect = chai.expect;
 var config = require('config');
 //Config files
 var serverAppContext = config.get("serverAppContext");
-var isBlankString = require("../../dist/index").isBlankString;
+var isBlankString = require("../../lib/index").isBlankString;
 
 describe("Testing blank string validator", function () {
     describe("When sending a null value", function () {
