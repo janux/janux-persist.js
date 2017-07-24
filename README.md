@@ -86,11 +86,11 @@ You can, for example, has a reference like the following example. All code in th
     
 Add the dependency to package.json.
 
-You can use the dependencies exactly as the step 1. However, this project also has the libraries compiled with es6. You can use the es6 libraries in the directory "ib-esm".
+You can use the dependencies exactly as the step 1. However, this project also has the libraries compiled with es6. You can use the es6 libraries in the directory "lib-esm".
 
     var DaoFactory=require('janux-persistence/lib-esm').DaoFactory;
     
-Last but not least. For pure node typescript projects, both step1 and step2 works.
+Last but not least. For pure node typescript projects, both "lib" and "lib-esm" works. Both directories has typescript definition files.
     
 **Using this project in another browser project**
 
@@ -98,7 +98,7 @@ _This feature is in very early stages, does not work, and most likely the inform
 
 For browser projects that uses typescript or es6 (babel). In theory you just need to add the janux-persistence project and link the references ( just like the previous examples). 
 
-For browser projects that are stuck with es5. You can't use the libraries in "lib" or "lib-es" because this code is not browser ready. You need to use the bundle file.
+For browser projects that are stuck with es5. You can't use the libraries in "lib" or "lib-esm" because this code is not browser ready. You need to use the bundle file.
      
      <script src="janux-persistence/_bundles/my-lib.min.js"></script>  
      
