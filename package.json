@@ -9,12 +9,14 @@
         "cleandoc": "npm run rimraf -- doc",
         "compile": "tsc --diagnostics && tsc --diagnostics -p tsconfiges6.json",
         "doc": " npm run cleandoc && npm run typedoc -- --options typedoc.json",
-        "build": "npm run clean && npm run compile && npm run doc && npm run webpack",
-        "test": "npm run clean && npm run compile && npm run mocha",
+        "build": "npm run clean && npm run lint && npm run compile && npm run doc && npm run webpack",
+        "test": "npm run clean && npm run lint && npm run compile && npm run mocha",
         "generateUsers": "npm run compile && node ./lib/util/user-generator/user-generator-script.js",
         "typedoc": "typedoc",
         "rimraf": "rimraf",
-        "mocha": "./node_modules/mocha/bin/mocha"
+        "mocha": "./node_modules/mocha/bin/mocha",
+        "tslint": "tslint --format codeFrame ",
+        "lint": "npm run tslint \"src/**/*.ts\""
     },
     "contributors": [
         "Ernesto Ortiz Gómez"
@@ -37,14 +39,14 @@
         "log4js": "1.1.1",
         "lokijs": "1.5.0",
         "mongoose": "4.10.5",
-        "tslint": "5.4.3",
         "typescript": "2.4.2",
         "uuid": "3.0.1",
         "hipchat-notifier": "^1.1.0",
         "loggly": "1.1.1",
         "mailgun-js": "0.11.3",
         "slack-node": "0.1.8",
-        "nodemailer": "4.0.1"
+        "nodemailer": "4.0.1",
+        "tslint": "5.4.3"
     },
     "devDependencies": {
         "awesome-typescript-loader": "3.2.1",
