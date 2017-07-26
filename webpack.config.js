@@ -7,6 +7,9 @@ var PATHS = {
     bundles: path.resolve(__dirname, '_bundles')
 };
 
+//var ignore = new webpack.IgnorePlugin(new RegExp("/(node_modules|log4js)/"));
+var ignore = new webpack.IgnorePlugin(/^(mongoose|log4js|lokijs|bluebird)$/);
+
 var config = {
     // These are the entry point of our library. We tell webpack to use
     // the name we assign later, when creating the bundle. We also use
@@ -35,15 +38,14 @@ var config = {
     // Activate source maps for the bundles in order to preserve the original
     // source when the user debugs the application
     devtool: 'source-map',
-    target: "node",
     plugins: [
-
+        ignore,
         // TODO careful, this plugin is new and might generate invalid code.
-        new UglifyEsPlugin({
-            compress: true,
-            sourceMap: true,
-            include: /\.min\.js$/
-        })
+        // new UglifyEsPlugin({
+        //     compress: true,
+        //     sourceMap: true,
+        //     include: /\.min\.js$/
+        // })
 
         // Apply minification only on the second bundle by
         // using a RegEx on the name, which must end with `.min.js`

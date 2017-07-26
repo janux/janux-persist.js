@@ -3,9 +3,9 @@
  * Created by ernesto on 6/13/17.
  */
 
-import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
+import {LoggerFactory} from "../../util/log4js/log4js_factory";
 import {AccountEntity} from "./account-entity";
 
 /**
@@ -82,5 +82,5 @@ export class AccountValidator {
         return errors;
     }
 
-    private static _log = logger.getLogger("AccountValidator");
+    private static _log = LoggerFactory.getLogger("AccountValidator");
 }

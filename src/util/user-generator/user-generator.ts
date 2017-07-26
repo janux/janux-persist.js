@@ -4,13 +4,13 @@
  */
 import * as Promise from "bluebird";
 import * as JanuxPeople from "janux-people.js";
-import * as logger from 'log4js';
 import * as md5 from 'MD5';
 import {PartyDao} from "../../daos/party/party-dao";
 import {PartyValidator} from "../../daos/party/party-validator";
 import {AccountDao} from "../../daos/user/account-dao";
 import {DaoFactory} from "../../services/dao-factory/dao-factory-service";
 import {UserService} from "../../services/user/user-service";
+import {LoggerFactory} from "../log4js/log4js_factory";
 
 export class UserGenerator {
 
@@ -30,7 +30,7 @@ export class UserGenerator {
             });
     }
 
-    private static _log = logger.getLogger("UserGenerator");
+    private static _log = LoggerFactory.getLogger("UserGenerator");
 
     private static generateUserFakeData(): any[] {
         this._log.debug("Call to generateUserFakeData");

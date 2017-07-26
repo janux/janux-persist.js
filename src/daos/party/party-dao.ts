@@ -5,12 +5,11 @@
 
 import * as Promise from "bluebird";
 import * as JanuxPeople from "janux-people.js";
-import * as logger from 'log4js';
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
 import {ICrudMethods} from "../../persistence/interfaces/crud-methods";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
-import {CircularReferenceDetector} from "../../util/circular-reference-detector/circular-reference-detector";
+import {LoggerFactory} from "../../util/log4js/log4js_factory";
 import {PartyValidator} from "./party-validator";
 
 /**
@@ -19,7 +18,7 @@ import {PartyValidator} from "./party-validator";
  */
 export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxPeople.Person | JanuxPeople.Organization> {
 
-    private partyDaoLogger = logger.getLogger("PartyDao");
+    private partyDaoLogger = LoggerFactory.getLogger("PartyDao");
 
     constructor(dbEngineUtil: ICrudMethods, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
@@ -135,7 +134,6 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
      */
     protected convertBeforeSave(object: JanuxPeople.Person | JanuxPeople.Organization): any {
         this.partyDaoLogger.debug("Call to convertBeforeSave with object: %j ", object);
-        CircularReferenceDetector.detectCircularReferences(object);
         let result: any = object.toJSON();
 
         // For some reason , PersonImpl an OrganizationImpl has circular references. In order to remove the circular

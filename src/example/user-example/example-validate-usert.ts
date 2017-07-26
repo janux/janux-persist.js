@@ -3,9 +3,9 @@
  * Created by ernesto on 6/12/17.
  */
 import * as EmailValidator from "email-validator";
-import * as logger from 'log4js';
 import {ValidationError} from "../../persistence/impl/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
+import {LoggerFactory} from "../../util/log4js/log4js_factory";
 import {ExampleUser} from "./example-user";
 
 /**
@@ -14,7 +14,7 @@ import {ExampleUser} from "./example-user";
  * @return {ValidationError[]} A list of errors founded.
  */
 export function validateExampleUser(exampleUser: ExampleUser): ValidationError[] {
-    const log = logger.getLogger("validateExampleUser");
+    const log = LoggerFactory.getLogger("validateExampleUser");
     const errors: ValidationError[] = [];
     log.debug("Call to validateExampleUser with exampleUser:%j", exampleUser);
     // Validating name not empty
