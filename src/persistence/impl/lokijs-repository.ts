@@ -3,7 +3,6 @@
  * Created by ernesto on 6/12/17.
  */
 import * as Promise from "bluebird";
-import * as _ from 'lodash';
 import * as logger from 'log4js';
 import {ICrudMethods} from "../interfaces/crud-methods";
 import {LokiJsUtil} from "../util/lokijs-util";
@@ -225,10 +224,14 @@ export class LokiJsRepository implements ICrudMethods {
     private getCollection(): any {
         this._log.debug("Call to getCollection with %j", this.collectionName);
         let collection = this.db.getCollection(this.collectionName);
-        if (_.isNil(collection)) {
+        if (collection == null) {
             this._log.debug("No collection founded with name %j, adding a new one", this.collectionName);
             collection = this.db.addCollection(this.collectionName);
         }
+        // if (_.isNil(coll ection)) {
+        //     this._log.debug("No collection founded with name %j, adding a new one", this.collectionName);
+        //     collection = this.db.addCollection(this.collectionName);
+        // }
         return collection;
     }
 }

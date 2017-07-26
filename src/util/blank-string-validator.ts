@@ -9,11 +9,9 @@
  * @return {boolean} Return true if value is a non empty string.
  */
 
-import * as _ from "lodash";
-
 export function isBlankString(value: any) {
     let result: boolean = false;
-    if (_.isString(value) === false) {
+    if (typeof  value !== 'string') {
         result = true;
     } else {
         const trimmed = value.trim();

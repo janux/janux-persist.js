@@ -3,7 +3,6 @@
  * Created by ernesto on 6/12/17.
  */
 import * as Promise from "bluebird";
-import * as _ from "lodash";
 import * as logger from 'log4js';
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
 import {ValidationError} from "../../persistence/impl/validation-error";
@@ -54,7 +53,7 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithEngine<
         return this.findOneByAttribute("email", objectToInsert.email)
             .then((result: ExampleUser) => {
                 const errors: ValidationError[] = [];
-                if (!_.isNull(result)) {
+                if (result != null) {
                     errors.push(
                         new ValidationError(
                             "email",

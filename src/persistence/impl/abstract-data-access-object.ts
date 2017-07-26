@@ -4,7 +4,6 @@
  */
 
 import * as Promise from "bluebird";
-import * as _ from 'lodash';
 import * as logger from 'log4js';
 import {isBlankString} from "../../util/blank-string-validator";
 import {IEntityProperties} from "../interfaces/entity-properties";
@@ -231,7 +230,7 @@ export abstract class AbstractDataAccessObject<t> {
     public findOneById(id: string): Promise<t> {
         return this.findOneByIdMethod(id)
             .then((resultQuery: any) => {
-                return Promise.resolve(_.isNil(resultQuery) ? resultQuery : this.addExtraValues(this.convertAfterDbOperation(resultQuery), resultQuery));
+                return Promise.resolve(resultQuery == null ? resultQuery : this.addExtraValues(this.convertAfterDbOperation(resultQuery), resultQuery));
             });
     }
 
@@ -291,7 +290,7 @@ export abstract class AbstractDataAccessObject<t> {
     public findOneByAttribute(attributeName: string, value): Promise<t> {
         return this.findOneByAttributeMethod(attributeName, value)
             .then((resultQuery: any) => {
-                return Promise.resolve(_.isNil(resultQuery) ? resultQuery : this.addExtraValues(this.convertAfterDbOperation(resultQuery), resultQuery));
+                return Promise.resolve(resultQuery == null ? resultQuery : this.addExtraValues(this.convertAfterDbOperation(resultQuery), resultQuery));
             });
     }
 
@@ -523,16 +522,16 @@ export abstract class AbstractDataAccessObject<t> {
      */
     private addExtraValues(obj: any, reference: any): any {
         const id: string = 'id';
-        if (_.isNil(reference[id]) === false) {
+        if (reference[id] != null) {
             obj[id] = reference[id];
         }
-        if (_.isNil(reference[UuidGenerator.UUID_PROPERTY]) === false) {
+        if (reference[UuidGenerator.UUID_PROPERTY] != null) {
             obj[UuidGenerator.UUID_PROPERTY] = reference[UuidGenerator.UUID_PROPERTY];
         }
-        if (_.isNil(reference[TimeStampGenerator.DATE_CREATED_PROPERTY]) === false) {
+        if (reference[TimeStampGenerator.DATE_CREATED_PROPERTY] != null) {
             obj[TimeStampGenerator.DATE_CREATED_PROPERTY] = reference[TimeStampGenerator.DATE_CREATED_PROPERTY];
         }
-        if (_.isNil(reference[TimeStampGenerator.DATE_UPDATED_PROPERTY]) === false) {
+        if (reference[TimeStampGenerator.DATE_UPDATED_PROPERTY] != null) {
             obj[TimeStampGenerator.DATE_UPDATED_PROPERTY] = reference[TimeStampGenerator.DATE_UPDATED_PROPERTY];
         }
 

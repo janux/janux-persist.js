@@ -4,7 +4,6 @@
  */
 
 import * as Promise from 'bluebird';
-import * as _ from 'lodash';
 import * as logger from 'log4js';
 
 /**
@@ -26,8 +25,8 @@ export class LokiJsUtil {
      */
     public static findOneById(collection: any, id: any): Promise<any> {
         this._log.debug('Call to findOneById with ', id);
-        const result = collection.get(_.toNumber(id));
-        if (_.isNil(result) === false) {
+        const result = collection.get(Number(id));
+        if (result != null) {
             result.id = result.$loki.toString();
         }
         this._log.debug('Result id %j', result);
@@ -78,7 +77,8 @@ export class LokiJsUtil {
         const query = {};
         query[attributeName] = value;
         let result = collection.find(query);
-        result = _.clone(result);
+        // result = _.clone(result);
+        result = Object.create(result);
         for (const obj of result) {
             obj.id = obj.$loki.toString();
         }
@@ -96,7 +96,8 @@ export class LokiJsUtil {
     public static findAllByQuery(collection: any, query: any): Promise<any> {
         this._log.debug("Call to findAllByQuery with collection: %j, query: %j", collection.name, query);
         let result = collection.find(query);
-        result = _.clone(result);
+        // result = _.clone(result);
+        result = Object.create(result);
         for (const obj of result) {
             obj.id = obj.$loki.toString();
         }
@@ -126,7 +127,8 @@ export class LokiJsUtil {
             this._log.debug("Returning null");
             return Promise.resolve(null);
         } else if (resultQuery.length === 1) {
-            result = _.clone(resultQuery[0]);
+            // result = _.clone(resultQuery[0]);
+            result = Object.create(resultQuery[0]);
             result.id = result.$loki.toString();
             this._log.debug("Returning %j", result);
             return Promise.resolve(result);
@@ -153,7 +155,8 @@ export class LokiJsUtil {
         const query = {};
         query[attributeName] = {$in: values};
         let result = collection.find(query);
-        result = _.clone(result);
+        // result = _.clone(result);
+        result = Object.create(result);
         for (const obj of result) {
             obj.id = obj.$loki.toString();
         }
@@ -180,7 +183,8 @@ export class LokiJsUtil {
                 objectToInsert.id = result.$loki.toString();
                 objectToInsert.meta = undefined;
                 // Yep, we need to clone it. Because the inserted record is a direct reference to the db data.
-                objectToInsert = _.clone(objectToInsert);
+                // objectToInsert = _.clone(objectToInsert);
+                objectToInsert = Object.create(objectToInsert);
                 this._log.debug("returning after insert: %j", objectToInsert);
                 resolve(objectToInsert);
             });
@@ -236,12 +240,18 @@ export class LokiJsUtil {
         this._log.debug('Call to insertMany with collection %j, objectsToInsert: %j', collection.name, objectsToInsert);
         return new Promise((resolve) => {
             let results = collection.insert(objectsToInsert);
-            if (_.isArray(results) === false) {
+
+            // lokijs does not return an array if the amount of objects to insert is 1.
+            if (Array.isArray(results) === false) {
                 results = [results];
             }
+            // if (_.isArray(results) === false) {
+            //     results = [results];
+            // }
             // Yep, we need to clone it. Because the inserted records are a direct reference to the db data.
             // For some reason if I don't do it. The subsequent queries return horrible results.
-            results = _.clone(results);
+            // results = _.clone(results);
+            results = Object.create(results);
             db.saveDatabase(() => {
                 for (const user of results) {
                     user.id = user.$loki.toString();

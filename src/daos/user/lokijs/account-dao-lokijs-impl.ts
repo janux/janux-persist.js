@@ -4,7 +4,6 @@
  */
 
 import * as Promise from "bluebird";
-import * as _ from "lodash";
 import {LokiJsRepository} from "../../../persistence/impl/lokijs-repository";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
@@ -60,7 +59,7 @@ export class AccountDaoLokiJsImpl extends AccountDao {
      * @return {Promise<ValidationError[]>} A list of validation errors.
      */
     protected validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<IValidationError[]> {
-        const idValue = _.toNumber(objectToUpdate.id);
+        const idValue = Number(objectToUpdate.id);
         const query = {
             $and: [
                 {$loki: {$ne: idValue}},

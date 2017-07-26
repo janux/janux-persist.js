@@ -3,7 +3,6 @@
  * Created by ernesto on 7/19/17.
  */
 
-import * as _ from 'lodash';
 import * as logger from 'log4js';
 import {PartyDaoLokiJsImpl} from "../../daos/party/lokijs/party-dao-loki-js-impl";
 import {PartyDaoMongoDbImpl} from "../../daos/party/mongodb/party-dao-mongodb-impl";
@@ -36,7 +35,7 @@ export class DaoFactory {
         this._log.debug("Call to createPartyDao with dbEngine %j , dbPath %j", dbEngine, dbPath);
         let partyDao: PartyDao;
         const existingDao: Dao = this.getDao(dbEngine, dbPath, this.PARTY_DEFAULT_COLLECTION_NAME);
-        if (_.isUndefined(existingDao)) {
+        if (existingDao == null) {
             this._log.debug("Creating a new partyDao");
             const dataSource: DataSource = this.getDataSource(dbEngine, dbPath);
             if (dbEngine === DataSourceHandler.MONGODB) {
@@ -68,7 +67,7 @@ export class DaoFactory {
         this._log.debug("Call to createAccountDao with dbEngine %j , dbPath %j", dbEngine, dbPath);
         const existingDao: Dao = this.getDao(dbEngine, dbPath, this.ACCOUNT_DEFAULT_COLLECTION_NAME);
         let accountDao: AccountDao;
-        if (_.isUndefined(existingDao)) {
+        if (existingDao == null) {
             this._log.debug("Creating a new createAccountDao");
             const dataSource: DataSource = this.getDataSource(dbEngine, dbPath);
             if (dbEngine === DataSourceHandler.MONGODB) {

@@ -5,7 +5,6 @@
 
 import * as Promise from "bluebird";
 import * as JanuxPeople from "janux-people.js";
-import * as _ from 'lodash';
 import * as logger from 'log4js';
 import * as uuid from 'uuid';
 import {PartyDao} from "../../daos/party/party-dao";
@@ -95,7 +94,7 @@ export class UserService {
         let result: any;
         return this.accountDao.findOneByUserId(id)
             .then((user: AccountEntity) => {
-                if (_.isNil(user)) return Promise.reject("No user with the id " + id);
+                if (user == null) return Promise.reject("No user with the id " + id);
                 result = user;
                 return this.partyDao.findOneById(user.contactId);
             })
@@ -118,7 +117,7 @@ export class UserService {
         let result: any;
         return this.accountDao.findOneByUserName(username)
             .then((user: AccountEntity) => {
-                if (_.isNil(user)) return Promise.reject("No user with the username " + username);
+                if (user == null) return Promise.reject("No user with the username " + username);
                 result = user;
                 return this.partyDao.findOneById(user.contactId);
             })
@@ -276,7 +275,8 @@ export class UserService {
 
     private populateUserData(contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]): Promise<any> {
         this._log.debug("Call to populate populateUserData with contacts: %j", contacts);
-        const ids = _.map(contacts, (o: any) => o.id);
+        const ids = contacts.map((value) => value.id);
+        // const ids = _.map(contacts, (o: any) => o.id);
         let result: any;
         return this.accountDao.findAllByContactIdsIn(ids)
             .then((users: AccountEntity[]) => {
@@ -301,11 +301,9 @@ export class UserService {
     private mixData(users: any[], contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]): any[] {
         this._log.debug("Call to mix data with users: %j contacts %j", users, contacts);
         for (const user of users) {
-            const contact = _.find(contacts, (o) => {
-                return o.id === user.contactId;
-            });
+            const contact = contacts.find((o) => o.id === user.contactId);
             this._log.debug("Founded contact %j", contact);
-            if (_.isNil(contact)) {
+            if (contact == null) {
                 this._log.error("NOT CONTACT FOUNDED");
             }
             user.contact = contact.toJSON();
@@ -328,11 +326,11 @@ export class UserService {
         // Check for an id
         if (isBlankString(party.id) === true) {
             // No id. Check port party type before inserting a new party.
-            if (_.isString(party.typeName) && party.typeName === PartyValidator.PERSON) {
+            if (party.typeName === PartyValidator.PERSON) {
                 person = JanuxPeople.Person.fromJSON(party);
                 this._log.debug("Inserting the person %j", person);
                 return this.partyDao.insert(person);
-            } else if (_.isString(party.typeName) && party.typeName === PartyValidator.ORGANIZATION) {
+            } else if (party.typeName === PartyValidator.ORGANIZATION) {
                 // Itś an organization
                 organization = JanuxPeople.Organization.fromJSON(party);
                 // Insert the organization.
@@ -352,7 +350,7 @@ export class UserService {
             // Look for if there is a party with the same id
             return this.partyDao.findOneById(party.id)
                 .then((resultQueryParty: JanuxPeople.Person | JanuxPeople.Organization) => {
-                    if (_.isNull(resultQueryParty)) {
+                    if (resultQueryParty == null) {
                         this._log.warn("The id %j does not exist in the database", party.id);
                         return Promise.reject([
                             new ValidationError(this.PARTY, this.NO_CONTACT_IN_DATABASE, party.id)
@@ -364,7 +362,7 @@ export class UserService {
                     }
                 })
                 .then((resultQueryAccount: AccountEntity) => {
-                    if (_.isNull(resultQueryAccount)) {
+                    if (resultQueryAccount == null) {
                         this._log.debug("Returning %j", resultQueryAccount);
                         return Promise.resolve(referenceObject);
                     } else {

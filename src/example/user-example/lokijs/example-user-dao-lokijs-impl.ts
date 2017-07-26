@@ -3,7 +3,6 @@
  * Created by ernesto on 6/12/17.
  */
 import * as Promise from "bluebird";
-import * as _ from "lodash";
 import {LokiJsRepository} from "../../../persistence/impl/lokijs-repository";
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
@@ -43,7 +42,7 @@ export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
         const errors: ValidationError[] = [];
         const query = {
             $and: [
-                {$loki: {$ne: _.toNumber(objectToUpdate[this.ID_REFERENCE])}},
+                {$loki: {$ne: Number(objectToUpdate[this.ID_REFERENCE])}},
                 {email: {$eq: objectToUpdate.email}}
             ]
         };
