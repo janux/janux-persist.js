@@ -53,11 +53,11 @@ var config = {
         // since they are disabled by default!
         // Unfortunately this plugin does no uglify es6 code. And janux-persistence
         // has deep dependencies that is programmed using es6 code.
-        //new webpack.optimize.UglifyJsPlugin({
-        //    minimize: true,
-        //    sourceMap: true,
-        //    include: /\.min\.js$/
-        //})
+        new webpack.optimize.UglifyJsPlugin({
+            minimize: true,
+            sourceMap: true,
+            include: /\.min\.js$/
+        })
     ],
     externals: {
         vertx: 'commonjs vertx'
