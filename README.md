@@ -53,3 +53,119 @@ which mongo db uses the project.
 **Extra tasks**
  
 running `npm run generateUsers` generated sample user data in a lokijs or mongodb database (based on the info retrieved from config).
+
+
+**Simple example of creating a dao.**
+
+1.. Create a typescript class that contains the attributes.
+
+    class Car{
+        //Needs to be public attributes. 
+        //Private attributes with getters and setters does not work
+        public name:string;
+        public model:number;
+    }
+
+
+2.. Create a dao class.
+
+    export class CarDao extends AbstractDataAccessObjectWithEngine<Car> {
+    
+        constructor(dbEngineUtil: ICrudRepository, entityProperties: IEntityProperties) {
+            super(dbEngineUtil, entityProperties);
+        }
+        
+        //Here you can define validations for the entity.
+        //For example validate the name is not null or undeifned.
+        protected validateEntity<t>(objectToValidate: Car): IValidationError[] {
+                const errors: ValidationError[] = [];
+                if(objectToValidate.name == null){
+                    errors.push(
+                        new ValidationError(
+                            "name",
+                            "There is another car with the same name",
+                            resultQuery.name));
+                }
+                return errors;
+        }
+
+        //Here you can define collection validations before insert the document.
+        //For this example, lets asume we don't want more than one car with the same name.        
+        protected validateBeforeUpdate<t>(objectToUpdate: Car): Promise<IValidationError[]> {
+        
+            //You can reuse the same dao methods inside the dao.
+            return this.findOneByAttribute("name", objectToInsert.name)
+                .then((resultQuery: Car) => {
+                    const errors: ValidationError[] = [];
+                    if (!_.isNull(result)) {
+                        errors.push(
+                            new ValidationError(
+                                "name",
+                                "There is another car with the same name",
+                                resultQuery.name));
+                    }
+                    return Promise.resolve(errors);
+                });
+        }
+        
+        //Here you can define collection validations before update the document.
+        //For this example, lets asume we don't want more than one car with the same name.
+        protected validateBeforeUpdate<t>(objectUpdate: Car): Promise<IValidationError[]> {
+        
+            return this.findOneByAttribute("name", objectUpdate.name)
+                .then((resultQuery: Car) => {
+                    const errors: ValidationError[] = [];
+                    if (!_.isNull(result) && objectUpdate.id!=resultQuery.id) {
+                        errors.push(
+                            new ValidationError(
+                                "name",
+                                "There is another car in the collection with the same name",
+                                result.name));
+                    }
+                    return Promise.resolve(errors);
+                });
+        }
+    }
+
+AbstractDataAccessObjectWithEngine has several methods for crud operations and simple queries. But
+it does not contain any direct db operation.
+
+For that all db operations are defined in a ICrudRepository 
+instance called dbEngineUtil.
+
+The project for the moment has two ICrudRepository instances. One for mongodb (MongoDbRepository) an the other for lokijs (LokiJsRepository).  
+
+3.. Create the implementations.
+    
+    //Lokijs implementation
+    //1.-We need a lokis database.
+    const lokiDatabase = new lokijs("myDatabase.db");
+    //2.-We need to encapusalte the loki database inside a LokiJsRepository instance.
+    //LokiJsRepository contains all lokijs db methods needed for the dao.
+    const lokijsRepository = new LokiJsRepository('carCollection', lokiDatabase);
+    //3.-Create the dao
+    var carDaoLokiJs = new CarDao(
+        lokijsRepository,
+        null
+    ); 
+    
+    //Mongo db
+    //1.- We need a mongoose model. For that we need to define a
+    //mongoose connection and use a mongoose schema.
+    mongoose.connect('mongodb://localhost/aMongoDatrabase');
+    var model = mongoose.model('carCollection', CarMongooseSchema);
+    //2.- We need to encapsulate the mongoose model in a MongoDbRepository.
+    //MongoDbRepository contains all mongodb methods needed for the dao.
+    var mongoRepository = new MongoDbRepository(model);
+    //3.- Create the dao.
+    var carDaoMongoDb = new CarDao(
+        mongoRepository,
+        null); 
+
+    //You can use the implementations.
+    const car:Car = new Car();
+    car.name = "volvo";
+    car.model = 2012;
+    
+    carDaoMongoDb.insert(car);
+    carDaoLokiJs.insert(car);

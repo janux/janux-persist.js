@@ -4,7 +4,7 @@
  */
 import * as EmailValidator from "email-validator";
 import * as logger from 'log4js';
-import {ValidationError} from "../../persistence/impl/validation-error";
+import {ValidationError} from "../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
 import {ExampleUser} from "./example-user";
 

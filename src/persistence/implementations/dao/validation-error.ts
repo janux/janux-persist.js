@@ -1,4 +1,4 @@
-import {IValidationError} from "../interfaces/validation-error";
+import {IValidationError} from "../../interfaces/validation-error";
 /**
  * Project janux-persistence
  * Created by ernesto on 6/9/17.

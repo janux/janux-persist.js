@@ -1,4 +1,4 @@
-import {IEntityProperties} from "../interfaces/entity-properties";
+import {IEntityProperties} from "../../interfaces/entity-properties";
 /**
  * Project janux-persistence
  * Created by ernesto on 6/12/17.

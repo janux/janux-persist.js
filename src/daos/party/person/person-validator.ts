@@ -3,7 +3,7 @@
  * Created by ernesto on 6/22/17.
  */
 import * as logger from 'log4js';
-import {ValidationError} from "../../../persistence/impl/validation-error";
+import {ValidationError} from "../../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../../util/blank-string-validator";
 import JanuxPeople = require("janux-people.js");
 

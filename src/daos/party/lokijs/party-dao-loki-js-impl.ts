@@ -4,7 +4,7 @@
  */
 
 import * as Promise from "bluebird";
-import {LokiJsRepository} from "../../../persistence/impl/lokijs-repository";
+import {LokiJsRepository} from "../../../persistence/implementations/db-engines/lokijs-repository";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
 import {PartyDao} from "../party-dao";

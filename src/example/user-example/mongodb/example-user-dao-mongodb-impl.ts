@@ -5,8 +5,8 @@
 import {ExampleUser} from "../example-user";
 import {ExampleUserDao} from "../example-user-dao";
 import Promise = require("bluebird");
-import {MongoDbRepository} from "../../../persistence/impl/mongodb-repository";
-import {ValidationError} from "../../../persistence/impl/validation-error";
+import {ValidationError} from "../../../persistence/implementations/dao/validation-error";
+import {MongoDbRepository} from "../../../persistence/implementations/db-engines/mongodb-repository";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 
 /**

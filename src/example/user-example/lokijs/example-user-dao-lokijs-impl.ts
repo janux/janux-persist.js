@@ -7,8 +7,8 @@ import {IEntityProperties} from "../../../persistence/interfaces/entity-properti
 import {ExampleUser} from "../example-user";
 import {ExampleUserDao} from "../example-user-dao";
 import Promise = require("bluebird");
-import {LokiJsRepository} from "../../../persistence/impl/lokijs-repository";
-import {ValidationError} from "../../../persistence/impl/validation-error";
+import {ValidationError} from "../../../persistence/implementations/dao/validation-error";
+import {LokiJsRepository} from "../../../persistence/implementations/db-engines/lokijs-repository";
 
 /**
  * this is the implementation for lokijs of ExampleUserDao

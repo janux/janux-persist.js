@@ -7,7 +7,7 @@ import {IValidationError} from "../../../persistence/interfaces/validation-error
 import {AccountDao} from "../account-dao";
 import {AccountEntity} from "../account-entity";
 import Promise = require("bluebird");
-import {MongoDbRepository} from "../../../persistence/impl/mongodb-repository";
+import {MongoDbRepository} from "../../../persistence/implementations/db-engines/mongodb-repository";
 import {AccountValidator} from "../account-valdiator";
 
 /**

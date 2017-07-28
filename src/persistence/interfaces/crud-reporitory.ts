@@ -3,13 +3,15 @@
  * Created by ernesto on 6/9/17.
  */
 import Promise = require("bluebird");
-import {AttributeFilter} from "../impl/attribute-filter";
+import {AttributeFilter} from "../implementations/dao/attribute-filter";
+import {IReadOnlyRepository} from "./read-only-repository";
+import {IWriteRepository} from "./write-repository";
 
 /**
- * Interface that defines the basic methods
- * per db engine
+ * Interface that defines the basic crud methods
+ * per dao or db engine to implement.
  */
-export interface ICrudMethods {
+export interface ICrudRepository extends IReadOnlyRepository, IWriteRepository {
 
     /**
      * Find one document by id.
@@ -78,20 +80,20 @@ export interface ICrudMethods {
      * Inserts a document.
      * @param objectToInsert The object to insert.
      */
-    insertMethod(objectToInsert: any): Promise<any>;
+    insert(objectToInsert: any): Promise<any>;
 
     /**
      * Update a document.
      * @param objectToUpdate The data to update. This object must have an attribute called "id" as string in order
      * to know which document is going to be updated.
      */
-    updateMethod(objectToUpdate: any): Promise<any>;
+    update(objectToUpdate: any): Promise<any>;
 
     /**
      * Insert many documents at once inside the collection.
      * @param objectsToInsert The objects to insert.
      */
-    insertManyMethod(objectsToInsert: any[]): Promise<any>;
+    insertMany(objectsToInsert: any[]): Promise<any>;
 
     /**
      * Return all the documents.

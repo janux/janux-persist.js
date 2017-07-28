@@ -4,11 +4,11 @@
  */
 import * as _ from "lodash";
 import * as logger from 'log4js';
-import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
+import {AbstractDataAccessObjectWithEngine} from "../../persistence/implementations/dao/abstract-data-access-object-with-engine";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
 import Promise = require("bluebird");
-import {ValidationError} from "../../persistence/impl/validation-error";
-import {ICrudMethods} from "../../persistence/interfaces/crud-methods";
+import {ValidationError} from "../../persistence/implementations/dao/validation-error";
+import {ICrudRepository} from "../../persistence/interfaces/crud-reporitory";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {ExampleUser} from "./example-user";
 import {validateExampleUser} from "./example-validate-usert";
@@ -20,7 +20,7 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithEngine<
 
     private _logExampleUserDao = logger.getLogger("ExampleUserDao");
 
-    constructor(dbEngineUtil: ICrudMethods, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: ICrudRepository, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 

@@ -3,8 +3,8 @@
  * Created by ernesto on 6/13/17.
  */
 
-import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
-import {ICrudMethods} from "../../persistence/interfaces/crud-methods";
+import {AbstractDataAccessObjectWithEngine} from "../../persistence/implementations/dao/abstract-data-access-object-with-engine";
+import {ICrudRepository} from "../../persistence/interfaces/crud-reporitory";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
 import {AccountEntity} from "./account-entity";
@@ -16,7 +16,7 @@ import {AccountValidator} from "./account-valdiator";
  */
 export abstract class AccountDao extends AbstractDataAccessObjectWithEngine<AccountEntity> {
 
-    constructor(dbEngineUtil: ICrudMethods, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: ICrudRepository, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 

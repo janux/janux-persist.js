@@ -5,7 +5,7 @@
 
 import * as Promise from "bluebird";
 import {Model} from "mongoose";
-import {MongoDbRepository} from "../../../persistence/impl/mongodb-repository";
+import {MongoDbRepository} from "../../../persistence/implementations/db-engines/mongodb-repository";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
 import {PartyDao} from "../party-dao";

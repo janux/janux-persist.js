@@ -4,24 +4,33 @@
  */
 
 import * as logger from 'log4js';
-import {ICrudMethods} from "../interfaces/crud-methods";
+import {ICrudRepository} from "../../interfaces/crud-reporitory";
 import Promise = require("bluebird");
-import {IEntityProperties} from "../interfaces/entity-properties";
+import {IEntityProperties} from "../../interfaces/entity-properties";
 import {AbstractDataAccessObject} from "./abstract-data-access-object";
 import {AttributeFilter} from "./attribute-filter";
 
 /**
- * This class, inside their properties, contains an object implementing the interface ICrudMethods.
- * The purpose, ideally, is to implement only one extended class from this, and to have as many instances per db engine.
+ * This class, inside their properties, contains an object implementing the interface ICrudRepository where you can do
+ * db operations.
+ * The purpose of this class is to encapsulate the db calls inside an object. And that object re-use ti
+ * in different dao implementations.
  */
 export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractDataAccessObject<t> {
 
     // This class holds all common db engine methods
-    protected dbEngineUtil: ICrudMethods;
+    protected dbEngineUtil: ICrudRepository;
 
     private readonly _logger = logger.getLogger("AbstractDataAccessObjectWithEngine");
 
-    constructor(dbEngineUtil: ICrudMethods, entityProperties: IEntityProperties) {
+    /**
+     * Constructor
+     * @param {ICrudRepository} dbEngineUtil This contains an implementation of ICrudRepository.
+     * The idea is there are ICrudRepository implementations per engine. In order to
+     * remove duplicated code per each db implementation.
+     * @param {IEntityProperties} entityProperties
+     */
+    constructor(dbEngineUtil: ICrudRepository, entityProperties: IEntityProperties) {
         super(entityProperties);
         this._logger.debug("Calling constructor");
         this.dbEngineUtil = dbEngineUtil;
@@ -156,7 +165,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @param objectToInsert The object to insert
      */
     protected insertMethod(objectToInsert: t): Promise<t> {
-        return this.dbEngineUtil.insertMethod(objectToInsert);
+        return this.dbEngineUtil.insert(objectToInsert);
     }
 
     /**
@@ -164,7 +173,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @param objectToUpdate The object to update
      */
     protected  updateMethod(objectToUpdate: t): Promise<t> {
-        return this.dbEngineUtil.updateMethod(objectToUpdate);
+        return this.dbEngineUtil.update(objectToUpdate);
     }
 
     /**
@@ -172,7 +181,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @param objectsToInsert The objects to insert
      */
     protected  insertManyMethod(objectsToInsert: t[]): Promise<any> {
-        return this.dbEngineUtil.insertManyMethod(objectsToInsert);
+        return this.dbEngineUtil.insertMany(objectsToInsert);
     }
 
     /**
