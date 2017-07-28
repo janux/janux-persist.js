@@ -1,29 +1,26 @@
 /**
  * Project janux-persistence
- * Created by ernesto on 6/9/17.
+ * Created by ernesto on 7/28/17.
  */
-import Promise = require("bluebird");
+import * as Promise from "bluebird";
 import {AttributeFilter} from "../implementations/dao/attribute-filter";
-import {IReadOnlyRepository} from "./read-only-repository";
-import {IWriteRepository} from "./write-repository";
 
 /**
- * Interface that defines the basic crud methods
- * per dao.
+ * This interface dine the method you need to implement per each database
+ * in order to wire the database to a AbstractDataAccessObjectWithEngine instance.
  */
-export interface ICrudRepository<t> extends IReadOnlyRepository<t>, IWriteRepository<t> {
-
+export interface IDbEngine {
     /**
      * Find one document by id.
      * @param id The id to look for.
      */
-    findOneById(id: string): Promise<t>;
+    findOneById(id): Promise<any>;
 
     /**
      * Find all the documents inside a collection whose ids belongs to the list.
      * @param arrayOfIds The ids to look for.
      */
-    findAllByIds(arrayOfIds: any[]): Promise<t[]>;
+    findAllByIds(arrayOfIds: any[]): Promise<any>;
 
     /**
      * Remove a document.

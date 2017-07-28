@@ -5,7 +5,7 @@
 
 import * as Promise from "bluebird";
 import {Model} from "mongoose";
-import {MongoDbRepository} from "../../../persistence/implementations/db-engines/mongodb-repository";
+import {MongoDbEngine} from "../../../persistence/implementations/db-engines/mongodb-db-engine";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
 import {PartyDao} from "../party-dao";
@@ -19,7 +19,7 @@ export class PartyDaoMongoDbImpl extends PartyDao {
 
     private model: Model<any>;
 
-    constructor(dbEngineUtil: MongoDbRepository, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: MongoDbEngine, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
         this.model = dbEngineUtil.model;
     }

@@ -6,20 +6,20 @@ import {ExampleUser} from "../example-user";
 import {ExampleUserDao} from "../example-user-dao";
 import Promise = require("bluebird");
 import {ValidationError} from "../../../persistence/implementations/dao/validation-error";
-import {MongoDbRepository} from "../../../persistence/implementations/db-engines/mongodb-repository";
+import {MongoDbEngine} from "../../../persistence/implementations/db-engines/mongodb-db-engine";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 
 /**
  * this is the implementation for mongodb of ExampleUserDao
  */
 export class ExampleUserDaoMongoDbImpl extends ExampleUserDao {
-    public static createInstance(dbEngineUtil: MongoDbRepository, entityProperties: IEntityProperties) {
+    public static createInstance(dbEngineUtil: MongoDbEngine, entityProperties: IEntityProperties) {
         return this.instance || (this.instance = new this(dbEngineUtil, entityProperties));
     }
 
     private static instance: ExampleUserDaoMongoDbImpl;
 
-    private constructor(dbEngineUtil: MongoDbRepository, entityProperties: IEntityProperties) {
+    private constructor(dbEngineUtil: MongoDbEngine, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 

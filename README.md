@@ -71,7 +71,7 @@ running `npm run generateUsers` generated sample user data in a lokijs or mongod
 
     export class CarDao extends AbstractDataAccessObjectWithEngine<Car> {
     
-        constructor(dbEngineUtil: ICrudRepository, entityProperties: IEntityProperties) {
+        constructor(dbEngineUtil: IGenericDaoCRUD, entityProperties: IEntityProperties) {
             super(dbEngineUtil, entityProperties);
         }
         
@@ -130,19 +130,19 @@ running `npm run generateUsers` generated sample user data in a lokijs or mongod
 AbstractDataAccessObjectWithEngine has several methods for crud operations and simple queries. But
 it does not contain any direct db operation.
 
-For that all db operations are defined in a ICrudRepository 
+For that all db operations are defined in a IGenericDaoCRUD 
 instance called dbEngineUtil.
 
-The project for the moment has two ICrudRepository instances. One for mongodb (MongoDbRepository) an the other for lokijs (LokiJsRepository).  
+The project for the moment has two IGenericDaoCRUD instances. One for mongodb (MongoDbEngine) an the other for lokijs (LokiJsDbEngine).  
 
 3.. Create the implementations.
     
     //Lokijs implementation
     //1.-We need a lokis database.
     const lokiDatabase = new lokijs("myDatabase.db");
-    //2.-We need to encapusalte the loki database inside a LokiJsRepository instance.
-    //LokiJsRepository contains all lokijs db methods needed for the dao.
-    const lokijsRepository = new LokiJsRepository('carCollection', lokiDatabase);
+    //2.-We need to encapusalte the loki database inside a LokiJsDbEngine instance.
+    //LokiJsDbEngine contains all lokijs db methods needed for the dao.
+    const lokijsRepository = new LokiJsDbEngine('carCollection', lokiDatabase);
     //3.-Create the dao
     var carDaoLokiJs = new CarDao(
         lokijsRepository,
@@ -154,9 +154,9 @@ The project for the moment has two ICrudRepository instances. One for mongodb (M
     //mongoose connection and use a mongoose schema.
     mongoose.connect('mongodb://localhost/aMongoDatrabase');
     var model = mongoose.model('carCollection', CarMongooseSchema);
-    //2.- We need to encapsulate the mongoose model in a MongoDbRepository.
-    //MongoDbRepository contains all mongodb methods needed for the dao.
-    var mongoRepository = new MongoDbRepository(model);
+    //2.- We need to encapsulate the mongoose model in a MongoDbEngine.
+    //MongoDbEngine contains all mongodb methods needed for the dao.
+    var mongoRepository = new MongoDbEngine(model);
     //3.- Create the dao.
     var carDaoMongoDb = new CarDao(
         mongoRepository,

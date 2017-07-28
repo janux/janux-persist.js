@@ -15,8 +15,8 @@ var ExampleUser = require("../../dist/index").ExampleUser;
 var ExampleUserDaoLokiJsImpl = require("../../dist/index").ExampleUserDaoLokiJsImpl;
 var ExampleUserDaoMongoDbImpl = require("../../dist/index").ExampleUserDaoMongoDbImpl;
 var MongoUserSchemaExample = require("../../dist/index").MongoUserSchemaExample;
-var LokiJsRepository = require("../../dist/index").LokiJsRepository;
-var MongoDbRepository = require("../../dist/index").MongoDbRepository;
+var LokiJsRepository = require("../../dist/index").LokiJsDbEngine;
+var MongoDbRepository = require("../../dist/index").MongoDbEngine;
 var EntityProperties = require("../../dist/index").EntityProperties;
 
 

@@ -6,10 +6,9 @@
 import Promise = require("bluebird");
 
 /**
- * Define the method for saving, updating or deleting in a dao or
- * db-engine implementation.
+ * Define the method for saving, updating or deleting in a dao.
  */
-export interface IWriteRepository {
+export interface IWriteRepository<t> {
 
     /**
      * Remove a document.
@@ -39,19 +38,19 @@ export interface IWriteRepository {
      * Inserts a document.
      * @param objectToInsert The object to insert.
      */
-    insert(objectToInsert: any): Promise<any>;
+    insert(objectToInsert: t): Promise<any>;
 
     /**
      * Update a document.
      * @param objectToUpdate The data to update. This object must have an attribute called "id" as string in order
      * to know which document is going to be updated.
      */
-    update(objectToUpdate: any): Promise<any>;
+    update(objectToUpdate: t): Promise<any>;
 
     /**
      * Insert many documents at once inside the collection.
      * @param objectsToInsert The objects to insert.
      */
-    insertMany(objectsToInsert: any[]): Promise<any>;
+    insertMany(objectsToInsert: t[]): Promise<any>;
 
 }

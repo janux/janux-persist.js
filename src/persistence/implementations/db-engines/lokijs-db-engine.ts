@@ -4,7 +4,7 @@
  */
 import * as _ from 'lodash';
 import * as logger from 'log4js';
-import {ICrudRepository} from "../../interfaces/crud-reporitory";
+import {IDbEngine} from "../../interfaces/db-engine-intercace";
 import {LokiJsUtil} from "../../util/lokijs-util";
 import Promise = require("bluebird");
 import {AttributeFilter} from "../dao/attribute-filter";
@@ -14,11 +14,11 @@ import {AttributeFilter} from "../dao/attribute-filter";
  * When calling this method. Make sure params has the
  * correct db property and the correct collection property
  */
-export class LokiJsRepository implements ICrudRepository {
+export class LokiJsDbEngine implements IDbEngine {
 
     private collectionName;
     private db: any;
-    private _log = logger.getLogger("LokiJsRepository");
+    private _log = logger.getLogger("LokiJsDbEngine");
 
     constructor(collectionName: string, db: any) {
         this._log.debug("Call to constructor with collectionName %j", collectionName);

@@ -5,17 +5,17 @@
 import * as logger from 'log4js';
 import Promise = require("bluebird");
 import {Model} from "mongoose";
-import {ICrudRepository} from "../../interfaces/crud-reporitory";
+import {IDbEngine} from "../../interfaces/db-engine-intercace";
 import {MongoDbUtil} from "../../util/mongodb-util.js";
 import {AttributeFilter} from "../dao/attribute-filter";
 
 /**
  * this class in an implementation of ICrudRepository in order to use mongodb as the db engine.
  */
-export class MongoDbRepository implements ICrudRepository {
+export class MongoDbEngine implements IDbEngine {
     public model: Model<any>;
 
-    private _log = logger.getLogger("MongoDbRepository");
+    private _log = logger.getLogger("MongoDbEngine");
 
     constructor(model: Model<any>) {
         this.model = model;

@@ -8,20 +8,20 @@ import {ExampleUser} from "../example-user";
 import {ExampleUserDao} from "../example-user-dao";
 import Promise = require("bluebird");
 import {ValidationError} from "../../../persistence/implementations/dao/validation-error";
-import {LokiJsRepository} from "../../../persistence/implementations/db-engines/lokijs-repository";
+import {LokiJsDbEngine} from "../../../persistence/implementations/db-engines/lokijs-db-engine";
 
 /**
  * this is the implementation for lokijs of ExampleUserDao
  */
 export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
 
-    public static createInstance(dbEngineUtil: LokiJsRepository, entityProperties: IEntityProperties) {
+    public static createInstance(dbEngineUtil: LokiJsDbEngine, entityProperties: IEntityProperties) {
         return this.instance || (this.instance = new this(dbEngineUtil, entityProperties));
     }
 
     private static instance: ExampleUserDaoLokiJsImpl;
 
-    private constructor(dbEngineUtil: LokiJsRepository, entityProperties: IEntityProperties) {
+    private constructor(dbEngineUtil: LokiJsDbEngine, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 

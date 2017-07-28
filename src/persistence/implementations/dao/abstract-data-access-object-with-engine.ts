@@ -6,6 +6,7 @@
 import * as logger from 'log4js';
 import {ICrudRepository} from "../../interfaces/crud-reporitory";
 import Promise = require("bluebird");
+import {IDbEngine} from "../../interfaces/db-engine-intercace";
 import {IEntityProperties} from "../../interfaces/entity-properties";
 import {AbstractDataAccessObject} from "./abstract-data-access-object";
 import {AttributeFilter} from "./attribute-filter";
@@ -19,7 +20,7 @@ import {AttributeFilter} from "./attribute-filter";
 export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractDataAccessObject<t> {
 
     // This class holds all common db engine methods
-    protected dbEngineUtil: ICrudRepository;
+    protected dbEngineUtil: IDbEngine;
 
     private readonly _logger = logger.getLogger("AbstractDataAccessObjectWithEngine");
 
@@ -30,7 +31,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * remove duplicated code per each db implementation.
      * @param {IEntityProperties} entityProperties
      */
-    constructor(dbEngineUtil: ICrudRepository, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: IDbEngine, entityProperties: IEntityProperties) {
         super(entityProperties);
         this._logger.debug("Calling constructor");
         this.dbEngineUtil = dbEngineUtil;

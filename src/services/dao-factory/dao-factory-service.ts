@@ -14,8 +14,8 @@ import {AccountDaoLokiJsImpl} from "../../daos/user/lokijs/account-dao-lokijs-im
 import {AccountDaoMongodbImpl} from "../../daos/user/mongodb/account-dao-mongodb-impl";
 import {AccountMongoDbSchema} from "../../daos/user/mongodb/account-mongodb-schema";
 import {EntityProperties} from "../../persistence/implementations/dao/entity-properties";
-import {LokiJsRepository} from "../../persistence/implementations/db-engines/lokijs-repository";
-import {MongoDbRepository} from "../../persistence/implementations/db-engines/mongodb-repository";
+import {LokiJsDbEngine} from "../../persistence/implementations/db-engines/lokijs-db-engine";
+import {MongoDbEngine} from "../../persistence/implementations/db-engines/mongodb-db-engine";
 import {DataSource} from "../datasource-handler/datasource";
 import {DataSourceHandler} from "../datasource-handler/datasource-handler";
 import {Dao} from "./dao";
@@ -41,11 +41,11 @@ export class DaoFactory {
             const dataSource: DataSource = this.getDataSource(dbEngine, dbPath);
             if (dbEngine === DataSourceHandler.MONGODB) {
                 partyDao = new PartyDaoMongoDbImpl(
-                    new MongoDbRepository(dataSource.dbConnection.model(this.PARTY_DEFAULT_COLLECTION_NAME, PartyMongoDbSchema)),
+                    new MongoDbEngine(dataSource.dbConnection.model(this.PARTY_DEFAULT_COLLECTION_NAME, PartyMongoDbSchema)),
                     new EntityProperties(false, true)
                 );
             } else {
-                partyDao = new PartyDaoLokiJsImpl(new LokiJsRepository(this.PARTY_DEFAULT_COLLECTION_NAME, dataSource.dbConnection),
+                partyDao = new PartyDaoLokiJsImpl(new LokiJsDbEngine(this.PARTY_DEFAULT_COLLECTION_NAME, dataSource.dbConnection),
                     new EntityProperties(false, true)
                 );
             }
@@ -73,11 +73,11 @@ export class DaoFactory {
             const dataSource: DataSource = this.getDataSource(dbEngine, dbPath);
             if (dbEngine === DataSourceHandler.MONGODB) {
                 accountDao = new AccountDaoMongodbImpl(
-                    new MongoDbRepository(dataSource.dbConnection.model(this.ACCOUNT_DEFAULT_COLLECTION_NAME, AccountMongoDbSchema)),
+                    new MongoDbEngine(dataSource.dbConnection.model(this.ACCOUNT_DEFAULT_COLLECTION_NAME, AccountMongoDbSchema)),
                     new EntityProperties(false, true));
             } else {
                 accountDao = new AccountDaoLokiJsImpl(
-                    new LokiJsRepository(this.ACCOUNT_DEFAULT_COLLECTION_NAME, dataSource.dbConnection),
+                    new LokiJsDbEngine(this.ACCOUNT_DEFAULT_COLLECTION_NAME, dataSource.dbConnection),
                     new EntityProperties(false, true)
                 );
             }

@@ -62,7 +62,7 @@ import {AttributeFilter} from "./attribute-filter";
  * If EntityProperties.timeStamp is true. Then the dao assigns a "insertDate" attribute per each insert and a lastUpdate
  * attribute per each update.
  */
-export abstract class AbstractDataAccessObject<t>  implements ICrudRepository {
+export abstract class AbstractDataAccessObject<t>  implements ICrudRepository<t> {
 
     // The attribute name that has the unique db id.
     public ID_REFERENCE: string = "id";

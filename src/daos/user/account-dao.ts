@@ -4,11 +4,11 @@
  */
 
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/implementations/dao/abstract-data-access-object-with-engine";
-import {ICrudRepository} from "../../persistence/interfaces/crud-reporitory";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
 import {AccountEntity} from "./account-entity";
 import Promise = require("bluebird");
+import {IDbEngine} from "../../persistence/interfaces/db-engine-intercace";
 import {AccountValidator} from "./account-valdiator";
 
 /**
@@ -16,7 +16,7 @@ import {AccountValidator} from "./account-valdiator";
  */
 export abstract class AccountDao extends AbstractDataAccessObjectWithEngine<AccountEntity> {
 
-    constructor(dbEngineUtil: ICrudRepository, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: IDbEngine, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 

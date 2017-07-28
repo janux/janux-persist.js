@@ -7,7 +7,7 @@ import * as _ from "lodash";
 import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {AccountDao} from "../account-dao";
 import Promise = require("bluebird");
-import {LokiJsRepository} from "../../../persistence/implementations/db-engines/lokijs-repository";
+import {LokiJsDbEngine} from "../../../persistence/implementations/db-engines/lokijs-db-engine";
 import {IValidationError} from "../../../persistence/interfaces/validation-error";
 import {AccountEntity} from "../account-entity";
 import {AccountValidator} from "../account-valdiator";
@@ -17,7 +17,7 @@ import {AccountValidator} from "../account-valdiator";
  */
 export class AccountDaoLokiJsImpl extends AccountDao {
 
-    constructor(dbEngineUtil: LokiJsRepository, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: LokiJsDbEngine, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);
     }
 
