@@ -4,7 +4,7 @@
  */
 
 import * as Promise from "bluebird";
-import * as logger from 'log4js';
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 import {ICrudMethods} from "../interfaces/crud-methods";
 import {IEntityProperties} from "../interfaces/entity-properties";
 import {AbstractDataAccessObject} from "./abstract-data-access-object";
@@ -19,7 +19,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
     // This class holds all common db engine methods
     protected dbEngineUtil: ICrudMethods;
 
-    private readonly _logger = logger.getLogger("AbstractDataAccessObjectWithEngine");
+    private readonly _logger = LoggerFactory.getLogger("AbstractDataAccessObjectWithEngine");
 
     constructor(dbEngineUtil: ICrudMethods, entityProperties: IEntityProperties) {
         super(entityProperties);

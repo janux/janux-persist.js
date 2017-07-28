@@ -4,7 +4,7 @@
  */
 
 import * as Promise from 'bluebird';
-import * as logger from 'log4js';
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 
 /**
  * Lokijs db functions util.
@@ -329,7 +329,7 @@ export class LokiJsUtil {
         });
     }
 
-    private static _log = logger.getLogger('LokiJsUtil');
+    private static _log = LoggerFactory.getLogger('LokiJsUtil');
 
     /**
      * Removes the meta attribute that adds lokijs.

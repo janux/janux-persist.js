@@ -5,7 +5,7 @@
 
 import {ValidationError} from "../../persistence/impl/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
-import {LoggerFactory} from "../../util/log4js/log4js_factory";
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 import {AccountEntity} from "./account-entity";
 
 /**

@@ -8,16 +8,17 @@ var PATHS = {
 };
 
 //var ignore = new webpack.IgnorePlugin(new RegExp("/(node_modules|log4js)/"));
-var ignore = new webpack.IgnorePlugin(/^(mongoose|log4js|lokijs|bluebird)$/);
+//var ignore = new webpack.IgnorePlugin(/^(mongoose)$/);
 
 var config = {
+    target: "web",
     // These are the entry point of our library. We tell webpack to use
     // the name we assign later, when creating the bundle. We also use
     // the name to filter the second entry point for applying code
     // minification via UglifyJS
     entry: {
-        'my-lib': [PATHS.entryPoint],
-        'my-lib.min': [PATHS.entryPoint]
+        'janux-persistence': [PATHS.entryPoint],
+        'janux-persistence.min': [PATHS.entryPoint]
     },
     // The output defines how and where we want the bundles. The special
     // value `[name]` in `filename` tell Webpack to use the name we defined above.
@@ -26,26 +27,25 @@ var config = {
     output: {
         path: PATHS.bundles,
         filename: '[name].js',
-        libraryTarget: 'umd',
-        library: 'janux-persistence',
-        umdNamedDefine: true
+        libraryTarget: 'window',
+        library: 'januxPersistence'
+    },
+    externals: {
+        "log4js": "Log4js",
+        "lokijs": "loki"
     },
     // Add resolve for `tsx` and `ts` files, otherwise Webpack would
     // only look for common JavaScript file extension (.js)
     resolve: {
-        extensions: ['.ts', '.tsx', '.js']
+        extensions: ['.webpack.js', '.web.js', '.ts', '.tsx', '.js']
     },
     // Activate source maps for the bundles in order to preserve the original
     // source when the user debugs the application
     devtool: 'source-map',
     plugins: [
-        ignore,
-        // TODO careful, this plugin is new and might generate invalid code.
-        // new UglifyEsPlugin({
-        //     compress: true,
-        //     sourceMap: true,
-        //     include: /\.min\.js$/
-        // })
+
+        // ignore,
+
 
         // Apply minification only on the second bundle by
         // using a RegEx on the name, which must end with `.min.js`
@@ -59,9 +59,6 @@ var config = {
             include: /\.min\.js$/
         })
     ],
-    externals: {
-        vertx: 'commonjs vertx'
-    },
     module: {
         // Webpack doesn't understand TypeScript files and a loader is needed.
         // `node_modules` folder is excluded in order to prevent problems with
@@ -73,7 +70,7 @@ var config = {
             exclude: /node_modules/,
             query: {
                 // we don't want any declaration file in the bundles
-                // folder since it wouldn't be of any use ans the source
+                // folder since it wouldn't be of any use and the source
                 // map already include everything for debugging
                 declaration: false
             }

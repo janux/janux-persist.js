@@ -4,8 +4,8 @@
  */
 
 import * as JanuxPeople from "janux-people.js";
-import * as logger from 'log4js';
 import {ValidationError} from "../../../../persistence/impl/validation-error";
+import {LoggerFactory} from "../../../../util/logger-factory/logger_factory";
 
 export class PostalAddressValidator {
 
@@ -69,5 +69,5 @@ export class PostalAddressValidator {
         return errors;
     }
 
-    private static _log = logger.getLogger("PostalAddressValidator");
+    private static _log = LoggerFactory.getLogger("PostalAddressValidator");
 }

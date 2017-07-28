@@ -12,14 +12,6 @@ import {isRunningInNode} from "../runnig-node";
 export class LoggerFactory {
 
     /**
-     * Define the logger for the browser.
-     * @param logger
-     */
-    public static setBrowserLogger(logger: any) {
-        this.browSerLogger = logger;
-    }
-
-    /**
      * Ge the logger is going to be used.
      * If the code is running in a node environment. Then the method returns the
      * node log4js logger.
@@ -30,16 +22,16 @@ export class LoggerFactory {
      */
     public static getLogger(name: string): any {
         let result: any;
-        if (isRunningInNode()) {
-            // Load log4js from node.
-            result = require('log4js').getLogger(name);
-        } else {
-            // Load log4js from the browser.
-            // http://stritti.github.io/log4js/docu/users-guide.html
-            result = new this.browSerLogger.getLogger("myCategory");
-        }
+        const logger: any = require('log4js');
+        result = new logger.getLogger(name);
+        // if (isRunningInNode()) {
+        //    // Load log4js from node.
+        //    result = logger.getLogger(name);
+        // } else {
+        //    // Load log4js from the browser.
+        //    // http://stritti.github.io/log4js/docu/users-guide.html
+        //
+        // }
         return result;
     }
-
-    private static browSerLogger: any;
 }

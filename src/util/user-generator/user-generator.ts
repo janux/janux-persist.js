@@ -10,7 +10,7 @@ import {PartyValidator} from "../../daos/party/party-validator";
 import {AccountDao} from "../../daos/user/account-dao";
 import {DaoFactory} from "../../services/dao-factory/dao-factory-service";
 import {UserService} from "../../services/user/user-service";
-import {LoggerFactory} from "../log4js/log4js_factory";
+import {LoggerFactory} from "../logger-factory/logger_factory";
 
 export class UserGenerator {
 

@@ -22,7 +22,7 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithEngine<Acco
 
     /**
      * Find all the users whose user name matches.
-     * This is an abstract class because the query is implement in a different way for lokijs and
+     * This is an abstract class because the query is implemented in a different way for lokijs and
      * mongoose.
      * @param username The username to match.
      */

@@ -9,7 +9,7 @@ import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstrac
 import {ICrudMethods} from "../../persistence/interfaces/crud-methods";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
-import {LoggerFactory} from "../../util/log4js/log4js_factory";
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 import {PartyValidator} from "./party-validator";
 
 /**

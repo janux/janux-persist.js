@@ -3,9 +3,9 @@
  * Created by ernesto on 6/22/17.
  */
 import * as JanuxPeople from "janux-people.js";
-import * as logger from 'log4js';
 import {ValidationError} from "../../../persistence/impl/validation-error";
 import {isBlankString} from "../../../util/blank-string-validator";
+import {LoggerFactory} from "../../../util/logger-factory/logger_factory";
 
 /**
  * Validates the content of the person.
@@ -35,5 +35,5 @@ export class PersonValidator {
         return errors;
     }
 
-    private static _log = logger.getLogger("PersonValidator");
+    private static _log = LoggerFactory.getLogger("PersonValidator");
 }

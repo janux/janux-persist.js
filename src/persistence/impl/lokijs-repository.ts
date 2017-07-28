@@ -3,7 +3,7 @@
  * Created by ernesto on 6/12/17.
  */
 import * as Promise from "bluebird";
-import * as logger from 'log4js';
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 import {ICrudMethods} from "../interfaces/crud-methods";
 import {LokiJsUtil} from "../util/lokijs-util";
 import {AttributeFilter} from "./attribute-filter";
@@ -17,7 +17,7 @@ export class LokiJsRepository implements ICrudMethods {
 
     private collectionName;
     private db: any;
-    private _log = logger.getLogger("LokiJsRepository");
+    private _log = LoggerFactory.getLogger("LokiJsRepository");
 
     constructor(collectionName: string, db: any) {
         this._log.debug("Call to constructor with collectionName %j", collectionName);

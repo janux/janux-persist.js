@@ -2,8 +2,8 @@
  * Project janux-persistence
  * Created by ernesto on 7/19/17.
  */
-import * as logger from 'log4js';
 import {isBlankString} from "../../util/blank-string-validator";
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 import {DataSource} from "./datasource";
 import {DataSourceStatus} from "./datasource-status";
 
@@ -53,7 +53,7 @@ export class DataSourceHandler {
     }
 
     private static dataSources: DataSource[] = [];
-    private static _log = logger.getLogger("DataSourceHandler");
+    private static _log = LoggerFactory.getLogger("DataSourceHandler");
 
     /**
      * Creates a new connection to the list.

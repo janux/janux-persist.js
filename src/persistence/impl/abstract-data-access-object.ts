@@ -4,8 +4,8 @@
  */
 
 import * as Promise from "bluebird";
-import * as logger from 'log4js';
 import {isBlankString} from "../../util/blank-string-validator";
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 import {IEntityProperties} from "../interfaces/entity-properties";
 import {IValidationError} from "../interfaces/validation-error";
 import {TimeStampGenerator} from "../util/TimeStampGenerator";
@@ -59,7 +59,7 @@ export abstract class AbstractDataAccessObject<t> {
 
     // The entity properties.
     protected entityProperties: IEntityProperties;
-    private readonly _log = logger.getLogger("AbstractDataAccessObject");
+    private readonly _log = LoggerFactory.getLogger("AbstractDataAccessObject");
 
     constructor(entityProperties: IEntityProperties) {
         this.entityProperties = entityProperties;

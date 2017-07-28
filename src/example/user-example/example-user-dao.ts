@@ -3,12 +3,12 @@
  * Created by ernesto on 6/12/17.
  */
 import * as Promise from "bluebird";
-import * as logger from 'log4js';
 import {AbstractDataAccessObjectWithEngine} from "../../persistence/impl/abstract-data-access-object-with-engine";
 import {ValidationError} from "../../persistence/impl/validation-error";
 import {ICrudMethods} from "../../persistence/interfaces/crud-methods";
 import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
 import {IValidationError} from "../../persistence/interfaces/validation-error";
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 import {ExampleUser} from "./example-user";
 import {validateExampleUser} from "./example-validate-usert";
 
@@ -17,7 +17,7 @@ import {validateExampleUser} from "./example-validate-usert";
  */
 export abstract class ExampleUserDao extends AbstractDataAccessObjectWithEngine<ExampleUser> {
 
-    private _logExampleUserDao = logger.getLogger("ExampleUserDao");
+    private _logExampleUserDao = LoggerFactory.getLogger("ExampleUserDao");
 
     constructor(dbEngineUtil: ICrudMethods, entityProperties: IEntityProperties) {
         super(dbEngineUtil, entityProperties);

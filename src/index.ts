@@ -3,6 +3,8 @@
  * Created by ernesto on 6/9/17.
  */
 
+import * as JanuxPeople from "janux-people.js";
+
 /**
  * This file helps to make the ts files
  * available to js test
@@ -48,3 +50,11 @@ export * from "./services/datasource-handler/datasource-handler";
 export * from "./util/blank-string-validator";
 // export * from "./util/user-generator/user-generator";
 // export * from "./util/user-generator/user-generator-script";
+
+export class PersonImpl extends JanuxPeople.Person {
+}
+
+export class OrganizationImpl extends JanuxPeople.Organization {
+}
+
+console.log("Hello from janux-persistence");

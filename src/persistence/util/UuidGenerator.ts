@@ -3,8 +3,8 @@
  * Created by ernesto on 6/12/17.
  */
 
-import * as logger from 'log4js';
 import * as uuid from "uuid";
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 import {IEntityProperties} from "../interfaces/entity-properties";
 
 /**
@@ -31,5 +31,5 @@ export class UuidGenerator {
         }
     }
 
-    private static _log = logger.getLogger("UuidGenerator");
+    private static _log = LoggerFactory.getLogger("UuidGenerator");
 }

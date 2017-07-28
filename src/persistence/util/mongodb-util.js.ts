@@ -4,9 +4,11 @@
  */
 
 import * as Promise from 'bluebird';
-import * as logger from 'log4js';
 import * as mongoose from 'mongoose';
 import {Model} from 'mongoose';
+import {DataSource} from "../../services/datasource-handler/datasource";
+import {DataSourceStatus} from "../../services/datasource-handler/datasource-status";
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 
 /**
  * Mongoose  db methods util.
@@ -117,7 +119,7 @@ export class MongoDbUtil {
      * @param query The query to perform, it must be a valid mongoose query
      * @return {Promise} a promise with the result
      */
-    public static  findAllByQuery(model: Model<any>, query: any): Promise<any> {
+    public static findAllByQuery(model: Model<any>, query: any): Promise<any> {
         this._log.debug("call to findAllByQuery with model: %j, query: %j", model.modelName, query);
         return new Promise((resolve, reject) => {
             model.find(query).lean().exec((err, result: any[]) => {
@@ -280,7 +282,24 @@ export class MongoDbUtil {
         });
     }
 
-    private static _log = logger.getLogger('MongoDbUtil');
+    /**
+     * Connect to a mongo db database
+     * @param {DataSource} datasource. The dataSource to connect.
+     */
+    public static connectToMongodb(datasource: DataSource) {
+        const conn: mongoose.Connection = mongoose.createConnection(datasource.path);
+        datasource.dbConnection = conn;
+        conn.on("error", (err) => {
+            this._log.error("Error connecting to mongodb %j \n %j", datasource.path, err);
+            throw  new Error("Error connecting to mongodb database");
+        });
+        conn.once("open", () => {
+            this._log.info("Connection to mongodb database %j successful", datasource.path);
+            datasource.status = DataSourceStatus.CONNECTED;
+        });
+    }
+
+    private static _log = LoggerFactory.getLogger('MongoDbUtil');
 
     /**
      * Clean the object that are going to be returned to the daos.

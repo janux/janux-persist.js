@@ -5,7 +5,6 @@
 
 import * as Promise from "bluebird";
 import * as JanuxPeople from "janux-people.js";
-import * as logger from 'log4js';
 import * as uuid from 'uuid';
 import {PartyDao} from "../../daos/party/party-dao";
 import {PartyValidator} from "../../daos/party/party-validator";
@@ -14,6 +13,7 @@ import {AccountEntity} from "../../daos/user/account-entity";
 import {AccountValidator} from "../../daos/user/account-valdiator";
 import {ValidationError} from "../../persistence/impl/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 
 /**
  * This class has basic user service methods.
@@ -30,7 +30,7 @@ export class UserService {
     public ANOTHER_ACCOUNT_USING_CONTACT = "There is another account using this contact";
     public ACCOUNT_NOT_IN_DATABASE = "The account with this id does not exist in the database";
     public PARTY_TYPE = "party.type";
-    private _log = logger.getLogger("UserService");
+    private _log = LoggerFactory.getLogger("UserService");
     private ID_REFERENCE: string = "id";
     private accountDao: AccountDao;
     private partyDao: PartyDao;

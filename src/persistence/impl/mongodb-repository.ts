@@ -3,8 +3,8 @@
  * Created by ernesto on 6/12/17.
  */
 import * as Promise from "bluebird";
-import * as logger from 'log4js';
 import {Model} from "mongoose";
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 import {ICrudMethods} from "../interfaces/crud-methods";
 import {MongoDbUtil} from "../util/mongodb-util.js";
 import {AttributeFilter} from "./attribute-filter";
@@ -15,7 +15,7 @@ import {AttributeFilter} from "./attribute-filter";
 export class MongoDbRepository implements ICrudMethods {
     public model: Model<any>;
 
-    private _log = logger.getLogger("MongoDbRepository");
+    private _log = LoggerFactory.getLogger("MongoDbRepository");
 
     constructor(model: Model<any>) {
         this.model = model;

@@ -4,9 +4,9 @@
  */
 import * as emailValidator from 'email-validator';
 import * as JanuxPeople from "janux-people.js";
-import * as logger from 'log4js';
 import {ValidationError} from "../../../../persistence/impl/validation-error";
 import {isBlankString} from "../../../../util/blank-string-validator";
+import {LoggerFactory} from "../../../../util/logger-factory/logger_factory";
 
 export class EmailValidator {
 
@@ -29,5 +29,5 @@ export class EmailValidator {
         return errors;
     }
 
-    private static _log = logger.getLogger("EmailValidator");
+    private static _log = LoggerFactory.getLogger("EmailValidator");
 }

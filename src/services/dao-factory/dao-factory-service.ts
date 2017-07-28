@@ -3,7 +3,6 @@
  * Created by ernesto on 7/19/17.
  */
 
-import * as logger from 'log4js';
 import {PartyDaoLokiJsImpl} from "../../daos/party/lokijs/party-dao-loki-js-impl";
 import {PartyDaoMongoDbImpl} from "../../daos/party/mongodb/party-dao-mongodb-impl";
 import {PartyMongoDbSchema} from "../../daos/party/mongodb/party-mongodb-schema";
@@ -15,6 +14,7 @@ import {AccountMongoDbSchema} from "../../daos/user/mongodb/account-mongodb-sche
 import {EntityProperties} from "../../persistence/impl/entity-properties";
 import {LokiJsRepository} from "../../persistence/impl/lokijs-repository";
 import {MongoDbRepository} from "../../persistence/impl/mongodb-repository";
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 import {DataSource} from "../datasource-handler/datasource";
 import {DataSourceHandler} from "../datasource-handler/datasource-handler";
 import {Dao} from "./dao";
@@ -92,7 +92,7 @@ export class DaoFactory {
 
     private static PARTY_DEFAULT_COLLECTION_NAME: string = "contact";
     private static ACCOUNT_DEFAULT_COLLECTION_NAME: string = "account";
-    private static _log = logger.getLogger("DaoFactoryService");
+    private static _log = LoggerFactory.getLogger("DaoFactoryService");
     private static daos: Dao[] = [];
 
     /**

@@ -2,7 +2,7 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
-import * as logger from 'log4js';
+import {LoggerFactory} from "../../util/logger-factory/logger_factory";
 import {IEntityProperties} from "../interfaces/entity-properties";
 
 /**
@@ -49,5 +49,5 @@ export class TimeStampGenerator {
         }
     }
 
-    private static _log = logger.getLogger("TimeStampGenerator");
+    private static _log = LoggerFactory.getLogger("TimeStampGenerator");
 }
