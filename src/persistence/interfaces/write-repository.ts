@@ -3,6 +3,8 @@
  * Created by ernesto on 7/28/17.
  */
 
+import Promise = require("bluebird");
+
 /**
  * Define the method for saving, updating or deleting in a dao or
  * db-engine implementation.

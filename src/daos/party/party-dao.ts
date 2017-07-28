@@ -11,7 +11,6 @@ import {IEntityProperties} from "../../persistence/interfaces/entity-properties"
 import {IValidationError} from "../../persistence/interfaces/validation-error";
 import {PartyValidator} from "./party-validator";
 import JanuxPeople = require("janux-people.js");
-import {CircularReferenceDetector} from "../../util/circular-reference-detector/circular-reference-detector";
 
 /**
  * This is the base class of the partyDao. In this class we define the object we are going to use
@@ -135,7 +134,6 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
      */
     protected convertBeforeSave(object: JanuxPeople.Person | JanuxPeople.Organization): any {
         this.partyDaoLogger.debug("Call to convertBeforeSave with object: %j ", object);
-        CircularReferenceDetector.detectCircularReferences(object);
         let result: any = object.toJSON();
 
         // For some reason , PersonImpl an OrganizationImpl has circular references. In order to remove the circular

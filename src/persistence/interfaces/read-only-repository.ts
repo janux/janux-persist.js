@@ -3,6 +3,7 @@
  * Created by ernesto on 7/28/17.
  */
 import {AttributeFilter} from "../implementations/dao/attribute-filter";
+import Promise = require("bluebird");
 
 /**
  * Define the methods for read only queries in a dao
