@@ -18,7 +18,7 @@ module.exports = function (gulp) {
                 module: "commonjs",
                 target: "es5",
                 includeDeclarations: true,
-								excludeExternals: true,
+                excludeExternals: true,
 
                 // Output options (see typedoc docs)
                 out: cfg.dir.doc,
