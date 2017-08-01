@@ -3,7 +3,7 @@
  * Created by ernesto on 6/13/17.
  */
 
-import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-engine";
+import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
 import {AccountEntity} from "./account-entity";
 import Promise = require("bluebird");
 import {DbAdapter} from "../../persistence/api/dn-adapters/db-adapter";

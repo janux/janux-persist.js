@@ -31,7 +31,7 @@ export * from "./example/user-example/example-validate-usert";
 export * from "./example/user-example/mongoose/user-schema";
 export * from "./persistence/implementations/db-adapters/lokijs-db-adapter";
 export * from "./persistence/implementations/db-adapters/mongoose-db-adapter";
-export * from "./persistence/implementations/dao/abstract-data-access-object-with-engine";
+export * from "./persistence/implementations/dao/abstract-data-access-object-with-adapter";
 export * from "./persistence/implementations/dao/entity-properties";
 export * from "./persistence/implementations/dao/abstract-data-access-object";
 export * from "./persistence/api/dao/crud-reporitory";
