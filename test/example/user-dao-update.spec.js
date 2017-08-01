@@ -13,11 +13,11 @@ var lokijs = require('lokijs');
 var mongoose = require('mongoose');
 var ExampleUser = require("../../dist/index").ExampleUser;
 var ExampleUserDaoLokiJsImpl = require("../../dist/index").ExampleUserDaoLokiJsImpl;
-var ExampleUserDaoMongoDbImpl = require("../../dist/index").ExampleUserDaoMongoDbImpl;
-var MongoUserSchemaExample = require("../../dist/index").MongoUserSchemaExample;
-var LokiJsRepository = require("../../dist/index").LokiJsDbEngine;
-var MongoDbRepository = require("../../dist/index").MongoDbEngine;
-var EntityProperties = require("../../dist/index").EntityProperties;
+var ExampleUserDaoMongoDbImpl = require("../../dist/index").ExampleUserDaoMongooseImpl;
+var MongoUserSchemaExample = require("../../dist/index").MongooseUserSchemaExample;
+var LokiJsAdapter = require("../../dist/index").LokiJsAdapter;
+var MongooseAdapter = require("../../dist/index").MongooseAdapter;
+var EntityProperties = require("../../dist/index").EntityPropertiesImpl;
 
 
 //Config files
@@ -25,13 +25,13 @@ var serverAppContext = config.get("serverAppContext");
 
 //lokiJs implementation
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
-var dbEngineUtilLokijs = new LokiJsRepository('users-example', lokiDatabase);
+var dbEngineUtilLokijs = new LokiJsAdapter('users-example', lokiDatabase);
 var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(dbEngineUtilLokijs, new EntityProperties(true, true));
 
 //Mongodb implementation
 mongoose.connect(serverAppContext.db.mongoConnUrl);
 var model = mongoose.model('users-example', MongoUserSchemaExample);
-var dbEngineUtilMongodb = new MongoDbRepository(model);
+var dbEngineUtilMongodb = new MongooseAdapter(model);
 var userDaoMongoDb = ExampleUserDaoMongoDbImpl.createInstance(dbEngineUtilMongodb, new EntityProperties(true, true));
 
 const email = "jon@smith.com";
@@ -48,7 +48,7 @@ describe("Testing user example dao update methods", function () {
         var insertedUsers;
 
         beforeEach(function (done) {
-            userDao.deleteAll()
+            userDao.removeAll()
                 .then(function () {
                     var user = new ExampleUser(name, lastName, email);
                     var user2 = new ExampleUser(name, lastName, email2);
@@ -72,7 +72,7 @@ describe("Testing user example dao update methods", function () {
                         expect(result.id).not.to.be.null;
                         expect(result.lastUpdate).to.be.a("Date");
                         expect(result.typeName).eq("an example of a getter");
-                        userDao.findOneById(id)
+                        userDao.findOne(id)
                             .then(function (queryResult) {
                                 expect(queryResult.id).eq(id);
                                 expect(queryResult.name).eq(newName);

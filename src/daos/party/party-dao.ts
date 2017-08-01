@@ -5,23 +5,23 @@
 
 import * as Promise from "bluebird";
 import * as logger from 'log4js';
-import {AbstractDataAccessObjectWithEngine} from "../../persistence/implementations/dao/abstract-data-access-object-with-engine";
-import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
-import {IValidationError} from "../../persistence/interfaces/validation-error";
+import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-engine";
 import {PartyValidator} from "./party-validator";
 import JanuxPeople = require("janux-people.js");
-import {IDbEngine} from "../../persistence/interfaces/db-engine-intercace";
+import {DbAdapter} from "../../persistence/api/dn-adapters/db-adapter";
+import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 
 /**
  * This is the base class of the partyDao. In this class we define the object we are going to use
  *  is JanuxPeople.Person or JanuxPeople.Organization.
  */
-export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxPeople.Person | JanuxPeople.Organization> {
+export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<JanuxPeople.Person | JanuxPeople.Organization> {
 
     private partyDaoLogger = logger.getLogger("PartyDao");
 
-    constructor(dbEngineUtil: IDbEngine, entityProperties: IEntityProperties) {
-        super(dbEngineUtil, entityProperties);
+    constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
+        super(dbAdapter, entityProperties);
     }
 
     /**
@@ -30,15 +30,15 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
      * @param name The name to look for.
      * @return A list of parties that matches with the name.
      */
-    public abstract findAllByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]>;
+    public abstract findByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]>;
 
     /**
      * Find all records that has the email address.
      * @param email The email address to look for.
      * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} A list of parties that matches with the name.
      */
-    public findAllByEmail(email: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
-        return this.findAllByAttribute("emails.address", email);
+    public findByEmail(email: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+        return this.findByAttribute("emails.address", email);
     }
 
     /**
@@ -47,33 +47,33 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
      * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} A list of parties that matches with the
      * criteria.
      */
-    public findAllByPhone(phone: string) {
-        return this.findAllByAttribute("phones.number", phone);
+    public findByPhone(phone: string) {
+        return this.findByAttribute("phones.number", phone);
     }
 
     /**
      * Find all people
      * @return {Promise<any[]>} The records
      */
-    public findAllPeople(): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
-        return this.findAllByAttribute("typeName", PartyValidator.PERSON);
+    public findPeople(): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+        return this.findByAttribute("typeName", PartyValidator.PERSON);
     }
 
     /**
      * Find all organizations
      * @return {Promise<any[]>} The records.
      */
-    public findAllOrganizations(): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
-        return this.findAllByAttribute("typeName", PartyValidator.ORGANIZATION);
+    public findOrganizations(): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+        return this.findByAttribute("typeName", PartyValidator.ORGANIZATION);
     }
 
     /**
      * Implementation of the method validateEntity.
      * @param objectToValidate The object to validate.
-     * @return {ValidationError[]} An array containing the validation errors. If there are no errors then
+     * @return {ValidationErrorImpl[]} An array containing the validation errors. If there are no errors then
      * returns an empty array.
      */
-    protected validateEntity<t>(objectToValidate: JanuxPeople.Person | JanuxPeople.Organization): IValidationError[] {
+    protected validateEntity<t>(objectToValidate: JanuxPeople.Person | JanuxPeople.Organization): ValidationErrorImpl[] {
         return PartyValidator.validateParty(objectToValidate);
     }
 
@@ -83,7 +83,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
      * @return {Promise<Array>} An array containing the validation errors. If there are no errors then
      * returns an empty array.
      */
-    protected validateBeforeInsert(objectToInsert: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
+    protected validateBeforeInsert(objectToInsert: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
         // let emailAddressesToLookFor: string[];
         // let personReference: JanuxPeople.PersonImpl;
         // let organizationReference: JanuxPeople.OrganizationImpl;
@@ -117,9 +117,9 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithEngine<JanuxP
         //    };
         // }
         //
-        // return this.dbEngineUtil.findAllByQuery(query)
+        // return this.dbAdapter.findByQuery(query)
         //    .then((resultQuery: IPartyEntity[]) => {
-        //        const errors: ValidationError[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToInsert);
+        //        const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToInsert);
         //        return Promise.resolve(errors);
         //    });
         return Promise.resolve([]);

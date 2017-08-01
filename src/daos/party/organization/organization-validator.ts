@@ -4,7 +4,7 @@
  */
 
 import * as logger from 'log4js';
-import {ValidationError} from "../../../persistence/implementations/dao/validation-error";
+import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../../util/blank-string-validator";
 import JanuxPeople = require("janux-people.js");
 
@@ -20,13 +20,13 @@ export class OrganizationValidator {
     /**
      * Validate if the organization content is valid.
      * @param organization The organization to validate.
-     * @return {ValidationError[]}
+     * @return {ValidationErrorImpl[]}
      */
-    public static validateOrganization(organization: JanuxPeople.Organization): ValidationError[] {
+    public static validateOrganization(organization: JanuxPeople.Organization): ValidationErrorImpl[] {
         this._log.debug("Call to validateOrganization with organization: %j", organization);
-        const errors: ValidationError[] = [];
+        const errors: ValidationErrorImpl[] = [];
         if (isBlankString(organization.name)) {
-            errors.push(new ValidationError(this.NAME, this.NAME_EMPTY, ""));
+            errors.push(new ValidationErrorImpl(this.NAME, this.NAME_EMPTY, ""));
         }
         this._log.debug("Returning errors: %j", errors);
         return errors;

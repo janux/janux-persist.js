@@ -12,18 +12,18 @@ var lokijs = require('lokijs');
 var mongoose = require('mongoose');
 var ExampleUser = require("../../dist/index").ExampleUser;
 var ExampleUserDaoLokiJsImpl = require("../../dist/index").ExampleUserDaoLokiJsImpl;
-var ExampleUserDaoMongoDbImpl = require("../../dist/index").ExampleUserDaoMongoDbImpl;
-var MongoUserSchemaExample = require("../../dist/index").MongoUserSchemaExample;
-var LokiJsRepository = require("../../dist/index").LokiJsDbEngine;
-var MongoDbRepository = require("../../dist/index").MongoDbEngine;
-var EntityProperties = require("../../dist/index").EntityProperties;
+var ExampleUserDaoMongoDbImpl = require("../../dist/index").ExampleUserDaoMongooseImpl;
+var MongoUserSchemaExample = require("../../dist/index").MongooseUserSchemaExample;
+var LokiJsAdapter = require("../../dist/index").LokiJsAdapter;
+var MongooseAdapter = require("../../dist/index").MongooseAdapter;
+var EntityProperties = require("../../dist/index").EntityPropertiesImpl;
 
 //Config files
 var serverAppContext = config.get("serverAppContext");
 
 //lokiJs implementation
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
-var dbEngineUtilLokijs = new LokiJsRepository('users-example', lokiDatabase);
+var dbEngineUtilLokijs = new LokiJsAdapter('users-example', lokiDatabase);
 var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(
     dbEngineUtilLokijs,
     new EntityProperties(true, true)
@@ -32,7 +32,7 @@ var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(
 //Mongodb implementation
 mongoose.connect(serverAppContext.db.mongoConnUrl);
 var model = mongoose.model('users-example', MongoUserSchemaExample);
-var dbEngineUtilMongodb = new MongoDbRepository(model);
+var dbEngineUtilMongodb = new MongooseAdapter(model);
 var userDaoMongoDb = ExampleUserDaoMongoDbImpl.createInstance(
     dbEngineUtilMongodb,
     new EntityProperties(true, true));
@@ -49,7 +49,7 @@ const incorrectEmail = "johnSmith.com";
 describe("Testing user example dao implementation insert", function () {
     [userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
         beforeEach(function (done) {
-            userDao.deleteAll().then(function () {
+            userDao.removeAll().then(function () {
                 done();
             });
         });
@@ -86,7 +86,7 @@ describe("Testing user example dao implementation insert", function () {
                             expect(result.lastUpdate).to.be.undefined;
                             expect(result.dateCreated).to.be.a("Date");
 
-                            userDao.findOneById(result.id)
+                            userDao.findOne(result.id)
                                 .then(function (resultQuery) {
                                     expect(resultQuery.name).eq(name);
                                     expect(resultQuery.email).eq(email);

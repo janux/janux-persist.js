@@ -7,8 +7,7 @@
  * User entity.
  */
 export class AccountEntity {
-
-    public id: string;
+    public id: any;
     public username: string;
     public password: string;
     public userId: string;

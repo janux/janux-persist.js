@@ -23,7 +23,7 @@ var serverAppContext = config.get("serverAppContext");
 
 
 describe("Testing user dao find methods", function () {
-    [DataSourceHandler.MONGODB, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
+    [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
 
         describe("Given the inserted records", function () {
 
@@ -33,7 +33,7 @@ describe("Testing user dao find methods", function () {
             before(function (done) {
                 var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
                 accountDao = DaoFactory.createAccountDao(dbEngine, path);
-                accountDao.deleteAll()
+                accountDao.removeAll()
                     .then(function () {
                         var account1 = new AccountEntity();
                         account1.username = username;
@@ -54,7 +54,7 @@ describe("Testing user dao find methods", function () {
 
             describe("When looking for an username", function () {
                 it("It should return one record", function (done) {
-                    accountDao.findAllByUserNameMatch(username)
+                    accountDao.findByUserNameMatch(username)
                         .then(function (result) {
                             expect(result.length).eq(2);
                             expect(result[0].username).eq(username);
@@ -79,7 +79,7 @@ describe("Testing user dao find methods", function () {
 
             describe("When looking for an incorrect username", function () {
                 it("It should return null", function (done) {
-                    accountDao.findAllByUserNameMatch(username3)
+                    accountDao.findByUserNameMatch(username3)
                         .then(function (result) {
                             expect(result.length).eq(0);
                             done();
@@ -89,7 +89,7 @@ describe("Testing user dao find methods", function () {
 
             describe("When looking for an id in the database", function () {
                 it("It should return one record", function (done) {
-                    accountDao.findOneById(insertedId)
+                    accountDao.findOne(insertedId)
                         .then(function (result) {
                             expect(result).not.to.be.null;
                             done();
@@ -99,7 +99,7 @@ describe("Testing user dao find methods", function () {
 
             describe("When looking for an id that doesn't exist in the database", function () {
                 it("It should return null", function (done) {
-                    accountDao.findOneById(invalidId)
+                    accountDao.findOne(invalidId)
                         .then(function (result) {
                             expect(result).to.be.null;
                             done();
@@ -109,7 +109,7 @@ describe("Testing user dao find methods", function () {
 
             describe("When looking for several id-s (correct and incorrect)", function () {
                 it("It should return an array", function (done) {
-                    accountDao.findAllByIds([insertedId, insertedId2])
+                    accountDao.findByIds([insertedId, insertedId2])
                         .then(function (result) {
                             expect(result.length).eq(2);
                             done();
@@ -117,7 +117,7 @@ describe("Testing user dao find methods", function () {
                 });
 
                 it("It should return an array with ony one result", function (done) {
-                    accountDao.findAllByIds([insertedId, invalidId])
+                    accountDao.findByIds([insertedId, invalidId])
                         .then(function (result) {
                             expect(result.length).eq(1);
                             done();
@@ -125,7 +125,7 @@ describe("Testing user dao find methods", function () {
                 });
 
                 it("It should return an empty array", function (done) {
-                    accountDao.findAllByIds([invalidId])
+                    accountDao.findByIds([invalidId])
                         .then(function (result) {
                             expect(result.length).eq(0);
                             done();

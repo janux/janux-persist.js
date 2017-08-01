@@ -5,21 +5,21 @@
 import {ExampleUser} from "../example-user";
 import {ExampleUserDao} from "../example-user-dao";
 import Promise = require("bluebird");
-import {ValidationError} from "../../../persistence/implementations/dao/validation-error";
-import {MongoDbEngine} from "../../../persistence/implementations/db-engines/mongodb-db-engine";
-import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
+import {EntityPropertiesImpl} from "../../../persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
+import {MongooseAdapter} from "../../../persistence/implementations/db-adapters/mongoose-db-adapter";
 
 /**
- * this is the implementation for mongodb of ExampleUserDao
+ * this is the implementation for mongoose of ExampleUserDao
  */
-export class ExampleUserDaoMongoDbImpl extends ExampleUserDao {
-    public static createInstance(dbEngineUtil: MongoDbEngine, entityProperties: IEntityProperties) {
-        return this.instance || (this.instance = new this(dbEngineUtil, entityProperties));
+export class ExampleUserDaoMongooseImpl extends ExampleUserDao {
+    public static createInstance(dbAdapter: MongooseAdapter, entityProperties: EntityPropertiesImpl) {
+        return this.instance || (this.instance = new this(dbAdapter, entityProperties));
     }
 
-    private static instance: ExampleUserDaoMongoDbImpl;
+    private static instance: ExampleUserDaoMongooseImpl;
 
-    private constructor(dbEngineUtil: MongoDbEngine, entityProperties: IEntityProperties) {
+    private constructor(dbEngineUtil: MongooseAdapter, entityProperties: EntityPropertiesImpl) {
         super(dbEngineUtil, entityProperties);
     }
 
@@ -28,7 +28,7 @@ export class ExampleUserDaoMongoDbImpl extends ExampleUserDao {
      * @param name
      * @return {null}
      */
-    public findAllByNameMatch(name: string): Promise<ExampleUser[]> {
+    public findByNameMatch(name: string): Promise<ExampleUser[]> {
         return null;
     }
 
@@ -45,11 +45,11 @@ export class ExampleUserDaoMongoDbImpl extends ExampleUserDao {
             ]
         };
 
-        return this.findAllByQuery(query)
+        return this.findByQuery(query)
             .then((result) => {
-                const errors: ValidationError[] = [];
+                const errors: ValidationErrorImpl[] = [];
                 if (result.length > 0) {
-                    errors.push(new ValidationError(
+                    errors.push(new ValidationErrorImpl(
                         'email',
                         'There is another user with the same email',
                         objectToUpdate.email));

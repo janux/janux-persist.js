@@ -4,24 +4,23 @@
  */
 import * as _ from "lodash";
 import * as logger from 'log4js';
-import {AbstractDataAccessObjectWithEngine} from "../../persistence/implementations/dao/abstract-data-access-object-with-engine";
-import {IValidationError} from "../../persistence/interfaces/validation-error";
+import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-engine";
 import Promise = require("bluebird");
-import {ValidationError} from "../../persistence/implementations/dao/validation-error";
-import {IDbEngine} from "../../persistence/interfaces/db-engine-intercace";
-import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
+import {DbAdapter} from "../../persistence/api/dn-adapters/db-adapter";
+import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 import {ExampleUser} from "./example-user";
 import {validateExampleUser} from "./example-validate-usert";
 
 /**
  * This is the base dao class of the entity ExampleUser.
  */
-export abstract class ExampleUserDao extends AbstractDataAccessObjectWithEngine<ExampleUser> {
+export abstract class ExampleUserDao extends AbstractDataAccessObjectWithAdapter<ExampleUser> {
 
     private _logExampleUserDao = logger.getLogger("ExampleUserDao");
 
-    constructor(dbEngineUtil: IDbEngine, entityProperties: IEntityProperties) {
-        super(dbEngineUtil, entityProperties);
+    constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
+        super(dbAdapter, entityProperties);
     }
 
     /**
@@ -30,17 +29,17 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithEngine<
      * @param lastName
      * @return {Promise<ExampleUser[]>}
      */
-    public findAllByLastName(lastName: string): Promise<ExampleUser[]> {
-        return this.findAllByAttribute("lastName", lastName);
+    public findByLastName(lastName: string): Promise<ExampleUser[]> {
+        return this.findByAttribute("lastName", lastName);
     }
 
     /**
      * This is a method where you need to implement it for every db engine.
      * @param name
      */
-    public abstract findAllByNameMatch(name: string): Promise<ExampleUser[]>;
+    public abstract findByNameMatch(name: string): Promise<ExampleUser[]>;
 
-    protected validateEntity<t>(objectToValidate: ExampleUser): IValidationError[] {
+    protected validateEntity<t>(objectToValidate: ExampleUser): ValidationErrorImpl[] {
         return validateExampleUser(objectToValidate);
     }
 
@@ -48,15 +47,15 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithEngine<
      * Validate the entity before to insert it to the database. In this case checks for duplicated emails.
      * Given the validation is simple, you can program it without the need to code each db engine implementation.
      * @param objectToInsert
-     * @return {Promise<ValidationError[]>}
+     * @return {Promise<ValidationErrorImpl[]>}
      */
-    protected validateBeforeInsert<t>(objectToInsert: ExampleUser): Promise<IValidationError[]> {
+    protected validateBeforeInsert<t>(objectToInsert: ExampleUser): Promise<ValidationErrorImpl[]> {
         return this.findOneByAttribute("email", objectToInsert.email)
             .then((result: ExampleUser) => {
-                const errors: ValidationError[] = [];
+                const errors: ValidationErrorImpl[] = [];
                 if (!_.isNull(result)) {
                     errors.push(
-                        new ValidationError(
+                        new ValidationErrorImpl(
                             "email",
                             "There is an user with the same email address",
                             result.email));

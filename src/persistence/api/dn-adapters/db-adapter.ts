@@ -1,29 +1,26 @@
 /**
  * Project janux-persistence
- * Created by ernesto on 6/9/17.
+ * Created by ernesto on 7/28/17.
  */
-import Promise = require("bluebird");
-import {AttributeFilter} from "../implementations/dao/attribute-filter";
-import {IReadOnlyRepository} from "./read-only-repository";
-import {IWriteRepository} from "./write-repository";
+import * as Promise from "bluebird";
+import {AttributeFilter} from "../../implementations/dao/attribute-filter";
 
 /**
- * Interface that defines the basic crud methods
- * per dao.
+ * This interface dine the method you need to implement per each database
+ * in order to wire the database to a AbstractDataAccessObjectWithAdapter instance.
  */
-export interface ICrudRepository<t> extends IReadOnlyRepository<t>, IWriteRepository<t> {
-
+export interface DbAdapter {
     /**
      * Find one document by id.
      * @param id The id to look for.
      */
-    findOneById(id: string): Promise<t>;
+    findOneById(id): Promise<any>;
 
     /**
      * Find all the documents inside a collection whose ids belongs to the list.
      * @param arrayOfIds The ids to look for.
      */
-    findAllByIds(arrayOfIds: any[]): Promise<t[]>;
+    findByIds(arrayOfIds: any[]): Promise<any>;
 
     /**
      * Remove a document.
@@ -36,7 +33,7 @@ export interface ICrudRepository<t> extends IReadOnlyRepository<t>, IWriteReposi
      * Remove a document whose id matches with the id parameter.
      * @param id The id query criteria.
      */
-    removeById(id: string): Promise<any>;
+    removeById(id: any): Promise<any>;
 
     /**
      * Count all documents in the collection.
@@ -46,13 +43,13 @@ export interface ICrudRepository<t> extends IReadOnlyRepository<t>, IWriteReposi
     /**
      * Delete all documents inside the collection.
      */
-    deleteAll(): Promise<any>;
+    removeAll(): Promise<any>;
 
     /**
      * Delete all documents inside the collections whose ids matches the list.
      * @param ids ids A list of ids.
      */
-    deleteAllByIds(ids: string[]): Promise<any>;
+    removeAllByIds(ids: any[]): Promise<any>;
 
     /**
      * Find one document inside the collection that has the attributeName and the value.
@@ -66,7 +63,7 @@ export interface ICrudRepository<t> extends IReadOnlyRepository<t>, IWriteReposi
      * @param attributeName The attribute to look for.
      * @param value The value to compare.
      */
-    findAllByAttribute(attributeName: string, value): Promise<any[]>;
+    findByAttribute(attributeName: string, value): Promise<any[]>;
 
     /**
      * Find all the documents inside the collection that has the attribute defined in the method and whose values
@@ -74,7 +71,7 @@ export interface ICrudRepository<t> extends IReadOnlyRepository<t>, IWriteReposi
      * @param attributeName The attribute to look for.
      * @param values The values to compare.
      */
-    findAllByAttributeNameIn(attributeName: string, values: any[]): Promise<any>;
+    findByAttributeNameIn(attributeName: string, values: any[]): Promise<any>;
 
     /**
      * Inserts a document.
@@ -104,17 +101,17 @@ export interface ICrudRepository<t> extends IReadOnlyRepository<t>, IWriteReposi
      * Find all the documents that matches all attributes.
      * @param attributes The attributes-value filters.
      */
-    findAllByAttributesAndOperator(attributes: AttributeFilter[]): Promise<any[]>;
+    findByAttributesAndOperator(attributes: AttributeFilter[]): Promise<any[]>;
 
     /**
      * Find all the documents that matches only one of the attributes.
      * @param attributes The attributes-value filters.
      */
-    findAllByAttributesOrOperator(attributes: AttributeFilter[]): Promise<any[]>;
+    findByAttributesOrOperator(attributes: AttributeFilter[]): Promise<any[]>;
 
     /**
      * Find all the documents that matches the query.
      * @param query A mongoose-like query.
      */
-    findAllByQuery(query: any): Promise<any[]>;
+    findByQuery(query: any): Promise<any[]>;
 }

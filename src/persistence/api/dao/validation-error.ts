@@ -6,7 +6,7 @@
 /**
  * This interface defines the content of a validation error.
  */
-export  interface  IValidationError {
+export  interface  ValidationError {
     attribute: string;
     message: string;
     value: string;

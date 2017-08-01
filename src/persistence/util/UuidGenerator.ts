@@ -5,7 +5,7 @@
 
 import * as logger from 'log4js';
 import uuid = require("uuid");
-import {IEntityProperties} from "../interfaces/entity-properties";
+import {EntityPropertiesImpl} from "../implementations/dao/entity-properties";
 
 /**
  * Generates a uuid to the object before insert it.
@@ -19,7 +19,7 @@ export class UuidGenerator {
      * @param entityProperties
      * @param objectToInsert
      */
-    public static assignUuid(entityProperties: IEntityProperties, objectToInsert: any) {
+    public static assignUuid(entityProperties: EntityPropertiesImpl, objectToInsert: any) {
         this._log.debug("Call to assignUuid with entityProperties: %j, objectToInsert %j:",
             entityProperties,
             objectToInsert);

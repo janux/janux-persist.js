@@ -4,11 +4,11 @@
  */
 
 import * as Promise from "bluebird";
-import {LokiJsDbEngine} from "../../../persistence/implementations/db-engines/lokijs-db-engine";
-import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
-import {IValidationError} from "../../../persistence/interfaces/validation-error";
+import {LokiJsAdapter} from "../../../persistence/implementations/db-adapters/lokijs-db-adapter";
 import {PartyDao} from "../party-dao";
 import JanuxPeople = require("janux-people.js");
+import {EntityPropertiesImpl} from "../../../persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {PartyValidator} from "../party-validator";
 
 /**
@@ -16,8 +16,8 @@ import {PartyValidator} from "../party-validator";
  */
 export class PartyDaoLokiJsImpl extends PartyDao {
 
-    constructor(dbEngineUtil: LokiJsDbEngine, entityProperties: IEntityProperties) {
-        super(dbEngineUtil, entityProperties);
+    constructor(dbAdapter: LokiJsAdapter, entityProperties: EntityPropertiesImpl) {
+        super(dbAdapter, entityProperties);
     }
 
     /**
@@ -25,7 +25,7 @@ export class PartyDaoLokiJsImpl extends PartyDao {
      * @param name the name to look for.
      * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} The parties that matches with the name.
      */
-    public findAllByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+    public findByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
         const query = {
             $or: [
                 {
@@ -48,19 +48,19 @@ export class PartyDaoLokiJsImpl extends PartyDao {
                 }
             ]
         };
-        return this.findAllByQuery(query);
+        return this.findByQuery(query);
     }
 
     /**
      * Validate the object before update to the database.
      * @param objectToUpdate
-     * @return {Promise<IValidationError[]>}
+     * @return {Promise<ValidationErrorImpl[]>}
      */
-    protected validateBeforeUpdate<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
+    protected validateBeforeUpdate<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
         return this.validateDuplicated(objectToUpdate);
     }
 
-    private validateDuplicated<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
+    private validateDuplicated<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
         /*let emailAddressesToLookFor: string[];
          emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value, index, array) => value.address);
          let personReference: JanuxPeople.PersonImpl;
@@ -101,9 +101,9 @@ export class PartyDaoLokiJsImpl extends PartyDao {
          ]
          };
          }
-         return LokiJsUtil.findAllByQuery(this.collection, query)
+         return LokiJsUtil.findByQuery(this.collection, query)
          .then((resultQuery: IPartyEntity[]) => {
-         const errors: ValidationError[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
+         const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
          return Promise.resolve(errors);
          });*/
 

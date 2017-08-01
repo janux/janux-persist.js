@@ -4,7 +4,7 @@
  */
 
 import * as logger from 'log4js';
-import {ValidationError} from "../../persistence/implementations/dao/validation-error";
+import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
 import {AccountEntity} from "./account-entity";
 
@@ -19,14 +19,14 @@ export class AccountValidator {
     /**
      * Validate the accountEntity
      * @param accountEntity AccountEntity to be validated
-     * @return {ValidationError[]} A list of validation errors.
+     * @return {ValidationErrorImpl[]} A list of validation errors.
      */
-    public static  validateAccount(accountEntity: AccountEntity): ValidationError[] {
+    public static  validateAccount(accountEntity: AccountEntity): ValidationErrorImpl[] {
         this._log.debug("Call to validateAccount with accountEntity: %j:", accountEntity);
-        let errors: ValidationError[] = [];
+        let errors: ValidationErrorImpl[] = [];
         errors = errors.concat(this.validateAccountExceptContactId(accountEntity));
         if (isBlankString(accountEntity.contactId)) {
-            errors.push(new ValidationError("contact", "Contact id is empty", ""));
+            errors.push(new ValidationErrorImpl("contact", "Contact id is empty", ""));
         }
         this._log.debug("Errors: %j", errors);
         return errors;
@@ -35,16 +35,16 @@ export class AccountValidator {
     /**
      * Same as validateAccount, but this method doesn't validate if the "contactId" attribute is empty.
      * @param accountEntity
-     * @return {ValidationError[]} A list of validation errors.
+     * @return {ValidationErrorImpl[]} A list of validation errors.
      */
-    public static validateAccountExceptContactId(accountEntity: AccountEntity): ValidationError[] {
+    public static validateAccountExceptContactId(accountEntity: AccountEntity): ValidationErrorImpl[] {
         this._log.debug("Call to validateAccountExceptContactId with accountEntity: %j:", accountEntity);
-        const errors: ValidationError[] = [];
+        const errors: ValidationErrorImpl[] = [];
         if (isBlankString(accountEntity.username)) {
-            errors.push(new ValidationError("username", "Username is empty", accountEntity.username));
+            errors.push(new ValidationErrorImpl("username", "Username is empty", accountEntity.username));
         }
         if (isBlankString(accountEntity.password)) {
-            errors.push(new ValidationError("password", "Password is empty", accountEntity.password));
+            errors.push(new ValidationErrorImpl("password", "Password is empty", accountEntity.password));
         }
 
         this._log.debug("Errors: %j", errors);
@@ -56,23 +56,23 @@ export class AccountValidator {
      * contactId.
      * @param accounts
      * @param reference
-     * @return {ValidationError[]}
+     * @return {ValidationErrorImpl[]}
      */
     public static validateResultQueryBeforeBdOperation(accounts: AccountEntity[],
-                                                       reference: AccountEntity): ValidationError[] {
+                                                       reference: AccountEntity): ValidationErrorImpl[] {
         this._log.debug("Call to validateResultQueryBeforeBdOperation with accounts: %j reference: %j",
             accounts, reference);
-        const errors: ValidationError[] = [];
+        const errors: ValidationErrorImpl[] = [];
         if (accounts.length > 0) {
             if (accounts[0].username === reference.username) {
                 errors.push(
-                    new ValidationError(
+                    new ValidationErrorImpl(
                         "username",
                         this.ANOTHER_USER,
                         reference.username));
             } else {
                 errors.push(
-                    new ValidationError(
+                    new ValidationErrorImpl(
                         "contactId",
                         this.ANOTHER_CONTACT,
                         reference.username));

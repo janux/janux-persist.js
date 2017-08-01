@@ -5,21 +5,21 @@
 
 import * as Promise from "bluebird";
 import {Model} from "mongoose";
-import {MongoDbEngine} from "../../../persistence/implementations/db-engines/mongodb-db-engine";
-import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
-import {IValidationError} from "../../../persistence/interfaces/validation-error";
+import {MongooseAdapter} from "../../../persistence/implementations/db-adapters/mongoose-db-adapter";
 import {PartyDao} from "../party-dao";
 import JanuxPeople = require("janux-people.js");
+import {EntityPropertiesImpl} from "../../../persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {PartyValidator} from "../party-validator";
 
 /**
- * Implementation of the PartyDao for the mongodb database.
+ * Implementation of the PartyDao for the mongoose library.
  */
-export class PartyDaoMongoDbImpl extends PartyDao {
+export class PartyDaoMongooseImpl extends PartyDao {
 
     private model: Model<any>;
 
-    constructor(dbEngineUtil: MongoDbEngine, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: MongooseAdapter, entityProperties: EntityPropertiesImpl) {
         super(dbEngineUtil, entityProperties);
         this.model = dbEngineUtil.model;
     }
@@ -29,7 +29,7 @@ export class PartyDaoMongoDbImpl extends PartyDao {
      * @param name The name to look for.
      * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} The objects that matches with the name.
      */
-    public findAllByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+    public findByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
         const regexpName = new RegExp(name, "i");
         const query = {
             $or: [
@@ -53,14 +53,14 @@ export class PartyDaoMongoDbImpl extends PartyDao {
                 }
             ]
         };
-        return this.findAllByQuery(query);
+        return this.findByQuery(query);
     }
 
-    protected validateBeforeUpdate(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
+    protected validateBeforeUpdate(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
         return this.validateDuplicated(objectToUpdate);
     }
 
-    protected validateDuplicated(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<IValidationError[]> {
+    protected validateDuplicated(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
         /*let emailAddressesToLookFor: string[];
          emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value) => value.address);
          let personReference: JanuxPeople.PersonImpl;
@@ -104,9 +104,9 @@ export class PartyDaoMongoDbImpl extends PartyDao {
          if (_.isUndefined(objectToUpdate.idAccount) === false) {
          query.$and[1].$or.push({idAccount: {$eq: objectToUpdate.idAccount}});
          }
-         return MongoDbUtil.findAllByQuery(this.model, query)
+         return MongooseDbUtil.findByQuery(this.model, query)
          .then((resultQuery: IPartyEntity[]) => {
-         const errors: ValidationError[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
+         const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
          return Promise.resolve(errors);
          });*/
         return Promise.resolve([]);

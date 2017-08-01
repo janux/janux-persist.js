@@ -4,7 +4,7 @@
  */
 
 import * as mongoose from 'mongoose';
-export const AccountMongoDbSchema = new mongoose.Schema({
+export const AccountMongooseDbSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true

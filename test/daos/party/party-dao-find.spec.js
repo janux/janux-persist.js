@@ -38,7 +38,7 @@ var invalidId1 = "313030303030303030303030";
 var invalidId2 = "313030303030303030303032";
 
 describe("Testing party dao find methods", function () {
-    [DataSourceHandler.MONGODB, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
+    [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
         describe("Given the inserted records", function () {
             var partyDao
             var insertedRecordOrganization;
@@ -49,7 +49,7 @@ describe("Testing party dao find methods", function () {
             beforeEach(function (done) {
                 var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
                 partyDao = DaoFactory.createPartyDao(dbEngine, path);
-                partyDao.deleteAll()
+                partyDao.removeAll()
                     .then(function () {
 
                         var organization = new OrganizationEntity();
@@ -83,9 +83,9 @@ describe("Testing party dao find methods", function () {
             });
 
 
-            describe("When calling findAllPeople", function () {
+            describe("When calling findPeople", function () {
                 it("The method should return 2 records", function (done) {
-                    partyDao.findAllPeople()
+                    partyDao.findPeople()
                         .then(function (result) {
                             expect(result.length).eq(2);
                             expect(result[0].id).not.to.be.undefined;
@@ -97,9 +97,9 @@ describe("Testing party dao find methods", function () {
                 })
             });
 
-            describe("When calling findAllOrganizations", function () {
+            describe("When calling findOrganizations", function () {
                 it("The method should return 2 records", function (done) {
-                    partyDao.findAllOrganizations()
+                    partyDao.findOrganizations()
                         .then(function (result) {
                             expect(result.length).eq(2);
                             expect(result[0].typeName).eq(PartyValidator.ORGANIZATION);
@@ -109,9 +109,9 @@ describe("Testing party dao find methods", function () {
                 })
             });
 
-            describe("When calling the method findAllByIds", function () {
+            describe("When calling the method findByIds", function () {
                 it("The method should return one record", function (done) {
-                    partyDao.findAllByIds([invalidId1, invalidId2, insertedRecordOrganization2.id])
+                    partyDao.findByIds([invalidId1, invalidId2, insertedRecordOrganization2.id])
                         .then(function (result) {
                             expect(result.length).eq(1);
                             done();
@@ -119,9 +119,9 @@ describe("Testing party dao find methods", function () {
                 });
             });
 
-            describe("When calling findOneById", function () {
+            describe("When calling findOne", function () {
                 it("The method should return one record when calling by a inserted id", function (done) {
-                    partyDao.findOneById(insertedRecordOrganization2.id)
+                    partyDao.findOne(insertedRecordOrganization2.id)
                         .then(function (result) {
                             expect(result).not.to.be.null;
                             expect(result.id).eq(insertedRecordOrganization2.id);
@@ -131,7 +131,7 @@ describe("Testing party dao find methods", function () {
                 });
 
                 it("The method should return null with an invalid id", function (done) {
-                    partyDao.findOneById(invalidId1)
+                    partyDao.findOne(invalidId1)
                         .then(function (result) {
                             expect(result).to.be.null;
                             done();

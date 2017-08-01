@@ -16,7 +16,7 @@ export class DataSource {
 
     // Could be mongo db or lokijs
     public dbEngine: string;
-    // Path to the connection, for lokijs is a file path, for mongodb is a url.
+    // Path to the connection, for lokijs is a file path, for mongoose is a url.
     public path: string;
     public extraParams: any;
     public status: DataSourceStatus;
@@ -30,8 +30,8 @@ export class DataSource {
             this.log.debug("Datasource is connected");
             return this;
         } else {
-            if (this.dbEngine === DataSourceHandler.MONGODB) {
-                // mongodb
+            if (this.dbEngine === DataSourceHandler.MONGOOSE) {
+                // mongoose
                 return this.connectToMongodb();
             } else {
                 // lokijs

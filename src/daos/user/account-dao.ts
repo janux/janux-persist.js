@@ -3,20 +3,20 @@
  * Created by ernesto on 6/13/17.
  */
 
-import {AbstractDataAccessObjectWithEngine} from "../../persistence/implementations/dao/abstract-data-access-object-with-engine";
-import {IEntityProperties} from "../../persistence/interfaces/entity-properties";
-import {IValidationError} from "../../persistence/interfaces/validation-error";
+import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-engine";
 import {AccountEntity} from "./account-entity";
 import Promise = require("bluebird");
-import {IDbEngine} from "../../persistence/interfaces/db-engine-intercace";
-import {AccountValidator} from "./account-valdiator";
+import {DbAdapter} from "../../persistence/api/dn-adapters/db-adapter";
+import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
+import {AccountValidator} from "./account-validator";
 
 /**
  * User dao.
  */
-export abstract class AccountDao extends AbstractDataAccessObjectWithEngine<AccountEntity> {
+export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<AccountEntity> {
 
-    constructor(dbEngineUtil: IDbEngine, entityProperties: IEntityProperties) {
+    constructor(dbEngineUtil: DbAdapter, entityProperties: EntityPropertiesImpl) {
         super(dbEngineUtil, entityProperties);
     }
 
@@ -26,7 +26,7 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithEngine<Acco
      * mongoose.
      * @param username The username to match.
      */
-    public abstract findAllByUserNameMatch(username: string): Promise<AccountEntity[]>;
+    public abstract findByUserNameMatch(username: string): Promise<AccountEntity[]>;
 
     /**
      * Find one user with the username.
@@ -60,17 +60,17 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithEngine<Acco
      * @param contactIds The values to look for.
      * @return {Promise<AccountEntity[]>} The users, if no record is founded then it return an empty array.
      */
-    public findAllByContactIdsIn(contactIds: string[]): Promise<AccountEntity[]> {
-        return this.findAllByAttributeNameIn("contactId", contactIds);
+    public findByContactIdsIn(contactIds: any[]): Promise<AccountEntity[]> {
+        return this.findByAttributeNameIn("contactId", contactIds);
     }
 
     /**
      * Validate the entity before insert or update.
      * @param objectToValidate The object to validate.
-     * @return {ValidationError[]} An array containing the validation errors. If there are no errors then
+     * @return {ValidationErrorImpl[]} An array containing the validation errors. If there are no errors then
      * returns an empty array
      */
-    protected  validateEntity(objectToValidate: AccountEntity): IValidationError[] {
+    protected  validateEntity(objectToValidate: AccountEntity): ValidationErrorImpl[] {
         return AccountValidator.validateAccount(objectToValidate);
     }
 
@@ -80,7 +80,7 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithEngine<Acco
      * implemented by each extended class.
      * @param objectToInsert The object to validate.
      */
-    protected abstract validateBeforeInsert(objectToInsert: AccountEntity): Promise<IValidationError[]>;
+    protected abstract validateBeforeInsert(objectToInsert: AccountEntity): Promise<ValidationErrorImpl[]>;
 
     /**
      * Validate the object before update it to the database.
@@ -88,6 +88,6 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithEngine<Acco
      * implemented by each extended class.
      * @param objectToUpdate
      */
-    protected abstract validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<IValidationError[]>;
+    protected abstract validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<ValidationErrorImpl[]>;
 
 }

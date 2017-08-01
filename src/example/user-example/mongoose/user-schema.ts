@@ -5,9 +5,9 @@
 import * as mongoose from 'mongoose';
 
 /*
- * The mongodb schema associated with ExampleUser
+ * The mongoose schema associated with ExampleUser
  */
-export const MongoUserSchemaExample = new mongoose.Schema({
+export const MongooseUserSchemaExample = new mongoose.Schema({
     name: {
         type: String
     },

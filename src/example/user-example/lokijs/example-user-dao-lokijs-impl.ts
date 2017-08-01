@@ -3,25 +3,25 @@
  * Created by ernesto on 6/12/17.
  */
 import * as _ from "lodash";
-import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {ExampleUser} from "../example-user";
 import {ExampleUserDao} from "../example-user-dao";
 import Promise = require("bluebird");
-import {ValidationError} from "../../../persistence/implementations/dao/validation-error";
-import {LokiJsDbEngine} from "../../../persistence/implementations/db-engines/lokijs-db-engine";
+import {EntityPropertiesImpl} from "../../../persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
+import {LokiJsAdapter} from "../../../persistence/implementations/db-adapters/lokijs-db-adapter";
 
 /**
  * this is the implementation for lokijs of ExampleUserDao
  */
 export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
 
-    public static createInstance(dbEngineUtil: LokiJsDbEngine, entityProperties: IEntityProperties) {
+    public static createInstance(dbEngineUtil: LokiJsAdapter, entityProperties: EntityPropertiesImpl) {
         return this.instance || (this.instance = new this(dbEngineUtil, entityProperties));
     }
 
     private static instance: ExampleUserDaoLokiJsImpl;
 
-    private constructor(dbEngineUtil: LokiJsDbEngine, entityProperties: IEntityProperties) {
+    private constructor(dbEngineUtil: LokiJsAdapter, entityProperties: EntityPropertiesImpl) {
         super(dbEngineUtil, entityProperties);
     }
 
@@ -30,7 +30,7 @@ export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
      * @param name
      * @return {null}
      */
-    public findAllByNameMatch(name: string): Promise<ExampleUser[]> {
+    public findByNameMatch(name: string): Promise<ExampleUser[]> {
         return null;
     }
 
@@ -40,7 +40,7 @@ export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
      * @return {null}
      */
     protected validateBeforeUpdate<t>(objectToUpdate: ExampleUser): Promise<any> {
-        const errors: ValidationError[] = [];
+        const errors: ValidationErrorImpl[] = [];
         const query = {
             $and: [
                 {$loki: {$ne: _.toNumber(objectToUpdate[this.ID_REFERENCE])}},
@@ -48,10 +48,10 @@ export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
             ]
         };
 
-        return this.findAllByQuery(query)
+        return this.findByQuery(query)
             .then((resultQuery) => {
                 if (resultQuery.length > 0) {
-                    errors.push(new ValidationError(
+                    errors.push(new ValidationErrorImpl(
                         'email',
                         'There is another user with the same email',
                         objectToUpdate.email));

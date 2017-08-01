@@ -23,7 +23,7 @@ const newPassword = "newPassword";
 var serverAppContext = config.get("serverAppContext");
 
 describe("Testing user dao update methods", function () {
-    [DataSourceHandler.LOKIJS, DataSourceHandler.MONGODB].forEach(function (dbEngine) {
+    [DataSourceHandler.LOKIJS, DataSourceHandler.MONGOOSE].forEach(function (dbEngine) {
 
         describe("Given the inserted records", function () {
             var accountDao;
@@ -33,7 +33,7 @@ describe("Testing user dao update methods", function () {
             beforeEach(function (done) {
                 var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
                 accountDao = DaoFactory.createAccountDao(dbEngine, path);
-                accountDao.deleteAll()
+                accountDao.removeAll()
                     .then(function () {
                         var account1 = new AccountEntity();
                         account1.username = username;
@@ -59,7 +59,7 @@ describe("Testing user dao update methods", function () {
                     accountDao.update(insertedRecord1)
                         .then(function (res) {
                             //Perform a query with the same id.
-                            return accountDao.findOneById(insertedRecord1.id);
+                            return accountDao.findOne(insertedRecord1.id);
                         })
                         .then(function (resultQuery) {
                             expect(resultQuery.id).eq(insertedRecord1.id);

@@ -13,11 +13,11 @@ var mongoose = require('mongoose');
 var _ = require('lodash');
 var ExampleUser = require("../../dist/index").ExampleUser;
 var ExampleUserDaoLokiJsImpl = require("../../dist/index").ExampleUserDaoLokiJsImpl;
-var ExampleUserDaoMongoDbImpl = require("../../dist/index").ExampleUserDaoMongoDbImpl;
-var MongoUserSchemaExample = require("../../dist/index").MongoUserSchemaExample;
-var LokiJsRepository = require("../../dist/index").LokiJsDbEngine;
-var MongoDbRepository = require("../../dist/index").MongoDbEngine;
-var EntityProperties = require("../../dist/index").EntityProperties;
+var ExampleUserDaoMongoDbImpl = require("../../dist/index").ExampleUserDaoMongooseImpl;
+var MongoUserSchemaExample = require("../../dist/index").MongooseUserSchemaExample;
+var LokiJsAdapter = require("../../dist/index").LokiJsAdapter;
+var MongooseAdapter = require("../../dist/index").MongooseAdapter;
+var EntityProperties = require("../../dist/index").EntityPropertiesImpl;
 
 
 //Config files
@@ -25,13 +25,13 @@ var serverAppContext = config.get("serverAppContext");
 
 //lokiJs implementation
 var lokiDatabase = new lokijs(serverAppContext.db.lokiJsDBPath);
-var dbEngineUtilLokijs = new LokiJsRepository('users-example', lokiDatabase);
+var dbEngineUtilLokijs = new LokiJsAdapter('users-example', lokiDatabase);
 var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(dbEngineUtilLokijs, new EntityProperties(true, true));
 
 //Mongodb implementation
 mongoose.connect(serverAppContext.db.mongoConnUrl);
 var model = mongoose.model('users-example', MongoUserSchemaExample);
-var dbEngineUtilMongodb = new MongoDbRepository(model);
+var dbEngineUtilMongodb = new MongooseAdapter(model);
 var userDaoMongoDb = ExampleUserDaoMongoDbImpl.createInstance(dbEngineUtilMongodb, new EntityProperties(true, true));
 
 const email = "jon@smith.com";
@@ -45,7 +45,7 @@ describe("Testing user dao example find methods", function () {
         var insertedUsers;
 
         before(function (done) {
-            userDao.deleteAll()
+            userDao.removeAll()
                 .then(function () {
                     var user = new ExampleUser(name, lastName, email);
                     var user2 = new ExampleUser(name, lastName, email2);
@@ -58,7 +58,7 @@ describe("Testing user dao example find methods", function () {
 
         context("Given the records in the database", function () {
             it("This query should return an array with one result", function (done) {
-                userDao.findAllByAttribute("email", email2)
+                userDao.findByAttribute("email", email2)
                     .then(function (result) {
                         expect(result.length).eq(1);
                         done();
@@ -69,7 +69,7 @@ describe("Testing user dao example find methods", function () {
             });
 
             it("This query should return an array with two results", function (done) {
-                userDao.findAllByAttribute("name", name)
+                userDao.findByAttribute("name", name)
                     .then(function (result) {
                         expect(result.length).eq(2);
                         done();
@@ -101,8 +101,8 @@ describe("Testing user dao example find methods", function () {
                     });
             });
 
-            it("This query (findOneById) should return null", function (done) {
-                userDao.findOneById("100000000000")
+            it("This query (findOne) should return null", function (done) {
+                userDao.findOne("100000000000")
                     .then(function (result) {
                         assert.isNull(result);
                         done();
@@ -124,7 +124,7 @@ describe("Testing user dao example find methods", function () {
             });
 
             it("This query should return an array with two results", function (done) {
-                userDao.findAllByAttributeNameIn("email", [email, email2, "anotherEmail@gmail.com"])
+                userDao.findByAttributeNameIn("email", [email, email2, "anotherEmail@gmail.com"])
                     .then(function (result) {
                         expect(result.length).eq(2);
                         done();
@@ -137,7 +137,7 @@ describe("Testing user dao example find methods", function () {
 
             it("This query should return an array with two results", function (done) {
                 var ids = _.map(insertedUsers, 'id');
-                userDao.findAllByIds(ids)
+                userDao.findByIds(ids)
                     .then(function (result) {
                         expect(result.length).eq(2);
                         done();
@@ -148,7 +148,7 @@ describe("Testing user dao example find methods", function () {
             });
 
             it("This query should return an array with zero results", function (done) {
-                userDao.findAllByIds(["100000000000", "200000000000"])
+                userDao.findByIds(["100000000000", "200000000000"])
                     .then(function (result) {
                         expect(result.length).eq(0);
                         done();

@@ -42,7 +42,7 @@ const name2 = "Jane";
 const middleName2 = "Smith";
 
 describe("Testing party dao update methods", function () {
-    [DataSourceHandler.MONGODB, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
+    [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
         describe("Given the inserted records", function () {
 
             var insertedRecordOrganization;
@@ -53,7 +53,7 @@ describe("Testing party dao update methods", function () {
             beforeEach(function (done) {
                 var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
                 partyDao = DaoFactory.createPartyDao(dbEngine, path)
-                partyDao.deleteAll()
+                partyDao.removeAll()
                     .then(function () {
                         var organization = new OrganizationEntity();
                         organization.idAccount = idAccount;

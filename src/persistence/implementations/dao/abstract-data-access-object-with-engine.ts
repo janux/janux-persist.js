@@ -4,37 +4,37 @@
  */
 
 import * as logger from 'log4js';
-import {ICrudRepository} from "../../interfaces/crud-reporitory";
+import {CrudRepository} from "../../api/dao/crud-reporitory";
 import Promise = require("bluebird");
-import {IDbEngine} from "../../interfaces/db-engine-intercace";
-import {IEntityProperties} from "../../interfaces/entity-properties";
+import {DbAdapter} from "../../api/dn-adapters/db-adapter";
 import {AbstractDataAccessObject} from "./abstract-data-access-object";
 import {AttributeFilter} from "./attribute-filter";
+import {EntityPropertiesImpl} from "./entity-properties";
 
 /**
- * This class, inside their properties, contains an object implementing the interface ICrudRepository where you can do
+ * This class, inside their properties, contains an object implementing the interface DbAdapter where you can do
  * db operations.
  * The purpose of this class is to encapsulate the db calls inside an object. And that object re-use ti
  * in different dao implementations.
  */
-export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractDataAccessObject<t> {
+export abstract class AbstractDataAccessObjectWithAdapter<t> extends AbstractDataAccessObject<t> {
 
     // This class holds all common db engine methods
-    protected dbEngineUtil: IDbEngine;
+    protected dbAdapter: DbAdapter;
 
-    private readonly _logger = logger.getLogger("AbstractDataAccessObjectWithEngine");
+    private readonly _logger = logger.getLogger("AbstractDataAccessObjectWithAdapter");
 
     /**
      * Constructor
-     * @param {ICrudRepository} dbEngineUtil This contains an implementation of ICrudRepository.
-     * The idea is there are ICrudRepository implementations per engine. In order to
+     * @param {DbAdapter} dbAdapter This contains an implementation of CrudRepository.
+     * The idea is there are CrudRepository implementations per engine. In order to
      * remove duplicated code per each db implementation.
-     * @param {IEntityProperties} entityProperties
+     * @param {EntityPropertiesImpl} entityProperties
      */
-    constructor(dbEngineUtil: IDbEngine, entityProperties: IEntityProperties) {
+    constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
         super(entityProperties);
         this._logger.debug("Calling constructor");
-        this.dbEngineUtil = dbEngineUtil;
+        this.dbAdapter = dbAdapter;
         this.entityProperties = entityProperties;
     }
 
@@ -43,11 +43,11 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * WARNING: This method IS NOT protected by any relational integrity rule because
      * noSql databases doesn't have this feature. Be VERY, VERY careful when calling this method.
      * Nothing (you, the db engine or anything else) will stop the operation once called.
-     * The method is removed by calling dbEngineUtil.remove.
+     * The method is removed by calling dbAdapter.remove.
      * @param objectToDelete The object to delete
      */
     public remove(objectToDelete: t): Promise<any> {
-        return this.dbEngineUtil.remove(objectToDelete);
+        return this.dbAdapter.remove(objectToDelete);
     }
 
     /**
@@ -55,15 +55,15 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @param id
      * @return {Promise<any>}
      */
-    public removeById(id: string): Promise<any> {
-        return this.dbEngineUtil.removeById(id);
+    public removeById(id: any): Promise<any> {
+        return this.dbAdapter.removeById(id);
     }
 
     /**
      * Returns the amount of records that has the entity
      */
     public count(): Promise<number> {
-        return this.dbEngineUtil.count();
+        return this.dbAdapter.count();
     }
 
     /**
@@ -73,8 +73,8 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * you can destroy your database data integrity so easily.
      * Nothing (you, the db engine or anything else) will stop the operation once called.
      */
-    public  deleteAll(): Promise<any> {
-        return this.dbEngineUtil.deleteAll();
+    public  removeAll(): Promise<any> {
+        return this.dbAdapter.removeAll();
     }
 
     /**
@@ -82,8 +82,8 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @param ids A list of ids.
      * @return {Promise<any>} Returns a promise indicating the delete was successful.
      */
-    public deleteAllByIds(ids: string[]): Promise<any> {
-        return this.dbEngineUtil.deleteAllByIds(ids);
+    public removeByIds(ids: any[]): Promise<any> {
+        return this.dbAdapter.removeAllByIds(ids);
     }
 
     /**
@@ -91,7 +91,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @return {Promise<any[]>}
      */
     protected findAllMethod(): Promise<t[]> {
-        return this.dbEngineUtil.findAll();
+        return this.dbAdapter.findAll();
     }
 
     /**
@@ -100,8 +100,8 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @return {Promise<any>} Return the document whose id matches the id. If no record is founded then the method
      * returns null.
      */
-    protected findOneByIdMethod(id: string): Promise<t> {
-        return this.dbEngineUtil.findOneById(id);
+    protected findOneByIdMethod(id: any): Promise<t> {
+        return this.dbAdapter.findOneById(id);
     }
 
     /**
@@ -110,8 +110,8 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @return A promise containing the result. If no records are founded, then the method returns
      * an empty array.
      */
-    protected  findAllByIdsMethod(arrayOfIds: any[]): Promise<t[]> {
-        return this.dbEngineUtil.findAllByIds(arrayOfIds);
+    protected  findByIdsMethod(arrayOfIds: any[]): Promise<t[]> {
+        return this.dbAdapter.findByIds(arrayOfIds);
     }
 
     /**
@@ -122,7 +122,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @param value The value to look for.
      */
     protected findOneByAttributeMethod(attributeName: string, value): Promise<t> {
-        return this.dbEngineUtil.findOneByAttribute(attributeName, value);
+        return this.dbAdapter.findOneByAttribute(attributeName, value);
     }
 
     /**
@@ -132,8 +132,8 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @param attributeName The attribute to look for.
      * @param value The value to look for.
      */
-    protected findAllByAttributeMethod(attributeName: string, value): Promise<t[]> {
-        return this.dbEngineUtil.findAllByAttribute(attributeName, value);
+    protected findByAttributeMethod(attributeName: string, value): Promise<t[]> {
+        return this.dbAdapter.findByAttribute(attributeName, value);
     }
 
     /**
@@ -141,24 +141,24 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @param attributeName The attribute to look for.
      * @param values The list of values to filter.
      */
-    protected findAllByAttributeNameInMethod(attributeName: string, values: any[]): Promise<t[]> {
-        return this.dbEngineUtil.findAllByAttributeNameIn(attributeName, values);
+    protected findByAttributeNameInMethod(attributeName: string, values: any[]): Promise<t[]> {
+        return this.dbAdapter.findByAttributeNameIn(attributeName, values);
     }
 
     /**
      * Perform a query with the and operator for every attribute and value
      * @param attributes The attributes to filter
      */
-    protected findAllByAttributesAndOperatorMethod(attributes: AttributeFilter[]): Promise<t[]> {
-        return this.dbEngineUtil.findAllByAttributesAndOperator(attributes);
+    protected findByAttributesAndOperatorMethod(attributes: AttributeFilter[]): Promise<t[]> {
+        return this.dbAdapter.findByAttributesAndOperator(attributes);
     }
 
     /**
      * Perform a query with the or operator for every attribute and value
      * @param attributes The attributes to filter
      */
-    protected findAllByAttributesOrOperatorMethod(attributes: AttributeFilter[]): Promise<t[]> {
-        return this.dbEngineUtil.findAllByAttributesOrOperator(attributes);
+    protected findByAttributesOrOperatorMethod(attributes: AttributeFilter[]): Promise<t[]> {
+        return this.dbAdapter.findByAttributesOrOperator(attributes);
     }
 
     /**
@@ -166,7 +166,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @param objectToInsert The object to insert
      */
     protected insertMethod(objectToInsert: t): Promise<t> {
-        return this.dbEngineUtil.insert(objectToInsert);
+        return this.dbAdapter.insert(objectToInsert);
     }
 
     /**
@@ -174,7 +174,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @param objectToUpdate The object to update
      */
     protected  updateMethod(objectToUpdate: t): Promise<t> {
-        return this.dbEngineUtil.update(objectToUpdate);
+        return this.dbAdapter.update(objectToUpdate);
     }
 
     /**
@@ -182,7 +182,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @param objectsToInsert The objects to insert
      */
     protected  insertManyMethod(objectsToInsert: t[]): Promise<any> {
-        return this.dbEngineUtil.insertMany(objectsToInsert);
+        return this.dbAdapter.insertMany(objectsToInsert);
     }
 
     /**
@@ -190,7 +190,7 @@ export abstract class AbstractDataAccessObjectWithEngine<t> extends AbstractData
      * @param query A mongoose like query.
      * @return {Promise<any[]>}
      */
-    protected findAllByQueryMethod(query: any): Promise<any> {
-        return this.dbEngineUtil.findAllByQuery(query);
+    protected findByQueryMethod(query: any): Promise<any> {
+        return this.dbAdapter.findByQuery(query);
     }
 }

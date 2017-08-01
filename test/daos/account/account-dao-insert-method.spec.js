@@ -21,12 +21,12 @@ const id = "313030303030303030303030";
 const id2 = "313030303030303030303031";
 
 describe("Testing account dao insert methods", function () {
-    [DataSourceHandler.MONGODB, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
+    [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
         var accountDao;
         beforeEach(function (done) {
             var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
             accountDao = DaoFactory.createAccountDao(dbEngine, path);
-            accountDao.deleteAll()
+            accountDao.removeAll()
                 .then(function () {
                     done();
                 })
@@ -43,7 +43,7 @@ describe("Testing account dao insert methods", function () {
                         //Validate the returned value
                         basicInsertValidation(insertedRecord);
                         //Validate the value is truly inserted
-                        accountDao.findOneById(insertedRecord.id)
+                        accountDao.findOne(insertedRecord.id)
                             .then(function (resultQuery) {
                                 basicInsertValidation(resultQuery);
                                 done();

@@ -3,7 +3,7 @@
  * Created by ernesto on 6/12/17.
  */
 import * as logger from 'log4js';
-import {IEntityProperties} from "../interfaces/entity-properties";
+import {EntityPropertiesImpl} from "../implementations/dao/entity-properties";
 
 /**
  * This class generates the timestamp values and insert the values inside the object.
@@ -18,7 +18,7 @@ export class TimeStampGenerator {
      * @param entityProperties This object indicates if this method needs to add the dateCreated attribute.
      * @param objectToInsert The object to insert in the database.
      */
-    public static generateTimeStampForInsert(entityProperties: IEntityProperties, objectToInsert: any) {
+    public static generateTimeStampForInsert(entityProperties: EntityPropertiesImpl, objectToInsert: any) {
         this._log.debug("generateTimeStampForInsert with entityProperties: %j, objectToInsert:%j"
             , entityProperties,
             objectToInsert);
@@ -37,7 +37,7 @@ export class TimeStampGenerator {
      * @param entityProperties This object indicates if this method needs to add the lastUpdate attribute.
      * @param objectToUpdate The object to update in the database.
      */
-    public static generateTimeStampForUpdate(entityProperties: IEntityProperties, objectToUpdate: any) {
+    public static generateTimeStampForUpdate(entityProperties: EntityPropertiesImpl, objectToUpdate: any) {
         this._log.debug("generateTimeStampForUpdate with entityProperties: %j, objectToUpdate %j",
             entityProperties,
             objectToUpdate);

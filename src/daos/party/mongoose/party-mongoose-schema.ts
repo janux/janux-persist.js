@@ -6,10 +6,10 @@
 import * as mongoose from 'mongoose';
 
 /**
- * Schema definition for the PartyDao an mongodb.
+ * Schema definition for the PartyDao.
  * @type {"mongoose".Schema}
  */
-export const PartyMongoDbSchema = new mongoose.Schema({
+export const PartyMongooseSchema = new mongoose.Schema({
     idAccount: {
         type: mongoose.Schema.Types.ObjectId
     },

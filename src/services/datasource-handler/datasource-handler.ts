@@ -16,7 +16,7 @@ import {DataSourceStatus} from "./datasource-status";
  */
 export class DataSourceHandler {
 
-    public static readonly MONGODB: string = "mongodb";
+    public static readonly MONGOOSE: string = "mongoose";
     public static readonly LOKIJS: string = "lokijs";
     public static readonly DB_PATH_EMPTY = "path is empty";
     public static readonly DB_ENGINE_EMPTY = "dbEngine is empty";
@@ -24,8 +24,8 @@ export class DataSourceHandler {
 
     /**
      * Gets a dataSource. If the datasource does not exits given the params. The method creates a new one.
-     * @param {string} dbEngine The db engine, for now is "mongodb" or "lokijs"
-     * @param {string} path The path where to connect, for mongodb is a url, for lokijs is a file path.
+     * @param {string} dbEngine The db engine, for now is "mongoose" or "lokijs"
+     * @param {string} path The path where to connect, for mongoose is a url, for lokijs is a file path.
      * @param extraParams Extra params, for now it is not used. But I expect later might be useful.
      * @return {Promise<DataSource>}
      */
@@ -33,7 +33,7 @@ export class DataSourceHandler {
         this._log.debug("Call to getDataSource with dbEngine %j, path %j, extraParams %j", dbEngine, path, extraParams);
         if (isBlankString(dbEngine)) {
             throw  new Error(this.DB_ENGINE_EMPTY);
-        } else if (dbEngine !== this.MONGODB && dbEngine !== this.LOKIJS) {
+        } else if (dbEngine !== this.MONGOOSE && dbEngine !== this.LOKIJS) {
             throw  new Error(this.DB_ENGINE_INVALID);
         }
         if (isBlankString(path)) {

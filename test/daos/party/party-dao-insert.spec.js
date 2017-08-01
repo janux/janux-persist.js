@@ -45,12 +45,12 @@ const line3Address = "Line 3 address";
 const postalCode = "05000";
 
 describe("Testing party dao insert methods", function () {
-    [DataSourceHandler.MONGODB,DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
+    [DataSourceHandler.MONGOOSE,DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
         var partyDao;
         beforeEach(function (done) {
             var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
             partyDao = DaoFactory.createPartyDao(dbEngine, path)
-            partyDao.deleteAll()
+            partyDao.removeAll()
                 .then(function () {
                     done()
                 })
@@ -98,7 +98,7 @@ describe("Testing party dao insert methods", function () {
                     .then(function (result) {
                         expect(result.id).not.to.be.undefined;
                         validateRecord(result);
-                        return partyDao.findOneById(result.id);
+                        return partyDao.findOne(result.id);
                     })
                     .then(function (resultQuery) {
                         expect(resultQuery.id).not.to.be.undefined;
@@ -157,7 +157,7 @@ describe("Testing party dao insert methods", function () {
                         expect(result.name).eq(organizationName);
                         expect(result.typeName).eq(PartyValidator.ORGANIZATION);
                         expect(result.emailAddresses(false).length).eq(1);
-                        return partyDao.findOneById(result.id);
+                        return partyDao.findOne(result.id);
                     })
                     .then(function (resultQuery) {
                         expect(resultQuery.name).eq(organizationName);

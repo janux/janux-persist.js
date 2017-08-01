@@ -59,9 +59,9 @@ describe("Testing user service service insert method", function () {
             partyDao = DaoFactory.createPartyDao(dbEngine, dbPath);
             accountDao = DaoFactory.createAccountDao(dbEngine, dbPath);
             userService = UserService.createInstance(accountDao, partyDao);
-            accountDao.deleteAll()
+            accountDao.removeAll()
                 .then(function () {
-                    return partyDao.deleteAll();
+                    return partyDao.removeAll();
                 })
                 .then(function () {
                     // Inserting one person
@@ -123,7 +123,7 @@ describe("Testing user service service insert method", function () {
                         temporalAccount = result;
 
                         //Let's check if the party has the associated account.
-                        return partyDao.findOneById(result.contact.id);
+                        return partyDao.findOne(result.contact.id);
                     })
                     .then(function (resultQueryPart) {
                         expect(resultQueryPart.id).eq(insertedParty1.id);
@@ -184,7 +184,7 @@ describe("Testing user service service insert method", function () {
                         };
                         return userService.insert(account2);
                     })
-                    .then(function (inaertedRecord2) {
+                    .then(function (insertedRecord2) {
                         expect.fail("The method should not have inserted the record");
                         done();
                     })
@@ -249,7 +249,7 @@ describe("Testing user service service insert method", function () {
                 userService.insert(account)
                     .then(function (result) {
                         expect(result.dateCreated).not.to.be.null;
-                        return partyDao.findOneById(result.contactId);
+                        return partyDao.findOne(result.contactId);
                     })
                     .then(function (resultQuery) {
                         expect(resultQuery).not.to.be.null;

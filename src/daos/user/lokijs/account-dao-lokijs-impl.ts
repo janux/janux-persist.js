@@ -4,21 +4,21 @@
  */
 
 import * as _ from "lodash";
-import {IEntityProperties} from "../../../persistence/interfaces/entity-properties";
 import {AccountDao} from "../account-dao";
 import Promise = require("bluebird");
-import {LokiJsDbEngine} from "../../../persistence/implementations/db-engines/lokijs-db-engine";
-import {IValidationError} from "../../../persistence/interfaces/validation-error";
+import {EntityPropertiesImpl} from "../../../persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
+import {LokiJsAdapter} from "../../../persistence/implementations/db-adapters/lokijs-db-adapter";
 import {AccountEntity} from "../account-entity";
-import {AccountValidator} from "../account-valdiator";
+import {AccountValidator} from "../account-validator";
 
 /**
- * AccountDao implementation for the mongodb database.
+ * AccountDao implementation for mongoose library.
  */
 export class AccountDaoLokiJsImpl extends AccountDao {
 
-    constructor(dbEngineUtil: LokiJsDbEngine, entityProperties: IEntityProperties) {
-        super(dbEngineUtil, entityProperties);
+    constructor(dbAdapter: LokiJsAdapter, entityProperties: EntityPropertiesImpl) {
+        super(dbAdapter, entityProperties);
     }
 
     /**
@@ -27,27 +27,27 @@ export class AccountDaoLokiJsImpl extends AccountDao {
      * @return {Promise<AccountEntity[]>} The parties whose username matches. If no record is founded then the method
      * returns an empty array.
      */
-    public findAllByUserNameMatch(username: string): Promise<AccountEntity[]> {
+    public findByUserNameMatch(username: string): Promise<AccountEntity[]> {
         const query = {
             username: {$contains: username},
         };
-        return this.findAllByQuery(query);
+        return this.findByQuery(query);
     }
 
     /**
      * Validate the object before inserting to the database.
      * In this case the method validates for duplicated usernames.
      * @param objectToInsert The object to validate.
-     * @return {Promise<IValidationError[]>} A list of validation errors.
+     * @return {Promise<ValidationErrorImpl[]>} A list of validation errors.
      */
-    protected validateBeforeInsert(objectToInsert: AccountEntity): Promise<IValidationError[]> {
+    protected validateBeforeInsert(objectToInsert: AccountEntity): Promise<ValidationErrorImpl[]> {
         const query = {
             $or: [
                 {username: {$eq: objectToInsert.username}},
                 {contactId: {$eq: objectToInsert.contactId}}
             ]
         };
-        return this.findAllByQuery(query)
+        return this.findByQuery(query)
             .then((result) => {
                 return Promise.resolve(AccountValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
             });
@@ -57,9 +57,9 @@ export class AccountDaoLokiJsImpl extends AccountDao {
      * Validate the object before updating to the database.
      * In this case the method validates for duplicated usernames.
      * @param objectToUpdate The object to update.
-     * @return {Promise<ValidationError[]>} A list of validation errors.
+     * @return {Promise<ValidationErrorImpl[]>} A list of validation errors.
      */
-    protected validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<IValidationError[]> {
+    protected validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<ValidationErrorImpl[]> {
         const idValue = _.toNumber(objectToUpdate.id);
         const query = {
             $and: [
@@ -72,7 +72,7 @@ export class AccountDaoLokiJsImpl extends AccountDao {
                 }
             ]
         };
-        return this.findAllByQuery(query)
+        return this.findByQuery(query)
             .then((result: AccountEntity[]) => {
                 return Promise.resolve(AccountValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
             });

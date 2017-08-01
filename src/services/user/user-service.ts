@@ -10,8 +10,8 @@ import * as uuid from 'uuid';
 import {PartyDao} from "../../daos/party/party-dao";
 import {PartyValidator} from "../../daos/party/party-validator";
 import {AccountEntity} from "../../daos/user/account-entity";
-import {AccountValidator} from "../../daos/user/account-valdiator";
-import {ValidationError} from "../../persistence/implementations/dao/validation-error";
+import {AccountValidator} from "../../daos/user/account-validator";
+import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
 import JanuxPeople = require("janux-people.js");
 import {AccountDao} from "../../daos/user/account-dao";
@@ -90,14 +90,14 @@ export class UserService {
      * @param id The id
      * @return {Promise<any>}
      */
-    public findOneByUserId(id: string): Promise<any> {
+    public findOneByUserId(id: any): Promise<any> {
         this._log.debug("Call to findOneByUserId with id: %j", id);
         let result: any;
         return this.accountDao.findOneByUserId(id)
             .then((user: AccountEntity) => {
                 if (_.isNil(user)) return Promise.reject("No user with the id " + id);
                 result = user;
-                return this.partyDao.findOneById(user.contactId);
+                return this.partyDao.findOne(user.contactId);
             })
             .then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
                 result.contact = contact.toJSON();
@@ -120,7 +120,7 @@ export class UserService {
             .then((user: AccountEntity) => {
                 if (_.isNil(user)) return Promise.reject("No user with the username " + username);
                 result = user;
-                return this.partyDao.findOneById(user.contactId);
+                return this.partyDao.findOne(user.contactId);
             })
             .then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
                 result.contact = contact.toJSON();
@@ -137,8 +137,8 @@ export class UserService {
      * @return {Promise<any[]>}
      */
     public findAllByUserNameMatch(username: string): Promise<any[]> {
-        this._log.debug("Call to findAllByUserNameMatch with username: %j", username);
-        return this.accountDao.findAllByUserNameMatch(username)
+        this._log.debug("Call to findByUserNameMatch with username: %j", username);
+        return this.accountDao.findByUserNameMatch(username)
             .then((users: AccountEntity[]) => {
                 return this.populateContactData(users);
             });
@@ -150,24 +150,24 @@ export class UserService {
      * @return {Promise<any[]>}
      */
     public findAllByContactNameMatch(name: string): Promise<any[]> {
-        this._log.debug("Call to findAllByContactNameMatch with name %j", name);
-        return this.partyDao.findAllByName(name)
+        this._log.debug("Call to findByContactNameContaining with name %j", name);
+        return this.partyDao.findByName(name)
             .then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
                 return this.populateUserData(resultQuery);
             });
     }
 
     public findAllByEmail(email: string): Promise<any[]> {
-        this._log.debug("Call to findAllByEmail with email %j", email);
-        return this.partyDao.findAllByEmail(email)
+        this._log.debug("Call to findByEmail with email %j", email);
+        return this.partyDao.findByEmail(email)
             .then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
                 return this.populateUserData(resultQuery);
             });
     }
 
     public findAllByPhone(phone: string): Promise<any[]> {
-        this._log.debug("Call to findAllByPhone with email %j", phone);
-        return this.partyDao.findAllByPhone(phone)
+        this._log.debug("Call to findByPhone with email %j", phone);
+        return this.partyDao.findByPhone(phone)
             .then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
                 return this.populateUserData(resultQuery);
             });
@@ -231,11 +231,11 @@ export class UserService {
         let result: any;
         const user: AccountEntity = new AccountEntity();
         // Find the user. This also helps to retrieve the contactId.
-        return this.accountDao.findOneById(object.id)
+        return this.accountDao.findOne(object.id)
             .then((resultQuery) => {
                 if (resultQuery === null) {
                     return Promise.reject([
-                        new ValidationError(this.ACCOUNT, this.ACCOUNT_NOT_IN_DATABASE, object.id)
+                        new ValidationErrorImpl(this.ACCOUNT, this.ACCOUNT_NOT_IN_DATABASE, object.id)
                     ]);
                 } else {
                     user.enabled = object.enabled;
@@ -278,7 +278,7 @@ export class UserService {
         this._log.debug("Call to populate populateUserData with contacts: %j", contacts);
         const ids = _.map(contacts, (o: any) => o.id);
         let result: any;
-        return this.accountDao.findAllByContactIdsIn(ids)
+        return this.accountDao.findByContactIdsIn(ids)
             .then((users: AccountEntity[]) => {
                 result = this.mixData(users, contacts);
                 this._log.debug("populateUserData : returning %j", result);
@@ -290,7 +290,7 @@ export class UserService {
         this._log.debug("Call to populateContactData with users: %j", users);
         let result: any = users;
         const contactIds = users.map((value) => value.contactId);
-        return this.partyDao.findAllByIds(contactIds)
+        return this.partyDao.findByIds(contactIds)
             .then((contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
                 result = this.mixData(result, contacts);
                 this._log.debug("populateContactData : returning %j", result);
@@ -321,7 +321,7 @@ export class UserService {
      * @param party The party to validate.
      * @return {any}
      */
-    private definePartyInfo(party: any): Promise<JanuxPeople.Person | JanuxPeople.Organization | ValidationError[]> {
+    private definePartyInfo(party: any): Promise<JanuxPeople.Person | JanuxPeople.Organization | ValidationErrorImpl[]> {
         this._log.debug("Call to define party  info with party: %j", party);
         let person: JanuxPeople.Person;
         let organization: JanuxPeople.Organization;
@@ -342,7 +342,7 @@ export class UserService {
                 this._log.warn("No correct party type, returning a reject");
                 // No party type, sending an error.
                 return Promise.reject([
-                    new ValidationError(this.PARTY_TYPE, PartyValidator.TYPE_NOT_PERSON_OR_ORGANIZATION, "")
+                    new ValidationErrorImpl(this.PARTY_TYPE, PartyValidator.TYPE_NOT_PERSON_OR_ORGANIZATION, "")
                 ]);
             }
 
@@ -350,12 +350,12 @@ export class UserService {
             this._log.debug("The account to insert has a contact id");
             let referenceObject: JanuxPeople.Person | JanuxPeople.Organization;
             // Look for if there is a party with the same id
-            return this.partyDao.findOneById(party.id)
+            return this.partyDao.findOne(party.id)
                 .then((resultQueryParty: JanuxPeople.Person | JanuxPeople.Organization) => {
                     if (_.isNull(resultQueryParty)) {
                         this._log.warn("The id %j does not exist in the database", party.id);
                         return Promise.reject([
-                            new ValidationError(this.PARTY, this.NO_CONTACT_IN_DATABASE, party.id)
+                            new ValidationErrorImpl(this.PARTY, this.NO_CONTACT_IN_DATABASE, party.id)
                         ]);
                     } else {
                         referenceObject = resultQueryParty;
@@ -370,7 +370,7 @@ export class UserService {
                     } else {
                         this._log.warn("The contact founded has an associated account");
                         return Promise.reject([
-                            new ValidationError(this.ACCOUNT, this.ANOTHER_ACCOUNT_USING_CONTACT, "")
+                            new ValidationErrorImpl(this.ACCOUNT, this.ANOTHER_ACCOUNT_USING_CONTACT, "")
                         ]);
                     }
                 });

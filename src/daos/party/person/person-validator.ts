@@ -3,7 +3,7 @@
  * Created by ernesto on 6/22/17.
  */
 import * as logger from 'log4js';
-import {ValidationError} from "../../../persistence/implementations/dao/validation-error";
+import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../../util/blank-string-validator";
 import JanuxPeople = require("janux-people.js");
 
@@ -20,16 +20,16 @@ export class PersonValidator {
     /**
      * Validate the content of the person.
      * @param person
-     * @return {ValidationError[]}
+     * @return {ValidationErrorImpl[]}
      */
-    public static validatePerson(person: JanuxPeople.PersonImpl): ValidationError[] {
+    public static validatePerson(person: JanuxPeople.PersonImpl): ValidationErrorImpl[] {
         this._log.debug("Call to validatePerson with person: %j", person);
-        const errors: ValidationError[] = [];
+        const errors: ValidationErrorImpl[] = [];
         if (isBlankString(person.name.first)) {
-            errors.push(new ValidationError(this.NAME_FIRST, "First name is empty", ""));
+            errors.push(new ValidationErrorImpl(this.NAME_FIRST, "First name is empty", ""));
         }
         /*if (isBlankString(person.name.middle)) {
-            errors.push(new ValidationError(this.NAME_MIDDLE, "Middle name is empty", ""));
+            errors.push(new ValidationErrorImpl(this.NAME_MIDDLE, "Middle name is empty", ""));
         }*/
         this._log.debug("Returning errors: %j", errors);
         return errors;

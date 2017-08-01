@@ -34,7 +34,7 @@ const name2 = "Jane";
 const middleName2 = "Smith";
 
 describe("Testing party dao delete methods", function () {
-    [DataSourceHandler.MONGODB, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
+    [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
         describe("Given the inserted records", function () {
             var partyDao;
             var insertedRecordOrganization;
@@ -45,7 +45,7 @@ describe("Testing party dao delete methods", function () {
             beforeEach(function (done) {
                 var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
                 partyDao = DaoFactory.createPartyDao(dbEngine, path)
-                partyDao.deleteAll()
+                partyDao.removeAll()
                     .then(function () {
                         var organization = new OrganizationEntity();
                         organization.idAccount = idAccount;
@@ -80,7 +80,7 @@ describe("Testing party dao delete methods", function () {
 
             describe("When calling delete all", function () {
                 it("It should delete all records", function (done) {
-                    partyDao.deleteAll()
+                    partyDao.removeAll()
                         .then(function () {
                             return partyDao.count();
                         })

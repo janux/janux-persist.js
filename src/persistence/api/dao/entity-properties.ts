@@ -7,7 +7,7 @@
  * Base interface for any entity properties.
  * The idea of this class is to add custom functionality per entity.
  */
-export interface IEntityProperties {
+export interface EntityProperties {
 
     // If true, the dao adds a uuid string before an insert.
     // Also every query returns the inserted uuid.

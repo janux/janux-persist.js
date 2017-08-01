@@ -63,9 +63,9 @@ describe("Testing auth context service update method", function () {
             partyDao = DaoFactory.createPartyDao(dbEngine, dbPath);
             accountDao = DaoFactory.createAccountDao(dbEngine, dbPath);
             userService = UserService.createInstance(accountDao, partyDao);
-            accountDao.deleteAll()
+            accountDao.removeAll()
                 .then(function () {
-                    return partyDao.deleteAll();
+                    return partyDao.removeAll();
                 })
                 .then(function () {
                     var person = new Person();

@@ -21,7 +21,7 @@ const id2 = "313030303030303030303031";
 
 describe("Testing account dao delete methods", function () {
 
-    [DataSourceHandler.MONGODB, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
+    [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
         describe("Given the inserted records", function () {
 
             var insertedRecord1;
@@ -51,9 +51,9 @@ describe("Testing account dao delete methods", function () {
 
             });
 
-            describe("When calling deleteAll", function () {
+            describe("When calling removeAll", function () {
                 it("It should delete all records", function (done) {
-                    accountDao.deleteAll()
+                    accountDao.removeAll()
                         .then(function () {
                             return accountDao.count();
                         })
