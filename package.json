@@ -1,5 +1,5 @@
 {
-    "name": "janux-persistence",
+    "name": "janux-persist",
     "version": "0.0.1",
     "description": "Janux persistence module",
     "main": "dist/index.js",
