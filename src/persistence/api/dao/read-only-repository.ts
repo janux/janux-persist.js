@@ -8,7 +8,7 @@ import Promise = require("bluebird");
 /**
  * Define the methods for read only daos.
  */
-export interface ReadOnlyRepository<t> {
+export interface ReadOnlyRepository<t, ID> {
     /**
      * Count all documents in the collection.
      */
@@ -18,7 +18,7 @@ export interface ReadOnlyRepository<t> {
      * Find one document by id.
      * @param id The id to look for.
      */
-    findOne(id: any): Promise<t>;
+    findOne(id: ID): Promise<t>;
 
     /**
      * Find all the documents that matches the query.
@@ -30,7 +30,7 @@ export interface ReadOnlyRepository<t> {
      * Find all the documents inside a collection whose ids belongs to the list.
      * @param arrayOfIds The ids to look for.
      */
-    findByIds(arrayOfIds: any[]): Promise<t[]>;
+    findByIds(arrayOfIds: ID[]): Promise<t[]>;
 
     /**
      * Find one document inside the collection that has the attributeName and the value.

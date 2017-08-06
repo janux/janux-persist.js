@@ -69,7 +69,7 @@ running `npm run generateUsers` generated sample user data in a lokijs or mongod
 
 2.. Create a dao class.
 
-    export class CarDao extends AbstractDataAccessObjectWithAdapter<Car> {
+    export class CarDao extends AbstractDataAccessObjectWithAdapter<Car,string> {
     
         constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
             super(dbAdapter, entityProperties);
@@ -146,7 +146,7 @@ The project for the moment has two IGenericDaoCRUD instances. One for mongodb (M
     //3.-Create the dao
     var carDaoLokiJs = new CarDao(
         lokijsRepository,
-        null
+        new EntityProperties(true,true)
     ); 
     
     //Mongo db
@@ -160,7 +160,7 @@ The project for the moment has two IGenericDaoCRUD instances. One for mongodb (M
     //3.- Create the dao.
     var carDaoMongoDb = new CarDao(
         mongoRepository,
-        null); 
+        new EntityProperties(true,true)); 
 
     //You can use the implementations.
     const car:Car = new Car();

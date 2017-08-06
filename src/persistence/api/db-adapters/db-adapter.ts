@@ -10,17 +10,20 @@ import {AttributeFilter} from "../../implementations/dao/attribute-filter";
  * in order to wire the database to a AbstractDataAccessObjectWithAdapter instance.
  */
 export interface DbAdapter {
+
+    adapterProperties: any;
+
     /**
      * Find one document by id.
      * @param id The id to look for.
      */
-    findOneById(id): Promise<any>;
+    findOneMethod(id): Promise<any>;
 
     /**
      * Find all the documents inside a collection whose ids belongs to the list.
      * @param arrayOfIds The ids to look for.
      */
-    findByIds(arrayOfIds: any[]): Promise<any>;
+    findByIdsMethod(arrayOfIds: any[]): Promise<any>;
 
     /**
      * Remove a document.
@@ -49,21 +52,21 @@ export interface DbAdapter {
      * Delete all documents inside the collections whose ids matches the list.
      * @param ids ids A list of ids.
      */
-    removeAllByIds(ids: any[]): Promise<any>;
+    removeByIds(ids: any[]): Promise<any>;
 
     /**
      * Find one document inside the collection that has the attributeName and the value.
      * @param attributeName The attribute to look for.
      * @param value The value to compare.
      */
-    findOneByAttribute(attributeName: string, value): Promise<any>;
+    findOneByAttributeMethod(attributeName: string, value): Promise<any>;
 
     /**
      * Find all the documents inside the collection that has the attributeName and the value.
      * @param attributeName The attribute to look for.
      * @param value The value to compare.
      */
-    findByAttribute(attributeName: string, value): Promise<any[]>;
+    findByAttributeMethod(attributeName: string, value): Promise<any[]>;
 
     /**
      * Find all the documents inside the collection that has the attribute defined in the method and whose values
@@ -71,47 +74,47 @@ export interface DbAdapter {
      * @param attributeName The attribute to look for.
      * @param values The values to compare.
      */
-    findByAttributeNameIn(attributeName: string, values: any[]): Promise<any>;
+    findByAttributeNameInMethod(attributeName: string, values: any[]): Promise<any>;
 
     /**
      * Inserts a document.
-     * @param objectToInsert The object to insert.
+     * @param objectToInsert The object to insertMethod.
      */
-    insert(objectToInsert: any): Promise<any>;
+    insertMethod(objectToInsert: any): Promise<any>;
 
     /**
      * Update a document.
-     * @param objectToUpdate The data to update. This object must have an attribute called "id" as string in order
+     * @param objectToUpdate The data to updateMethod. This object must have an attribute called "id" as string in order
      * to know which document is going to be updated.
      */
-    update(objectToUpdate: any): Promise<any>;
+    updateMethod(objectToUpdate: any): Promise<any>;
 
     /**
      * Insert many documents at once inside the collection.
-     * @param objectsToInsert The objects to insert.
+     * @param objectsToInsert The objects to insertMethod.
      */
-    insertMany(objectsToInsert: any[]): Promise<any>;
+    insertManyMethod(objectsToInsert: any[]): Promise<any>;
 
     /**
      * Return all the documents.
      */
-    findAll(): Promise<any[]>;
+    findAllMethod(): Promise<any[]>;
 
     /**
      * Find all the documents that matches all attributes.
      * @param attributes The attributes-value filters.
      */
-    findByAttributesAndOperator(attributes: AttributeFilter[]): Promise<any[]>;
+    findByAttributesAndOperatorMethod(attributes: AttributeFilter[]): Promise<any[]>;
 
     /**
      * Find all the documents that matches only one of the attributes.
      * @param attributes The attributes-value filters.
      */
-    findByAttributesOrOperator(attributes: AttributeFilter[]): Promise<any[]>;
+    findByAttributesOrOperatorMethod(attributes: AttributeFilter[]): Promise<any[]>;
 
     /**
      * Find all the documents that matches the query.
      * @param query A mongoose-like query.
      */
-    findByQuery(query: any): Promise<any[]>;
+    findByQueryMethod(query: any): Promise<any[]>;
 }

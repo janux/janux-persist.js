@@ -20,7 +20,7 @@ const password2 = "password2";
 const id = "313030303030303030303030";
 const id2 = "313030303030303030303031";
 
-describe("Testing account dao insert methods", function () {
+describe("Testing account dao insertMethod methods", function () {
     [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
         var accountDao;
         beforeEach(function (done) {

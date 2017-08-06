@@ -9,7 +9,7 @@
 module.exports = {
     serverAppContext: {
         db: {
-            //Default db engine to use. Could be mongodb or lokijs
+            //Default db engine to use. Could be mongoose or lokijs
             dbEngine: "lokijs",
             //If mongodb is chosen. You must define the connection url.
             mongoConnUrl: "mongodb://localhost/janux-persistence-dev",

@@ -48,7 +48,7 @@ const personMiddleName2 = "Smith";
 const contactEmail2 = "dev_full_stack@glarus.com";
 
 
-describe("Testing auth context service update method", function () {
+describe("Testing auth context service updateMethod method", function () {
     describe("Given the inserted roles and accounts", function () {
 
         var partyDao;
@@ -113,7 +113,7 @@ describe("Testing auth context service update method", function () {
         });
 
         describe("When updating the account", function () {
-            it("The method should update the account and contact data", function (done) {
+            it("The method should updateMethod the account and contact data", function (done) {
                 insertedUser1.username = accountUsername3;
                 insertedUser1.password = accountPassword3;
                 insertedUser1.contact.name.first = personName2;

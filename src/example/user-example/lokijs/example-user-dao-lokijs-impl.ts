@@ -35,7 +35,7 @@ export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
     }
 
     /**
-     * Validates the entity before update it. In this case checks for duplicated emails.
+     * Validates the entity before updateMethod it. In this case checks for duplicated emails.
      * @param objectToUpdate
      * @return {null}
      */
@@ -43,7 +43,7 @@ export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
         const errors: ValidationErrorImpl[] = [];
         const query = {
             $and: [
-                {$loki: {$ne: _.toNumber(objectToUpdate[this.ID_REFERENCE])}},
+                {id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
                 {email: {$eq: objectToUpdate.email}}
             ]
         };

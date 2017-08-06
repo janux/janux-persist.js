@@ -8,6 +8,12 @@ import * as mongoose from 'mongoose';
  * The mongoose schema associated with ExampleUser
  */
 export const MongooseUserSchemaExample = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true,
+        index: true,
+        unique: true
+    },
     name: {
         type: String
     },
@@ -26,4 +32,4 @@ export const MongooseUserSchemaExample = new mongoose.Schema({
     dateCreated: {
         type: Date
     }
-}, {collection: 'usersExample'});
+}, {id: false});

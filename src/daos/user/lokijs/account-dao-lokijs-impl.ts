@@ -3,7 +3,6 @@
  * Created by ernesto on 6/13/17.
  */
 
-import * as _ from "lodash";
 import {AccountDao} from "../account-dao";
 import Promise = require("bluebird");
 import {EntityPropertiesImpl} from "../../../persistence/implementations/dao/entity-properties";
@@ -56,14 +55,13 @@ export class AccountDaoLokiJsImpl extends AccountDao {
     /**
      * Validate the object before updating to the database.
      * In this case the method validates for duplicated usernames.
-     * @param objectToUpdate The object to update.
+     * @param objectToUpdate The object to updateMethod.
      * @return {Promise<ValidationErrorImpl[]>} A list of validation errors.
      */
     protected validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<ValidationErrorImpl[]> {
-        const idValue = _.toNumber(objectToUpdate.id);
         const query = {
             $and: [
-                {$loki: {$ne: idValue}},
+                {id: {$ne: objectToUpdate.id}},
                 {
                     $or: [
                         {username: {$eq: objectToUpdate.username}},

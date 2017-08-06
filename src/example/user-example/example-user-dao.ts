@@ -4,18 +4,18 @@
  */
 import * as _ from "lodash";
 import * as logger from 'log4js';
+import {DbAdapter} from "../../persistence/api/db-adapters/db-adapter";
 import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
 import Promise = require("bluebird");
-import {DbAdapter} from "../../persistence/api/dn-adapters/db-adapter";
 import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 import {ExampleUser} from "./example-user";
-import {validateExampleUser} from "./example-validate-usert";
+import {validateExampleUser} from "./example-validate-user";
 
 /**
  * This is the base dao class of the entity ExampleUser.
  */
-export abstract class ExampleUserDao extends AbstractDataAccessObjectWithAdapter<ExampleUser> {
+export abstract class ExampleUserDao extends AbstractDataAccessObjectWithAdapter<ExampleUser, string> {
 
     private _logExampleUserDao = logger.getLogger("ExampleUserDao");
 
@@ -44,7 +44,7 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithAdapter
     }
 
     /**
-     * Validate the entity before to insert it to the database. In this case checks for duplicated emails.
+     * Validate the entity before to insertMethod it to the database. In this case checks for duplicated emails.
      * Given the validation is simple, you can program it without the need to code each db engine implementation.
      * @param objectToInsert
      * @return {Promise<ValidationErrorImpl[]>}

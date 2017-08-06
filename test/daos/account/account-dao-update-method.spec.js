@@ -22,7 +22,7 @@ const newPassword = "newPassword";
 //Config files
 var serverAppContext = config.get("serverAppContext");
 
-describe("Testing user dao update methods", function () {
+describe("Testing user dao updateMethod methods", function () {
     [DataSourceHandler.LOKIJS, DataSourceHandler.MONGOOSE].forEach(function (dbEngine) {
 
         describe("Given the inserted records", function () {

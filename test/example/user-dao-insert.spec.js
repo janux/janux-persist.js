@@ -46,7 +46,7 @@ const lastName2 = "Smith";
 
 const incorrectEmail = "johnSmith.com";
 
-describe("Testing user example dao implementation insert", function () {
+describe("Testing user example dao implementation insert methods", function () {
     [userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
         beforeEach(function (done) {
             userDao.removeAll().then(function () {
@@ -81,7 +81,6 @@ describe("Testing user example dao implementation insert", function () {
                             expect(result.typeName).not.to.be.undefined;
                             expect(result.typeName).not.to.be.null;
                             expect(result).to.have.property('id');
-                            expect(result).to.have.property('uuid');
                             expect(result).to.have.property('dateCreated');
                             expect(result.lastUpdate).to.be.undefined;
                             expect(result.dateCreated).to.be.a("Date");
@@ -94,7 +93,6 @@ describe("Testing user example dao implementation insert", function () {
                                     expect(resultQuery.typeName).not.to.be.null;
                                     expect(resultQuery.lastName).eq(lastName);
                                     expect(resultQuery.id).eq(result.id);
-                                    expect(result).to.have.property('uuid');
                                     expect(result).to.have.property('dateCreated');
                                     expect(result.dateCreated).to.be.a("Date");
                                     expect(result.lastUpdate).to.be.undefined;
@@ -126,12 +124,7 @@ describe("Testing user example dao implementation insert", function () {
                             var obj = result[i];
                             expect(obj).to.have.property("id");
                             expect(obj).to.have.property("dateCreated");
-                            expect(obj).to.have.property("uuid");
                         }
-                        done();
-                    })
-                    .catch(function (err) {
-                        assert.fail(error, "The method should have inserted the users");
                         done();
                     })
             })

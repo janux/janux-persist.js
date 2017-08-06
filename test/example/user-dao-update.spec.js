@@ -43,8 +43,8 @@ const newLastName = "Perez";
 const newEmail = "newEmail@mail.com";
 const invalidEmail = "email.com";
 
-describe("Testing user example dao update methods", function () {
-    [userDaoLokiJS,userDaoMongoDb].forEach(function (userDao) {
+describe("Testing user example dao updateMethod methods", function () {
+    [userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
         var insertedUsers;
 
         beforeEach(function (done) {
@@ -60,7 +60,7 @@ describe("Testing user example dao update methods", function () {
         });
 
         context("Given the inserted users", function () {
-            it("This method should update with no problems", function (done) {
+            it("This method should updateMethod with no problems", function (done) {
                 var user = insertedUsers[0];
                 var id = user.id;
                 user.name = newName;
@@ -81,7 +81,6 @@ describe("Testing user example dao update methods", function () {
                                 expect(queryResult.email).eq(newEmail);
                                 expect(queryResult.typeName).not.to.be.undefined;
                                 expect(queryResult).to.have.property("dateCreated");
-                                expect(queryResult).to.have.property("uuid");
                                 expect(queryResult).to.have.property('lastUpdate');
                                 expect(queryResult.lastUpdate).to.be.a("Date");
                                 done();

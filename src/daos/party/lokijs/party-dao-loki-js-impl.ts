@@ -52,7 +52,7 @@ export class PartyDaoLokiJsImpl extends PartyDao {
     }
 
     /**
-     * Validate the object before update to the database.
+     * Validate the object before updateMethod to the database.
      * @param objectToUpdate
      * @return {Promise<ValidationErrorImpl[]>}
      */
@@ -101,7 +101,7 @@ export class PartyDaoLokiJsImpl extends PartyDao {
          ]
          };
          }
-         return LokiJsUtil.findByQuery(this.collection, query)
+         return LokiJsUtil.findByQueryMethod(this.collection, query)
          .then((resultQuery: IPartyEntity[]) => {
          const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
          return Promise.resolve(errors);

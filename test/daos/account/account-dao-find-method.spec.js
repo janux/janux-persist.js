@@ -109,7 +109,7 @@ describe("Testing user dao find methods", function () {
 
             describe("When looking for several id-s (correct and incorrect)", function () {
                 it("It should return an array", function (done) {
-                    accountDao.findByIds([insertedId, insertedId2])
+                    accountDao.findByIdsMethod([insertedId, insertedId2])
                         .then(function (result) {
                             expect(result.length).eq(2);
                             done();
@@ -117,7 +117,7 @@ describe("Testing user dao find methods", function () {
                 });
 
                 it("It should return an array with ony one result", function (done) {
-                    accountDao.findByIds([insertedId, invalidId])
+                    accountDao.findByIdsMethod([insertedId, invalidId])
                         .then(function (result) {
                             expect(result.length).eq(1);
                             done();
@@ -125,7 +125,7 @@ describe("Testing user dao find methods", function () {
                 });
 
                 it("It should return an empty array", function (done) {
-                    accountDao.findByIds([invalidId])
+                    accountDao.findByIdsMethod([invalidId])
                         .then(function (result) {
                             expect(result.length).eq(0);
                             done();

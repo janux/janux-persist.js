@@ -44,7 +44,7 @@ const line2Address = "Line 2 address";
 const line3Address = "Line 3 address";
 const postalCode = "05000";
 
-describe("Testing party dao insert methods", function () {
+describe("Testing party dao insertMethod methods", function () {
     [DataSourceHandler.MONGOOSE,DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
         var partyDao;
         beforeEach(function (done) {
@@ -144,7 +144,7 @@ describe("Testing party dao insert methods", function () {
 
 
         describe("When inserting a valid organization", function () {
-            it("The method should insert the record", function (done) {
+            it("The method should insertMethod the record", function (done) {
                 var organization = new OrganizationEntity();
                 // organization.displayName = organizationDisplayName;
                 organization.name = organizationName;
@@ -169,13 +169,13 @@ describe("Testing party dao insert methods", function () {
         });
 
         /*describe("When inserting with invalid data, in this case an invalid email", function () {
-         it("The entity should insert en error", function (done) {
+         it("The entity should insertMethod en error", function (done) {
          var person = new PersonEntity();
          // person.displayName = displayName;
          person.name.first = firstName;
          person.name.middle = middleName;
          person.emails.push(new EmailAddress(work, true, invalidEmail));
-         partyDao.insert(person)
+         partyDao.insertMethod(person)
          .then(function (result) {
          expect.fail("The method should not have inserted the record");
          })
@@ -194,7 +194,7 @@ describe("Testing party dao insert methods", function () {
         //         person.name.middle = middleName;
         //         person.type = PartyValidator.PERSON;
         //         person.emails.push(new EmailAddress(work, true, email));
-        //         partyDao.insert(person)
+        //         partyDao.insertMethod(person)
         //             .then(function (insertedRecord) {
         //                 var person = new PersonEntity();
         //                 person.displayName = displayName;
@@ -203,7 +203,7 @@ describe("Testing party dao insert methods", function () {
         //                 person.type = PartyValidator.PERSON;
         //                 person.emails.push(new EmailAddress(work, true, email));
         //                 person.emails.push(new EmailAddress(home, false, email2));
-        //                 return partyDao.insert(person);
+        //                 return partyDao.insertMethod(person);
         //             })
         //             .then(function (resultSecondInsert) {
         //                 expect.fail("The method should not have inserted the record");
@@ -228,7 +228,7 @@ describe("Testing party dao insert methods", function () {
         //         person.type = PartyValidator.PERSON;
         //         person.emails.push(new EmailAddress(work, true, email));
         //         person.emails.push(new EmailAddress(home, false, email2));
-        //         partyDao.insert(person)
+        //         partyDao.insertMethod(person)
         //             .then(function (insertedRecord) {
         //                 var person = new PersonEntity();
         //                 person.displayName = displayName;
@@ -236,7 +236,7 @@ describe("Testing party dao insert methods", function () {
         //                 person.name.middle = middleName;
         //                 person.type = PartyValidator.PERSON;
         //                 person.emails.push(new EmailAddress(work, true, email3));
-        //                 return partyDao.insert(person);
+        //                 return partyDao.insertMethod(person);
         //             })
         //             .then(function (resultSecondInsert) {
         //                 expect.fail("The method should not have inserted the record");
@@ -260,14 +260,14 @@ describe("Testing party dao insert methods", function () {
         //         organization.type = PartyValidator.ORGANIZATION;
         //         organization.emails.push(new EmailAddress(work, true, email));
         //         organization.emails.push(new EmailAddress(home, false, email2));
-        //         partyDao.insert(organization)
+        //         partyDao.insertMethod(organization)
         //             .then(function (insertedRecord) {
         //                 var organization = new OrganizationEntity();
         //                 organization.name = organizationName;
         //                 organization.displayName = organizationDisplayName;
         //                 organization.type = PartyValidator.ORGANIZATION;
         //                 organization.emails.push(new EmailAddress(work, true, email3));
-        //                 return partyDao.insert(organization);
+        //                 return partyDao.insertMethod(organization);
         //             })
         //             .then(function (resultSecondInsert) {
         //                 expect.fail("The method should not have inserted the record");

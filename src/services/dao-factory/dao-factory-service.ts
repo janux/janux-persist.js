@@ -42,11 +42,11 @@ export class DaoFactory {
             if (dbEngine === DataSourceHandler.MONGOOSE) {
                 partyDao = new PartyDaoMongooseImpl(
                     new MongooseAdapter(dataSource.dbConnection.model(this.PARTY_DEFAULT_COLLECTION_NAME, PartyMongooseSchema)),
-                    new EntityPropertiesImpl(false, true)
+                    new EntityPropertiesImpl(true, true)
                 );
             } else {
                 partyDao = new PartyDaoLokiJsImpl(new LokiJsAdapter(this.PARTY_DEFAULT_COLLECTION_NAME, dataSource.dbConnection),
-                    new EntityPropertiesImpl(false, true)
+                    new EntityPropertiesImpl(true, true)
                 );
             }
             this.insertDao(dbEngine, dbPath, this.PARTY_DEFAULT_COLLECTION_NAME, partyDao);
@@ -74,11 +74,11 @@ export class DaoFactory {
             if (dbEngine === DataSourceHandler.MONGOOSE) {
                 accountDao = new AccountDaoMongooseImpl(
                     new MongooseAdapter(dataSource.dbConnection.model(this.ACCOUNT_DEFAULT_COLLECTION_NAME, AccountMongooseDbSchema)),
-                    new EntityPropertiesImpl(false, true));
+                    new EntityPropertiesImpl(true, true));
             } else {
                 accountDao = new AccountDaoLokiJsImpl(
                     new LokiJsAdapter(this.ACCOUNT_DEFAULT_COLLECTION_NAME, dataSource.dbConnection),
-                    new EntityPropertiesImpl(false, true)
+                    new EntityPropertiesImpl(true, true)
                 );
             }
             this.insertDao(dbEngine, dbPath, this.ACCOUNT_DEFAULT_COLLECTION_NAME, accountDao);

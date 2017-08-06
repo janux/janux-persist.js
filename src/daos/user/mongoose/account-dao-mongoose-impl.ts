@@ -55,13 +55,13 @@ export class AccountDaoMongooseImpl extends AccountDao {
     /**
      * Validate the object before updating to the database.
      * In this case the method validates for duplicated usernames.
-     * @param objectToUpdate The object to update.
+     * @param objectToUpdate The object to updateMethod.
      * @return {Promise<ValidationErrorImpl[]>} A list of validation errors.
      */
     protected validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<ValidationErrorImpl[]> {
         const query = {
             $and: [
-                {_id: {$ne: objectToUpdate.id}},
+                {id: {$ne: objectToUpdate.id}},
                 {
                     $or: [
                         {username: {$eq: objectToUpdate.username}},

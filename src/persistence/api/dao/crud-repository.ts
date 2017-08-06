@@ -10,19 +10,19 @@ import {ReadOnlyRepository} from "./read-only-repository";
  * Interface that defines the basic crud methods
  * per dao.
  */
-export interface CrudRepository<t> extends ReadOnlyRepository<t> {
+export interface CrudRepository<t, ID> extends ReadOnlyRepository<t, ID> {
 
     /**
      * Find one document by id.
      * @param id The id to look for.
      */
-    findOne(id: any): Promise<t>;
+    findOne(id: ID): Promise<t>;
 
     /**
      * Find all the documents inside a collection whose ids belongs to the list.
      * @param arrayOfIds The ids to look for.
      */
-    findByIds(arrayOfIds: any[]): Promise<t[]>;
+    findByIds(arrayOfIds: ID[]): Promise<t[]>;
 
     /**
      * Remove a document.
@@ -35,7 +35,7 @@ export interface CrudRepository<t> extends ReadOnlyRepository<t> {
      * Remove a document whose id matches with the id parameter.
      * @param id The id query criteria.
      */
-    removeById(id: any): Promise<any>;
+    removeById(id: ID): Promise<any>;
 
     /**
      * Count all documents in the collection.
@@ -51,7 +51,7 @@ export interface CrudRepository<t> extends ReadOnlyRepository<t> {
      * Delete all documents inside the collections whose ids matches the list.
      * @param ids ids A list of ids.
      */
-    removeByIds(ids: any[]): Promise<any>;
+    removeByIds(ids: ID[]): Promise<any>;
 
     /**
      * Find one document inside the collection that has the attributeName and the value.
@@ -77,20 +77,20 @@ export interface CrudRepository<t> extends ReadOnlyRepository<t> {
 
     /**
      * Inserts a document.
-     * @param objectToInsert The object to insert.
+     * @param objectToInsert The object to insertMethod.
      */
     insert(objectToInsert: any): Promise<any>;
 
     /**
      * Update a document.
-     * @param objectToUpdate The data to update. This object must have an attribute called "id" as string in order
+     * @param objectToUpdate The data to updateMethod. This object must have an attribute called "id" as string in order
      * to know which document is going to be updated.
      */
     update(objectToUpdate: any): Promise<any>;
 
     /**
      * Insert many documents at once inside the collection.
-     * @param objectsToInsert The objects to insert.
+     * @param objectsToInsert The objects to insertMethod.
      */
     insertMany(objectsToInsert: any[]): Promise<any>;
 

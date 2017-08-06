@@ -6,3 +6,5 @@
 /vendor/
 /janux-persistence-test.db
 /doc/
+/janux-persist.js.iml
+/package-lock.json

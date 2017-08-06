@@ -58,7 +58,7 @@ describe("Testing user dao example find methods", function () {
 
         context("Given the records in the database", function () {
             it("This query should return an array with one result", function (done) {
-                userDao.findByAttribute("email", email2)
+                userDao.findByAttributeMethod("email", email2)
                     .then(function (result) {
                         expect(result.length).eq(1);
                         done();
@@ -69,7 +69,7 @@ describe("Testing user dao example find methods", function () {
             });
 
             it("This query should return an array with two results", function (done) {
-                userDao.findByAttribute("name", name)
+                userDao.findByAttributeMethod("name", name)
                     .then(function (result) {
                         expect(result.length).eq(2);
                         done();
@@ -80,7 +80,7 @@ describe("Testing user dao example find methods", function () {
             });
 
             it("This query should return one result", function (done) {
-                userDao.findOneByAttribute("email", email2)
+                userDao.findOneByAttributeMethod("email", email2)
                     .then(function (result) {
                         expect(result.email).eq(email2);
                         done();
@@ -90,8 +90,8 @@ describe("Testing user dao example find methods", function () {
                     })
             });
 
-            it("This query (findOneByAttribute) should return null", function (done) {
-                userDao.findOneByAttribute("email", "emailTharDoesNoExits")
+            it("This query (findOneByAttributeMethod) should return null", function (done) {
+                userDao.findOneByAttributeMethod("email", "emailTharDoesNoExits")
                     .then(function (result) {
                         assert.isNull(result);
                         done();
@@ -101,7 +101,7 @@ describe("Testing user dao example find methods", function () {
                     });
             });
 
-            it("This query (findOne) should return null", function (done) {
+            it("This query (findOneMethod) should return null", function (done) {
                 userDao.findOne("100000000000")
                     .then(function (result) {
                         assert.isNull(result);
@@ -113,7 +113,7 @@ describe("Testing user dao example find methods", function () {
             });
 
             it("This query should return a reject (the query returned two records while expecting only one)", function (done) {
-                userDao.findOneByAttribute("name", name)
+                userDao.findOneByAttributeMethod("name", name)
                     .then(function (result) {
                         assert.fail(result, "It shouldn't have returned any value");
                         done();
@@ -124,7 +124,7 @@ describe("Testing user dao example find methods", function () {
             });
 
             it("This query should return an array with two results", function (done) {
-                userDao.findByAttributeNameIn("email", [email, email2, "anotherEmail@gmail.com"])
+                userDao.findByAttributeNameInMethod("email", [email, email2, "anotherEmail@gmail.com"])
                     .then(function (result) {
                         expect(result.length).eq(2);
                         done();
@@ -137,7 +137,7 @@ describe("Testing user dao example find methods", function () {
 
             it("This query should return an array with two results", function (done) {
                 var ids = _.map(insertedUsers, 'id');
-                userDao.findByIds(ids)
+                userDao.findByIdsMethod(ids)
                     .then(function (result) {
                         expect(result.length).eq(2);
                         done();
@@ -148,7 +148,7 @@ describe("Testing user dao example find methods", function () {
             });
 
             it("This query should return an array with zero results", function (done) {
-                userDao.findByIds(["100000000000", "200000000000"])
+                userDao.findByIdsMethod(["100000000000", "200000000000"])
                     .then(function (result) {
                         expect(result.length).eq(0);
                         done();

@@ -5,6 +5,12 @@
 
 import * as mongoose from 'mongoose';
 export const AccountMongooseDbSchema = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true,
+        index: true,
+        unique: true
+    },
     username: {
         type: String,
         required: true
@@ -26,7 +32,7 @@ export const AccountMongooseDbSchema = new mongoose.Schema({
         type: Date
     },
     contactId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true
     },
     lastUpdate: {
@@ -45,4 +51,4 @@ export const AccountMongooseDbSchema = new mongoose.Schema({
         type: Date
     },
     roles: [mongoose.Schema.Types.Mixed]
-});
+}, { id: false });

@@ -109,9 +109,9 @@ describe("Testing party dao find methods", function () {
                 })
             });
 
-            describe("When calling the method findByIds", function () {
+            describe("When calling the method findByIdsMethod", function () {
                 it("The method should return one record", function (done) {
-                    partyDao.findByIds([invalidId1, invalidId2, insertedRecordOrganization2.id])
+                    partyDao.findByIdsMethod([invalidId1, invalidId2, insertedRecordOrganization2.id])
                         .then(function (result) {
                             expect(result.length).eq(1);
                             done();
@@ -119,7 +119,7 @@ describe("Testing party dao find methods", function () {
                 });
             });
 
-            describe("When calling findOne", function () {
+            describe("When calling findOneMethod", function () {
                 it("The method should return one record when calling by a inserted id", function (done) {
                     partyDao.findOne(insertedRecordOrganization2.id)
                         .then(function (result) {

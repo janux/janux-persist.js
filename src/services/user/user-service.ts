@@ -60,7 +60,7 @@ export class UserService {
     }
 
     /**
-     * Save or update an users and it's contact info.
+     * Save or updateMethod an users and it's contact info.
      * @param object
      * @return {Promise<any>}
      */
@@ -78,7 +78,7 @@ export class UserService {
      * @return {Promise<U>}
      */
     public findAll(): Promise<any[]> {
-        this._log.debug("Call to findAll");
+        this._log.debug("Call to findAllMethod");
         return this.accountDao.findAll()
             .then((users: AccountEntity[]) => {
                 return this.populateContactData(users);
@@ -175,15 +175,15 @@ export class UserService {
 
     /**
      * Insert a new user.
-     * @param object The account info to insert.
+     * @param object The account info to insertMethod.
      * object must have contact info.
      * If the contact info has an id. The system assumes
      * the account is going to be used by an existing party record.
      * If the contact info doesn't hav an id. The the system
-     * assumes is going to insert a new party record.
+     * assumes is going to insertMethod a new party record.
      */
     public insert(object: any): Promise<any> {
-        this._log.debug("Call to insert with object %j", object);
+        this._log.debug("Call to insertMethod with object %j", object);
         let associatedParty: JanuxPeople.Person | JanuxPeople.Organization;
         let result: any;
         const user: AccountEntity = new AccountEntity();
@@ -221,13 +221,13 @@ export class UserService {
     }
 
     /**
-     * Update the account data. Just update the account info and the associated roles.
-     * One difference with insert is the update will not update the contact data.
-     * Instead one must use partyDao.update().
+     * Update the account data. Just updateMethod the account info and the associated roles.
+     * One difference with insertMethod is the updateMethod will not updateMethod the contact data.
+     * Instead one must use partyDao.updateMethod().
      * @param object The account to be updated.
      */
     public update(object: any): Promise<any> {
-        this._log.debug("Call to update with object:%j", object);
+        this._log.debug("Call to updateMethod with object:%j", object);
         let result: any;
         const user: AccountEntity = new AccountEntity();
         // Find the user. This also helps to retrieve the contactId.
@@ -255,7 +255,7 @@ export class UserService {
             })
             .then((updatedAccount: AccountEntity) => {
                 result = updatedAccount;
-                // Now update the contact data.
+                // Now updateMethod the contact data.
                 const contact: any = object.contact;
                 let objectToUpdate: any;
                 if (contact.typeName === PartyValidator.PERSON) {
@@ -347,7 +347,7 @@ export class UserService {
             }
 
         } else {
-            this._log.debug("The account to insert has a contact id");
+            this._log.debug("The account to insertMethod has a contact id");
             let referenceObject: JanuxPeople.Person | JanuxPeople.Organization;
             // Look for if there is a party with the same id
             return this.partyDao.findOne(party.id)

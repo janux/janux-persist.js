@@ -41,7 +41,7 @@ const organizationName2 = "Glarus 2";
 const name2 = "Jane";
 const middleName2 = "Smith";
 
-describe("Testing party dao update methods", function () {
+describe("Testing party dao updateMethod methods", function () {
     [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
         describe("Given the inserted records", function () {
 
@@ -102,7 +102,7 @@ describe("Testing party dao update methods", function () {
             // describe("When updating a party with a duplicated email", function () {
             //     it("The method should return an error", function (done) {
             //         insertedRecordPerson.emails.push(new EmailAddress(home, false, email));
-            //         partyDao.update(insertedRecordPerson)
+            //         partyDao.updateMethod(insertedRecordPerson)
             //             .then(function (updatedRecord) {
             //                 expect.fail("The method should not have updated the record");
             //                 done();
@@ -118,7 +118,7 @@ describe("Testing party dao update methods", function () {
             // describe("When updating a party with invalid info", function () {
             //     it("The method should return an error", function (done) {
             //         insertedRecordPerson.emails.push(new EmailAddress(work, true, invalidEmail));
-            //         partyDao.update(insertedRecordPerson)
+            //         partyDao.updateMethod(insertedRecordPerson)
             //             .then(function (updatedRecord) {
             //                 expect.fail("The method should not have updated the record");
             //                 done();
@@ -133,7 +133,7 @@ describe("Testing party dao update methods", function () {
             // describe("When updating an organization with a duplicated name", function () {
             //     it("The method should return an error", function (done) {
             //         insertedRecordOrganization2.name = organizationName;
-            //         partyDao.update(insertedRecordOrganization2)
+            //         partyDao.updateMethod(insertedRecordOrganization2)
             //             .then(function (updatedRecord) {
             //                 expect.fail("The method should not have updated the record");
             //                 done();
@@ -154,7 +154,7 @@ describe("Testing party dao update methods", function () {
             //         insertedRecordPerson2.name.first = firstName;
             //         insertedRecordPerson2.name.middle = middleName;
             //         insertedRecordPerson2.name.last = lastName;
-            //         partyDao.update(insertedRecordPerson2)
+            //         partyDao.updateMethod(insertedRecordPerson2)
             //             .then(function (updatedRecord) {
             //                 expect.fail("The method should not have updated the record");
             //                 done();

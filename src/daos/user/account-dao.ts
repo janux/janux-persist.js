@@ -3,10 +3,10 @@
  * Created by ernesto on 6/13/17.
  */
 
+import {DbAdapter} from "../../persistence/api/db-adapters/db-adapter";
 import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
 import {AccountEntity} from "./account-entity";
 import Promise = require("bluebird");
-import {DbAdapter} from "../../persistence/api/dn-adapters/db-adapter";
 import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 import {AccountValidator} from "./account-validator";
@@ -14,7 +14,7 @@ import {AccountValidator} from "./account-validator";
 /**
  * User dao.
  */
-export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<AccountEntity> {
+export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<AccountEntity, string> {
 
     constructor(dbEngineUtil: DbAdapter, entityProperties: EntityPropertiesImpl) {
         super(dbEngineUtil, entityProperties);
@@ -65,17 +65,17 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<Acc
     }
 
     /**
-     * Validate the entity before insert or update.
+     * Validate the entity before insertMethod or updateMethod.
      * @param objectToValidate The object to validate.
      * @return {ValidationErrorImpl[]} An array containing the validation errors. If there are no errors then
      * returns an empty array
      */
-    protected  validateEntity(objectToValidate: AccountEntity): ValidationErrorImpl[] {
+    protected validateEntity(objectToValidate: AccountEntity): ValidationErrorImpl[] {
         return AccountValidator.validateAccount(objectToValidate);
     }
 
     /**
-     * Validate the object before insert it to the database.
+     * Validate the object before insertMethod it to the database.
      * Given the validation might involve complex queries. The method is marked as abstract in order to be
      * implemented by each extended class.
      * @param objectToInsert The object to validate.
@@ -83,7 +83,7 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<Acc
     protected abstract validateBeforeInsert(objectToInsert: AccountEntity): Promise<ValidationErrorImpl[]>;
 
     /**
-     * Validate the object before update it to the database.
+     * Validate the object before updateMethod it to the database.
      * Given the validation might involve complex queries. The method is marked as abstract in order to be
      * implemented by each extended class.
      * @param objectToUpdate

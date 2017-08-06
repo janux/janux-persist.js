@@ -10,8 +10,14 @@ import * as mongoose from 'mongoose';
  * @type {"mongoose".Schema}
  */
 export const PartyMongooseSchema = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true,
+        index: true,
+        unique: true
+    },
     idAccount: {
-        type: mongoose.Schema.Types.ObjectId
+        type: String
     },
     typeName: {
         type: String,
@@ -39,4 +45,4 @@ export const PartyMongooseSchema = new mongoose.Schema({
     dateCreated: {
         type: Date
     }
-});
+}, {id: false});

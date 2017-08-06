@@ -47,7 +47,7 @@ const accountExpirePassword2 = undefined;
 var invalidId1 = "313030303030303030303030";
 
 
-describe("Testing user service service insert method", function () {
+describe("Testing user service service insertMethod method", function () {
     describe("Given the inserted contacts", function () {
         var insertedParty1;
         var insertedParty2;
@@ -131,7 +131,7 @@ describe("Testing user service service insert method", function () {
                         expect(resultQueryPart.emailAddresses(false)[0].address).eq(contactEmail);
                         expect(resultQueryPart.emailAddresses(false)[0].type).eq(contactType);
                         expect(resultQueryPart.emailAddresses(false)[0].primary).eq(true);
-                        return accountDao.findAll()
+                        return accountDao.findAllMethod()
                     })
                     .then(function (resultQueryAccount) {
                         expect(resultQueryAccount.length).eq(1);

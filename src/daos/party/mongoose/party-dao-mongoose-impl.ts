@@ -104,7 +104,7 @@ export class PartyDaoMongooseImpl extends PartyDao {
          if (_.isUndefined(objectToUpdate.idAccount) === false) {
          query.$and[1].$or.push({idAccount: {$eq: objectToUpdate.idAccount}});
          }
-         return MongooseDbUtil.findByQuery(this.model, query)
+         return MongooseDbUtil.findByQueryMethod(this.model, query)
          .then((resultQuery: IPartyEntity[]) => {
          const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
          return Promise.resolve(errors);
