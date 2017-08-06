@@ -10,8 +10,8 @@ var lokijs = require('lokijs');
 var mongoose = require('mongoose');
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
-var PersonEntity = require("janux-people.js").Person;
-var OrganizationEntity = require("janux-people.js").Organization;
+var PersonEntity = require("janux-people").Person;
+var OrganizationEntity = require("janux-people").Organization;
 var DaoFactory = require("../../../dist/index").DaoFactory;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 

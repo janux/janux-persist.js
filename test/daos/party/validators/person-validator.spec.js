@@ -12,7 +12,7 @@ var assert = chai.assert;
 var config = require('config');
 //Config files
 var serverAppContext = config.get("serverAppContext");
-var PersonEntity = require("janux-people.js").Person;
+var PersonEntity = require("janux-people").Person;
 var PersonValidator = require("../../../../dist/index").PersonValidator;
 
 const honorificPrefix = "Mr.";

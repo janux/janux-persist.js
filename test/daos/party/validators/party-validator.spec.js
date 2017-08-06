@@ -4,12 +4,12 @@
  */
 var chai = require('chai');
 var expect = chai.expect;
-var PersonEntity = require("janux-people.js").Person;
-var OrganizationEntity = require("janux-people.js").Organization;
-var PhoneNumber = require("janux-people.js").PhoneNumber;
+var PersonEntity = require("janux-people").Person;
+var OrganizationEntity = require("janux-people").Organization;
+var PhoneNumber = require("janux-people").PhoneNumber;
 var PartyValidator = require("../../../../dist/index").PartyValidator;
-var EmailAddress = require("janux-people.js").EmailAddress;
-var PostalAddress = require("janux-people.js").PostalAddress;
+var EmailAddress = require("janux-people").EmailAddress;
+var PostalAddress = require("janux-people").PostalAddress;
 
 const name = "John";
 const middleName = "Doe";

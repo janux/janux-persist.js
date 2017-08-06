@@ -10,11 +10,11 @@ var lokijs = require('lokijs');
 var mongoose = require('mongoose');
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
-var EmailAddress = require("janux-people.js").EmailAddress;
-var PostalAddress = require("janux-people.js").PostalAddress;
-var PhoneNumber = require("janux-people.js").PhoneNumber;
-var PersonEntity = require("janux-people.js").Person;
-var OrganizationEntity = require("janux-people.js").Organization;
+var EmailAddress = require("janux-people").EmailAddress;
+var PostalAddress = require("janux-people").PostalAddress;
+var PhoneNumber = require("janux-people").PhoneNumber;
+var PersonEntity = require("janux-people").Person;
+var OrganizationEntity = require("janux-people").Organization;
 var DaoFactory = require("../../../dist/index").DaoFactory;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 

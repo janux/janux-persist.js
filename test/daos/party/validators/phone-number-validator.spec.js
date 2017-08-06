@@ -5,7 +5,7 @@
 
 var chai = require('chai');
 var expect = chai.expect;
-var PhoneNumber = require("janux-people.js").PhoneNumber;
+var PhoneNumber = require("janux-people").PhoneNumber;
 var PhoneNumberValidator = require("../../../../dist/index").PhoneNumberValidator;
 
 
