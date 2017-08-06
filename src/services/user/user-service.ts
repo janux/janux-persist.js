@@ -13,7 +13,7 @@ import {AccountEntity} from "../../daos/user/account-entity";
 import {AccountValidator} from "../../daos/user/account-validator";
 import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
-import JanuxPeople = require("janux-people.js");
+import JanuxPeople = require("janux-people");
 import {AccountDao} from "../../daos/user/account-dao";
 
 /**

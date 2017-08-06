@@ -6,7 +6,7 @@
 import * as logger from 'log4js';
 import {ValidationErrorImpl} from "../../../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../../../util/blank-string-validator";
-import JanuxPeople = require("janux-people.js");
+import JanuxPeople = require("janux-people");
 
 export class PhoneNumberValidator {
 

@@ -7,7 +7,7 @@ import * as Promise from "bluebird";
 import * as logger from 'log4js';
 import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
 import {PartyValidator} from "./party-validator";
-import JanuxPeople = require("janux-people.js");
+import JanuxPeople = require("janux-people");
 import {DbAdapter} from "../../persistence/api/dn-adapters/db-adapter";
 import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";

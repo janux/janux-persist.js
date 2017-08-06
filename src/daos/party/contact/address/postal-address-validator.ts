@@ -5,7 +5,7 @@
 
 import * as logger from 'log4js';
 import {ValidationErrorImpl} from "../../../../persistence/implementations/dao/validation-error";
-import JanuxPeople = require("janux-people.js");
+import JanuxPeople = require("janux-people");
 
 export class PostalAddressValidator {
 
