@@ -3,12 +3,12 @@
  * Created by ernesto on 6/21/17.
  */
 
+import JanuxPeople = require("janux-people");
 import * as logger from 'log4js';
 import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
 import {OrganizationValidator} from "./organization/organization-validator";
 import {PersonValidator} from "./person/person-validator";
-import JanuxPeople = require("janux-people");
 
 /**
  * Validates if the party has the correct values.

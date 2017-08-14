@@ -2,11 +2,12 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
+
+import Promise = require("bluebird");
 import * as _ from "lodash";
 import * as logger from 'log4js';
 import {DbAdapter} from "../../persistence/api/db-adapters/db-adapter";
 import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
-import Promise = require("bluebird");
 import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 import {ExampleUser} from "./example-user";

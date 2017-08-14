@@ -2,10 +2,11 @@
  * Project janux-persistence
  * Created by ernesto on 7/10/17.
  */
-import * as logger from 'log4js';
-import JanuxPeople = require('janux-people');
-import md5 = require('MD5');
+
 import Promise = require("bluebird");
+import JanuxPeople = require('janux-people');
+import * as logger from 'log4js';
+import md5 = require('MD5');
 import {PartyDao} from "../../daos/party/party-dao";
 import {PartyValidator} from "../../daos/party/party-validator";
 import {AccountDao} from "../../daos/user/account-dao";

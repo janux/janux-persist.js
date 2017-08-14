@@ -3,11 +3,11 @@
  * Created by ernesto on 6/13/17.
  */
 
-import {AccountDao} from "../account-dao";
 import Promise = require("bluebird");
 import {EntityPropertiesImpl} from "../../../persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {LokiJsAdapter} from "../../../persistence/implementations/db-adapters/lokijs-db-adapter";
+import {AccountDao} from "../account-dao";
 import {AccountEntity} from "../account-entity";
 import {AccountValidator} from "../account-validator";
 

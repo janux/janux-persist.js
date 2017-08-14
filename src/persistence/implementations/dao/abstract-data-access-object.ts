@@ -3,9 +3,9 @@
  * Created by ernesto on 6/9/17.
  */
 
+import Promise = require("bluebird");
 import * as _ from 'lodash';
 import * as logger from 'log4js';
-import Promise = require("bluebird");
 import {isBlankString} from "../../../util/blank-string-validator";
 import {CrudRepository} from "../../api/dao/crud-repository";
 import {TimeStampGenerator} from "../../util/TimeStampGenerator";

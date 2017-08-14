@@ -2,8 +2,8 @@
  * Project janux-persistence
  * Created by ernesto on 7/28/17.
  */
-import {AttributeFilter} from "../../implementations/dao/attribute-filter";
 import Promise = require("bluebird");
+import {AttributeFilter} from "../../implementations/dao/attribute-filter";
 
 /**
  * Define the methods for read only daos.

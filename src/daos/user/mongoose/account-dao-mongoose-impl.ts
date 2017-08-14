@@ -2,12 +2,13 @@
  * Project janux-persistence
  * Created by ernesto on 6/13/17.
  */
-import {EntityPropertiesImpl} from "../../../index";
-import {AccountDao} from "../account-dao";
-import {AccountEntity} from "../account-entity";
+
 import Promise = require("bluebird");
+import {EntityPropertiesImpl} from "../../../index";
 import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {MongooseAdapter} from "../../../persistence/implementations/db-adapters/mongoose-db-adapter";
+import {AccountDao} from "../account-dao";
+import {AccountEntity} from "../account-entity";
 import {AccountValidator} from "../account-validator";
 
 /**

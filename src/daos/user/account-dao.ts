@@ -3,12 +3,12 @@
  * Created by ernesto on 6/13/17.
  */
 
+import Promise = require("bluebird");
 import {DbAdapter} from "../../persistence/api/db-adapters/db-adapter";
 import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
-import {AccountEntity} from "./account-entity";
-import Promise = require("bluebird");
 import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
+import {AccountEntity} from "./account-entity";
 import {AccountValidator} from "./account-validator";
 
 /**

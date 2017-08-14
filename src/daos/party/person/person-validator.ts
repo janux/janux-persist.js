@@ -2,10 +2,11 @@
  * Project janux-persistence
  * Created by ernesto on 6/22/17.
  */
+
+import JanuxPeople = require("janux-people");
 import * as logger from 'log4js';
 import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../../util/blank-string-validator";
-import JanuxPeople = require("janux-people");
 
 /**
  * Validates the content of the person.

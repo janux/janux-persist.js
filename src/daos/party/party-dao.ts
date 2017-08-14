@@ -4,13 +4,13 @@
  */
 
 import * as Promise from "bluebird";
+import JanuxPeople = require("janux-people");
 import * as logger from 'log4js';
 import {DbAdapter} from "../../persistence/api/db-adapters/db-adapter";
 import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
 import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
-import {PartyValidator} from "./party-validator";
-import JanuxPeople = require("janux-people");
 import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
+import {PartyValidator} from "./party-validator";
 
 /**
  * This is the base class of the partyDao. In this class we define the object we are going to use

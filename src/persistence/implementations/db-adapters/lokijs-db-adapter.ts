@@ -2,9 +2,9 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
+import Promise = require("bluebird");
 import * as _ from 'lodash';
 import * as logger from 'log4js';
-import Promise = require("bluebird");
 import {DbAdapter} from "../../api/db-adapters/db-adapter";
 import {AttributeFilter} from "../dao/attribute-filter";
 

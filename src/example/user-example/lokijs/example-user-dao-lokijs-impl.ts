@@ -2,13 +2,12 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
-import * as _ from "lodash";
-import {ExampleUser} from "../example-user";
-import {ExampleUserDao} from "../example-user-dao";
 import Promise = require("bluebird");
 import {EntityPropertiesImpl} from "../../../persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {LokiJsAdapter} from "../../../persistence/implementations/db-adapters/lokijs-db-adapter";
+import {ExampleUser} from "../example-user";
+import {ExampleUserDao} from "../example-user-dao";
 
 /**
  * this is the implementation for lokijs of ExampleUserDao
