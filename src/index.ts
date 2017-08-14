@@ -35,6 +35,7 @@ export * from "./persistence/implementations/db-adapters/mongoose-db-adapter";
 export * from "./persistence/implementations/dao/abstract-data-access-object-with-adapter";
 export * from "./persistence/implementations/dao/entity-properties";
 export * from "./persistence/implementations/dao/abstract-data-access-object";
+export * from "./persistence/implementations/dao/validation-error";
 export * from "./persistence/api/dao/crud-repository";
 export * from "./persistence/api/dao/entity-properties";
 export * from "./persistence/api/dao/validation-error";

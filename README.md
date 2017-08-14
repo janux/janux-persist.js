@@ -169,3 +169,7 @@ The project for the moment has two IGenericDaoCRUD instances. One for mongodb (M
     
     carDaoMongoDb.insert(car);
     carDaoLokiJs.insert(car);
+
+**Using janux-persist inside antoher node project.**
+
+Make sure the version of bluebird and @types/bluebird of janux-persist are the same in you project. Not doing the typescript compiler will fail.
