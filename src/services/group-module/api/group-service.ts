@@ -33,13 +33,11 @@ export interface GroupService {
      * Insert a reference to an existing group.
      * @param {string} code The name of the group.
      * @param objectToInsert The object to insert.
-     * @param {boolean} validateDuplicated If true, the method is going to validate and reject if the reference exists in another
-     * groups with the same collectionName that belongs the group.
      * @return {Promise<any>} Return a promise if successful,  a reject the following conditions arise.
      * There is no record with the same name.
      * If validateDuplicated is true. Then the method rejects is the reference belong to another group with the same collectionName.
      */
-    addObjectToGroup(code: string, objectToInsert: any, validateDuplicated: boolean): Promise<null>;
+    addObjectToGroup(code: string, objectToInsert: any): Promise<null>;
 
     /**
      * Removes an object of the group.

@@ -21,6 +21,7 @@ export class GroupValidator {
      * return an array containing the errors.
      */
     public static validate(objectToValidate: GroupEntity): ValidationErrorImpl[] {
+        this._log.debug("Call to validate with objectToValidate %j", objectToValidate);
         const errors: ValidationErrorImpl[] = [];
         if (isBlankString(objectToValidate.name)) {
             errors.push(new ValidationErrorImpl(this.NAME, this.NAME_EMPTY, null));
@@ -30,6 +31,5 @@ export class GroupValidator {
         }
         return errors;
     }
-
     private static _log = logger.getLogger("GroupValidator");
 }

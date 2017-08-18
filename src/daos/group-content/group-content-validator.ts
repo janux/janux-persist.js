@@ -15,6 +15,7 @@ export class GroupContentValidator {
     public static readonly ID_OBJECT_EMPTY = "objectGroup is empty";
 
     public static validate(objectToValidate: GroupContentEntity): ValidationErrorImpl[] {
+        this._log.debug("Call to validate with objectToValidate %j", objectToValidate);
         const errors: ValidationErrorImpl[] = [];
         if (isBlankString(objectToValidate.idGroup)) {
             errors.push(new ValidationErrorImpl(this.ID_GROUP, this.ID_GROUP_EMPTY, null));
