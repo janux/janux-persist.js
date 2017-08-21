@@ -8,66 +8,67 @@ import {AttributeFilter} from "../../implementations/dao/attribute-filter";
 /**
  * Define the methods for read only daos.
  */
-export interface ReadOnlyRepository<t, ID> {
+export interface ReadOnlyRepository<T, ID> {
     /**
-     * Count all documents in the collection.
+     * Return count of all entities of this Type
      */
     count(): Promise<number>;
 
     /**
-     * Find one document by id.
+     * Load a specific entity
      * @param id The id to look for.
      */
-    findOne(id: ID): Promise<t>;
+    findOne(id: ID): Promise<T>;
 
     /**
-     * Find all the documents that matches the query.
+     * Find all entities that match a certain query, where the query object may
+     * vary according to the underlying implementation of the entity store.
      * @param query A mongoose-like query.
      */
-    findByQuery(query: any): Promise<t[]>;
+    findByQuery(query: any): Promise<T[]>;
 
     /**
-     * Find all the documents inside a collection whose ids belongs to the list.
+     * Find all entities with the given IDs
      * @param arrayOfIds The ids to look for.
      */
-    findByIds(arrayOfIds: ID[]): Promise<t[]>;
+    findByIds(arrayOfIds: ID[]): Promise<T[]>;
 
     /**
-     * Find one document inside the collection that has the attributeName and the value.
+     * Find the first entity that has the attributeName and the value.
      * @param attributeName The attribute to look for.
      * @param value The value to compare.
      */
-    findOneByAttribute(attributeName: string, value): Promise<t>;
+    findOneByAttribute(attributeName: string, value): Promise<T>;
 
     /**
-     * Find all the documents inside the collection that has the attributeName and the value.
+     * Find all the entities that have the attributeName and the value.
      * @param attributeName The attribute to look for.
      * @param value The value to compare.
      */
-    findByAttribute(attributeName: string, value): Promise<t[]>;
+    findByAttribute(attributeName: string, value): Promise<T[]>;
 
     /**
-     * Find all the documents inside the collection that has the attribute defined in the method and whose values
+     * Find all the entities that have the attribute defined in the method and whose values
      * belongs to the list.
      * @param attributeName The attribute to look for.
      * @param values The values to compare.
      */
-    findByAttributeNameIn(attributeName: string, values: any[]): Promise<t[]>;
+    findByAttributeNameIn(attributeName: string, values: any[]): Promise<T[]>;
 
     /**
-     * Return all the documents.
+     * Return all entities of this type
      */
-    findAll(): Promise<t[]>;
+    findAll(): Promise<T[]>;
 
     /**
-     * Find all the documents that matches all attributes.
+     * Find all the entities that match all attributes.
      * @param attributes The attributes-value filters.
      */
-    findByAttributesAndOperator(attributes: AttributeFilter[]): Promise<t[]>;
+    findByAttributesAllMatching(attributes: AttributeFilter[]): Promise<T[]>;
 
     /**
-     * Find all the documents that matches only one of the attributes.
+     * Find all entities that match any one of the attributes.
      * @param attributes The attributes-value filters.
      */
-    findByAttributesOrOperator(attributes: AttributeFilter[]): Promise<t[]>;
+    findByAttributesAnyMatching(attributes: AttributeFilter[]): Promise<T[]>;
 }
