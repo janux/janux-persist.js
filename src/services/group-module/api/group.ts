@@ -2,7 +2,7 @@
  * Project
  * Created by ernesto on 8/17/17.
  */
-export interface Group {
+export interface Group<t> {
 
     // A user readable name
     name: string;
@@ -15,7 +15,7 @@ export interface Group {
     description: string;
 
     // Content of the group. It is responsibility of the developer to make sure
-    // the content is simple enough to be saved in a database and query-able by db engines.
+    // the values is simple enough to be saved in a database and query-able by db engines.
     // A personal recommendation is to save the references of the objects.
-    content: any[];
+    values: t[];
 }

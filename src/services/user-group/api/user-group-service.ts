@@ -9,7 +9,7 @@ export interface UserGroupService {
      * Get all group names that belong tho the users group
      * @return {Promise<string>}
      */
-    findAllUserGroups(): Promise<string>;
+    findAllGroupNames(): Promise<string>;
 
     /**
      * Insert a new group
@@ -19,17 +19,17 @@ export interface UserGroupService {
      * operation was successful, a reject if there is another users group
      * with the same name.
      */
-    insertGroup(name: string, users: any[]): Promise<null>;
+    insert(name: string, users: any[]): Promise<null>;
 
     /**
      * Update the users group.
-     * @param {string} name the group whose content is going to updated.
+     * @param {string} name the group whose values is going to updated.
      * @param {any[]} updatesUsersList The new list.
      * @return {Promise<any>} Returns a promise if the operation
      * was successful. Returns a reject if there is no group with
      * this name.
      */
-    updateUsersGroup(name: string, updatesUsersList: any[]): Promise<null>;
+    update(name: string, updatesUsersList: any[]): Promise<null>;
 
     /**
      * Update a name of the users group.
@@ -37,7 +37,7 @@ export interface UserGroupService {
      * @param {string} newName
      * @return Returns a promise indicating the operation was successful, a reject if there is no group with the oldName.
      */
-    updateNameGroup(oldName: string, newName: string): Promise<null> ;
+    updateName(oldName: string, newName: string): Promise<null> ;
 
     /**
      * Delete a group.
@@ -46,7 +46,7 @@ export interface UserGroupService {
      * was successful. Returns a reject if there is no group with
      * this name.
      */
-    deleteGroup(name: string): Promise<null>;
+    remove(name: string): Promise<null>;
 
     /**
      * Return the users that belongs to the group.
@@ -54,6 +54,6 @@ export interface UserGroupService {
      * @return {Promise<any[]>} Returns a promise with the list of users. Return a reject if there is no
      * group with this name.
      */
-    getUsers(name: string): Promise<any[]>;
+    getItems(name: string): Promise<any[]>;
 
 }

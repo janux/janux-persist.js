@@ -9,7 +9,7 @@ import {ValidationErrorImpl} from "../../../persistence/implementations/dao/vali
 import {isBlankString} from "../../../util/blank-string-validator";
 
 /**
- * Validates the content of the person.
+ * Validates the values of the person.
  */
 export class PersonValidator {
 
@@ -19,7 +19,7 @@ export class PersonValidator {
     public static readonly PERSON_NAME_DUPLICATED = "There is another person with the same name";
 
     /**
-     * Validate the content of the person.
+     * Validate the values of the person.
      * @param person
      * @return {ValidationErrorImpl[]}
      */

@@ -13,6 +13,8 @@ export class GroupValidator {
     public static readonly CODE = "code";
     public static readonly NAME_EMPTY = "name is empty";
     public static readonly CODE_EMPTY = "code is empty";
+    public static readonly CODE_DUPLICATED = "There is a record with the same code";
+    public static readonly CODE_DOES_NOT_EXITS: string = "Thre is no record with this code";
 
     /**
      * Validate the entity
@@ -31,5 +33,6 @@ export class GroupValidator {
         }
         return errors;
     }
+
     private static _log = logger.getLogger("GroupValidator");
 }

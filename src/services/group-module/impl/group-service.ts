@@ -4,105 +4,201 @@
  */
 import Promise = require("bluebird");
 import * as log4js from "log4js";
-import {GroupContentDao} from "../../../daos/group-content/group-content-dao";
-import {GroupContentEntity} from "../../../daos/group-content/group-content-entity";
+import {ValidationErrorImpl} from "../../../../dist/persistence/implementations/dao/validation-error";
+import {GroupValueDao} from "../../../daos/group-content/group-value-dao";
+import {GroupValueEntity} from "../../../daos/group-content/group-value-entity";
 import {GroupDao} from "../../../daos/group/group-dao";
 import {GroupEntity} from "../../../daos/group/group-entity";
+import {GroupValidator} from "../../../daos/group/group-validator";
 import {GroupService} from "../api/group-service";
 import {GroupImpl} from "./group";
 
 /**
  * Implementation of the group service.
  * As a comment. This service needs to handle attributes that are not recommended to
- * expose outside the project (the attribute code)0. In this case this service should not exposed to the internet.
+ * expose outside the project (the attribute code). In this case this service should not exposed to the internet.
  * Instead encapsulate the methods with another service.
  */
-export class GroupServiceImpl implements GroupService {
+export class GroupServiceImpl<t> implements GroupService<t> {
 
     private groupDao: GroupDao;
-    private groupContentDao: GroupContentDao;
+    private groupValueDao: GroupValueDao;
     private log = log4js.getLogger("GroupServiceImpl");
 
-    constructor(groupDao: GroupDao, groupContentDao: GroupContentDao) {
+    constructor(groupDao: GroupDao, groupValueDao: GroupValueDao) {
         this.groupDao = groupDao;
-        this.groupContentDao = groupContentDao;
+        this.groupValueDao = groupValueDao;
         this.log.debug("Constructor");
     }
 
-    public insertGroup(group: GroupImpl): Promise<any> {
+    /**
+     * Inserts a group.
+     * @param {GroupImpl} group to insert.
+     * @return {Promise<GroupImpl>} Returns a promise if the object was inserted correctly. Return a reject if
+     * there is another group with the same code.
+     */
+    public insert(group: GroupImpl<t>): Promise<GroupImpl<t>> {
         this.log.debug("Call to insert group with group: %j", group);
-        let entity: GroupEntity;
-        return this.groupDao.findOneByCode(group.name)
+        return this.groupDao.findOneByCode(group.code)
             .then((resultQuery: GroupEntity) => {
                 if (resultQuery == null) {
                     const groupEntity = new GroupEntity();
                     groupEntity.name = group.name;
                     groupEntity.description = group.description;
+                    groupEntity.code = group.code;
                     return this.groupDao.insert(groupEntity);
                 } else {
-                    return Promise.resolve(resultQuery);
+                    this.log.warn("Inserting a group with duplicated code " + group.code);
+                    return Promise.reject([new ValidationErrorImpl(GroupValidator.CODE, GroupValidator.CODE_DUPLICATED, group.code)]);
                 }
             })
-            .then((groupEntity: GroupEntity) => {
-                entity = groupEntity;
-                return this.groupContentDao.deleteAllByIdGroup(groupEntity['id']);
-            })
-            .then(() => {
+            .then((entity: GroupEntity) => {
                 // Insert the records.
-                const records: GroupContentEntity[] = group.content.map((value: any) => {
-                    const groupContentEntity: GroupContentEntity = new GroupContentEntity();
+                const records: GroupValueEntity[] = group.values.map((value: any) => {
+                    const groupContentEntity: GroupValueEntity = new GroupValueEntity();
                     groupContentEntity.idGroup = entity.id;
-                    groupContentEntity.objectGroup = value.id;
+                    groupContentEntity.value = value;
                     return groupContentEntity;
                 });
-                return this.groupContentDao.insertMany(records);
+                return this.groupValueDao.insertMany(records);
+            })
+            .then(() => {
+                return Promise.resolve(group);
             });
     }
 
-    updateGroup(group: GroupImpl): Promise<GroupImpl> {
-        this.log.debug("Call to updateGroup with group %j", group);
-        return null;
-    }
+    /**
+     * Insert an item to a existing group.
+     * @param {string} code The code of the group.
+     * @param objectToInsert The item to insert.
+     * @return {Promise<any>} Return a promise if successful, a reject if there is no group
+     * with the specified code
+     */
+    public addItem(code: string, objectToInsert: t): Promise<null> {
+        this.log.debug("Call to addItem with code: %j, objectToInsert: %j, validateDuplicated");
+        return this.findGroup(code)
+            .then((entity: GroupEntity) => {
+                const groupVale: GroupValueEntity = new GroupValueEntity();
+                groupVale.idGroup = entity.id;
+                groupVale.value = objectToInsert;
+                return this.groupValueDao.insert(groupVale);
+            })
+            .then(() => {
+                return Promise.resolve(null);
+            });
 
-    deleteGroup(group: GroupImpl): Promise<any> {
-        this.log.debug("Call to deleteGroup with group: %j", group);
-        return null;
     }
 
     /**
-     * Add object to a group
-     * @param {string} code GroupImpl where the object is going gto be inserted.
-     * @param objectToInsert The object to insert.
+     * Updates a group and it's values.
+     * @param {Group} group The group to be updated.
+     * @return {Promise<Group>} Returns a reject if there is no group with the same code.
+     */
+    update(group: GroupImpl<t>): Promise<GroupImpl<t>> {
+        this.log.debug("Call to update with group %j", group);
+        let groupEntity: GroupEntity;
+        return this.findGroup(group.code)
+            .then((result: GroupEntity) => {
+                result.name = group.name;
+                result.description = group.description;
+                return this.groupDao.update(result);
+            })
+            .then((result: GroupEntity) => {
+                groupEntity = result;
+                return this.groupValueDao.removeAllByIdGroup(result.id);
+            })
+            .then(() => {
+                // Insert the new values.
+                const records: GroupValueEntity[] = group.values.map((value: any) => {
+                    const groupContentEntity: GroupValueEntity = new GroupValueEntity();
+                    groupContentEntity.idGroup = groupEntity.id;
+                    groupContentEntity.value = value;
+                    return groupContentEntity;
+                });
+                return this.groupValueDao.insertMany(records);
+            })
+            .then(() => {
+                return Promise.resolve(group);
+            });
+    }
+
+    /**
+     * Delete group.
+     * @param {Group} group The group to delete.
      * @return {Promise<any>}
      */
-    public addObjectToGroup(code: string, objectToInsert: any): Promise<null> {
-        this.log.debug("Call to addObjectToGroup with code: %j, objectToInsert: %j, validateDuplicated")
-        let groupEntity: GroupEntity;
-        // Find the group
+    remove(group: GroupImpl<t>): Promise<any> {
+        this.log.debug("Call to remove with group: %j", group);
+        let entity: GroupEntity;
+        return this.findGroup(group.code)
+            .then((groupEntity: GroupEntity) => {
+                entity = groupEntity;
+                // Delete the values.
+                return this.groupValueDao.removeAllByIdGroup(entity.id);
+            })
+            .then(() => {
+                // Delete the group.
+                return this.groupDao.remove(entity);
+            })
+            .then(() => {
+                return Promise.resolve();
+            });
+    }
+
+    /**
+     * Removes an item of the group.
+     * @param {string} code The group code.
+     * @param objectToRemove The object to remove.
+     * Return a promise if the remove was successful. Returns a reject if there is group
+     * with the specified code.
+     */
+    public removeItem(code: string, objectToRemove: t): Promise<null> {
+        this.log.debug("Call to removeItem with code: %j object to remove %j", code, objectToRemove);
+        return this.findGroup(code)
+            .then((entity: GroupEntity) => {
+                return this.groupValueDao.findByIdGroupAndValue(entity.id, objectToRemove);
+            })
+            .then((values: GroupValueEntity[]) => {
+                const ids: string[] = values.map((value) => value.id);
+                return this.groupValueDao.removeByIds(ids);
+            });
+    }
+
+    /**
+     * Get the group and it's items given a code
+     * @param {string} code the code of the group.
+     * @return {Promise<GroupImpl>} Return a promise with the group, a reject if there is no group
+     * with the specified code.
+     */
+    public findOneByCode(code: string): Promise<GroupImpl<t>> {
+        this.log.debug("Call to find with code %j", code);
+        const result: GroupImpl<t> = new GroupImpl();
+        return this.findGroup(code)
+            .then((groupEntity: GroupEntity) => {
+                result.code = groupEntity.code;
+                result.name = groupEntity.name;
+                result.description = groupEntity.description;
+                return this.groupValueDao.findByIdGroup(groupEntity.id);
+            })
+            .then((groupValues: GroupValueEntity[]) => {
+                result.values = groupValues.map((item) => item.value);
+                return Promise.resolve(result);
+            });
+    }
+
+    /**
+     * Return a group given a code
+     * @param {string} code The code to look for.
+     * @return {Bluebird<GroupEntity>} Return a promise with the code, or a reject if there is no record
+     * with the specified code.
+     */
+    private findGroup(code: string): Promise<GroupEntity> {
         return this.groupDao.findOneByCode(code)
             .then((resultQuery: GroupEntity) => {
                 if (resultQuery == null) {
-                    return Promise.reject("There is no group with the code " + code);
+                    return Promise.reject([new ValidationErrorImpl(GroupValidator.CODE, GroupValidator.CODE_DOES_NOT_EXITS, code)]);
                 }
-                groupEntity = resultQuery;
+                return Promise.resolve(resultQuery);
             });
-    }
-
-    /**
-     * Remove and object to the group.
-     * @param {string} code
-     * @param objectToRemove
-     */
-    public removeReferenceToGroup(code: string, objectToRemove: any): Promise<null> {
-        throw new Error("Method not implemented.");
-    }
-
-    /**
-     * Get the group and it's content given a code
-     * @param {string} code the code of the group.
-     * @return {Promise<GroupImpl>}
-     */
-    public findGroup(code: string): Promise<GroupImpl> {
-        return null;
     }
 }

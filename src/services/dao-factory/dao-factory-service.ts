@@ -5,6 +5,10 @@
 
 import * as _ from 'lodash';
 import * as logger from 'log4js';
+import {GroupValueDao} from "../../daos/group-content/group-value-dao";
+import {GroupContentMongooseSchema} from "../../daos/group-content/mongoose/group-value-mongoose-schema";
+import {GroupDao} from "../../daos/group/group-dao";
+import {GroupMongooseSchema} from "../../daos/group/mongoose/group-mongoose-schema";
 import {PartyDaoLokiJsImpl} from "../../daos/party/lokijs/party-dao-loki-js-impl";
 import {PartyDaoMongooseImpl} from "../../daos/party/mongoose/party-dao-mongoose-impl";
 import {PartyMongooseSchema} from "../../daos/party/mongoose/party-mongoose-schema";
@@ -25,7 +29,6 @@ import {Dao} from "./dao";
  * Given the database params, this class hides which implementation classes are used.
  */
 export class DaoFactory {
-
     /**
      * Get a new party dao, or a existing one with the same db engine and dbPath.
      * @param dbEngine
@@ -91,8 +94,64 @@ export class DaoFactory {
         }
     }
 
+    public static createGroupDao(dbEngine: any, dbPath: string): GroupDao {
+        this._log.debug("Call to crateGroupDao with dbEngine %j , dbPath %j", dbEngine, dbPath);
+        const existingDao: Dao = this.getDao(dbEngine, dbPath, this.GROUP_DEFAULT_COLLECTION_NAME);
+        let groupDao: GroupDao;
+        if (_.isUndefined(existingDao)) {
+            this._log.debug("Creating a new groupDao");
+            const dataSource: DataSource = this.getDataSource(dbEngine, dbPath);
+            if (dbEngine === DataSourceHandler.MONGOOSE) {
+                groupDao = new GroupDao(
+                    new MongooseAdapter(dataSource.dbConnection.model(this.GROUP_DEFAULT_COLLECTION_NAME, GroupMongooseSchema)),
+                    new EntityPropertiesImpl(true, true));
+            } else {
+                groupDao = new GroupDao(
+                    new LokiJsAdapter(this.GROUP_DEFAULT_COLLECTION_NAME, dataSource.dbConnection),
+                    new EntityPropertiesImpl(true, true)
+                );
+            }
+            this.insertDao(dbEngine, dbPath, this.GROUP_DEFAULT_COLLECTION_NAME, groupDao);
+            this._log.debug("Returning inserted dao");
+            return groupDao;
+        } else {
+            this._log.debug("Returning an existing groupDao");
+            groupDao = existingDao.daoInstance;
+            return groupDao;
+        }
+    }
+
+    public static createGroupValueDao(dbEngine: any, dbPath: string): GroupValueDao {
+        this._log.debug("Call to createGroupValueDao with dbEngine %j , dbPath %j", dbEngine, dbPath);
+        const existingDao: Dao = this.getDao(dbEngine, dbPath, this.GROUP_CONTENT_DEFAULT_COLLECTION_NAME);
+        let groupContentDao: GroupValueDao;
+        if (_.isUndefined(existingDao)) {
+            this._log.debug("Creating a new groupContentDao");
+            const dataSource: DataSource = this.getDataSource(dbEngine, dbPath);
+            if (dbEngine === DataSourceHandler.MONGOOSE) {
+                groupContentDao = new GroupValueDao(
+                    new MongooseAdapter(dataSource.dbConnection.model(this.GROUP_CONTENT_DEFAULT_COLLECTION_NAME, GroupContentMongooseSchema)),
+                    new EntityPropertiesImpl(true, true));
+            } else {
+                groupContentDao = new GroupValueDao(
+                    new LokiJsAdapter(this.GROUP_CONTENT_DEFAULT_COLLECTION_NAME, dataSource.dbConnection),
+                    new EntityPropertiesImpl(true, true)
+                );
+            }
+            this.insertDao(dbEngine, dbPath, this.GROUP_CONTENT_DEFAULT_COLLECTION_NAME, groupContentDao);
+            this._log.debug("Returning new groupContentDao");
+            return groupContentDao;
+        } else {
+            this._log.debug("Returning an existing groupContentDao");
+            groupContentDao = existingDao.daoInstance;
+            return groupContentDao;
+        }
+    }
+
     private static PARTY_DEFAULT_COLLECTION_NAME: string = "contact";
     private static ACCOUNT_DEFAULT_COLLECTION_NAME: string = "account";
+    private static GROUP_CONTENT_DEFAULT_COLLECTION_NAME: string = "groupValue";
+    private static GROUP_DEFAULT_COLLECTION_NAME: string = "group";
     private static _log = logger.getLogger("DaoFactoryService");
     private static daos: Dao[] = [];
 
@@ -110,6 +169,7 @@ export class DaoFactory {
     }
 
     private static getDao(dbEngine: any, dbPath: string, daoName: string): Dao {
+        this._log.debug("Call to getDao with dbEngine %j, dbPath: %j, daoName %j", dbEngine, dbPath, daoName);
         const existingDaos: Dao[] = this.daos.filter((value) => value.dbEngine === dbEngine && value.daoName === daoName && value.dbPath === dbPath);
         let result: Dao;
         if (existingDaos.length === 1) {

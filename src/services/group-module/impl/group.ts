@@ -8,7 +8,7 @@ import {Group} from "../api/group";
 /**
  * This class saves the group information
  */
-export class GroupImpl implements Group {
+export class GroupImpl<t> implements Group<t> {
     // A user readable name
     name: string;
 
@@ -20,7 +20,7 @@ export class GroupImpl implements Group {
     description: string;
 
     // Content of the group. It is responsibility of the developer to make sure
-    // the content is simple enough to be saved in a database and query-able by db engines.
+    // the values is simple enough to be saved in a database and query-able by db engines.
     // A personal recommendation is to save the references of the objects.
-    content: any[];
+    values: t[] = [];
 }
