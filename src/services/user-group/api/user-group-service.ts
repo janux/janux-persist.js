@@ -9,7 +9,7 @@ export interface UserGroupService {
      * Get all group names that belong tho the users group
      * @return {Promise<string>}
      */
-    findAllGroupNames(): Promise<string>;
+    findAllGroupNames(): Promise<string[]>;
 
     /**
      * Insert a new group
