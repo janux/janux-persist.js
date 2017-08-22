@@ -20,7 +20,7 @@ export class UserGroupServiceImpl implements UserGroupService {
         this.groupService = new GroupServiceImpl<any>(groupDao, groupContentDao);
     }
 
-    findAllGroupNames(): Promise<string> {
+    findAllGroupNames(): Promise<string[]> {
         return null;
     }
 
