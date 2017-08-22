@@ -75,11 +75,19 @@ export class UserService {
 
     /**
      * Find all users and adds its contact info.
-     * @return {Promise<U>}
+     * @return {Promise<any[]>}
      */
     public findAll(): Promise<any[]> {
         this._log.debug("Call to findAllMethod");
         return this.accountDao.findAll()
+            .then((users: AccountEntity[]) => {
+                return this.populateContactData(users);
+            });
+    }
+
+    public findByIdsIn(ids: string[]): Promise<any[]> {
+        this._log.debug("Call to findByIdsIn with ids %j", ids);
+        return this.accountDao.findByIds(ids)
             .then((users: AccountEntity[]) => {
                 return this.populateContactData(users);
             });

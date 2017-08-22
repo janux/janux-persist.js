@@ -30,6 +30,13 @@ export interface GroupService<t> {
     remove(group: Group<t>): Promise<null>;
 
     /**
+     * Delete group.
+     * @param {Group} code The code of the group to delete.
+     * @return {Promise<any>} Return a promise when the group has been deleted.
+     */
+    removeByCode(code: string): Promise<null>;
+
+    /**
      * Insert an item to a existing group.
      * @param {string} code The code of the group.
      * @param objectToInsert The item to insert.

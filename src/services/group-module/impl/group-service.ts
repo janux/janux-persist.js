@@ -105,6 +105,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
             })
             .then((result: GroupEntity) => {
                 groupEntity = result;
+                // Remove the old items.
                 return this.groupValueDao.removeAllByIdGroup(result.id);
             })
             .then(() => {
@@ -129,8 +130,18 @@ export class GroupServiceImpl<t> implements GroupService<t> {
      */
     remove(group: GroupImpl<t>): Promise<any> {
         this.log.debug("Call to remove with group: %j", group);
+        return this.removeByCode(group.code);
+    }
+
+    /**
+     * Delete group.
+     * @param {Group} code The code of the group to delete.
+     * @return {Promise<any>} Return a promise when the group has been deleted.
+     */
+    removeByCode(code: string): Promise<any> {
+        this.log.debug("Call to removeByCode with group: %j", code);
         let entity: GroupEntity;
-        return this.findGroup(group.code)
+        return this.findGroup(code)
             .then((groupEntity: GroupEntity) => {
                 entity = groupEntity;
                 // Delete the values.
