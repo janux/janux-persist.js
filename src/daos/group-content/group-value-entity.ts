@@ -4,9 +4,9 @@
  */
 
 /**
- * The entity for the content of the group
+ * The entity for the values of the group
  */
-export class GroupContentEntity {
+export class GroupValueEntity {
 
     // The id to the database
     id: string;
@@ -16,7 +16,7 @@ export class GroupContentEntity {
 
     // The object that belong to the group. The developer is responsible
     // to save enough information in order to identify the object
-    // Also, the content to the object must be database friendly and database query-able.
-    objectGroup: any;
+    // Also, the values to the object must be database friendly and database query-able.
+    value: any;
 
 }

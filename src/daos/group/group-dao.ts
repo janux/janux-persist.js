@@ -3,24 +3,21 @@
  * Created by ernesto on 8/16/17.
  */
 import Promise = require("bluebird");
-import {EntityPropertiesImpl} from "../../../dist/persistence/implementations/dao/entity-properties";
 import {DbAdapter} from "../../persistence/api/db-adapters/db-adapter";
 import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
+import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 import {GroupEntity} from "./group-entity";
 import {GroupValidator} from "./group-validator";
 
 export class GroupDao extends AbstractDataAccessObjectWithAdapter<GroupEntity, string> {
 
-    public readonly CODE = "CODE";
-    public readonly CODE_DUPLICATED = "There is a record with the same code";
-
     constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
         super(dbAdapter, entityProperties);
     }
 
     public findOneByCode(code: string) {
-        return this.findOneByAttribute(this.CODE, code);
+        return this.findOneByAttribute(GroupValidator.CODE, code);
     }
 
     protected validateEntity(objectToValidate: GroupEntity): ValidationErrorImpl[] {
@@ -32,7 +29,7 @@ export class GroupDao extends AbstractDataAccessObjectWithAdapter<GroupEntity, s
             .then((resultQuery: GroupEntity) => {
                 const errors: ValidationErrorImpl[] = [];
                 if (resultQuery != null) {
-                    errors.push(new ValidationErrorImpl(this.CODE, this.CODE_DUPLICATED, objectToInsert.code));
+                    errors.push(new ValidationErrorImpl(GroupValidator.CODE, GroupValidator.CODE_DUPLICATED, objectToInsert.code));
                 }
                 return Promise.resolve(errors);
             });
@@ -49,7 +46,7 @@ export class GroupDao extends AbstractDataAccessObjectWithAdapter<GroupEntity, s
             .then((resultQuery: GroupEntity[]) => {
                 const errors: ValidationErrorImpl[] = [];
                 if (resultQuery.length > 0) {
-                    errors.push(new ValidationErrorImpl(this.CODE, this.CODE_DUPLICATED, objectToUpdate.code));
+                    errors.push(new ValidationErrorImpl(GroupValidator.CODE, GroupValidator.CODE_DUPLICATED, objectToUpdate.code));
                 }
                 return Promise.resolve(errors);
             });

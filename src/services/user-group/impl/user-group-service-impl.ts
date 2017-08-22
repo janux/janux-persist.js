@@ -3,41 +3,44 @@
  * Created by ernesto on 8/17/17.
  */
 import Promise = require("bluebird");
-import {GroupContentDao} from "../../../daos/group-content/group-content-dao";
+import {GroupValueDao} from "../../../daos/group-content/group-value-dao";
 import {GroupDao} from "../../../daos/group/group-dao";
+import {GroupServiceImpl} from "../../group-module/impl/group-service";
 import {UserGroupService} from "../api/user-group-service";
 
 export class UserGroupServiceImpl implements UserGroupService {
 
     private groupDao: GroupDao;
-    private groupContentDao: GroupContentDao;
+    private groupContentDao: GroupValueDao;
+    private groupService: GroupServiceImpl<any>;
 
-    constructor(groupDao: GroupDao, groupContentDao: GroupContentDao) {
+    constructor(groupDao: GroupDao, groupContentDao: GroupValueDao) {
         this.groupDao = groupDao;
         this.groupContentDao = groupContentDao;
+        this.groupService = new GroupServiceImpl<any>(groupDao, groupContentDao);
     }
 
-    findAllUserGroups(): Promise<string> {
+    findAllGroupNames(): Promise<string> {
         return null;
     }
 
-    insertGroup(name: string, users: any[]): Promise<any> {
+    insert(name: string, users: any[]): Promise<any> {
         return null;
     }
 
-    updateUsersGroup(name: string, updatesUsersList: any[]): Promise<any> {
+    update(name: string, updatesUsersList: any[]): Promise<any> {
         return null;
     }
 
-    updateNameGroup(oldName: string, newName: string): Promise<null>  {
+    updateName(oldName: string, newName: string): Promise<null> {
         return null;
     }
 
-    deleteGroup(name: string): Promise<any> {
+    remove(name: string): Promise<any> {
         return null;
     }
 
-    getUsers(name: string): Promise<any[]> {
+    getItems(name: string): Promise<any[]> {
         return null;
     }
 }

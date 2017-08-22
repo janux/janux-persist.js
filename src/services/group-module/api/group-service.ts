@@ -5,53 +5,53 @@
 import Promise = require("bluebird");
 import {Group} from "./group";
 
-export interface GroupService {
+export interface GroupService<t> {
 
     /**
-     * Inserts a group. If there is a group with the same code.
+     * Inserts a group.
      * @param {GroupImpl} group to insert.
      * @return {Promise<GroupImpl>} Returns a promise if the object was inserted correctly. Return a reject if
      * there is another group with the same code.
      */
-    insertGroup(group: Group): Promise<Group>;
+    insert(group: Group<t>): Promise<Group<t>>;
 
     /**
-     * Updates a group and it's content.
+     * Updates a group and it's values.
      * @param {Group} group The group to be updated.
      * @return {Promise<Group>} Returns a reject if there is no group with the same code.
      */
-    updateGroup(group: Group): Promise<Group>;
+    update(group: Group<t>): Promise<Group<t>>;
 
     /**
      * Delete group.
      * @param {Group} group The group to delete.
      * @return {Promise<any>}
      */
-    deleteGroup(group: Group): Promise<null>;
+    remove(group: Group<t>): Promise<null>;
 
     /**
-     * Insert a reference to an existing group.
-     * @param {string} code The name of the group.
-     * @param objectToInsert The object to insert.
-     * @return {Promise<any>} Return a promise if successful,  a reject the following conditions arise.
-     * There is no record with the same name.
-     * If validateDuplicated is true. Then the method rejects is the reference belong to another group with the same collectionName.
+     * Insert an item to a existing group.
+     * @param {string} code The code of the group.
+     * @param objectToInsert The item to insert.
+     * @return {Promise<any>} Return a promise if successful, a reject if there is no group
+     * with the specified code
      */
-    addObjectToGroup(code: string, objectToInsert: any): Promise<null>;
+    addItem(code: string, objectToInsert: any): Promise<null>;
 
     /**
-     * Removes an object of the group.
+     * Removes an item of the group.
      * @param {string} code The group code.
      * @param objectToRemove The object to remove.
-     * Return a promise if the removal was successful. Returns a reject if the object
-     * to remove does not belong to the group.
+     * Return a promise if the remove was successful. Returns a reject if there is group
+     * with the specified code.
      */
-    removeReferenceToGroup(code: string, objectToRemove: any): Promise<null>;
+    removeItem(code: string, objectToRemove: any): Promise<null>;
 
     /**
-     * Get the group and it's content.
-     * @param {string} code
-     * @return {Promise<GroupImpl>}
+     * Get the group and it's items given a code
+     * @param {string} code the code of the group.
+     * @return {Promise<GroupImpl>} Return a promise with the group, a reject if there is no group
+     * with the specified code.
      */
-    findGroup(code: string): Promise<Group>;
+    findOneByCode(code: string): Promise<Group<t>>;
 }
