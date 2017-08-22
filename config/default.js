@@ -49,4 +49,19 @@ cfg.tsConfig = {
     declaration: true
 };
 
+//
+// Configure tests
+//
+cfg.serverAppContext = {
+		db: {
+				dbEngine: "lokijs",
+				mongoConnUrl: "mongodb://localhost/janux-persistence-test",
+				lokiJsDBPath: "./janux-persistence-test.db"
+		}
+},
+
+cfg.mocha = {
+	reporter: 'dot'
+}
+
 module.exports = cfg;
