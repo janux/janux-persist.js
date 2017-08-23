@@ -37,13 +37,13 @@ export interface GroupService<t> {
     removeByCode(code: string): Promise<null>;
 
     /**
-     * Insert an item to a existing group.
+     * Insert an user to a existing group.
      * @param {string} code The code of the group.
      * @param objectToInsert The item to insert.
      * @return {Promise<any>} Return a promise if successful, a reject if there is no group
      * with the specified code
      */
-    addItem(code: string, objectToInsert: any): Promise<null>;
+    addItem(code: string, objectToInsert: t): Promise<null>;
 
     /**
      * Removes an item of the group.
@@ -52,7 +52,7 @@ export interface GroupService<t> {
      * Return a promise if the remove was successful. Returns a reject if there is group
      * with the specified code.
      */
-    removeItem(code: string, objectToRemove: any): Promise<null>;
+    removeItem(code: string, objectToRemove: t): Promise<null>;
 
     /**
      * Get the group and it's items given a code
