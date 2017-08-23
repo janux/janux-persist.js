@@ -150,6 +150,53 @@ export class UserGroupServiceImpl implements UserGroupService {
     }
 
     /**
+     * Adds an user to a users list.
+     * @param {string} name The name of the list.
+     * @param user The user to be added.
+     * @return {Bluebird<any>} Return a promise indicating the users has been inserted.
+     * To the list, or a reject if there is no users group with this name.
+     */
+    addItem(name: string, user: any): Promise<any> {
+        return this.findOrInsertGroupListName()
+            .then((groupNames: GroupImpl<UserListName>) => {
+                let filteredData: UserListName[];
+                let groupWhereToAddUser: UserListName;
+                filteredData = groupNames.values.filter((value) => value.name === name);
+                if (filteredData.length === 1) {
+                    groupWhereToAddUser = filteredData[0];
+                    return this.groupServiceUsers.addItem(groupWhereToAddUser.code, user.id);
+                } else if (filteredData.length === 0) {
+                    return Promise.reject("There is no users group with the name " + name);
+                } else {
+                    throw  new Error("Two users groups with the same name");
+                }
+            });
+    }
+
+    /**
+     * Removes an user from a group
+     * @param {string} name The name of the group.
+     * @param user The user to remove.
+     * @return {Bluebird<any>}
+     */
+    remoteItem(name: string, user: any): Promise<any> {
+        return this.findOrInsertGroupListName()
+            .then((groupNames: GroupImpl<UserListName>) => {
+                let filteredData: UserListName[];
+                let groupWhereToAddUser: UserListName;
+                filteredData = groupNames.values.filter((value) => value.name === name);
+                if (filteredData.length === 1) {
+                    groupWhereToAddUser = filteredData[0];
+                    return this.groupServiceUsers.removeItem(groupWhereToAddUser.code, user.id);
+                } else if (filteredData.length === 0) {
+                    return Promise.reject("There is no users group with the name " + name);
+                } else {
+                    throw  new Error("Two users groups with the same name");
+                }
+            });
+    }
+
+    /**
      * Delete a group.
      * @param {string} name
      * @return {Promise<null>} Returns a promise if the operation

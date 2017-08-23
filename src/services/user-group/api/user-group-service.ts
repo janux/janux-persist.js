@@ -23,6 +23,23 @@ export interface UserGroupService {
     insertOrUpdate(name: string, users: any[]): Promise<Group<any>>;
 
     /**
+     * Adds an user to a group.
+     * @param {string} name The name of the list.
+     * @param user The user to be added.
+     * @return {Bluebird<any>} Return a promise indicating the users has been inserted.
+     * To the list, or a reject if there is no users group with this name.
+     */
+    addItem(name: string, user: any): Promise<null>;
+
+    /**
+     * Removes an user from a group
+     * @param {string} name The name of the group.
+     * @param user The user to remove.
+     * @return {Bluebird<any>}
+     */
+    remoteItem(name: string, user: any): Promise<null>;
+
+    /**
      * Delete a group.
      * @param {string} name
      * @return {Promise<null>} Returns a promise if the operation

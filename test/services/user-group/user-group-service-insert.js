@@ -26,6 +26,10 @@ describe("Testing user group service insert method", function () {
     var userGroupService;
     var userService;
     var sampleUsers;
+    var smallSampleUser;
+    var anUserToAdd;
+    const name = "all users";
+    const name2 = "some users";
 
     beforeEach(function (done) {
         groupValueDao = DaoFactory.createGroupValueDao(dbEngine, path);
@@ -52,14 +56,16 @@ describe("Testing user group service insert method", function () {
                 })
                 .then(function (result) {
                     sampleUsers = result;
+                    smallSampleUser = [sampleUsers[0], sampleUsers[1]];
+                    anUserToAdd = sampleUsers[2];
                     done();
                 });
-        }, 50);
+        }, 20);
 
     });
 
     describe("When calling insertOrUpdate", function () {
-        var name = "all users";
+
         var insertedGroups;
         it("The method should insert the users to the assigned group", function (done) {
             // Inserting a users group with all the users.
@@ -132,4 +138,31 @@ describe("Testing user group service insert method", function () {
                 });
         })
     });
+
+
+    describe("When calling addItem", function () {
+        it("The method should add the user to the group", function (done) {
+            var groupCode;
+            //Create the group.
+            userGroupService.insertOrUpdate(name2, smallSampleUser)
+                .then(function (smallUsersGroup) {
+                    groupCode = smallUsersGroup.code;
+                    return userGroupService.addItem(name2, anUserToAdd);
+                })
+                .then(function () {
+                    return groupDao.findOneByCode(groupCode);
+                })
+                .then(function (resultQuery) {
+                    expect(resultQuery).not.to.be.null;
+                    return groupValueDao.findByIdGroup(resultQuery.id);
+                })
+                .then(function (resultGroupItems) {
+                    expect(resultGroupItems.length).eq(3);
+                    expect(resultGroupItems[0].value).eq(sampleUsers[0].id);
+                    expect(resultGroupItems[1].value).eq(sampleUsers[1].id);
+                    expect(resultGroupItems[2].value).eq(sampleUsers[2].id);
+                    done();
+                });
+        })
+    })
 });

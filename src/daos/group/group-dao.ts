@@ -16,8 +16,12 @@ export class GroupDao extends AbstractDataAccessObjectWithAdapter<GroupEntity, s
         super(dbAdapter, entityProperties);
     }
 
-    public findOneByCode(code: string) {
+    public findOneByCode(code: string): Promise<GroupEntity> {
         return this.findOneByAttribute(GroupValidator.CODE, code);
+    }
+
+    public findByCodesIn(codes: string[]): Promise<GroupEntity[]> {
+        return this.findByAttributeNameIn(GroupValidator.CODE, codes);
     }
 
     protected validateEntity(objectToValidate: GroupEntity): ValidationErrorImpl[] {
