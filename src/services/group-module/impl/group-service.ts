@@ -4,12 +4,12 @@
  */
 import Promise = require("bluebird");
 import * as log4js from "log4js";
-import {ValidationErrorImpl} from "../../../../dist/persistence/implementations/dao/validation-error";
 import {GroupValueDao} from "../../../daos/group-content/group-value-dao";
 import {GroupValueEntity} from "../../../daos/group-content/group-value-entity";
 import {GroupDao} from "../../../daos/group/group-dao";
 import {GroupEntity} from "../../../daos/group/group-entity";
 import {GroupValidator} from "../../../daos/group/group-validator";
+import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {GroupService} from "../api/group-service";
 import {GroupImpl} from "./group";
 
@@ -183,7 +183,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
      */
     public findOneByCode(code: string): Promise<GroupImpl<t>> {
         this.log.debug("Call to find with code %j", code);
-        const result: GroupImpl<t> = new GroupImpl();
+        const result: GroupImpl<t> = new GroupImpl<any>();
         return this.findGroup(code)
             .then((groupEntity: GroupEntity) => {
                 result.code = groupEntity.code;

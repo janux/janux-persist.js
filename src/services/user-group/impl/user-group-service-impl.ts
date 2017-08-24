@@ -126,7 +126,7 @@ export class UserGroupServiceImpl implements UserGroupService {
                         .then((updateGroupNames: GroupImpl<UserListName>) => {
                             this.groupListNames = updateGroupNames;
                             // Create a new users group.
-                            const newUsersGroup: GroupImpl<string> = new GroupImpl();
+                            const newUsersGroup: GroupImpl<string> = new GroupImpl<string>();
                             newUsersGroup.name = newGroupName.name;
                             newUsersGroup.code = newGroupName.code;
                             newUsersGroup.description = newGroupName.code;
@@ -242,7 +242,7 @@ export class UserGroupServiceImpl implements UserGroupService {
                     return Promise.resolve(groupListNames);
                 }, () => {
                     // Create a new group list;
-                    const newGroup: GroupImpl<UserListName> = new GroupImpl();
+                    const newGroup: GroupImpl<UserListName> = new GroupImpl<UserListName>();
                     newGroup.name = this.GROUP_NAMES_NAME;
                     newGroup.code = this.GROUP_NAMES_CODE;
                     this.groupListNames = newGroup;
