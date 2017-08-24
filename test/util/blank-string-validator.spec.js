@@ -4,9 +4,7 @@
  */
 var chai = require('chai');
 var expect = chai.expect;
-var config = require('config');
 //Config files
-var serverAppContext = config.get("serverAppContext");
 var isBlankString = require("../../dist/index").isBlankString;
 
 describe("Testing blank string validator", function () {
@@ -45,6 +43,4 @@ describe("Testing blank string validator", function () {
             expect(isBlankString("   ")).eq(true);
         });
     });
-
-
 });
