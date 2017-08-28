@@ -123,7 +123,7 @@ export class PartyValidator {
          person = element as PersonEntity;
          if (PersonName.validateSameName(person.name, personReference.name) === true) {
          errors.push(new ValidationErrorImpl(
-         PersonValidator.CODE,
+         PersonValidator.ATTRIBUTES,
          PersonValidator.PERSON_NAME_DUPLICATED,
          JSON.stringify(person.name)));
          }
@@ -132,7 +132,7 @@ export class PartyValidator {
          organization = element as OrganizationEntity;
          if (organization.name === organizationReference.name) {
          errors.push(new ValidationErrorImpl(
-         OrganizationValidator.CODE,
+         OrganizationValidator.ATTRIBUTES,
          OrganizationValidator.CODE_DUPLICATED,
          organization.name));
          }

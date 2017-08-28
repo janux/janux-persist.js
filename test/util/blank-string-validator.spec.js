@@ -8,6 +8,13 @@ var expect = chai.expect;
 var isBlankString = require("../../dist/index").isBlankString;
 
 describe("Testing blank string validator", function () {
+
+    describe("When sending an string", function () {
+        it("The method should return false",function () {
+            expect(isBlankString("hello")).eq(false);
+        })
+    });
+
     describe("When sending a null value", function () {
         it("The method should return true", function () {
             expect(isBlankString(null)).eq(true);

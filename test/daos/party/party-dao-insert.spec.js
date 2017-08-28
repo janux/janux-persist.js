@@ -245,7 +245,7 @@ describe("Testing party dao insertMethod methods", function () {
         //             .catch(function (err) {
         //                 assert("The method sent an error. It is OK");
         //                 expect(err.length).eq(1);
-        //                 expect(err[0].attribute).eq(PersonValidator.CODE);
+        //                 expect(err[0].attribute).eq(PersonValidator.ATTRIBUTES);
         //                 expect(err[0].message).eq(PersonValidator.PERSON_NAME_DUPLICATED);
         //                 done();
         //             })
@@ -276,7 +276,7 @@ describe("Testing party dao insertMethod methods", function () {
         //             .catch(function (err) {
         //                 assert("The method sent an error. It is OK");
         //                 expect(err.length).eq(1);
-        //                 expect(err[0].attribute).eq(OrganizationValidator.CODE);
+        //                 expect(err[0].attribute).eq(OrganizationValidator.ATTRIBUTES);
         //                 expect(err[0].message).eq(OrganizationValidator.CODE_DUPLICATED);
         //                 done();
         //             })

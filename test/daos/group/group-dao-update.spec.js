@@ -95,7 +95,7 @@ describe("Testing group dao update methods", function () {
                     })
                     .catch(function (err) {
                         expect(err.length).eq(1);
-                        expect(err[0].attribute).eq(GroupValidator.CODE);
+                        expect(err[0].attribute).eq(GroupValidator.ATTRIBUTES);
                         expect(err[0].message).eq(GroupValidator.CODE_EMPTY);
                         done();
                     })
@@ -112,7 +112,7 @@ describe("Testing group dao update methods", function () {
                     })
                     .catch(function (err) {
                         expect(err.length).eq(1);
-                        expect(err[0].attribute).eq(GroupValidator.CODE);
+                        expect(err[0].attribute).eq(GroupValidator.ATTRIBUTES);
                         expect(err[0].message).eq(GroupValidator.CODE_DUPLICATED);
                         done();
                     })

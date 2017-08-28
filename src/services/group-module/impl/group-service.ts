@@ -5,25 +5,22 @@
 import Promise = require("bluebird");
 import * as log4js from "log4js";
 import {GroupValueDao} from "../../../daos/group-content/group-value-dao";
-import {GroupValueEntity} from "../../../daos/group-content/group-value-entity";
 import {GroupDao} from "../../../daos/group/group-dao";
-import {GroupEntity} from "../../../daos/group/group-entity";
-import {GroupValidator} from "../../../daos/group/group-validator";
-import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {GroupService} from "../api/group-service";
 import {GroupImpl} from "./group";
+import {GroupPropertiesImpl} from "./group-properties";
 
 /**
- * Implementation of the group service.
+ * Implementation of the GroupImpl service.
  * As a comment. This service needs to handle attributes that are not recommended to
  * expose outside the project (the attribute code). In this case this service should not exposed to the internet.
  * Instead encapsulate the methods with another service.
  */
-export class GroupServiceImpl<t> implements GroupService<t> {
+export class GroupImplServiceImpl<t> implements GroupService<t> {
 
     private groupDao: GroupDao;
     private groupValueDao: GroupValueDao;
-    private log = log4js.getLogger("GroupServiceImpl");
+    private log = log4js.getLogger("GroupImplServiceImpl");
 
     constructor(groupDao: GroupDao, groupValueDao: GroupValueDao) {
         this.groupDao = groupDao;
@@ -32,184 +29,108 @@ export class GroupServiceImpl<t> implements GroupService<t> {
     }
 
     /**
-     * Inserts a group.
-     * @param {GroupImpl} group to insert.
-     * @return {Promise<GroupImpl>} Returns a promise if the object was inserted correctly. Return a reject if
-     * there is another group with the same code.
+     * Return all group properties that shares the same type.
+     * @param {string} type
+     * @return {Bluebird<GroupProperties[]>} Return a list of group references.
      */
-    public insert(group: GroupImpl<t>): Promise<GroupImpl<t>> {
-        this.log.debug("Call to insert group with group: %j", group);
-        return this.groupDao.findOneByCode(group.code)
-            .then((resultQuery: GroupEntity) => {
-                if (resultQuery == null) {
-                    const groupEntity = new GroupEntity();
-                    groupEntity.name = group.name;
-                    groupEntity.description = group.description;
-                    groupEntity.code = group.code;
-                    return this.groupDao.insert(groupEntity);
-                } else {
-                    this.log.warn("Inserting a group with duplicated code " + group.code);
-                    return Promise.reject([new ValidationErrorImpl(GroupValidator.CODE, GroupValidator.CODE_DUPLICATED, group.code)]);
-                }
-            })
-            .then((entity: GroupEntity) => {
-                // Insert the records.
-                const records: GroupValueEntity[] = group.values.map((value: any) => {
-                    const groupContentEntity: GroupValueEntity = new GroupValueEntity();
-                    groupContentEntity.idGroup = entity.id;
-                    groupContentEntity.value = value;
-                    return groupContentEntity;
-                });
-                return this.groupValueDao.insertMany(records);
-            })
-            .then(() => {
-                return Promise.resolve(group);
-            });
+    findAllProperties(type: string): Promise<GroupPropertiesImpl[]> {
+        return null;
     }
 
     /**
-     * Insert an item to a existing group.
-     * @param {string} code The code of the group.
-     * @param objectToInsert The item to insert.
-     * @return {Promise<any>} Return a promise if successful, a reject if there is no group
-     * with the specified code
+     * Find all groups that belongs to the same type.
+     * @param {string} type The type to look for.
+     * @return {Bluebird<Array<Group<t>>>} Return a list of groups. Returns an empty array if there is no
+     * group with this type.
      */
-    public addItem(code: string, objectToInsert: t): Promise<null> {
-        this.log.debug("Call to addItem with code: %j, objectToInsert: %j, validateDuplicated");
-        return this.findGroup(code)
-            .then((entity: GroupEntity) => {
-                const groupVale: GroupValueEntity = new GroupValueEntity();
-                groupVale.idGroup = entity.id;
-                groupVale.value = objectToInsert;
-                return this.groupValueDao.insert(groupVale);
-            })
-            .then(() => {
-                return Promise.resolve(null);
-            });
+    findAll(type: string): Promise<Array<GroupImpl<t>>> {
+        return null;
+    }
 
+    /**
+     * Find one group given the type and attributes.
+     * @param {string} type
+     * @param {} attributes The attributes to look for.
+     * @return {Bluebird<Group<t>>} Return the group or null if there is no group given the type and
+     * attributes.
+     */
+    findOne(type: string, attributes: { [p: string]: string }): Promise<GroupImpl<t>> {
+        return null;
+    }
+
+    /**
+     * Find many groups and it's content.
+     * @param {string} type. The type to look for.
+     * @param {} filter A key-value map that will help to filter the groups that shares the same type. This is as a AND filter.
+     * If there is an empty map then the method will return all records of the same type.
+     * @return {Bluebird<Group[]>} Return a list of groups. Returns an empty array if there is no group that qualifies
+     * with the type and filter.
+     */
+    findByTypeAndFilter(type: string, filter: { [p: string]: string }): Promise<Array<GroupImpl<t>>> {
+        return null;
+    }
+
+    /**
+     * Inserts a new group.
+     * @param {GroupImpl} group to insert.
+     * @return {Promise<GroupImpl>} Returns a promise if the object was inserted correctly. Return a reject if
+     * there is another group with the same type and attributes. Returns a reject if the content of the groups
+     * has duplicated values.
+     */
+    insert(group: GroupImpl<t>): Promise<GroupImpl<t>> {
+        return null;
     }
 
     /**
      * Updates a group and it's values.
      * @param {Group} group The group to be updated.
-     * @return {Promise<Group>} Returns a reject if there is no group with the same code.
+     * @return {Promise<Group>} Returns a reject if there is no group with the specified type an properties.
+     * Returns a reject if the content of the groups has duplicated values.
      */
     update(group: GroupImpl<t>): Promise<GroupImpl<t>> {
-        this.log.debug("Call to update with group %j", group);
-        let groupEntity: GroupEntity;
-        return this.findGroup(group.code)
-            .then((result: GroupEntity) => {
-                result.name = group.name;
-                result.description = group.description;
-                return this.groupDao.update(result);
-            })
-            .then((result: GroupEntity) => {
-                groupEntity = result;
-                // Remove the old items.
-                return this.groupValueDao.removeAllByIdGroup(result.id);
-            })
-            .then(() => {
-                // Insert the new values.
-                const records: GroupValueEntity[] = group.values.map((value: any) => {
-                    const groupContentEntity: GroupValueEntity = new GroupValueEntity();
-                    groupContentEntity.idGroup = groupEntity.id;
-                    groupContentEntity.value = value;
-                    return groupContentEntity;
-                });
-                return this.groupValueDao.insertMany(records);
-            })
-            .then(() => {
-                return Promise.resolve(group);
-            });
+        return null;
     }
 
     /**
      * Delete group.
      * @param {Group} group The group to delete.
-     * @return {Promise<any>}
+     * @return {Promise<any>} Returns a reject if there is no group with the same type an properties.
      */
     remove(group: GroupImpl<t>): Promise<any> {
-        this.log.debug("Call to remove with group: %j", group);
-        return this.removeByCode(group.code);
+        return null;
     }
 
     /**
-     * Delete group.
-     * @param {Group} code The code of the group to delete.
-     * @return {Promise<any>} Return a promise when the group has been deleted.
+     * Remove one group given the type and it's attributes.
+     * @param {string} type
+     * @param {} attributes The attributes to look for. The method will fin the group with the exact attributes.
+     * @return {Bluebird<any>} Returns a reject if there is no group with the same type an properties.
      */
-    removeByCode(code: string): Promise<any> {
-        this.log.debug("Call to removeByCode with group: %j", code);
-        let entity: GroupEntity;
-        return this.findGroup(code)
-            .then((groupEntity: GroupEntity) => {
-                entity = groupEntity;
-                // Delete the values.
-                return this.groupValueDao.removeAllByIdGroup(entity.id);
-            })
-            .then(() => {
-                // Delete the group.
-                return this.groupDao.remove(entity);
-            })
-            .then(() => {
-                return Promise.resolve();
-            });
+    removeByTypeAndAttributes(type: string, attributes: { [p: string]: string }): Promise<any> {
+        return null;
+    }
+
+    /**
+     * Insert an element to an existing group.
+     * @param {string} type Type
+     * @param {} attributes Attributes to identify groups of the same type.
+     * @param {t} objectToInsert The value to insert.
+     * @return {Bluebird<any>} Return a promise indicating the group is inserted. Returns a reject if
+     * the method was not able to identify a group given the type and attributes. Returns a reject if
+     * the objectToInsert exists already in the group.
+     */
+    addItem(type: string, attributes: { [p: string]: string }, objectToInsert: t): Promise<any> {
+        return null;
     }
 
     /**
      * Removes an item of the group.
-     * @param {string} code The group code.
-     * @param objectToRemove The object to remove.
-     * Return a promise if the remove was successful. Returns a reject if there is group
-     * with the specified code.
+     * @param {string} type The group type.
+     * @param attributes the attributes to know which to group to delete.
+     * Return a promise if the remove was successful. Returns a reject if there is no
+     * record given the type and attributes.
      */
-    public removeItem(code: string, objectToRemove: t): Promise<null> {
-        this.log.debug("Call to removeItem with code: %j object to remove %j", code, objectToRemove);
-        return this.findGroup(code)
-            .then((entity: GroupEntity) => {
-                return this.groupValueDao.findByIdGroupAndValue(entity.id, objectToRemove);
-            })
-            .then((values: GroupValueEntity[]) => {
-                const ids: string[] = values.map((value) => value.id);
-                return this.groupValueDao.removeByIds(ids);
-            });
-    }
-
-    /**
-     * Get the group and it's items given a code
-     * @param {string} code the code of the group.
-     * @return {Promise<GroupImpl>} Return a promise with the group, a reject if there is no group
-     * with the specified code.
-     */
-    public findOneByCode(code: string): Promise<GroupImpl<t>> {
-        this.log.debug("Call to find with code %j", code);
-        const result: GroupImpl<t> = new GroupImpl<any>();
-        return this.findGroup(code)
-            .then((groupEntity: GroupEntity) => {
-                result.code = groupEntity.code;
-                result.name = groupEntity.name;
-                result.description = groupEntity.description;
-                return this.groupValueDao.findByIdGroup(groupEntity.id);
-            })
-            .then((groupValues: GroupValueEntity[]) => {
-                result.values = groupValues.map((item) => item.value);
-                return Promise.resolve(result);
-            });
-    }
-
-    /**
-     * Return a group given a code
-     * @param {string} code The code to look for.
-     * @return {Bluebird<GroupEntity>} Return a promise with the code, or a reject if there is no record
-     * with the specified code.
-     */
-    private findGroup(code: string): Promise<GroupEntity> {
-        return this.groupDao.findOneByCode(code)
-            .then((resultQuery: GroupEntity) => {
-                if (resultQuery == null) {
-                    return Promise.reject([new ValidationErrorImpl(GroupValidator.CODE, GroupValidator.CODE_DOES_NOT_EXITS, code)]);
-                }
-                return Promise.resolve(resultQuery);
-            });
+    removeItem(type: string, attributes: { [p: string]: string }): Promise<any> {
+        return null;
     }
 }
