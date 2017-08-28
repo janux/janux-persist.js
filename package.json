@@ -34,7 +34,7 @@
         "gulp-typedoc": "2.0.2",
         "janux-people": "file:vendor/janux-people.js",
         "lodash": "4.17.4",
-        "log4js": "1.1.1",
+        "log4js": "2.3.3",
         "lokijs": "1.5.0",
         "MD5": "1.3.0",
         "merge2": "1.0.3",

@@ -17,6 +17,7 @@ var cfg = {
     file: {
         app: 'app.js'
     },
+		log4js: require('./log4js'),
     debugPort: 30000,
     fileset: {}
 };
