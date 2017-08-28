@@ -4,7 +4,7 @@
  */
 
 /**
- * Base interface for any entity properties.
+ * Base interface for any entity attributes.
  * The idea of this class is to add custom functionality per entity.
  */
 export interface EntityProperties {

@@ -2,20 +2,24 @@
  * Project
  * Created by ernesto on 8/17/17.
  */
+import {GroupProperties} from "./group-properties";
+
+/**
+ * This is the content of a group.
+ */
 export interface Group<t> {
 
-    // A user readable name
-    name: string;
+    // This is the type of the group. Examples:  "users group", "auth-context group", "services groups".
+    // All groups of the same type are expected to share the same t.
+    type: string;
 
-    // This attribute must be unique to the collection.
-    // This is a developer and db friendly attribute that helps to identify the group.
-    code: string;
-
-    // Description of the group
-    description: string;
+    /**
+     * These properties has human readable field and has the attributes that identifies different groups with the same type.
+     */
+    properties: GroupProperties;
 
     // Content of the group. It is responsibility of the developer to make sure
-    // the values is simple enough to be saved in a database and query-able by db engines.
-    // A personal recommendation is to save the references of the objects.
+    // the values is simple enough to be saved in a database.
+    // A recommendation is to save the references of the objects.
     values: t[];
 }

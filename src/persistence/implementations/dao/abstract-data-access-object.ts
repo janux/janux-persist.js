@@ -70,7 +70,7 @@ export abstract class AbstractDataAccessObject<t, ID>  implements CrudRepository
     // The attribute name that has the unique db id.
     public ID_REFERENCE: string = "id";
 
-    // The entity properties.
+    // The entity attributes.
     protected entityProperties: EntityPropertiesImpl;
     private readonly _log = logger.getLogger("AbstractDataAccessObject");
 

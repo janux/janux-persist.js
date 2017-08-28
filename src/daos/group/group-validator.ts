@@ -10,8 +10,10 @@ import {GroupEntity} from "./group-entity";
 export class GroupValidator {
 
     public static readonly NAME = "name";
-    public static readonly CODE = "code";
+    public static readonly TYPE = "type";
+    public static readonly ATTRIBUTES = "code";
     public static readonly NAME_EMPTY = "name is empty";
+    public static readonly TYPE_EMPTY = "type is empty";
     public static readonly CODE_EMPTY = "code is empty";
     public static readonly CODE_DUPLICATED = "There is a record with the same code";
     public static readonly CODE_DOES_NOT_EXITS: string = "Thre is no record with this code";
@@ -28,8 +30,11 @@ export class GroupValidator {
         if (isBlankString(objectToValidate.name)) {
             errors.push(new ValidationErrorImpl(this.NAME, this.NAME_EMPTY, null));
         }
-        if (isBlankString(objectToValidate.code)) {
-            errors.push(new ValidationErrorImpl(this.CODE, this.CODE_EMPTY, null));
+        if (isBlankString(objectToValidate.type)) {
+            errors.push(new ValidationErrorImpl(this.TYPE, this.TYPE_EMPTY, null));
+        }
+        if (objectToValidate.attributes == null) {
+            errors.push(new ValidationErrorImpl(this.ATTRIBUTES, this.CODE_EMPTY, null));
         }
         return errors;
     }

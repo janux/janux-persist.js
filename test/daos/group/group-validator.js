@@ -46,7 +46,7 @@ describe("Testing group validator", function () {
             group.description = description;
             var errors = GroupValidator.validate(group);
             expect(errors.length).eq(1);
-            expect(errors[0].attribute).eq(GroupValidator.CODE);
+            expect(errors[0].attribute).eq(GroupValidator.ATTRIBUTES);
             expect(errors[0].message).eq(GroupValidator.CODE_EMPTY);
         })
     });
