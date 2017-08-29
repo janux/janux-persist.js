@@ -2,7 +2,6 @@
  * Project
  * Created by ernesto on 8/17/17.
  */
-import {GroupProperties} from "./group-properties";
 
 /**
  * This is the content of a group.
@@ -13,10 +12,19 @@ export interface Group<t> {
     // All groups of the same type are expected to share the same t.
     type: string;
 
-    /**
-     * These properties has human readable field and has the attributes that identifies different groups with the same type.
-     */
-    properties: GroupProperties;
+    // Unique identifier.
+    code: string;
+
+    // A user readable name.
+    name: string;
+
+    // Description of the group.
+    description: string;
+
+    // This is a dictionary that helps to identify groups with the same type between each other.
+    // All groups that shares the same type must have different key-value map.
+    // It is crucial to kep the dictionary key and values as string.
+    attributes: { [key: string]: string };
 
     // Content of the group. It is responsibility of the developer to make sure
     // the values is simple enough to be saved in a database.

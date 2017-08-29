@@ -19,6 +19,7 @@ const path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsD
 
 
 const name = "a simple names group";
+const code = "code1";
 const type = "names";
 const attributes = {code: "code 1"};
 const description = "a description";
@@ -56,9 +57,10 @@ describe("Testing group service insert methods", function () {
     function getSampleData() {
         var group = new Group();
         group.type = type;
-        group.properties.name = name;
-        group.properties.description = description;
-        group.properties.attributes = attributes;
+        group.name = name;
+        group.code = code;
+        group.description = description;
+        group.attributes = attributes;
         group.values.push(item1);
         group.values.push(item2);
         return group;
@@ -71,9 +73,11 @@ describe("Testing group service insert methods", function () {
             var idReference;
             groupService.insert(group)
                 .then(function (result) {
-                    expect(result.properties.name).eq(name);
-                    expect(result.properties.description).eq(description);
-                    expect(result.properties.attributes).eq(attributes);
+                    expect(result.name).eq(name);
+                    expect(result.description).eq(description);
+                    expect(result.code).eq(code);
+                    expect(result.type).eq(type);
+                    expect(result.attributes).eq(attributes);
                     expect(result.values.length).eq(2);
                     return groupDao.findAll();
                 })
@@ -82,6 +86,7 @@ describe("Testing group service insert methods", function () {
                     expect(result[0].id).not.to.be.undefined;
                     expect(result[0].name).eq(name);
                     expect(result[0].description).eq(description);
+                    expect(result[0].code).eq(code);
                     expect(result[0].type).eq(type);
                     idReference = result[0].id;
                     return groupContentDao.findAll();
@@ -97,7 +102,7 @@ describe("Testing group service insert methods", function () {
         });
     });
 
-    describe("When inserting with a duplicated attributes", function () {
+    describe("When inserting with a duplicated code", function () {
         it("The method should return an error", function (done) {
             var group = getSampleData();
             groupService.insert(group)
@@ -121,7 +126,7 @@ describe("Testing group service insert methods", function () {
             var group = getSampleData();
             groupService.insert(group)
                 .then(function (result) {
-                    return groupService.addItem(type, attributes, item3);
+                    return groupService.addItem(code, item3);
                 })
                 .then(function () {
                     return groupContentDao.findAll();
@@ -138,7 +143,7 @@ describe("Testing group service insert methods", function () {
             var group = getSampleData();
             groupService.insert(group)
                 .then(function (result) {
-                    return groupService.addItem(type, attributes, item2);
+                    return groupService.addItem(code, item2);
                 })
                 .then(function () {
                     expect.fail("The method should not have inserted the item");

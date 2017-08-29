@@ -9,6 +9,9 @@ export class GroupEntity {
     // A user readable name
     name: string;
 
+    // A unique identifier.
+    code: string;
+
     // Description of the group
     description: string;
 

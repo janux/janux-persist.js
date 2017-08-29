@@ -11,8 +11,11 @@ export class GroupValidator {
 
     public static readonly NAME = "name";
     public static readonly TYPE = "type";
+    public static readonly CODE = "code";
     public static readonly ATTRIBUTES = "attributes";
     public static readonly NAME_EMPTY = "name is empty";
+    public static readonly CODE_EMPTY = "code is empty";
+    public static readonly CODE_DUPLICATE = "There is a record with the same code";
     public static readonly TYPE_EMPTY = "type is empty";
 
     /**
@@ -26,6 +29,9 @@ export class GroupValidator {
         const errors: ValidationErrorImpl[] = [];
         if (isBlankString(objectToValidate.name)) {
             errors.push(new ValidationErrorImpl(this.NAME, this.NAME_EMPTY, null));
+        }
+        if (isBlankString(objectToValidate.code)) {
+            errors.push(new ValidationErrorImpl(this.CODE, this.CODE_EMPTY, null));
         }
         if (isBlankString(objectToValidate.type)) {
             errors.push(new ValidationErrorImpl(this.TYPE, this.TYPE_EMPTY, null));

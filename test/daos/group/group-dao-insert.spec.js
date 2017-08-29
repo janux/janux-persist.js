@@ -19,6 +19,8 @@ var serverAppContext = config.get("serverAppContext");
 const groupName1 = "Group 1";
 const groupName2 = "Group 1";
 const type = "a type";
+const code = "code";
+const code2 = "code 2";
 const groupDescription1 = "Description 1";
 const groupDescription2 = "Description 2";
 
@@ -32,7 +34,7 @@ describe("Testing group dao insert methods", function () {
             groupDao = DaoFactory.createGroupDao(dbEngine, path);
             groupDao.removeAll()
                 .then(function () {
-                    done()
+                    done();
                 })
                 .catch(function (err) {
                     assert.fail("Error", err);
@@ -43,6 +45,7 @@ describe("Testing group dao insert methods", function () {
             it("The entity should exits in the database", function (done) {
                 var group = new GroupEntity();
                 group.name = groupName1;
+                group.code = code;
                 group.type = type;
                 group.description = groupDescription1;
 
@@ -61,6 +64,7 @@ describe("Testing group dao insert methods", function () {
                 expect(record.id).not.to.be.undefined;
                 expect(record.name).eq(groupName1);
                 expect(record.type).eq(type);
+                expect(record.code).eq(code);
                 expect(record.description).eq(groupDescription1);
             }
         });
@@ -71,6 +75,7 @@ describe("Testing group dao insert methods", function () {
                 var group = new GroupEntity();
                 group.name = "";
                 group.type = type;
+                group.code = code;
                 group.description = groupDescription1;
 
                 groupDao.insert(group)
@@ -87,6 +92,33 @@ describe("Testing group dao insert methods", function () {
             });
         });
 
+        describe("When inserting a group with the same code", function () {
+            it("The method should return a reject", function (done) {
+                var group = new GroupEntity();
+                group.name = groupName1;
+                group.code = code;
+                group.type = type;
+                group.description = groupDescription1;
+
+                groupDao.insert(group)
+                    .then(function (result) {
+                        var duplicatedGroup = new GroupEntity();
+                        duplicatedGroup.name = groupName2;
+                        duplicatedGroup.code = code;
+                        duplicatedGroup.type = type;
+                        duplicatedGroup.description = groupDescription2;
+                        return groupDao.insert(duplicatedGroup);
+                    })
+                    .then(function (result) {
+                        expect.fail("The method should not have inserted the record");
+                    },function (err) {
+                        expect(err.length).eq(1);
+                        expect(err[0].attribute).eq(GroupValidator.CODE);
+                        expect(err[0].message).eq(GroupValidator.CODE_DUPLICATE);
+                        done();
+                    })
+            })
+        });
 
         describe("When inserting many records", function () {
             it("The method should have inserted the records", function (done) {
@@ -94,11 +126,13 @@ describe("Testing group dao insert methods", function () {
                 var group1 = new GroupEntity();
                 group1.name = groupName1;
                 group1.description = groupDescription1;
+                group1.code = code;
                 group1.type = type;
 
                 var group2 = new GroupEntity();
                 group2.name = groupName2;
                 group2.description = groupDescription2;
+                group2.code = code2;
                 group2.type = type;
 
                 groupDao.insertMany([group1, group2])

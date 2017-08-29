@@ -25,8 +25,12 @@ export class GroupDao extends AbstractDataAccessObjectWithAdapter<GroupEntity, s
      * @param {string} type
      * @return {Bluebird<GroupEntity[]>}
      */
-    public findByType(type: string) {
+    public findByType(type: string): Promise<GroupEntity[]> {
         return this.findByAttribute("type", type);
+    }
+
+    public findOneByCode(code: string): Promise<GroupEntity> {
+        return this.findOneByAttribute("code", code);
     }
 
     protected validateEntity(objectToValidate: GroupEntity): ValidationErrorImpl[] {
@@ -34,10 +38,38 @@ export class GroupDao extends AbstractDataAccessObjectWithAdapter<GroupEntity, s
     }
 
     protected validateBeforeInsert(objectToInsert: GroupEntity): Promise<ValidationErrorImpl[]> {
-        return Promise.resolve([]);
+        return this.findOneByCode(objectToInsert.code)
+            .then((resultQuery: GroupEntity) => {
+                const errors: ValidationErrorImpl[] = [];
+                if (resultQuery != null) {
+                    errors.push(new ValidationErrorImpl(
+                        GroupValidator.CODE,
+                        GroupValidator.CODE_DUPLICATE,
+                        objectToInsert.code
+                    ));
+                }
+                return Promise.resolve(errors);
+            });
     }
 
     protected validateBeforeUpdate(objectToUpdate: GroupEntity): Promise<ValidationErrorImpl[]> {
-        return Promise.resolve([]);
+        const query = {
+            $and: [
+                {id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
+                {code: {$eq: objectToUpdate.code}}
+            ]
+        };
+        return this.findByQuery(query)
+            .then((resultQuery: GroupEntity[]) => {
+                const errors: ValidationErrorImpl[] = [];
+                if (resultQuery.length > 0) {
+                    errors.push(new ValidationErrorImpl(
+                        GroupValidator.CODE,
+                        GroupValidator.CODE_DUPLICATE,
+                        objectToUpdate.code
+                    ));
+                }
+                return Promise.resolve(errors);
+            });
     }
 }

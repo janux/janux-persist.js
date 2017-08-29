@@ -18,6 +18,8 @@ var serverAppContext = config.get("serverAppContext");
 const groupName1 = "Group 1";
 const groupName2 = "Group 1";
 const type = "a type";
+const code = "code";
+const code2 = "code 2";
 const groupDescription1 = "Description 1";
 const groupDescription2 = "Description 2";
 
@@ -33,11 +35,13 @@ describe("Testing group dao delete methods", function () {
                 .then(function () {
                     var group1 = new GroupEntity();
                     group1.name = groupName1;
+                    group1.code = code;
                     group1.description = groupDescription1;
                     group1.type = type;
 
                     var group2 = new GroupEntity();
                     group2.name = groupName2;
+                    group2.code = code2;
                     group2.description = groupDescription2;
                     group2.type = type;
 

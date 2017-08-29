@@ -20,6 +20,8 @@ const groupName1 = "Group 1";
 const groupName2 = "Group 1";
 const groupDescription1 = "Description 1";
 const groupDescription2 = "Description 2";
+const code = "code";
+const code2 = "code2";
 
 const groupNameNewValue = "Group new value";
 const groupDescriptionNewValue = "Description new value";
@@ -38,11 +40,13 @@ describe("Testing group dao update methods", function () {
                     var group1 = new GroupEntity();
                     group1.name = groupName1;
                     group1.description = groupDescription1;
+                    group1.code = code;
                     group1.type = type;
 
                     var group2 = new GroupEntity();
                     group2.name = groupName2;
                     group2.description = groupDescription2;
+                    group2.code = code2;
                     group2.type = type;
 
                     return groupDao.insertMany([group1, group2])
@@ -77,6 +81,21 @@ describe("Testing group dao update methods", function () {
                         done();
                     });
             })
+        });
+
+        describe("When updating a group with a duplicated code", function () {
+            it("The method should return an error", function (done) {
+                insertedRecord1.code = code2;
+                groupDao.update(insertedRecord1)
+                    .then(function () {
+                        expect.fail("The method should not have updated the record");
+                    }, function (err) {
+                        expect(err.length).eq(1);
+                        expect(err[0].attribute).eq(GroupValidator.CODE);
+                        expect(err[0].message).eq(GroupValidator.CODE_DUPLICATE);
+                        done();
+                    })
+            });
         });
 
         describe("When updating the record with incorrect values", function () {

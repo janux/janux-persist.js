@@ -8,7 +8,6 @@ var expect = chai.expect;
 var config = require('config');
 const DaoFactory = require("../../../dist/index").DaoFactory;
 const DataSourceHandler = require("../../../dist/index").DataSourceHandler;
-const GroupServiceValidator = require("../../../dist/index").GroupServiceValidator;
 const GroupService = require("../../../dist/index").GroupServiceImpl;
 const Group = require("../../../dist/index").GroupImpl;
 //Config files
@@ -19,6 +18,7 @@ const path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsD
 
 const name = "a simple names group";
 const type = "names";
+const code = "code";
 const attributes = {code: "code 1"};
 const description = "a description";
 const item1 = "name 1";
@@ -54,9 +54,10 @@ describe("Testing group service remove methods", function () {
     function getSampleData() {
         var group = new Group();
         group.type = type;
-        group.properties.name = name;
-        group.properties.description = description;
-        group.properties.attributes = attributes;
+        group.name = name;
+        group.code = code;
+        group.description = description;
+        group.attributes = attributes;
         group.values.push(item1);
         group.values.push(item2);
         return group;
@@ -67,7 +68,7 @@ describe("Testing group service remove methods", function () {
             var group = getSampleData();
             groupService.insert(group)
                 .then(function (result) {
-                    return groupService.remove(group);
+                    return groupService.remove(group.code);
                 })
                 .then(function () {
                     return groupDao.count();
@@ -87,29 +88,12 @@ describe("Testing group service remove methods", function () {
         });
     });
 
-    describe("When calling removeByTypeAndAttributes with invalid type and attributes", function () {
-        it("The method should return a reject", function (done) {
-            var group = getSampleData();
-            groupService.insert(group)
-                .then(function () {
-                    return groupService.removeByTypeAndAttributes("another type",attributes);
-                })
-                .then(function () {
-                    expect.fail("The method should not have removed the group");
-                },function (err) {
-                    expect(err).eq(GroupServiceValidator.NO_GROUP);
-                    done();
-                })
-
-        });
-    });
-
     describe("When calling remove item", function () {
         it("The method should remove the item", function (done) {
             var group = getSampleData();
             groupService.insert(group)
                 .then(function () {
-                    return groupService.removeItem(type,attributes, item1);
+                    return groupService.removeItem(group.code, item1);
                 })
                 .then(function () {
                     return groupContentDao.findAll();

@@ -19,6 +19,7 @@ const path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsD
 const type = "names";
 
 const name = "a list of names";
+const code = "names1";
 const description = "a description";
 const attributes = {code: "code 1", parent: "root"};
 const item1 = "name 1";
@@ -27,6 +28,7 @@ const item3 = "name 3";
 
 
 const nameB = "a second list of names";
+const codeB = "names2";
 const descriptionB = "a description";
 const attributesB = {code: "code 2", parent: "root"};
 const item1B = "name 4";
@@ -36,6 +38,7 @@ const item2B = "name 5";
 // Group with the same type "users"
 const usersType = "users";
 const usersName = "a list of users";
+const usersCode = "users";
 const usersDescription = "a list of sample users";
 const usersAttributes = {tenantId: "123456", parent: "glarus"};
 const usersItem1 = {id: "123456", name: "a name"};
@@ -70,26 +73,29 @@ describe("Testing group service find methods", function () {
     function getSampleData() {
         var group = new Group();
         group.type = type;
-        group.properties.name = name;
-        group.properties.description = description;
-        group.properties.attributes = attributes;
+        group.name = name;
+        group.code = code;
+        group.description = description;
+        group.attributes = attributes;
         group.values.push(item1);
         group.values.push(item2);
         group.values.push(item3);
 
         var group2 = new Group();
         group2.type = type;
-        group2.properties.name = nameB;
-        group2.properties.description = descriptionB;
-        group2.properties.attributes = attributesB;
+        group2.name = nameB;
+        group2.code = codeB;
+        group2.description = descriptionB;
+        group2.attributes = attributesB;
         group2.values.push(item1B);
         group2.values.push(item2B);
 
         var group3 = new Group();
         group3.type = usersType;
-        group3.properties.name = usersName;
-        group3.properties.description = usersDescription;
-        group3.properties.attributes = usersAttributes;
+        group3.name = usersName;
+        group3.code = usersCode;
+        group3.description = usersDescription;
+        group3.attributes = usersAttributes;
         group3.values.push(usersItem1);
 
         return [group, group2, group3];
@@ -106,12 +112,13 @@ describe("Testing group service find methods", function () {
                     return groupService.insert(groups[2])
                 })
                 .then(function () {
-                    return groupService.findOne(type, attributes);
+                    return groupService.findOne(code);
                 })
                 .then(function (result) {
-                    expect(result.properties.name).eq(name);
-                    expect(result.properties.description).eq(description);
-                    expect(result.properties.attributes).eq(attributes);
+                    expect(result.name).eq(name);
+                    expect(result.description).eq(description);
+                    expect(result.code).eq(code);
+                    expect(result.attributes).to.deep.equals(attributes);
                     expect(result.type).eq(type);
                     expect(result.values.length).eq(3);
                     expect(result.values[0]).eq(item1);
@@ -122,7 +129,7 @@ describe("Testing group service find methods", function () {
         });
     });
 
-    describe("When calling the method findGroup with the incorrect code and attributes", function () {
+    describe("When calling the method findGroup with the incorrect code", function () {
         it("The method should return a null", function (done) {
             var groups = getSampleData();
             groupService.insert(groups[0])
@@ -133,7 +140,7 @@ describe("Testing group service find methods", function () {
                     return groupService.insert(groups[2])
                 })
                 .then(function (result) {
-                    return groupService.findOne(usersType, attributes);
+                    return groupService.findOne("invalidCode");
                 })
                 .then(function (result) {
                     expect(result).to.be.null;
