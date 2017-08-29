@@ -10,7 +10,8 @@ var assert = chai.assert;
 var config = require('config');
 
 var DaoFactory = require("../../../dist/index").DaoFactory;
-var GroupValueEntity = require("../../../dist/index").GroupValueEntity;
+var GroupValueEntity = require("../../../dist/index").GroupContentEntity;
+var GroupValueValidator = require("../../../dist/index").GroupContentValidator;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 //Config files
@@ -19,16 +20,17 @@ const idGroup = "idGroup";
 const objectGroup = "value";
 const idGroup2 = "idGroup2";
 const objectGroup2 = "objectGroup2";
-describe("Testing group value dao find methods", function () {
+const objectGroup3 = "objectGroup3";
+describe("Testing group values dao update methods", function () {
     [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
         var groupValueDao;
         var insertedRecord1;
         var insertedRecord2;
         beforeEach(function (done) {
             var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-            groupValueDao = DaoFactory.createGroupValueDao(dbEngine, path);
+            groupValueDao = DaoFactory.createGroupContentDao(dbEngine, path);
             groupValueDao.removeAll()
-                .then(function (result) {
+                .then(function () {
                     var groupValue = new GroupValueEntity();
                     groupValue.idGroup = idGroup;
                     groupValue.value = objectGroup;
@@ -47,13 +49,16 @@ describe("Testing group value dao find methods", function () {
                 })
         });
 
-        describe("When calling findByIdGroup", function () {
-            it("The method should return one record", function (done) {
-                groupValueDao.findByIdGroup(idGroup2)
-                    .then(function (result) {
-                        expect(result.length).eq(1);
-                        expect(result[0].idGroup).eq(idGroup2);
-                        expect(result[0].value).eq(objectGroup2);
+        describe("When calling the method update", function () {
+            it("The method should always return an error", function (done) {
+                insertedRecord1.objectGroup = objectGroup3;
+                groupValueDao.update(insertedRecord1)
+                    .then(function () {
+                        expect.fail("The method should not have updated the record");
+                    })
+                    .catch(function (err) {
+                        expect(err.length).eq(1);
+                        expect(err[0].message).eq(GroupValueValidator.CANT_UPDATE);
                         done();
                     });
             });

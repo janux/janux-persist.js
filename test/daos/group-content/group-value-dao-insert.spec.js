@@ -10,8 +10,8 @@ var assert = chai.assert;
 var config = require('config');
 
 var DaoFactory = require("../../../dist/index").DaoFactory;
-var GroupValueEntity = require("../../../dist/index").GroupValueEntity;
-var GroupValueValidator = require("../../../dist/index").GroupValueValidator;
+var GroupValueEntity = require("../../../dist/index").GroupContentEntity;
+var GroupValueValidator = require("../../../dist/index").GroupContentValidator;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 //Config files
@@ -26,9 +26,9 @@ describe("Testing group values dao insert methods", function () {
 
         beforeEach(function (done) {
             var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-            groupValueDao = DaoFactory.createGroupValueDao(dbEngine, path);
+            groupValueDao = DaoFactory.createGroupContentDao(dbEngine, path);
             groupValueDao.removeAll()
-                .then(function (result) {
+                .then(function () {
                     done();
                 })
                 .catch(function (err) {
@@ -66,7 +66,7 @@ describe("Testing group values dao insert methods", function () {
                 groupValue.idGroup = idGroup;
                 groupValue.value = undefined;
                 groupValueDao.insert(groupValue)
-                    .then(function (result) {
+                    .then(function () {
                         expect.fail("The method should not have inserted the record");
                     })
                     .catch(function (err) {
@@ -79,7 +79,7 @@ describe("Testing group values dao insert methods", function () {
         });
 
         describe("When calling insertMany", function () {
-            it("The method should not return any error", function () {
+            it("The method should not return any error", function (done) {
                 var groupValue = new GroupValueEntity();
                 groupValue.idGroup = idGroup;
                 groupValue.value = objectGroup;
@@ -94,7 +94,8 @@ describe("Testing group values dao insert methods", function () {
                         return groupValueDao.count();
                     })
                     .then(function (result) {
-                        expect(count).eq(2);
+                        expect(result).eq(2);
+                        done();
                     })
             });
         });

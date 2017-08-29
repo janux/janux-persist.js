@@ -3,6 +3,7 @@
  * Created by ernesto on 8/16/17.
  */
 import Promise = require("bluebird");
+import * as logger from 'log4js';
 import {DbAdapter} from "../../persistence/api/db-adapters/db-adapter";
 import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
 import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
@@ -12,8 +13,20 @@ import {GroupValidator} from "./group-validator";
 
 export class GroupDao extends AbstractDataAccessObjectWithAdapter<GroupEntity, string> {
 
+    private log = logger.getLogger("GroupDao");
+
     constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
         super(dbAdapter, entityProperties);
+        this.log.debug("constructor");
+    }
+
+    /**
+     * Returns all records that has the same type.
+     * @param {string} type
+     * @return {Bluebird<GroupEntity[]>}
+     */
+    public findByType(type: string) {
+        return this.findByAttribute("type", type);
     }
 
     protected validateEntity(objectToValidate: GroupEntity): ValidationErrorImpl[] {
@@ -21,10 +34,10 @@ export class GroupDao extends AbstractDataAccessObjectWithAdapter<GroupEntity, s
     }
 
     protected validateBeforeInsert(objectToInsert: GroupEntity): Promise<ValidationErrorImpl[]> {
-        return null;
+        return Promise.resolve([]);
     }
 
     protected validateBeforeUpdate(objectToUpdate: GroupEntity): Promise<ValidationErrorImpl[]> {
-        return null;
+        return Promise.resolve([]);
     }
 }

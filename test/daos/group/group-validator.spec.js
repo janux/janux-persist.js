@@ -11,14 +11,14 @@ var expect = chai.expect;
 describe("Testing group validator", function () {
 
     var name = "name";
-    var code = "code";
+    var type = "type";
     var description = "description";
 
     describe("When calling the method with correct values", function () {
         it("The method should not return any error", function () {
             var group = new GroupEntity();
             group.name = name;
-            group.code = code;
+            group.type = type;
             group.description = description;
             var errors = GroupValidator.validate(group);
             expect(errors.length).eq(0);
@@ -29,7 +29,7 @@ describe("Testing group validator", function () {
         it("The method should return any error", function () {
             var group = new GroupEntity();
             group.name = "   ";
-            group.code = code;
+            group.type = type;
             group.description = description;
             var errors = GroupValidator.validate(group);
             expect(errors.length).eq(1);
@@ -38,16 +38,23 @@ describe("Testing group validator", function () {
         })
     });
 
-    describe("When calling the method with empty code", function () {
+    describe("When calling the method with empty type", function () {
         it("The method should return any error", function () {
             var group = new GroupEntity();
             group.name = name;
-            group.code =  "     ";
+            group.type = "   ";
             group.description = description;
             var errors = GroupValidator.validate(group);
             expect(errors.length).eq(1);
-            expect(errors[0].attribute).eq(GroupValidator.ATTRIBUTES);
-            expect(errors[0].message).eq(GroupValidator.CODE_EMPTY);
+            expect(errors[0].attribute).eq(GroupValidator.TYPE);
+            expect(errors[0].message).eq(GroupValidator.TYPE_EMPTY);
         })
     });
+
+
+
+
+
+
+
 });

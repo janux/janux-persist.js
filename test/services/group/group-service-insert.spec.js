@@ -5,11 +5,11 @@
 
 var chai = require('chai');
 var expect = chai.expect;
-var assert = chai.assert;
 var config = require('config');
 const DaoFactory = require("../../../dist/index").DaoFactory;
 const DataSourceHandler = require("../../../dist/index").DataSourceHandler;
-const GroupValidator = require("../../../dist/index").GroupValidator;
+const GroupServiceValidator = require("../../../dist/index").GroupServiceValidator;
+const GroupContentValidator = require("../../../dist/index").GroupContentValidator;
 const GroupService = require("../../../dist/index").GroupServiceImpl;
 const Group = require("../../../dist/index").GroupImpl;
 //Config files
@@ -18,28 +18,34 @@ const dbEngine = serverAppContext.db.dbEngine;
 const path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
 
 
-const name = "a name";
-const code = "a code";
+const name = "a simple names group";
+const type = "names";
+const attributes = {code: "code 1"};
 const description = "a description";
-const item1 = "item 1";
-const item2 = "item 2";
-const item3 = "item 3";
+const item1 = "name 1";
+const item2 = "name 2";
+const item3 = "name 3";
 
 describe("Testing group service insert methods", function () {
 
-    var groupValueDao;
+    var groupContentDao;
+    var groupAttributeValueDao;
     var groupDao;
     var groupService;
 
-    beforeEach("Cleaning data and define daos", function (done) {
+    beforeEach(function (done) {
 
-        groupValueDao = DaoFactory.createGroupValueDao(dbEngine, path);
+        groupContentDao = DaoFactory.createGroupContentDao(dbEngine, path);
         groupDao = DaoFactory.createGroupDao(dbEngine, path);
-        groupService = new GroupService(groupDao, groupValueDao);
+        groupAttributeValueDao = DaoFactory.createGroupAttributesDao(dbEngine, path);
+        groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
         setTimeout(function () {
-            groupValueDao.removeAll()
+            groupContentDao.removeAll()
                 .then(function () {
                     return groupDao.removeAll();
+                })
+                .then(function () {
+                    return groupAttributeValueDao.removeAll();
                 })
                 .then(function () {
                     done();
@@ -49,9 +55,10 @@ describe("Testing group service insert methods", function () {
 
     function getSampleData() {
         var group = new Group();
-        group.name = name;
-        group.code = code;
-        group.description = description;
+        group.type = type;
+        group.properties.name = name;
+        group.properties.description = description;
+        group.properties.attributes = attributes;
         group.values.push(item1);
         group.values.push(item2);
         return group;
@@ -64,9 +71,9 @@ describe("Testing group service insert methods", function () {
             var idReference;
             groupService.insert(group)
                 .then(function (result) {
-                    expect(result.name).eq(name);
-                    expect(result.code).eq(code);
-                    expect(result.description).eq(description);
+                    expect(result.properties.name).eq(name);
+                    expect(result.properties.description).eq(description);
+                    expect(result.properties.attributes).eq(attributes);
                     expect(result.values.length).eq(2);
                     return groupDao.findAll();
                 })
@@ -74,10 +81,10 @@ describe("Testing group service insert methods", function () {
                     expect(result.length).eq(1);
                     expect(result[0].id).not.to.be.undefined;
                     expect(result[0].name).eq(name);
-                    expect(result[0].code).eq(code);
                     expect(result[0].description).eq(description);
+                    expect(result[0].type).eq(type);
                     idReference = result[0].id;
-                    return groupValueDao.findAll();
+                    return groupContentDao.findAll();
                 })
                 .then(function (result) {
                     expect(result.length).eq(2);
@@ -90,7 +97,7 @@ describe("Testing group service insert methods", function () {
         });
     });
 
-    describe("When inserting with a duplicated code", function () {
+    describe("When inserting with a duplicated attributes", function () {
         it("The method should return an error", function (done) {
             var group = getSampleData();
             groupService.insert(group)
@@ -103,9 +110,7 @@ describe("Testing group service insert methods", function () {
                     done();
                 })
                 .catch(function (err) {
-                    expect(err.length).eq(1);
-                    expect(err[0].attribute).eq(GroupValidator.ATTRIBUTES);
-                    expect(err[0].message).eq(GroupValidator.CODE_DUPLICATED);
+                    expect(err).eq(GroupServiceValidator.DUPLICATED_GROUP);
                     done();
                 });
         });
@@ -116,10 +121,10 @@ describe("Testing group service insert methods", function () {
             var group = getSampleData();
             groupService.insert(group)
                 .then(function (result) {
-                    return groupService.addItem(group.code, item3);
+                    return groupService.addItem(type, attributes, item3);
                 })
                 .then(function () {
-                    return groupValueDao.findAll();
+                    return groupContentDao.findAll();
                 })
                 .then(function (result) {
                     expect(result.length).eq(3);
@@ -128,4 +133,26 @@ describe("Testing group service insert methods", function () {
         });
     });
 
+    describe("When calling the method add item with an existing item", function () {
+        it("The method should return a reject", function (done) {
+            var group = getSampleData();
+            groupService.insert(group)
+                .then(function (result) {
+                    return groupService.addItem(type, attributes, item2);
+                })
+                .then(function () {
+                    expect.fail("The method should not have inserted the item");
+                }, function (err) {
+                    expect(err.length).eq(1);
+                    expect(err[0].attribute).eq(GroupContentValidator.OBJECT_GROUP);
+                    expect(err[0].message).eq(GroupContentValidator.OBJECT_GROUP_DUPLICATED);
+                    return groupContentDao.findAll();
+                })
+                .then(function (result) {
+                    // Make sure any record is not inserted.
+                    expect(result.length).eq(2);
+                    done();
+                });
+        });
+    });
 });

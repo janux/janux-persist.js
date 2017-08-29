@@ -10,7 +10,6 @@ var config = require('config');
 
 var DaoFactory = require("../../../dist/index").DaoFactory;
 var GroupEntity = require("../../../dist/index").GroupEntity;
-var GroupValidator = require("../../../dist/index").GroupValidator;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 //Config files
@@ -18,11 +17,9 @@ var serverAppContext = config.get("serverAppContext");
 
 const groupName1 = "Group 1";
 const groupName2 = "Group 1";
-const groupCode1 = "Code 1";
-const groupCode2 = "Code 2";
+const type = "a type";
 const groupDescription1 = "Description 1";
 const groupDescription2 = "Description 2";
-
 
 describe("Testing group dao delete methods", function () {
     [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
@@ -37,12 +34,12 @@ describe("Testing group dao delete methods", function () {
                     var group1 = new GroupEntity();
                     group1.name = groupName1;
                     group1.description = groupDescription1;
-                    group1.code = groupCode1;
+                    group1.type = type;
 
                     var group2 = new GroupEntity();
                     group2.name = groupName2;
                     group2.description = groupDescription2;
-                    group2.code = groupCode2;
+                    group2.type = type;
 
                     return groupDao.insertMany([group1, group2])
                 })
@@ -59,7 +56,7 @@ describe("Testing group dao delete methods", function () {
         describe("When calling removeAll", function () {
             it("The method should not return an error", function () {
                 groupDao.removeAll()
-                    .then(function (result) {
+                    .then(function () {
                         return groupDao.count()
                     })
                     .then(function (result) {
@@ -71,7 +68,7 @@ describe("Testing group dao delete methods", function () {
         describe("When calling remove", function () {
             it("The method should not return an error", function () {
                 groupDao.remove(insertedRecord1)
-                    .then(function (result) {
+                    .then(function () {
                         return groupDao.count()
                     })
                     .then(function (result) {
