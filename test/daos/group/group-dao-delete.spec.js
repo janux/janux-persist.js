@@ -54,25 +54,27 @@ describe("Testing group dao delete methods", function () {
         });
 
         describe("When calling removeAll", function () {
-            it("The method should not return an error", function () {
+            it("The method should not return an error", function (done) {
                 groupDao.removeAll()
                     .then(function () {
                         return groupDao.count()
                     })
                     .then(function (result) {
                         expect(result).eq(0);
+                        done();
                     })
             })
         });
 
         describe("When calling remove", function () {
-            it("The method should not return an error", function () {
+            it("The method should not return an error", function (done) {
                 groupDao.remove(insertedRecord1)
                     .then(function () {
                         return groupDao.count()
                     })
                     .then(function (result) {
                         expect(result).eq(1);
+                        done();
                     })
             });
         });

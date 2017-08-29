@@ -22,7 +22,7 @@ for (var filename in taskDir) {
 //
 // Compile typescript project
 //
-gulp.task('default', ['clean:build', 'ts']);
+gulp.task('default', ['clean', 'compile']);
 
 //
 // Compile and run tests for typescript project
@@ -38,8 +38,8 @@ gulp.task('doc', ['clean:doc', 'typedoc']);
 //Init the server and also
 //compile the typescript files and restart the
 //server when the development files are changed
-gulp.task('watch', ['ts'], function () {
-    gulp.watch(gulp.cfg.fileset.filesToWatch, ['tsIncremental']);
+gulp.task('watch', ['compile'], function () {
+    gulp.watch(gulp.cfg.fileset.filesToWatch, ['compile:fast']);
 });
 
 

@@ -15,24 +15,16 @@ module.exports = function (gulp) {
     //
     // Compile TypeScript and include references to library and app .d.ts files.
     //
-    gulp.task('ts-plus-test', function () {
-        // return  gulp.src([cfg.fileset.ts, cfg.fileset.tsTest])
+    gulp.task('compile-tests', function () {
         return gulp.src([cfg.fileset.ts])
             .pipe(sourcemaps.init())
             .pipe(ts(cfg.tsConfig))
             .pipe(sourcemaps.write())
             .pipe(gulp.dest(path.join(cfg.dir.dist)))
-        //.pipe(gulp.dest(function(file) {
-        //   return file.base;
-        //}));
     });
 
-    gulp.task('run-tests', ['ts-lint', 'set-test-node-env', 'ts-plus-test'], function () {
+    gulp.task('run-tests', ['ts-lint', 'compile-tests'], function () {
         return gulp.src(cfg.fileset.test, {read: false})
-            .pipe(mocha({reporter: 'nyan'}));
-    });
-
-    gulp.task('set-test-node-env', function () {
-        return process.env.NODE_ENV = 'test';
+            .pipe(mocha({reporter: cfg.mocha.reporter}));
     });
 };

@@ -17,6 +17,7 @@ var cfg = {
     file: {
         app: 'app.js'
     },
+		log4js: require('./log4js'),
     debugPort: 30000,
     fileset: {}
 };
@@ -48,5 +49,20 @@ cfg.tsConfig = {
     skipLibCheck: true,
     declaration: true
 };
+
+//
+// Configure tests
+//
+cfg.serverAppContext = {
+		db: {
+				dbEngine: "lokijs",
+				mongoConnUrl: "mongodb://localhost/janux-persistence-test",
+				lokiJsDBPath: "./janux-persistence-test.db"
+		}
+},
+
+cfg.mocha = {
+	reporter: 'dot'
+}
 
 module.exports = cfg;

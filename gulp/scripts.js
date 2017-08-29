@@ -26,7 +26,7 @@ module.exports = function (gulp) {
     //
     // Compile TypeScript and include references to library and app .d.ts files.
     //
-    gulp.task('ts', ['ts-lint'], function () {
+    gulp.task('compile', ['ts-lint'], function () {
         console.log('compiling ts files...');
         return merge([
             gulp.src(cfg.fileset.ts)
@@ -40,16 +40,18 @@ module.exports = function (gulp) {
     //
     // Compile the typescripts files. The difference is that,
     // according with the website, the task performs
-    // incremental compilation, which is faster than normal
+    // 'incremental' compilation, which is faster than normal
     //
-    gulp.task('tsIncremental', ['ts-lint'], function () {
-        console.log("Compiling files incremental");
+    gulp.task('compile:fast', ['ts-lint'], function () {
+        console.log("Compiling ts files fast");
         var tsResult = gulp.src(cfg.fileset.ts).pipe(sourcemaps.init()).pipe(tsProject());
         return merge([
             tsResult.dts.pipe(gulp.dest(cfg.dir.dist)),
             tsResult.js.pipe(sourcemaps.write()).pipe(gulp.dest(cfg.dir.dist))
         ])
     });
+
+		gulp.task('fast', ['compile:fast']);
 
 };
 
