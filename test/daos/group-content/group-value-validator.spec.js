@@ -3,8 +3,8 @@
  * Created by ernesto on 8/18/17.
  */
 
-var GroupValueEntity = require("../../../dist/index").GroupValueEntity;
-var GroupValueValidator = require("../../../dist/index").GroupValueValidator;
+var GroupValueEntity = require("../../../dist/index").GroupContentEntity;
+var GroupValueValidator = require("../../../dist/index").GroupContentValidator;
 var chai = require('chai');
 var expect = chai.expect;
 

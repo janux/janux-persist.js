@@ -79,7 +79,7 @@ export interface GroupService<t> {
      * @param {string} type Type
      * @param {} attributes Attributes to identify groups of the same type.
      * @param {t} objectToInsert The value to insert.
-     * @return {Bluebird<any>} Return a promise indicating the group is inserted. Returns a reject if
+     * @return {Bluebird<any>} Return a promise indicating the item is inserted. Returns a reject if
      * the method was not able to identify a group given the type and attributes. Returns a reject if
      * the objectToInsert exists already in the group.
      */
@@ -89,8 +89,9 @@ export interface GroupService<t> {
      * Removes an item of the group.
      * @param {string} type The group type.
      * @param attributes the attributes to know which to group to delete.
+     * @param objectToRemove The object to remove.
      * Return a promise if the remove was successful. Returns a reject if there is no
      * record given the type and attributes.
      */
-    removeItem(type: string, attributes: { [p: string]: string }): Promise<null>;
+    removeItem(type: string, attributes: { [p: string]: string }, objectToRemove: t): Promise<null>;
 }

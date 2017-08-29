@@ -14,8 +14,8 @@ export interface GroupProperties {
     // Description of the group.
     description: string;
 
-    // This is a key-value map that helps to identify groups with the same type between each other.
+    // This is a dictionary that helps to identify groups with the same type between each other.
     // All groups that shares the same type must have different key-value map.
-    // It is crucial to kep the attributes and values as string.
+    // It is crucial to kep the dictionary key and values as string.
     attributes: { [key: string]: string };
 }

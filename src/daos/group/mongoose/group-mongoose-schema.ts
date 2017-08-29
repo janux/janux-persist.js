@@ -20,10 +20,10 @@ export const GroupMongooseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    code: {
+    type: {
         type: String,
         required: true,
-        unique: true
+        index: true
     },
     description: {
         type: String

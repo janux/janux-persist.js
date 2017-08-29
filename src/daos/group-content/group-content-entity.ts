@@ -6,7 +6,7 @@
 /**
  * The entity for the values of the group
  */
-export class GroupValueEntity {
+export class GroupContentEntity {
 
     // The id to the database
     id: string;

@@ -5,7 +5,9 @@
 
 import * as _ from 'lodash';
 import * as logger from 'log4js';
-import {GroupValueDao} from "../../daos/group-content/group-value-dao";
+import {GroupAttributeValueDao} from "../../daos/group-attribute-value/group-attribute-value-dao";
+import {GroupAttributeValueMongooseSchema} from "../../daos/group-attribute-value/mongoose/group-attribute-value-schema";
+import {GroupContentDao} from "../../daos/group-content/group-content-dao";
 import {GroupContentMongooseSchema} from "../../daos/group-content/mongoose/group-value-mongoose-schema";
 import {GroupDao} from "../../daos/group/group-dao";
 import {GroupMongooseSchema} from "../../daos/group/mongoose/group-mongoose-schema";
@@ -94,6 +96,12 @@ export class DaoFactory {
         }
     }
 
+    /**
+     * Gets a group dao.
+     * @param dbEngine
+     * @param {string} dbPath
+     * @return {GroupDao}
+     */
     public static createGroupDao(dbEngine: any, dbPath: string): GroupDao {
         this._log.debug("Call to crateGroupDao with dbEngine %j , dbPath %j", dbEngine, dbPath);
         const existingDao: Dao = this.getDao(dbEngine, dbPath, this.GROUP_DEFAULT_COLLECTION_NAME);
@@ -121,19 +129,25 @@ export class DaoFactory {
         }
     }
 
-    public static createGroupValueDao(dbEngine: any, dbPath: string): GroupValueDao {
-        this._log.debug("Call to createGroupValueDao with dbEngine %j , dbPath %j", dbEngine, dbPath);
+    /**
+     * Get a group content dao.
+     * @param dbEngine
+     * @param {string} dbPath
+     * @return {GroupContentDao}
+     */
+    public static createGroupContentDao(dbEngine: any, dbPath: string): GroupContentDao {
+        this._log.debug("Call to createGroupContentDao with dbEngine %j , dbPath %j", dbEngine, dbPath);
         const existingDao: Dao = this.getDao(dbEngine, dbPath, this.GROUP_CONTENT_DEFAULT_COLLECTION_NAME);
-        let groupContentDao: GroupValueDao;
+        let groupContentDao: GroupContentDao;
         if (_.isUndefined(existingDao)) {
             this._log.debug("Creating a new groupContentDao");
             const dataSource: DataSource = this.getDataSource(dbEngine, dbPath);
             if (dbEngine === DataSourceHandler.MONGOOSE) {
-                groupContentDao = new GroupValueDao(
+                groupContentDao = new GroupContentDao(
                     new MongooseAdapter(dataSource.dbConnection.model(this.GROUP_CONTENT_DEFAULT_COLLECTION_NAME, GroupContentMongooseSchema)),
                     new EntityPropertiesImpl(true, true));
             } else {
-                groupContentDao = new GroupValueDao(
+                groupContentDao = new GroupContentDao(
                     new LokiJsAdapter(this.GROUP_CONTENT_DEFAULT_COLLECTION_NAME, dataSource.dbConnection),
                     new EntityPropertiesImpl(true, true)
                 );
@@ -148,9 +162,37 @@ export class DaoFactory {
         }
     }
 
+    public static createGroupAttributesDao(dbEngine: any, dbPath: string): GroupAttributeValueDao {
+        this._log.debug("Call to createGroupAttributesDao with dbEngine %j , dbPath %j", dbEngine, dbPath);
+        const existingDao: Dao = this.getDao(dbEngine, dbPath, this.GROUP_ATTRIBUTES_DEFAULT_COLLECTION_NAME);
+        let groupAttributeValueDao: GroupAttributeValueDao;
+        if (_.isUndefined(existingDao)) {
+            this._log.debug("Creating a new groupAttributeValueDao");
+            const dataSource: DataSource = this.getDataSource(dbEngine, dbPath);
+            if (dbEngine === DataSourceHandler.MONGOOSE) {
+                groupAttributeValueDao = new GroupAttributeValueDao(
+                    new MongooseAdapter(dataSource.dbConnection.model(this.GROUP_ATTRIBUTES_DEFAULT_COLLECTION_NAME, GroupAttributeValueMongooseSchema)),
+                    new EntityPropertiesImpl(true, true));
+            } else {
+                groupAttributeValueDao = new GroupAttributeValueDao(
+                    new LokiJsAdapter(this.GROUP_ATTRIBUTES_DEFAULT_COLLECTION_NAME, dataSource.dbConnection),
+                    new EntityPropertiesImpl(true, true)
+                );
+            }
+            this.insertDao(dbEngine, dbPath, this.GROUP_ATTRIBUTES_DEFAULT_COLLECTION_NAME, groupAttributeValueDao);
+            this._log.debug("Returning new groupAttributeValueDao");
+            return groupAttributeValueDao;
+        } else {
+            this._log.debug("Returning an existing groupAttributeValueDao");
+            groupAttributeValueDao = existingDao.daoInstance;
+            return groupAttributeValueDao;
+        }
+    }
+
     private static PARTY_DEFAULT_COLLECTION_NAME: string = "contact";
     private static ACCOUNT_DEFAULT_COLLECTION_NAME: string = "account";
-    private static GROUP_CONTENT_DEFAULT_COLLECTION_NAME: string = "groupValue";
+    private static GROUP_CONTENT_DEFAULT_COLLECTION_NAME: string = "groupContent";
+    private static GROUP_ATTRIBUTES_DEFAULT_COLLECTION_NAME: string = "groupAttribute";
     private static GROUP_DEFAULT_COLLECTION_NAME: string = "group";
     private static _log = logger.getLogger("DaoFactoryService");
     private static daos: Dao[] = [];

@@ -17,11 +17,12 @@ var serverAppContext = config.get("serverAppContext");
 
 const groupName1 = "Group 1";
 const groupName2 = "Group 1";
-const groupCode1 = "Code 1";
-const groupCode2 = "Code 2";
+const groupName3 = "Group 3";
 const groupDescription1 = "Description 1";
 const groupDescription2 = "Description 2";
-
+const groupDescription3 = "Description 3";
+const type = "a type";
+const type2 = "a type2";
 
 describe("Testing group dao find methods", function () {
     [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
@@ -36,14 +37,19 @@ describe("Testing group dao find methods", function () {
                     var group1 = new GroupEntity();
                     group1.name = groupName1;
                     group1.description = groupDescription1;
-                    group1.code = groupCode1;
+                    group1.type = type;
 
                     var group2 = new GroupEntity();
                     group2.name = groupName2;
                     group2.description = groupDescription2;
-                    group2.code = groupCode2;
+                    group2.type = type;
 
-                    return groupDao.insertMany([group1, group2])
+                    var group3 = new GroupEntity();
+                    group3.name = groupName3;
+                    group3.description = groupDescription3;
+                    group3.type = type2;
+
+                    return groupDao.insertMany([group1, group2, group3])
                 })
                 .then(function (result) {
                     insertedRecord1 = result[0];
@@ -55,29 +61,15 @@ describe("Testing group dao find methods", function () {
                 })
         });
 
-
-        describe("When calling findOneByCode with the correct value", function () {
-            it("The method should return a result", function (done) {
-                groupDao.findOneByCode(groupCode2)
-                    .then(function (value) {
-                        expect(value).not.to.be.undefined;
-                        expect(value.id).not.to.be.undefined;
-                        expect(value.name).eq(groupName2);
-                        expect(value.code).eq(groupCode2);
-                        expect(value.description).eq(groupDescription2);
+        describe("When calling findByType", function () {
+            it("The method should return two records", function (done) {
+                groupDao.findByType(type2)
+                    .then(function (result) {
+                        expect(result.length).eq(1);
                         done();
                     })
-            });
-        });
+            })
+        })
 
-        describe("When calling findOneByCode with the incorrect value", function () {
-            it("The method should return a result", function (done) {
-                groupDao.findOneByCode("i_do_not_exists")
-                    .then(function (value) {
-                        expect(value).to.be.null;
-                        done();
-                    });
-            });
-        });
     });
 });
