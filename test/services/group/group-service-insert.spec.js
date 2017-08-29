@@ -97,6 +97,12 @@ describe("Testing group service insert methods", function () {
                     expect(result[0].value).eq(item1);
                     expect(result[1].idGroup).eq(idReference);
                     expect(result[1].value).eq(item2);
+                    return groupAttributeValueDao.findAll()
+                })
+                .then(function (result) {
+                    const keys = Object.keys(attributes);
+                    expect(result.length).eq(keys.length);
+                    expect(result[0].key).eq(keys[0]);
                     done();
                 });
         });
@@ -106,11 +112,11 @@ describe("Testing group service insert methods", function () {
         it("The method should return an error", function (done) {
             var group = getSampleData();
             groupService.insert(group)
-                .then(function (result) {
+                .then(function () {
                     var group2 = getSampleData();
                     return groupService.insert(group2)
                 })
-                .then(function (result) {
+                .then(function () {
                     expect.fail("The method should not have inserted the group");
                     done();
                 })
@@ -125,7 +131,7 @@ describe("Testing group service insert methods", function () {
         it("The method should insert the new item", function (done) {
             var group = getSampleData();
             groupService.insert(group)
-                .then(function (result) {
+                .then(function () {
                     return groupService.addItem(code, item3);
                 })
                 .then(function () {
@@ -142,7 +148,7 @@ describe("Testing group service insert methods", function () {
         it("The method should return a reject", function (done) {
             var group = getSampleData();
             groupService.insert(group)
-                .then(function (result) {
+                .then(function () {
                     return groupService.addItem(code, item2);
                 })
                 .then(function () {
