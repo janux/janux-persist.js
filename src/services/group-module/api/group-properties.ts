@@ -21,4 +21,9 @@ export interface GroupProperties {
     // All groups that shares the same type must have different key-value map.
     // It is crucial to kep the dictionary key and values as string.
     attributes: { [key: string]: string };
+
+    // This is the type of the group. Examples:  "users group", "auth-context group", "services groups".
+    // All groups of the same type are expected to share the same t.
+    type: string;
+
 }

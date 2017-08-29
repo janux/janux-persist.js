@@ -101,6 +101,32 @@ describe("Testing group service find methods", function () {
         return [group, group2, group3];
     }
 
+    describe("When calling findAllProperties", function () {
+        it("The method should return the 2 groups that belongs to the type", function (done) {
+            var groups = getSampleData();
+            groupService.insert(groups[0])
+                .then(function () {
+                    return groupService.insert(groups[1])
+                })
+                .then(function () {
+                    return groupService.insert(groups[2])
+                })
+                .then(function () {
+                    return groupService.findAllProperties(type)
+                })
+                .then(function (groupProperties) {
+                    expect(groupProperties.length).eq(2);
+                    expect(groupProperties[0].name).eq(name);
+                    expect(groupProperties[1].name).eq(nameB);
+                    expect(groupProperties[0].type).eq(type);
+                    expect(groupProperties[1].type).eq(type);
+                    expect(groupProperties[0].code).eq(code);
+                    expect(groupProperties[1].code).eq(codeB);
+                    done();
+                });
+        });
+    });
+
     describe("When calling the method findGroup with the correct code and attributes", function () {
         it("The method should return the group", function (done) {
             var groups = getSampleData();

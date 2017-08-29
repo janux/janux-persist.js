@@ -9,4 +9,5 @@ export class GroupPropertiesImpl implements GroupProperties {
     description: string;
     attributes: { [p: string]: string } = {};
     code: string;
+    type: string;
 }

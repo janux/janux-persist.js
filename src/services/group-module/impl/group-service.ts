@@ -55,6 +55,8 @@ export class GroupServiceImpl<t> implements GroupService<t> {
                     const element: GroupPropertiesImpl = new GroupPropertiesImpl();
                     element.name = value.name;
                     element.description = value.description;
+                    element.code = value.code;
+                    element.type = value.type;
                     element.attributes = this.attributesToDictionary(resultQuery.filter((value2) => value2.idGroup === value.id));
                     return element;
                 });
@@ -111,7 +113,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
                             return this.groupContentDao.findByIdGroup(group.id);
                         })
                         .then((resultQuery: GroupContentEntity[]) => {
-                            const result: GroupImpl<t> = new GroupImpl();
+                            const result: GroupImpl<t> = new GroupImpl<t>();
                             result.type = groupReference.type;
                             result.name = groupReference.name;
                             result.description = groupReference.description;
@@ -387,13 +389,20 @@ export class GroupServiceImpl<t> implements GroupService<t> {
         return result;
     }
 
+    /**
+     * This method map the input in a list of GroupImpl.
+     * @param {GroupEntity[]} groups
+     * @param {GroupAttributeValueEntity[]} attributeValues
+     * @param {GroupContentEntity[]} groupContent
+     * @return {Array<GroupImpl<t>>}
+     */
     private mixData(groups: GroupEntity[],
                     attributeValues: GroupAttributeValueEntity[],
                     groupContent: GroupContentEntity[]): Array<GroupImpl<t>> {
         const result: Array<GroupImpl<t>> = [];
         let group: GroupImpl<t>;
         for (const element of groups) {
-            group = new GroupImpl();
+            group = new GroupImpl<t>();
             group.type = element.type;
             group.name = element.name;
             group.code = element.code;
