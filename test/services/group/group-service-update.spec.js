@@ -46,15 +46,4 @@ describe("Testing group service update methods", function () {
                 })
         }, 50);
     });
-
-    function getSampleData() {
-        var group = new Group();
-        group.type = type;
-        group.properties.name = name;
-        group.properties.description = description;
-        group.properties.attributes = attributes;
-        group.values.push(item1);
-        group.values.push(item2);
-        return group;
-    }
 });
