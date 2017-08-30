@@ -54,6 +54,17 @@ which mongo db uses the project.
  
 running `npm run generateUsers` generated sample user data in a lokijs or mongodb database (based on the info retrieved from config).
 
+**How to use janux-persist inside another project.**
+
+If you want to use janux-persist inside another project you need to do the following.
+
+1.. Make sure janux-persist is cloned and installed correctly
+
+2.. Run `gulp` to make sure the compiled files are generated.
+
+3.. Insert the dependency inside the package.json to the project you want to use janux-persist.
+
+4.. Run `npm install` to the project that depends on janux-persist. 
 
 **Simple example of creating a dao.**
 
