@@ -34,6 +34,22 @@ export class GroupContentDao extends AbstractDataAccessObjectWithAdapter<GroupCo
         return this.findByQuery(query);
     }
 
+    /**
+     * Return all records given a value and a list of idGroups.
+     * @param {string[]} idGroups
+     * @param value
+     * @return {Bluebird<GroupContentEntity[]>}
+     */
+    public findByIdGroupsInAndValue(idGroups: string[], value: any): Promise<GroupContentEntity[]> {
+        const query = {
+            $and: [
+                {idGroup: {$in: idGroups}},
+                {value: {$eq: value}}
+            ]
+        };
+        return this.findByQuery(query);
+    }
+
     public removeAllByIdGroup(idGroup: string): Promise<any> {
         return this.findByIdGroup(idGroup)
             .then((resultQuery: GroupContentEntity[]) => {

@@ -13,7 +13,16 @@ export interface GroupService<t> {
      * @param {string} type
      * @return {Bluebird<GroupProperties[]>} Return a list of group references.
      */
-    findAllProperties(type: string): Promise<GroupProperties[]>;
+    findPropertiesByType(type: string): Promise<GroupProperties[]>;
+
+    /**
+     * Return all groups where the object is defined.
+     * @param {string} type The type of groups to filter.
+     * @param {t} object The object to look for.
+     * @return {Bluebird<GroupPropertiesImpl[]>} Returns a promise indicating the groups where the object
+     * is defined.
+     */
+    findPropertiesByTypeAndItem(type: string, object: t): Promise<GroupProperties[]>;
 
     /**
      * Find all groups that belongs to the same type.
@@ -82,4 +91,12 @@ export interface GroupService<t> {
      * group given the code.
      */
     removeItem(code: string, objectToRemove: t): Promise<null>;
+
+    /**
+     * Removes the object to all groups that has the same type.
+     * @param {string} type the type of the groups to look for.
+     * @param {t} objectToRemove The object to remove.
+     * @return {Bluebird<any>} Returns a promise indicating the operation was done.
+     */
+    removeItemByType(type: string, objectToRemove: t): Promise<any>;
 }

@@ -19,10 +19,16 @@ const path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsD
 const name = "a simple names group";
 const type = "names";
 const code = "code";
-const attributes = {code: "code 1"};
+const attributes = {code: "code 1", parent: "root"};
 const description = "a description";
 const item1 = "name 1";
 const item2 = "name 2";
+
+const nameB = "a second list of names";
+const codeB = "names2";
+const descriptionB = "a description";
+const attributesB = {code: "code 2", parent: "root"};
+const item2B = "name 5";
 
 describe("Testing group service remove methods", function () {
 
@@ -63,11 +69,24 @@ describe("Testing group service remove methods", function () {
         return group;
     }
 
+    function getSampleData2() {
+        var group2 = new Group();
+        group2.type = type;
+        group2.name = nameB;
+        group2.code = codeB;
+        group2.description = descriptionB;
+        group2.attributes = attributesB;
+        group2.values.push(item1);
+        group2.values.push(item2);
+        group2.values.push(item2B);
+        return group2
+    }
+
     describe("When calling remove", function () {
         it("The method should delete the records", function (done) {
             var group = getSampleData();
             groupService.insert(group)
-                .then(function (result) {
+                .then(function () {
                     return groupService.remove(group.code);
                 })
                 .then(function () {
@@ -91,7 +110,12 @@ describe("Testing group service remove methods", function () {
     describe("When calling remove item", function () {
         it("The method should remove the item", function (done) {
             var group = getSampleData();
+            expect(group.values.length).eq(2);
+            var group2 = getSampleData2();
             groupService.insert(group)
+                .then(function () {
+                    return groupService.insert(group2);
+                })
                 .then(function () {
                     return groupService.removeItem(group.code, item1);
                 })
@@ -99,10 +123,46 @@ describe("Testing group service remove methods", function () {
                     return groupContentDao.findAll();
                 })
                 .then(function (result) {
-                    expect(result.length).eq(1);
+                    expect(result.length).eq(4);
                     expect(result[0].value).eq(item2);
+                    return groupService.findOne(group.code);
+
+                })
+                .then(function (resultQuery) {
+                    expect(resultQuery.values.length).eq(1);
+                    expect(resultQuery.values[0]).eq(item2);
                     done();
                 });
         });
     });
+
+    describe("When calling removeItemByType with a item inside two groups", function () {
+        it("The method should delete the item inside the two groups", function (done) {
+            var group = getSampleData();
+            expect(group.values.length).eq(2);
+            var group2 = getSampleData2();
+            groupService.insert(group)
+                .then(function () {
+                    return groupService.insert(group2);
+                })
+                .then(function () {
+                    return groupService.removeItemByType(group.type, item1);
+                })
+                .then(function () {
+                    //Validating the item was removed inside the two groups.
+                    return groupService.findOne(group.code);
+                })
+                .then(function (resultQuery) {
+                    expect(resultQuery.values.length).eq(1);
+                    expect(resultQuery.values[0]).eq(item2);
+                    return groupService.findOne(group2.code);
+                })
+                .then(function (resultQuery2) {
+                    expect(resultQuery2.values.length).eq(2);
+                    expect(resultQuery2.values[0]).eq(item2);
+                    expect(resultQuery2.values[1]).eq(item2B);
+                    done();
+                });
+        })
+    })
 });

@@ -24,7 +24,7 @@ const description = "a description";
 const attributes = {code: "code 1", parent: "root"};
 const item1 = "name 1";
 const item2 = "name 2";
-const item3 = "name 3";
+const sharedItem = "name 3"; // This is a record shared between to groups.
 
 
 const nameB = "a second list of names";
@@ -79,7 +79,7 @@ describe("Testing group service find methods", function () {
         group.attributes = attributes;
         group.values.push(item1);
         group.values.push(item2);
-        group.values.push(item3);
+        group.values.push(sharedItem);
 
         var group2 = new Group();
         group2.type = type;
@@ -89,6 +89,7 @@ describe("Testing group service find methods", function () {
         group2.attributes = attributesB;
         group2.values.push(item1B);
         group2.values.push(item2B);
+        group2.values.push(sharedItem);
 
         var group3 = new Group();
         group3.type = usersType;
@@ -101,7 +102,7 @@ describe("Testing group service find methods", function () {
         return [group, group2, group3];
     }
 
-    describe("When calling findAllProperties", function () {
+    describe("When calling findPropertiesByType", function () {
         it("The method should return the 2 groups that belongs to the type", function (done) {
             var groups = getSampleData();
             groupService.insert(groups[0])
@@ -112,7 +113,7 @@ describe("Testing group service find methods", function () {
                     return groupService.insert(groups[2])
                 })
                 .then(function () {
-                    return groupService.findAllProperties(type)
+                    return groupService.findPropertiesByType(type)
                 })
                 .then(function (groupProperties) {
                     expect(groupProperties.length).eq(2);
@@ -149,7 +150,7 @@ describe("Testing group service find methods", function () {
                     expect(result.values.length).eq(3);
                     expect(result.values[0]).eq(item1);
                     expect(result.values[1]).eq(item2);
-                    expect(result.values[2]).eq(item3);
+                    expect(result.values[2]).eq(sharedItem);
                     done();
                 });
         });
@@ -159,13 +160,13 @@ describe("Testing group service find methods", function () {
         it("The method should return a null", function (done) {
             var groups = getSampleData();
             groupService.insert(groups[0])
-                .then(function (result) {
+                .then(function () {
                     return groupService.insert(groups[1])
                 })
-                .then(function (result) {
+                .then(function () {
                     return groupService.insert(groups[2])
                 })
-                .then(function (result) {
+                .then(function () {
                     return groupService.findOne("invalidCode");
                 })
                 .then(function (result) {
@@ -179,13 +180,13 @@ describe("Testing group service find methods", function () {
         it("The method should return 2 groups", function (done) {
             var groups = getSampleData();
             groupService.insert(groups[0])
-                .then(function (result) {
+                .then(function () {
                     return groupService.insert(groups[1])
                 })
-                .then(function (result) {
+                .then(function () {
                     return groupService.insert(groups[2])
                 })
-                .then(function (result) {
+                .then(function () {
                     return groupService.findByTypeAndFilter(type, {});
                 })
                 .then(function (groups) {
@@ -197,23 +198,25 @@ describe("Testing group service find methods", function () {
         });
     });
 
-    describe("When calling findByTypeAndFilter with a shared kay-value", function () {
+    describe("When calling findByTypeAndFilter with a shared key-value", function () {
         it("The method should return 2 groups", function (done) {
             var groups = getSampleData();
             groupService.insert(groups[0])
-                .then(function (result) {
+                .then(function () {
                     return groupService.insert(groups[1])
                 })
-                .then(function (result) {
+                .then(function () {
                     return groupService.insert(groups[2])
                 })
-                .then(function (result) {
+                .then(function () {
                     return groupService.findByTypeAndFilter(type, {parent: "root"});
                 })
                 .then(function (groups) {
                     expect(groups.length).eq(2);
                     expect(groups[0].type).eq(type);
                     expect(groups[1].type).eq(type);
+                    expect(groups[0].name).eq(name);
+                    expect(groups[1].name).eq(nameB);
                     done();
                 });
         });
@@ -223,20 +226,43 @@ describe("Testing group service find methods", function () {
         it("The method should return 1 group", function (done) {
             var groups = getSampleData();
             groupService.insert(groups[0])
-                .then(function (result) {
+                .then(function () {
                     return groupService.insert(groups[1])
                 })
-                .then(function (result) {
+                .then(function () {
                     return groupService.insert(groups[2])
                 })
-                .then(function (result) {
+                .then(function () {
                     return groupService.findByTypeAndFilter(type, {code: "code 1"});
                 })
                 .then(function (groups) {
                     expect(groups.length).eq(1);
                     expect(groups[0].type).eq(type);
+                    expect(groups[0].name).eq(name);
                     done();
                 });
         });
     });
+
+    describe("When calling findPropertiesByTypeAndItem with a item that is associated to two groups", function () {
+        it("The method should return the two groups", function (done) {
+            var groups = getSampleData();
+            groupService.insert(groups[0])
+                .then(function () {
+                    return groupService.insert(groups[1])
+                })
+                .then(function () {
+                    return groupService.insert(groups[2])
+                })
+                .then(function () {
+                    return groupService.findPropertiesByTypeAndItem(type, sharedItem);
+                })
+                .then(function (result) {
+                    expect(result.length).eq(2);
+                    expect(result[0].name).eq(name);
+                    expect(result[1].name).eq(nameB);
+                    done();
+                })
+        })
+    })
 });

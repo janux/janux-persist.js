@@ -36,12 +36,12 @@ export class GroupServiceImpl<t> implements GroupService<t> {
     }
 
     /**
-     * Return all group properties that shares the same type.
+     * Return all group properties (no content) that shares the same type.
      * @param {string} type
      * @return {Bluebird<GroupProperties[]>} Return a list of group references.
      */
-    findAllProperties(type: string): Promise<GroupPropertiesImpl[]> {
-        this.log.debug("Call to findAllProperties with type %j", type);
+    findPropertiesByType(type: string): Promise<GroupPropertiesImpl[]> {
+        this.log.debug("Call to findPropertiesByType with type %j", type);
         let groups: GroupEntity[];
         return this.groupDao.findByType(type)
             .then((resultQuery: GroupEntity[]) => {
@@ -58,6 +58,46 @@ export class GroupServiceImpl<t> implements GroupService<t> {
                     element.code = value.code;
                     element.type = value.type;
                     element.attributes = this.attributesToDictionary(resultQuery.filter((value2) => value2.idGroup === value.id));
+                    return element;
+                });
+                return Promise.resolve(result);
+            });
+    }
+
+    /**
+     * Return all groups properties (no content) where the object is defined.
+     * @param {string} type The type of groups to filter.
+     * @param {t} object The object to look for.
+     * @return {Bluebird<GroupPropertiesImpl[]>} Returns a promise indicating the groups where the object
+     * is defined.
+     */
+    findPropertiesByTypeAndItem(type: string, object: t): Promise<GroupPropertiesImpl[]> {
+        this.log.debug("Call to findAllPropertiesByTypeAndItem with type: %j, object: %j", type, object);
+        let groups: GroupEntity[];
+        let groupsMatchCriteria: GroupEntity[];
+        return this.groupDao.findByType(type)
+            .then((resultQuery: GroupEntity[]) => {
+                const ids = resultQuery.map((value) => value.id);
+                groups = resultQuery;
+                return this.groupContentDao.findByIdGroupsInAndValue(ids, object);
+            })
+            .then((resultQuery: GroupContentEntity[]) => {
+                const idsMatchFilter = resultQuery.map((value) => value.idGroup);
+                groupsMatchCriteria = groups.filter((value) => {
+                    return idsMatchFilter.indexOf(value.id) >= 0;
+                });
+                return this.groupAttributeValueDao.findByIdsGroupIn(idsMatchFilter);
+            })
+            .then((attributesValues: GroupAttributeValueEntity[]) => {
+                let result: GroupPropertiesImpl[];
+                result = groupsMatchCriteria.map((value) => {
+                    const element: GroupPropertiesImpl = new GroupPropertiesImpl();
+                    const subAttributesValues: GroupAttributeValueEntity[] = attributesValues.filter((value) => value.idGroup === value.id);
+                    element.name = value.name;
+                    element.code = value.code;
+                    element.description = value.description;
+                    element.type = value.type;
+                    element.attributes = this.attributesToDictionary(subAttributesValues);
                     return element;
                 });
                 return Promise.resolve(result);
@@ -299,6 +339,29 @@ export class GroupServiceImpl<t> implements GroupService<t> {
                     newContent.value = objectToInsert;
                     return this.groupContentDao.insert(newContent);
                 }
+            })
+            .then(() => {
+                return Promise.resolve();
+            });
+    }
+
+    /**
+     * Removes the object to all groups that has the same type.
+     * @param {string} type the type of the groups to look for.
+     * @param {t} objectToRemove The object to remove.
+     * @return {Bluebird<any>} Returns a promise indicating the operation was done.
+     */
+    removeItemByType(type: string, objectToRemove: t): Promise<any> {
+        this.log.debug("Call to removeItemByType with type: %j, objectToRemove: %j ", type, objectToRemove);
+        return this.groupDao.findByType(type)
+            .then((groups: GroupEntity[]) => {
+                const ids = groups.map((value) => value.id);
+                return this.groupContentDao.findByIdGroupsInAndValue(ids, objectToRemove);
+            })
+            .then((objectsToDelete: GroupContentEntity[]) => {
+                this.log.debug("The object was founded in %j records", objectsToDelete.length);
+                const ids = objectsToDelete.map((value) => value.id);
+                return this.groupContentDao.removeByIds(ids);
             })
             .then(() => {
                 return Promise.resolve();
