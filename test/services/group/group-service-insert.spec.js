@@ -108,6 +108,25 @@ describe("Testing group service insert methods", function () {
         });
     });
 
+
+    describe("When inserting a group with incorrect values", function () {
+        it("The method should return an error", function (done) {
+            var group = getSampleData();
+            group.attributes = {code: "   ", parent: "  "};
+            groupService.insert(group)
+                .then(function (result) {
+                    expect.fail("The method should not have inserted the group");
+                }, function (err) {
+                    expect(err.length).eq(2);
+                    expect(err[0].attribute).eq(GroupServiceValidator.ATTRIBUTE);
+                    expect(err[1].attribute).eq(GroupServiceValidator.ATTRIBUTE);
+                    expect(err[0].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
+                    expect(err[1].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
+                    done();
+                })
+        })
+    });
+
     describe("When inserting with a duplicated code", function () {
         it("The method should return an error", function (done) {
             var group = getSampleData();
@@ -142,6 +161,24 @@ describe("Testing group service insert methods", function () {
                     done();
                 });
         });
+    });
+
+    describe("When calling addItem with a undefined item", function () {
+        it("the method should send an error", function (done) {
+            var group = getSampleData();
+            groupService.insert(group)
+                .then(function () {
+                    return groupService.addItem(code, undefined);
+                })
+                .then(function () {
+                    expect.fail("The method should not have inserted the item")
+                },function (err) {
+                    expect(err.length).eq(1);
+                    expect(err[0].attribute).eq(GroupServiceValidator.ITEM);
+                    expect(err[0].message).eq(GroupServiceValidator.ITEM_EMPTY);
+                    done();
+                })
+        })
     });
 
     describe("When calling the method add item with an existing item", function () {

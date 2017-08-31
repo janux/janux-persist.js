@@ -77,9 +77,10 @@ export interface GroupService<t> {
      * Insert an element to an existing group.
      * @param {string} code
      * @param {t} objectToInsert The value to insert.
-     * @return {Bluebird<any>} Return a promise indicating the item is inserted. Returns a reject if
-     * the method was not able to identify a group given the code. Returns a reject if
-     * the objectToInsert exists already in the group.
+     * @return {Bluebird<any>} Return a promise indicating the item is inserted.
+     * Returns a reject if the method was not able to identify a group given the code.
+     * Returns a reject if the objectToInsert exists already in the group.
+     * Return a reject if the objectToInsert is null.
      */
     addItem(code: string, objectToInsert: t): Promise<null>;
 
@@ -87,8 +88,9 @@ export interface GroupService<t> {
      * Removes an item of the group.
      * @param {string} code.
      * @param objectToRemove The object to remove.
-     * Return a promise if the remove was successful. Returns a reject if there is no
-     * group given the code.
+     * Return a promise if the remove was successful.
+     * Returns a reject if there is no group given the code.
+     * Returns a reject if the object to remove is null or undefined.
      */
     removeItem(code: string, objectToRemove: t): Promise<null>;
 
@@ -97,6 +99,7 @@ export interface GroupService<t> {
      * @param {string} type the type of the groups to look for.
      * @param {t} objectToRemove The object to remove.
      * @return {Bluebird<any>} Returns a promise indicating the operation was done.
+     * Returns a reject if the object to remove is null or undefined.
      */
     removeItemByType(type: string, objectToRemove: t): Promise<any>;
 }

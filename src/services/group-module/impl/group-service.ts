@@ -10,10 +10,11 @@ import {GroupContentDao} from "../../../daos/group-content/group-content-dao";
 import {GroupContentEntity} from "../../../daos/group-content/group-content-entity";
 import {GroupDao} from "../../../daos/group/group-dao";
 import {GroupEntity} from "../../../daos/group/group-entity";
+import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {GroupService} from "../api/group-service";
 import {GroupImpl} from "./group";
 import {GroupPropertiesImpl} from "./group-properties";
-import {GroupServiceValidator} from "./group-validator";
+import {GroupServiceValidator} from "./group-service-validator";
 
 /**
  * Implementation of the GroupImpl service.
@@ -171,7 +172,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
      * @param {string} type. The type to look for.
      * @param {} filter A key-value map that will help to filter the groups that shares the same type. This is as a AND filter.
      * If there is an empty map then the method will return all groups of the same type.
-     * @return {Bluebird<Group[]>} Return a list of groups. Returns an empty array if there is no group that qualifies
+     * @return {Bluebird<GroupImpl[]>} Return a list of groups. Returns an empty array if there is no group that qualifies
      * with the type and filter.
      */
     findByTypeAndFilter(type: string, filter: { [p: string]: string }): Promise<Array<GroupImpl<t>>> {
@@ -224,6 +225,10 @@ export class GroupServiceImpl<t> implements GroupService<t> {
      */
     insert(group: GroupImpl<t>): Promise<GroupImpl<t>> {
         this.log.debug("Call to insert with group: %j", group);
+        const errors = GroupServiceValidator.validateGroup(group);
+        if (errors.length > 0) {
+            return Promise.reject(errors);
+        }
         return this.groupDao.findOneByCode(group.code)
             .then((resultQuery: GroupEntity) => {
                 if (resultQuery != null) {
@@ -244,6 +249,10 @@ export class GroupServiceImpl<t> implements GroupService<t> {
     update(group: GroupImpl<t>): Promise<GroupImpl<t>> {
         this.log.debug("Call to update with group %j", group);
         let updatedGroup: GroupEntity;
+        const errors = GroupServiceValidator.validateGroup(group);
+        if (errors.length > 0) {
+            return Promise.reject(errors);
+        }
         return this.groupDao.findOneByCode(group.code)
             .then((groupToUpdate: GroupEntity) => {
                 if (groupToUpdate == null) {
@@ -322,12 +331,20 @@ export class GroupServiceImpl<t> implements GroupService<t> {
      * Insert an element to an existing group.
      * @param {string} code
      * @param {t} objectToInsert The value to insert.
-     * @return {Bluebird<any>} Return a promise indicating the item is inserted. Returns a reject if
-     * the method was not able to identify a group given the code. Returns a reject if
-     * the objectToInsert exists already in the group.
+     * @return {Bluebird<any>} Return a promise indicating the item is inserted.
+     * Returns a reject if the method was not able to identify a group given the code.
+     * Returns a reject if the objectToInsert exists already in the group.
+     * Return a reject if the objectToInsert is null.
      */
     addItem(code: string, objectToInsert: t): Promise<any> {
         this.log.debug("Call to addItem with code %j, objectToInsert: %j", code, objectToInsert);
+        if (objectToInsert == null) {
+            const error: ValidationErrorImpl = new ValidationErrorImpl(
+                GroupServiceValidator.ITEM,
+                GroupServiceValidator.ITEM_EMPTY,
+                "");
+            return Promise.reject([error]);
+        }
         return this.groupDao.findOneByCode(code)
             .then((group: GroupEntity) => {
                 if (group == null) {
@@ -350,9 +367,17 @@ export class GroupServiceImpl<t> implements GroupService<t> {
      * @param {string} type the type of the groups to look for.
      * @param {t} objectToRemove The object to remove.
      * @return {Bluebird<any>} Returns a promise indicating the operation was done.
+     * Returns a reject if the object to remove is null or undefined.
      */
     removeItemByType(type: string, objectToRemove: t): Promise<any> {
         this.log.debug("Call to removeItemByType with type: %j, objectToRemove: %j ", type, objectToRemove);
+        if (objectToRemove == null) {
+            const error: ValidationErrorImpl = new ValidationErrorImpl(
+                GroupServiceValidator.ITEM,
+                GroupServiceValidator.ITEM_EMPTY,
+                "");
+            return Promise.reject([error]);
+        }
         return this.groupDao.findByType(type)
             .then((groups: GroupEntity[]) => {
                 const ids = groups.map((value) => value.id);
@@ -372,11 +397,19 @@ export class GroupServiceImpl<t> implements GroupService<t> {
      * Removes an item of the group.
      * @param {string} code.
      * @param objectToRemove The object to remove.
-     * Return a promise if the remove was successful. Returns a reject if there is no
-     * group given the code.
+     * Return a promise if the remove was successful.
+     * Returns a reject if there is no group given the code.
+     * Returns a reject if the object to remove is null or undefined.
      */
     removeItem(code: string, objectToRemove: t): Promise<any> {
         this.log.debug("Call to removeIte with code %j", code);
+        if (objectToRemove == null) {
+            const error: ValidationErrorImpl = new ValidationErrorImpl(
+                GroupServiceValidator.ITEM,
+                GroupServiceValidator.ITEM_EMPTY,
+                "");
+            return Promise.reject([error]);
+        }
         return this.groupDao.findOneByCode(code)
             .then((group: GroupEntity) => {
                 if (group == null) {
@@ -462,6 +495,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
     private mixData(groups: GroupEntity[],
                     attributeValues: GroupAttributeValueEntity[],
                     groupContent: GroupContentEntity[]): Array<GroupImpl<t>> {
+        this.log.debug("Call to mixData");
         const result: Array<GroupImpl<t>> = [];
         let group: GroupImpl<t>;
         for (const element of groups) {

@@ -61,7 +61,7 @@ export * from "./services/datasource-handler/datasource";
 export * from "./services/datasource-handler/datasource-status";
 export * from "./services/group-module/impl/group";
 export * from "./services/group-module/impl/group-service";
-export * from "./services/group-module/impl/group-validator";
+export * from "./services/group-module/impl/group-service-validator";
 export * from "./util/blank-string-validator";
 export * from "./util/user-generator/user-generator";
 export * from "./util/user-generator/user-generator-script";

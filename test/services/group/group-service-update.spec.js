@@ -5,6 +5,7 @@ const DaoFactory = require("../../../dist/index").DaoFactory;
 const DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 const GroupService = require("../../../dist/index").GroupServiceImpl;
 const Group = require("../../../dist/index").GroupImpl;
+const GroupServiceValidator = require("../../../dist/index").GroupServiceValidator;
 //Config files
 const serverAppContext = config.get("serverAppContext");
 const dbEngine = serverAppContext.db.dbEngine;
@@ -83,4 +84,48 @@ describe("Testing group service update methods", function () {
                 });
         })
     })
+
+
+    describe("When inserting a group with incorrect values", function () {
+        it("The method should return an error", function (done) {
+            var group = getSampleData();
+            group.attributes = {code: "   ", parent: "  "};
+            groupService.insert(group)
+                .then(function (result) {
+                    expect.fail("The method should not have inserted the group");
+                }, function (err) {
+                    expect(err.length).eq(2);
+                    expect(err[0].attribute).eq(GroupServiceValidator.ATTRIBUTE);
+                    expect(err[1].attribute).eq(GroupServiceValidator.ATTRIBUTE);
+                    expect(err[0].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
+                    expect(err[1].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
+                    done();
+                })
+        })
+    });
+
+    describe("When calling update with incorrect values", function () {
+        it("The method should send an error", function (done) {
+            var group = getSampleData();
+            groupService.insert(group)
+                .then(function (result) {
+                    group.name = updatedName;
+                    group.description = updatedDescription;
+                    group.attributes = {code: "   ", parent: "  "};
+                    group.values.push(item3);
+                    return groupService.update(group);
+                })
+                .then(function (updatedGroup) {
+                    expect.fail("The method should not have updated the group")
+                },function (err) {
+                    expect(err.length).eq(2);
+                    expect(err[0].attribute).eq(GroupServiceValidator.ATTRIBUTE);
+                    expect(err[1].attribute).eq(GroupServiceValidator.ATTRIBUTE);
+                    expect(err[0].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
+                    expect(err[1].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
+                    done();
+                });
+        })
+    })
+
 });

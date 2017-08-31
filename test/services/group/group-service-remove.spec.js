@@ -10,6 +10,7 @@ const DaoFactory = require("../../../dist/index").DaoFactory;
 const DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 const GroupService = require("../../../dist/index").GroupServiceImpl;
 const Group = require("../../../dist/index").GroupImpl;
+const GroupServiceValidator = require("../../../dist/index").GroupServiceValidator;
 //Config files
 const serverAppContext = config.get("serverAppContext");
 const dbEngine = serverAppContext.db.dbEngine;
@@ -136,6 +137,29 @@ describe("Testing group service remove methods", function () {
         });
     });
 
+    describe("When calling remove item with a null item", function () {
+        it("The method should send an error", function (done) {
+            var group = getSampleData();
+            expect(group.values.length).eq(2);
+            var group2 = getSampleData2();
+            groupService.insert(group)
+                .then(function () {
+                    return groupService.insert(group2);
+                })
+                .then(function () {
+                    return groupService.removeItem(group.code, null);
+                })
+                .then(function () {
+                    expect.fail("The method should have returned an error");
+                },function (err) {
+                    expect(err.length).eq(1);
+                    expect(err[0].attribute).eq(GroupServiceValidator.ITEM);
+                    expect(err[0].message).eq(GroupServiceValidator.ITEM_EMPTY);
+                    done();
+                })
+        });
+    });
+
     describe("When calling removeItemByType with a item inside two groups", function () {
         it("The method should delete the item inside the two groups", function (done) {
             var group = getSampleData();
@@ -163,6 +187,29 @@ describe("Testing group service remove methods", function () {
                     expect(resultQuery2.values[1]).eq(item2B);
                     done();
                 });
+        })
+    });
+
+    describe("When calling removeItemByType with a null item",function () {
+        it("The method should return an error",function (done) {
+            var group = getSampleData();
+            expect(group.values.length).eq(2);
+            var group2 = getSampleData2();
+            groupService.insert(group)
+                .then(function () {
+                    return groupService.insert(group2);
+                })
+                .then(function () {
+                    return groupService.removeItemByType(group.type, null);
+                })
+                .then(function () {
+                    expect.fail("The method should have returned an error");
+                },function (err) {
+                    expect(err.length).eq(1);
+                    expect(err[0].attribute).eq(GroupServiceValidator.ITEM);
+                    expect(err[0].message).eq(GroupServiceValidator.ITEM_EMPTY);
+                    done();
+                })
         })
     })
 });
