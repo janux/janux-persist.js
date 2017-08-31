@@ -16,11 +16,11 @@ const path = dbEngine === DataSourceHandler.LOKIJS ? lokiJsDBPath : mongoConnUrl
 console.log("Inserting users at " + dbEngine + " in the path/url " + path);
 console.log("Users are being generated");
 UserGenerator.generateUserDateInTheDatabase(dbEngine, path)
-    .then(() => {
-        console.log("Users generated successfully");
-        process.exit(0);
-    })
-    .catch((error) => {
-        console.log("There was an error inserting the users.\n" + JSON.stringify(error));
-        process.exit(-1);
-    });
+	.then(() => {
+		console.log("Users generated successfully");
+		process.exit(0);
+	})
+	.catch((error) => {
+		console.log("There was an error inserting the users.\n" + JSON.stringify(error));
+		process.exit(-1);
+	});

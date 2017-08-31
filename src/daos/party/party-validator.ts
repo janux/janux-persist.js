@@ -15,77 +15,75 @@ import {PersonValidator} from "./person/person-validator";
  */
 export class PartyValidator {
 
-    public static readonly PERSON: string = "PersonImpl";
-    public static readonly ORGANIZATION: string = "OrganizationImpl";
-    public static readonly CONTACTS_EMAILS = "contact.emails";
-    public static readonly CONTACT_PHONE_NUMBER = "contacts.phoneNumbers";
-    public static readonly TYPE: string = "type";
-    public static readonly AT_LEAST_ONE_EMAIL = "You need to put at least one email";
-    public static readonly CONTACT_ADDRESSES = "contacts.addresses";
-    public static readonly TYPE_EMPTY = "Type is empty";
-    public static readonly MORE_THAN_ONE_PRIMARY_CONTACT = "There is more than one contact marked as primary";
-    public static readonly NO_PRIMARY_CONTACT = "There is no contact marked as primary";
-    public static readonly ID_ACCOUNT = "idAccount";
-    public static readonly DUPLICATED_EMAILS = "This party has duplicated email addresses";
-    public static readonly ID_ACCOUNT_NOT_UNDEFINED = "idAccount must be undefined or not empty";
-    public static readonly ID_ACCOUNT_DUPLICATE = "There is another record with the same idAccount";
-    public static TYPE_NOT_PERSON_OR_ORGANIZATION = "Type is not person or organization";
-    public static THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL = "There is another record with the same email address";
-    public static DISPLAY_NAME: string = "displayName";
-    public static DISPLAY_NAME_EMPTY: string = "Display name is empty";
+	public static readonly PERSON: string = "PersonImpl";
+	public static readonly ORGANIZATION: string = "OrganizationImpl";
+	public static readonly CONTACTS_EMAILS = "contact.emails";
+	public static readonly CONTACT_PHONE_NUMBER = "contacts.phoneNumbers";
+	public static readonly TYPE: string = "type";
+	public static readonly AT_LEAST_ONE_EMAIL = "You need to put at least one email";
+	public static readonly CONTACT_ADDRESSES = "contacts.addresses";
+	public static readonly TYPE_EMPTY = "Type is empty";
+	public static readonly MORE_THAN_ONE_PRIMARY_CONTACT = "There is more than one contact marked as primary";
+	public static readonly NO_PRIMARY_CONTACT = "There is no contact marked as primary";
+	public static readonly ID_ACCOUNT = "idAccount";
+	public static readonly DUPLICATED_EMAILS = "This party has duplicated email addresses";
+	public static readonly ID_ACCOUNT_NOT_UNDEFINED = "idAccount must be undefined or not empty";
+	public static readonly ID_ACCOUNT_DUPLICATE = "There is another record with the same idAccount";
+	public static TYPE_NOT_PERSON_OR_ORGANIZATION = "Type is not person or organization";
+	public static THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL = "There is another record with the same email address";
+	public static DISPLAY_NAME: string = "displayName";
+	public static DISPLAY_NAME_EMPTY: string = "Display name is empty";
 
-    /**
-     * Validate the entity.
-     * @param party
-     * @return {ValidationErrorImpl[]} A list of errors. If the record is valid. The the method returns an empty array.
-     */
-    public static validateParty(party: JanuxPeople.Person | JanuxPeople.Organization): ValidationErrorImpl[] {
-        this._log.debug("Call to validateParty with party: %j", party);
-        let errors: ValidationErrorImpl[] = [];
-        if (isBlankString(party.typeName)) {
-            errors.push(new ValidationErrorImpl(this.TYPE, this.TYPE_EMPTY, ""));
-        } else if (party.typeName !== this.PERSON && party.typeName !== this.ORGANIZATION) {
-            errors.push(new ValidationErrorImpl(
-                this.TYPE,
-                this.TYPE_NOT_PERSON_OR_ORGANIZATION,
-                ""));
-        } else {
-            errors = errors.concat(this.validateContactData(party));
-            if (party.typeName === this.PERSON) {
-                errors = errors.concat(PersonValidator.validatePerson(party as JanuxPeople.Person));
-            } else {
-                errors = errors.concat(OrganizationValidator.validateOrganization(party as JanuxPeople.Organization));
-            }
-        }
-        // TODO: Look for how to validate that.
-        // if (isBlankString(party.displayName)) {
-        //     errors.push(new ValidationErrorImpl(
-        //         this.DISPLAY_NAME,
-        //         this.DISPLAY_NAME_EMPTY,
-        //         ""));
-        // }
+	/**
+	 * Validate the entity.
+	 * @param party
+	 * @return {ValidationErrorImpl[]} A list of errors. If the record is valid. The the method returns an empty array.
+	 */
+	public static validateParty(party: JanuxPeople.Person | JanuxPeople.Organization): ValidationErrorImpl[] {
+		this._log.debug("Call to validateParty with party: %j", party);
+		let errors: ValidationErrorImpl[] = [];
+		if (isBlankString(party.typeName)) {
+			errors.push(new ValidationErrorImpl(this.TYPE, this.TYPE_EMPTY, ""));
+		} else if (party.typeName !== this.PERSON && party.typeName !== this.ORGANIZATION) {
+			errors.push(new ValidationErrorImpl(
+				this.TYPE,
+				this.TYPE_NOT_PERSON_OR_ORGANIZATION,
+				""));
+		} else {
+			errors = errors.concat(this.validateContactData(party));
+			if (party.typeName === this.PERSON) {
+				errors = errors.concat(PersonValidator.validatePerson(party as JanuxPeople.Person));
+			} else {
+				errors = errors.concat(OrganizationValidator.validateOrganization(party as JanuxPeople.Organization));
+			}
+		}
+		// TODO: Look for how to validate that.
+		// if (isBlankString(party.displayName)) {
+		//     errors.push(new ValidationErrorImpl(
+		//         this.DISPLAY_NAME,
+		//         this.DISPLAY_NAME_EMPTY,
+		//         ""));
+		// }
 
-        this._log.debug("Returning: %j", errors);
-        return errors;
-    }
+		this._log.debug("Returning: %j", errors);
+		return errors;
+	}
 
-    /**
-     * Validate for duplicated records.
-     * @param resultQuery
-     * @param emailAddressesToLookFor
-     * @param reference
-     * @return {ValidationErrorImpl[]}
-     */
-    public static validateDuplicatedRecords(resultQuery: JanuxPeople.Person | JanuxPeople.Organization[],
-                                            emailAddressesToLookFor: string[],
-                                            reference: JanuxPeople.Person | JanuxPeople.Organization): ValidationErrorImpl[] {
-        this._log.debug(
-            "Call to validateDuplicatedRecords with resultQuery: %j  emailAddressesToLookFor: %j reference : %j",
-            resultQuery,
-            emailAddressesToLookFor,
-            resultQuery);
-        const errors: ValidationErrorImpl[] = [];
-        /*let person: PersonEntity;
+	/**
+	 * Validate for duplicated records.
+	 * @param resultQuery
+	 * @param emailAddressesToLookFor
+	 * @param reference
+	 * @return {ValidationErrorImpl[]}
+	 */
+	public static validateDuplicatedRecords(resultQuery: JanuxPeople.Person | JanuxPeople.Organization[], emailAddressesToLookFor: string[], reference: JanuxPeople.Person | JanuxPeople.Organization): ValidationErrorImpl[] {
+		this._log.debug(
+			"Call to validateDuplicatedRecords with resultQuery: %j  emailAddressesToLookFor: %j reference : %j",
+			resultQuery,
+			emailAddressesToLookFor,
+			resultQuery);
+		const errors: ValidationErrorImpl[] = [];
+		/*let person: PersonEntity;
          let organization: OrganizationEntity;
          let personReference: PersonEntity;
          let organizationReference: OrganizationEntity;
@@ -139,39 +137,39 @@ export class PartyValidator {
          }
          }*/
 
-        this._log.debug("Retuning errors: %j", errors);
-        return errors;
-    }
+		this._log.debug("Retuning errors: %j", errors);
+		return errors;
+	}
 
-    private static _log = logger.getLogger("PartyValidator");
+	private static _log = logger.getLogger("PartyValidator");
 
-    /**
-     * Validate phones, postal addresses and emails data.
-     * @param party
-     * @return {ValidationErrorImpl[]} A list of errors. If the record is valid. The the method returns an empty array.
-     */
-    private static validateContactData(party: JanuxPeople.Person | JanuxPeople.Organization) {
-        const errors: ValidationErrorImpl[] = [];
-        // Check there is at least one primary email
-        /*if (_.isArray(party.emailAddresses) === false || party.emailAddresses.length === 0) {
+	/**
+	 * Validate phones, postal addresses and emails data.
+	 * @param party
+	 * @return {ValidationErrorImpl[]} A list of errors. If the record is valid. The the method returns an empty array.
+	 */
+	private static validateContactData(party: JanuxPeople.Person | JanuxPeople.Organization) {
+		const errors: ValidationErrorImpl[] = [];
+		// Check there is at least one primary email
+		/*if (_.isArray(party.emailAddresses) === false || party.emailAddresses.length === 0) {
          errors.push(new ValidationErrorImpl(this.CONTACTS_EMAILS, this.AT_LEAST_ONE_EMAIL, ""));
          } else {
          errors = errors.concat(this.validateEmailAddresses(party.emailAddresses(false)));
          errors = errors.concat(this.validatePhoneNumbers(party.phoneNumbers(false)));
          errors = errors.concat(this.validatePostalAddresses(party.postalAddresses(false)));
          }*/
-        // Check there is only one primary email
-        return errors;
-    }
+		// Check there is only one primary email
+		return errors;
+	}
 
-    /**
-     * Validate for valid email address.
-     * @param emails The emails to validate.
-     * @return {ValidationErrorImpl[]} A list of errors. If the record is valid. The the method returns an empty array.
-     */
-    private static validateEmailAddresses(emails: JanuxPeople.EmailAddress[]): ValidationErrorImpl[] {
-        const errors: ValidationErrorImpl[] = [];
-        /*const addresses: string[] = emails.map((value, index, array) => value.address);
+	/**
+	 * Validate for valid email address.
+	 * @param emails The emails to validate.
+	 * @return {ValidationErrorImpl[]} A list of errors. If the record is valid. The the method returns an empty array.
+	 */
+	private static validateEmailAddresses(emails: JanuxPeople.EmailAddress[]): ValidationErrorImpl[] {
+		const errors: ValidationErrorImpl[] = [];
+		/*const addresses: string[] = emails.map((value, index, array) => value.address);
          const uniqueAddresses: string[] = _.uniq(addresses);
          if (addresses.length !== uniqueAddresses.length) {
          errors.push(new ValidationErrorImpl(this.CONTACTS_EMAILS, this.DUPLICATED_EMAILS, ""));
@@ -180,12 +178,12 @@ export class PartyValidator {
          for (const email of emails) {
          errors = errors.concat(EmailValidator.validateEmail(email));
          }*/
-        return errors;
-    }
+		return errors;
+	}
 
-    private static validatePhoneNumbers(phones: JanuxPeople.PhoneNumber[]) {
-        const errors: ValidationErrorImpl[] = [];
-        /*if (_.isArray(phones) === false) {
+	private static validatePhoneNumbers(phones: JanuxPeople.PhoneNumber[]) {
+		const errors: ValidationErrorImpl[] = [];
+		/*if (_.isArray(phones) === false) {
          return errors;
          }
          if (phones.length > 0) {
@@ -195,12 +193,12 @@ export class PartyValidator {
          errors = errors.concat(PhoneNumberValidator.validatePhoneNumber(phone));
          }
          }*/
-        return errors;
-    }
+		return errors;
+	}
 
-    private static validatePostalAddresses(addresses: JanuxPeople.PostalAddress[]) {
-        const errors: ValidationErrorImpl[] = [];
-        /*if (_.isArray(addresses) === false) {
+	private static validatePostalAddresses(addresses: JanuxPeople.PostalAddress[]) {
+		const errors: ValidationErrorImpl[] = [];
+		/*if (_.isArray(addresses) === false) {
          return errors;
          }
          if (addresses.length > 0) {
@@ -210,14 +208,13 @@ export class PartyValidator {
          errors = errors.concat(PostalAddressValidator.validatePostalAddress(address));
          }
          }*/
-        return errors;
-    }
+		return errors;
+	}
 
-    private static checkOnlyOnePrimaryContact(prefix: string,
-                                              contacts: JanuxPeople.EmailAddress | JanuxPeople.PhoneNumber | JanuxPeople.PostalAddress): ValidationErrorImpl[] {
-        this._log.debug("Call to checkOnlyOnePrimaryContact with prefix: %j contacts: %j", prefix, contacts);
-        const errors: ValidationErrorImpl[] = [];
-        /*if (contacts.length > 0) {
+	private static checkOnlyOnePrimaryContact(prefix: string, contacts: JanuxPeople.EmailAddress | JanuxPeople.PhoneNumber | JanuxPeople.PostalAddress): ValidationErrorImpl[] {
+		this._log.debug("Call to checkOnlyOnePrimaryContact with prefix: %j contacts: %j", prefix, contacts);
+		const errors: ValidationErrorImpl[] = [];
+		/*if (contacts.length > 0) {
          let primaryRecords: IContactMethod[];
          primaryRecords = _.filter(contacts, (o) => {
          return o.primary === true;
@@ -228,7 +225,7 @@ export class PartyValidator {
          errors.push(new ValidationErrorImpl(prefix, this.NO_PRIMARY_CONTACT, ""));
          }
          }*/
-        return errors;
-    }
+		return errors;
+	}
 
 }

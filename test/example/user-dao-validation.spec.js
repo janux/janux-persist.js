@@ -15,13 +15,13 @@ const incorrectEmail = "jonSmith.com";
 const lastName = "Smith";
 
 describe("Testing user example dao validation", function () {
-    describe("When validating with incorrect email", function () {
-        it("Should have sent the error message", function () {
-            var user = new ExampleUser("", lastName, incorrectEmail);
-            var errors = validateExampleUser(user);
-            expect(errors.length).eq(2);
-            expect(errors[0].attribute).eq('name');
-            expect(errors[1].attribute).eq('email');
-        });
-    });
+	describe("When validating with incorrect email", function () {
+		it("Should have sent the error message", function () {
+			var user = new ExampleUser("", lastName, incorrectEmail);
+			var errors = validateExampleUser(user);
+			expect(errors.length).eq(2);
+			expect(errors[0].attribute).eq('name');
+			expect(errors[1].attribute).eq('email');
+		});
+	});
 });

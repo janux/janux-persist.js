@@ -49,67 +49,67 @@ const contactEmail2 = "dev_full_stack@glarus.com";
 
 
 describe("Testing auth context service find method", function () {
-    describe("Given the inserted roles and accounts", function () {
+	describe("Given the inserted roles and accounts", function () {
 
-        var partyDao;
-        var accountDao;
-        var userService;
-        var insertedUser1;
-        var insertedUser2;
+		var partyDao;
+		var accountDao;
+		var userService;
+		var insertedUser1;
+		var insertedUser2;
 
 
-        beforeEach(function (done) {
+		beforeEach(function (done) {
 
-            partyDao = DaoFactory.createPartyDao(dbEngine, dbPath);
-            accountDao = DaoFactory.createAccountDao(dbEngine, dbPath);
-            userService = UserService.createInstance(accountDao, partyDao);
-            accountDao.removeAll()
-                .then(function () {
-                    return partyDao.removeAll();
-                })
-                .then(function () {
-                    var person = new Person();
-                    person.name.first = personName;
-                    person.name.middle = personMiddleName;
-                    person.name.last = personLastName;
-                    person.setContactMethod(contactType, new EmailAddress(contactEmail));
-                    var contactReference = person.toJSON();
-                    contactReference.typeName = person.typeName;
-                    var account = {
-                        username: accountUsername,
-                        password: accountPassword,
-                        enabled: accountEnabled,
-                        locked: accountLocked,
-                        expire: accountExpire,
-                        expirePassword: accountExpirePassword,
-                        contact: contactReference,
-                        roles: ["admin"]
-                    };
-                    return userService.insert(account)
-                })
-                .then(function (insertedUser) {
-                    insertedUser1 = insertedUser;
-                    var organization = new Organization();
-                    organization.name = organizationName;
-                    organization.setContactMethod(organizationContactType, new EmailAddress(organizationContactEmail));
-                    var contactReference = organization.toJSON();
-                    contactReference.typeName = organization.typeName;
-                    var account2 = {
-                        username: accountUsername2,
-                        password: accountPassword2,
-                        enabled: accountEnabled2,
-                        locked: accountLocked2,
-                        expire: accountExpire2,
-                        expirePassword: accountExpirePassword2,
-                        contact: contactReference,
-                        roles: ["user"]
-                    };
-                    return UserService.insert(account2)
-                })
-                .then(function (insertedUser) {
-                    insertedUser2 = insertedUser;
-                    done();
-                });
-        });
-    });
+			partyDao = DaoFactory.createPartyDao(dbEngine, dbPath);
+			accountDao = DaoFactory.createAccountDao(dbEngine, dbPath);
+			userService = UserService.createInstance(accountDao, partyDao);
+			accountDao.removeAll()
+				.then(function () {
+					return partyDao.removeAll();
+				})
+				.then(function () {
+					var person = new Person();
+					person.name.first = personName;
+					person.name.middle = personMiddleName;
+					person.name.last = personLastName;
+					person.setContactMethod(contactType, new EmailAddress(contactEmail));
+					var contactReference = person.toJSON();
+					contactReference.typeName = person.typeName;
+					var account = {
+						username: accountUsername,
+						password: accountPassword,
+						enabled: accountEnabled,
+						locked: accountLocked,
+						expire: accountExpire,
+						expirePassword: accountExpirePassword,
+						contact: contactReference,
+						roles: ["admin"]
+					};
+					return userService.insert(account)
+				})
+				.then(function (insertedUser) {
+					insertedUser1 = insertedUser;
+					var organization = new Organization();
+					organization.name = organizationName;
+					organization.setContactMethod(organizationContactType, new EmailAddress(organizationContactEmail));
+					var contactReference = organization.toJSON();
+					contactReference.typeName = organization.typeName;
+					var account2 = {
+						username: accountUsername2,
+						password: accountPassword2,
+						enabled: accountEnabled2,
+						locked: accountLocked2,
+						expire: accountExpire2,
+						expirePassword: accountExpirePassword2,
+						contact: contactReference,
+						roles: ["user"]
+					};
+					return UserService.insert(account2)
+				})
+				.then(function (insertedUser) {
+					insertedUser2 = insertedUser;
+					done();
+				});
+		});
+	});
 });

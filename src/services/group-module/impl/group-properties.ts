@@ -5,9 +5,9 @@
 import {GroupProperties} from "../api/group-properties";
 
 export class GroupPropertiesImpl implements GroupProperties {
-    name: string;
-    description: string;
-    attributes: { [p: string]: string } = {};
-    code: string;
-    type: string;
+	name: string;
+	description: string;
+	attributes: { [p: string]: string } = {};
+	code: string;
+	type: string;
 }

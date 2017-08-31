@@ -13,24 +13,24 @@ import {isBlankString} from "../../../util/blank-string-validator";
  */
 export class OrganizationValidator {
 
-    public static readonly NAME = "name";
-    public static readonly NAME_DUPLICATED = "There is another organization with the same name";
-    public static readonly NAME_EMPTY = "Organization name is empty";
+	public static readonly NAME = "name";
+	public static readonly NAME_DUPLICATED = "There is another organization with the same name";
+	public static readonly NAME_EMPTY = "Organization name is empty";
 
-    /**
-     * Validate if the organization values is valid.
-     * @param organization The organization to validate.
-     * @return {ValidationErrorImpl[]}
-     */
-    public static validateOrganization(organization: JanuxPeople.Organization): ValidationErrorImpl[] {
-        this._log.debug("Call to validateOrganization with organization: %j", organization);
-        const errors: ValidationErrorImpl[] = [];
-        if (isBlankString(organization.name)) {
-            errors.push(new ValidationErrorImpl(this.NAME, this.NAME_EMPTY, ""));
-        }
-        this._log.debug("Returning errors: %j", errors);
-        return errors;
-    }
+	/**
+	 * Validate if the organization values is valid.
+	 * @param organization The organization to validate.
+	 * @return {ValidationErrorImpl[]}
+	 */
+	public static validateOrganization(organization: JanuxPeople.Organization): ValidationErrorImpl[] {
+		this._log.debug("Call to validateOrganization with organization: %j", organization);
+		const errors: ValidationErrorImpl[] = [];
+		if (isBlankString(organization.name)) {
+			errors.push(new ValidationErrorImpl(this.NAME, this.NAME_EMPTY, ""));
+		}
+		this._log.debug("Returning errors: %j", errors);
+		return errors;
+	}
 
-    private static _log = logger.getLogger("OrganizationValidator");
+	private static _log = logger.getLogger("OrganizationValidator");
 }

@@ -4,18 +4,18 @@
  */
 
 export class GroupEntity {
-    id: string;
+	id: string;
 
-    // A user readable name
-    name: string;
+	// A user readable name
+	name: string;
 
-    // A unique identifier.
-    code: string;
+	// A unique identifier.
+	code: string;
 
-    // Description of the group
-    description: string;
+	// Description of the group
+	description: string;
 
-    // An user readable or user readable attribute to identify the content of the groups amongst
-    // other groups.
-    type: string;
+	// An user readable or user readable attribute to identify the content of the groups amongst
+	// other groups.
+	type: string;
 }

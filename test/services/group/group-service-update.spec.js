@@ -27,105 +27,105 @@ const item3 = "item 3";
 
 describe("Testing group service update methods", function () {
 
-    var groupContentDao;
-    var groupAttributeValueDao;
-    var groupDao;
-    var groupService;
+	var groupContentDao;
+	var groupAttributeValueDao;
+	var groupDao;
+	var groupService;
 
-    beforeEach("Cleaning data and define daos", function (done) {
+	beforeEach("Cleaning data and define daos", function (done) {
 
-        groupContentDao = DaoFactory.createGroupContentDao(dbEngine, path);
-        groupDao = DaoFactory.createGroupDao(dbEngine, path);
-        groupAttributeValueDao = DaoFactory.createGroupAttributesDao(dbEngine, path);
-        groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
-        setTimeout(function () {
-            groupContentDao.removeAll()
-                .then(function () {
-                    return groupDao.removeAll();
-                })
-                .then(function () {
-                    return groupAttributeValueDao.removeAll();
-                })
-                .then(function () {
-                    done();
-                })
-        }, 50);
-    });
+		groupContentDao = DaoFactory.createGroupContentDao(dbEngine, path);
+		groupDao = DaoFactory.createGroupDao(dbEngine, path);
+		groupAttributeValueDao = DaoFactory.createGroupAttributesDao(dbEngine, path);
+		groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
+		setTimeout(function () {
+			groupContentDao.removeAll()
+				.then(function () {
+					return groupDao.removeAll();
+				})
+				.then(function () {
+					return groupAttributeValueDao.removeAll();
+				})
+				.then(function () {
+					done();
+				})
+		}, 50);
+	});
 
-    function getSampleData() {
-        var group = new Group();
-        group.type = type;
-        group.name = name;
-        group.code = code;
-        group.description = description;
-        group.attributes = attributes;
-        group.values.push(item1);
-        group.values.push(item2);
-        return group;
-    }
+	function getSampleData() {
+		var group = new Group();
+		group.type = type;
+		group.name = name;
+		group.code = code;
+		group.description = description;
+		group.attributes = attributes;
+		group.values.push(item1);
+		group.values.push(item2);
+		return group;
+	}
 
-    describe("When calling update", function () {
-        it("The method should update the group", function (done) {
-            var group = getSampleData();
-            groupService.insert(group)
-                .then(function (result) {
-                    group.name = updatedName;
-                    group.description = updatedDescription;
-                    group.attributes = updatedAttributes;
-                    group.values.push(item3);
-                    return groupService.update(group);
-                })
-                .then(function (updatedGroup) {
-                    expect(updatedGroup.name).eq(updatedName);
-                    expect(updatedGroup.description).eq(updatedDescription);
-                    expect(updatedGroup.attributes).to.deep.equals(updatedAttributes);
-                    expect(updatedGroup.values).to.deep.equals([item1, item2, item3]);
-                    done();
-                });
-        })
-    })
+	describe("When calling update", function () {
+		it("The method should update the group", function (done) {
+			var group = getSampleData();
+			groupService.insert(group)
+				.then(function (result) {
+					group.name = updatedName;
+					group.description = updatedDescription;
+					group.attributes = updatedAttributes;
+					group.values.push(item3);
+					return groupService.update(group);
+				})
+				.then(function (updatedGroup) {
+					expect(updatedGroup.name).eq(updatedName);
+					expect(updatedGroup.description).eq(updatedDescription);
+					expect(updatedGroup.attributes).to.deep.equals(updatedAttributes);
+					expect(updatedGroup.values).to.deep.equals([item1, item2, item3]);
+					done();
+				});
+		})
+	})
 
 
-    describe("When inserting a group with incorrect values", function () {
-        it("The method should return an error", function (done) {
-            var group = getSampleData();
-            group.attributes = {code: "   ", parent: "  "};
-            groupService.insert(group)
-                .then(function (result) {
-                    expect.fail("The method should not have inserted the group");
-                }, function (err) {
-                    expect(err.length).eq(2);
-                    expect(err[0].attribute).eq(GroupServiceValidator.ATTRIBUTE);
-                    expect(err[1].attribute).eq(GroupServiceValidator.ATTRIBUTE);
-                    expect(err[0].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
-                    expect(err[1].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
-                    done();
-                })
-        })
-    });
+	describe("When inserting a group with incorrect values", function () {
+		it("The method should return an error", function (done) {
+			var group = getSampleData();
+			group.attributes = {code: "   ", parent: "  "};
+			groupService.insert(group)
+				.then(function (result) {
+					expect.fail("The method should not have inserted the group");
+				}, function (err) {
+					expect(err.length).eq(2);
+					expect(err[0].attribute).eq(GroupServiceValidator.ATTRIBUTE);
+					expect(err[1].attribute).eq(GroupServiceValidator.ATTRIBUTE);
+					expect(err[0].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
+					expect(err[1].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
+					done();
+				})
+		})
+	});
 
-    describe("When calling update with incorrect values", function () {
-        it("The method should send an error", function (done) {
-            var group = getSampleData();
-            groupService.insert(group)
-                .then(function (result) {
-                    group.name = updatedName;
-                    group.description = updatedDescription;
-                    group.attributes = {code: "   ", parent: "  "};
-                    group.values.push(item3);
-                    return groupService.update(group);
-                })
-                .then(function (updatedGroup) {
-                    expect.fail("The method should not have updated the group")
-                },function (err) {
-                    expect(err.length).eq(2);
-                    expect(err[0].attribute).eq(GroupServiceValidator.ATTRIBUTE);
-                    expect(err[1].attribute).eq(GroupServiceValidator.ATTRIBUTE);
-                    expect(err[0].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
-                    expect(err[1].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
-                    done();
-                });
-        })
-    })
+	describe("When calling update with incorrect values", function () {
+		it("The method should send an error", function (done) {
+			var group = getSampleData();
+			groupService.insert(group)
+				.then(function (result) {
+					group.name = updatedName;
+					group.description = updatedDescription;
+					group.attributes = {code: "   ", parent: "  "};
+					group.values.push(item3);
+					return groupService.update(group);
+				})
+				.then(function (updatedGroup) {
+					expect.fail("The method should not have updated the group")
+				}, function (err) {
+					expect(err.length).eq(2);
+					expect(err[0].attribute).eq(GroupServiceValidator.ATTRIBUTE);
+					expect(err[1].attribute).eq(GroupServiceValidator.ATTRIBUTE);
+					expect(err[0].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
+					expect(err[1].message).eq(GroupServiceValidator.ATTRIBUTE_VALUE_EMPTY);
+					done();
+				});
+		})
+	})
 
 });

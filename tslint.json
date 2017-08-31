@@ -37,7 +37,8 @@
             false
         ],
         "no-string-literal": false,
-        "forin": false
+        "forin": false,
+		"indent": false
     },
     "rulesDirectory": []
 }

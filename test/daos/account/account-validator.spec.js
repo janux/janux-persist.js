@@ -16,25 +16,25 @@ const contactId = "313030303030303030303030";
 
 describe("Testing validate user", function () {
 
-    describe("Given the account", function () {
-        var account = new AccountEntity();
-        account.username = username;
-        account.password = password;
-        account.contactId = contactId;
-        it("The method should return an empty array", function () {
-            var errors = AccountValidator.validateAccount(account);
-            expect(errors.length).eq(0);
-        });
-    });
+	describe("Given the account", function () {
+		var account = new AccountEntity();
+		account.username = username;
+		account.password = password;
+		account.contactId = contactId;
+		it("The method should return an empty array", function () {
+			var errors = AccountValidator.validateAccount(account);
+			expect(errors.length).eq(0);
+		});
+	});
 
 
-    describe("Given the account", function () {
-        var account = new AccountEntity();
-        account.username = "";
-        account.password = "";
-        it("The method should return two errors", function () {
-            var errors = AccountValidator.validateAccount(account);
-            expect(errors.length).eq(3);
-        });
-    });
+	describe("Given the account", function () {
+		var account = new AccountEntity();
+		account.username = "";
+		account.password = "";
+		it("The method should return two errors", function () {
+			var errors = AccountValidator.validateAccount(account);
+			expect(errors.length).eq(3);
+		});
+	});
 });

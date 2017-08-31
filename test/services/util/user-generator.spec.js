@@ -19,25 +19,25 @@ var path = dbEngine === DataSourceHandler.LOKIJS ? lokiJsDBPath : mongoConnUrl;
 
 describe("Testing users generator", function () {
 
-    beforeEach(function (done) {
-        var accountDao = DaoFactory.createAccountDao(dbEngine, path);
-        var partyDao = DaoFactory.createPartyDao(dbEngine, path);
-        accountDao.removeAll()
-            .then(function () {
-                return partyDao.removeAll();
-            })
-            .then(function () {
-                done();
-            })
-    });
+	beforeEach(function (done) {
+		var accountDao = DaoFactory.createAccountDao(dbEngine, path);
+		var partyDao = DaoFactory.createPartyDao(dbEngine, path);
+		accountDao.removeAll()
+			.then(function () {
+				return partyDao.removeAll();
+			})
+			.then(function () {
+				done();
+			})
+	});
 
-    describe("When calling the function.", function () {
-        it("The method should have inserted the records", function (done) {
-            UserGenerator.generateUserDateInTheDatabase(dbEngine, path)
-                .then(function (result) {
-                    expect(result.length > 0);
-                    done();
-                });
-        })
-    })
+	describe("When calling the function.", function () {
+		it("The method should have inserted the records", function (done) {
+			UserGenerator.generateUserDateInTheDatabase(dbEngine, path)
+				.then(function (result) {
+					expect(result.length > 0);
+					done();
+				});
+		})
+	})
 });

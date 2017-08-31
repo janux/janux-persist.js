@@ -20,368 +20,368 @@ import {isBlankString} from "../../util/blank-string-validator";
  * This class has basic user service methods.
  */
 export class UserService {
-    public static createInstance(accountDao: AccountDao, partyDao: PartyDao) {
-        return this._instance || (this._instance = new this(accountDao, partyDao));
-    }
+	public static createInstance(accountDao: AccountDao, partyDao: PartyDao) {
+		return this._instance || (this._instance = new this(accountDao, partyDao));
+	}
 
-    private static _instance: UserService;
-    public PARTY = "party";
-    public NO_CONTACT_IN_DATABASE = "There is no contact in the database with this id";
-    public ACCOUNT = "account";
-    public ANOTHER_ACCOUNT_USING_CONTACT = "There is another account using this contact";
-    public ACCOUNT_NOT_IN_DATABASE = "The account with this id does not exist in the database";
-    public PARTY_TYPE = "party.type";
-    private _log = logger.getLogger("UserService");
-    private ID_REFERENCE: string = "id";
-    private accountDao: AccountDao;
-    private partyDao: PartyDao;
+	private static _instance: UserService;
+	public PARTY = "party";
+	public NO_CONTACT_IN_DATABASE = "There is no contact in the database with this id";
+	public ACCOUNT = "account";
+	public ANOTHER_ACCOUNT_USING_CONTACT = "There is another account using this contact";
+	public ACCOUNT_NOT_IN_DATABASE = "The account with this id does not exist in the database";
+	public PARTY_TYPE = "party.type";
+	private _log = logger.getLogger("UserService");
+	private ID_REFERENCE: string = "id";
+	private accountDao: AccountDao;
+	private partyDao: PartyDao;
 
-    private constructor(accountDao: AccountDao, partyDao: PartyDao) {
-        this.accountDao = accountDao;
-        this.partyDao = partyDao;
-    }
+	private constructor(accountDao: AccountDao, partyDao: PartyDao) {
+		this.accountDao = accountDao;
+		this.partyDao = partyDao;
+	}
 
-    /**
-     * Delete an users, and it's party info, given the userId.
-     * @param userId The user id.
-     * @return {Promise<any>} A promise indicating the operation is executed successfully.
-     */
-    public deleteUserByUserId(userId: string): Promise<any> {
-        this._log.debug("Call to deleteUserByUserId with userId: %j", userId);
-        let user: AccountEntity;
-        return this.accountDao.findOneByUserId(userId)
-            .then((resultQuery: AccountEntity) => {
-                user = resultQuery;
-                return this.partyDao.removeById(user.contactId);
-            })
-            .then(() => {
-                return this.accountDao.remove(user);
-            });
-    }
+	/**
+	 * Delete an users, and it's party info, given the userId.
+	 * @param userId The user id.
+	 * @return {Promise<any>} A promise indicating the operation is executed successfully.
+	 */
+	public deleteUserByUserId(userId: string): Promise<any> {
+		this._log.debug("Call to deleteUserByUserId with userId: %j", userId);
+		let user: AccountEntity;
+		return this.accountDao.findOneByUserId(userId)
+			.then((resultQuery: AccountEntity) => {
+				user = resultQuery;
+				return this.partyDao.removeById(user.contactId);
+			})
+			.then(() => {
+				return this.accountDao.remove(user);
+			});
+	}
 
-    /**
-     * Save or updateMethod an users and it's contact info.
-     * @param object
-     * @return {Promise<any>}
-     */
-    public saveOrUpdate(object: any): Promise<any> {
-        this._log.debug("Call to saveOrUpdate with object: %j", object);
-        if (isBlankString(object.id)) {
-            return this.insert(object);
-        } else {
-            return this.update(object);
-        }
-    }
+	/**
+	 * Save or updateMethod an users and it's contact info.
+	 * @param object
+	 * @return {Promise<any>}
+	 */
+	public saveOrUpdate(object: any): Promise<any> {
+		this._log.debug("Call to saveOrUpdate with object: %j", object);
+		if (isBlankString(object.id)) {
+			return this.insert(object);
+		} else {
+			return this.update(object);
+		}
+	}
 
-    /**
-     * Find all users and adds its contact info.
-     * @return {Promise<any[]>}
-     */
-    public findAll(): Promise<any[]> {
-        this._log.debug("Call to findAllMethod");
-        return this.accountDao.findAll()
-            .then((users: AccountEntity[]) => {
-                return this.populateContactData(users);
-            });
-    }
+	/**
+	 * Find all users and adds its contact info.
+	 * @return {Promise<any[]>}
+	 */
+	public findAll(): Promise<any[]> {
+		this._log.debug("Call to findAllMethod");
+		return this.accountDao.findAll()
+			.then((users: AccountEntity[]) => {
+				return this.populateContactData(users);
+			});
+	}
 
-    public findByIdsIn(ids: string[]): Promise<any[]> {
-        this._log.debug("Call to findByIdsIn with ids %j", ids);
-        return this.accountDao.findByIds(ids)
-            .then((users: AccountEntity[]) => {
-                return this.populateContactData(users);
-            });
-    }
+	public findByIdsIn(ids: string[]): Promise<any[]> {
+		this._log.debug("Call to findByIdsIn with ids %j", ids);
+		return this.accountDao.findByIds(ids)
+			.then((users: AccountEntity[]) => {
+				return this.populateContactData(users);
+			});
+	}
 
-    /**
-     * Find one user by its id.
-     * @param id The id
-     * @return {Promise<any>}
-     */
-    public findOneByUserId(id: any): Promise<any> {
-        this._log.debug("Call to findOneByUserId with id: %j", id);
-        let result: any;
-        return this.accountDao.findOneByUserId(id)
-            .then((user: AccountEntity) => {
-                if (_.isNil(user)) return Promise.reject("No user with the id " + id);
-                result = user;
-                return this.partyDao.findOne(user.contactId);
-            })
-            .then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
-                result.contact = contact.toJSON();
-                result.contact.id = contact.id;
-                result.contact.typeName = contact.typeName;
-                this._log.debug("Returning %j", result);
-                return Promise.resolve(result);
-            });
-    }
+	/**
+	 * Find one user by its id.
+	 * @param id The id
+	 * @return {Promise<any>}
+	 */
+	public findOneByUserId(id: any): Promise<any> {
+		this._log.debug("Call to findOneByUserId with id: %j", id);
+		let result: any;
+		return this.accountDao.findOneByUserId(id)
+			.then((user: AccountEntity) => {
+				if (_.isNil(user)) return Promise.reject("No user with the id " + id);
+				result = user;
+				return this.partyDao.findOne(user.contactId);
+			})
+			.then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
+				result.contact = contact.toJSON();
+				result.contact.id = contact.id;
+				result.contact.typeName = contact.typeName;
+				this._log.debug("Returning %j", result);
+				return Promise.resolve(result);
+			});
+	}
 
-    /**
-     * Find one user by its username.
-     * @param username
-     * @return {Promise<any>}
-     */
-    public findOneByUserName(username: string): Promise<any> {
-        this._log.debug("Call to findOneByUserName with username: %j", username);
-        let result: any;
-        return this.accountDao.findOneByUserName(username)
-            .then((user: AccountEntity) => {
-                if (_.isNil(user)) return Promise.reject("No user with the username " + username);
-                result = user;
-                return this.partyDao.findOne(user.contactId);
-            })
-            .then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
-                result.contact = contact.toJSON();
-                result.contact.id = contact.id;
-                result.contact.typeName = contact.typeName;
-                this._log.debug("Returning %j", result);
-                return Promise.resolve(result);
-            });
-    }
+	/**
+	 * Find one user by its username.
+	 * @param username
+	 * @return {Promise<any>}
+	 */
+	public findOneByUserName(username: string): Promise<any> {
+		this._log.debug("Call to findOneByUserName with username: %j", username);
+		let result: any;
+		return this.accountDao.findOneByUserName(username)
+			.then((user: AccountEntity) => {
+				if (_.isNil(user)) return Promise.reject("No user with the username " + username);
+				result = user;
+				return this.partyDao.findOne(user.contactId);
+			})
+			.then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
+				result.contact = contact.toJSON();
+				result.contact.id = contact.id;
+				result.contact.typeName = contact.typeName;
+				this._log.debug("Returning %j", result);
+				return Promise.resolve(result);
+			});
+	}
 
-    /**
-     * Find all users that matches with the username.
-     * @param username
-     * @return {Promise<any[]>}
-     */
-    public findAllByUserNameMatch(username: string): Promise<any[]> {
-        this._log.debug("Call to findByUserNameMatch with username: %j", username);
-        return this.accountDao.findByUserNameMatch(username)
-            .then((users: AccountEntity[]) => {
-                return this.populateContactData(users);
-            });
-    }
+	/**
+	 * Find all users that matches with the username.
+	 * @param username
+	 * @return {Promise<any[]>}
+	 */
+	public findAllByUserNameMatch(username: string): Promise<any[]> {
+		this._log.debug("Call to findByUserNameMatch with username: %j", username);
+		return this.accountDao.findByUserNameMatch(username)
+			.then((users: AccountEntity[]) => {
+				return this.populateContactData(users);
+			});
+	}
 
-    /**
-     * Find all users whose contact name
-     * @param name
-     * @return {Promise<any[]>}
-     */
-    public findAllByContactNameMatch(name: string): Promise<any[]> {
-        this._log.debug("Call to findByContactNameContaining with name %j", name);
-        return this.partyDao.findByName(name)
-            .then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
-                return this.populateUserData(resultQuery);
-            });
-    }
+	/**
+	 * Find all users whose contact name
+	 * @param name
+	 * @return {Promise<any[]>}
+	 */
+	public findAllByContactNameMatch(name: string): Promise<any[]> {
+		this._log.debug("Call to findByContactNameContaining with name %j", name);
+		return this.partyDao.findByName(name)
+			.then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
+				return this.populateUserData(resultQuery);
+			});
+	}
 
-    public findAllByEmail(email: string): Promise<any[]> {
-        this._log.debug("Call to findByEmail with email %j", email);
-        return this.partyDao.findByEmail(email)
-            .then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
-                return this.populateUserData(resultQuery);
-            });
-    }
+	public findAllByEmail(email: string): Promise<any[]> {
+		this._log.debug("Call to findByEmail with email %j", email);
+		return this.partyDao.findByEmail(email)
+			.then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
+				return this.populateUserData(resultQuery);
+			});
+	}
 
-    public findAllByPhone(phone: string): Promise<any[]> {
-        this._log.debug("Call to findByPhone with email %j", phone);
-        return this.partyDao.findByPhone(phone)
-            .then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
-                return this.populateUserData(resultQuery);
-            });
-    }
+	public findAllByPhone(phone: string): Promise<any[]> {
+		this._log.debug("Call to findByPhone with email %j", phone);
+		return this.partyDao.findByPhone(phone)
+			.then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
+				return this.populateUserData(resultQuery);
+			});
+	}
 
-    /**
-     * Insert a new user.
-     * @param object The account info to insertMethod.
-     * object must have contact info.
-     * If the contact info has an id. The system assumes
-     * the account is going to be used by an existing party record.
-     * If the contact info doesn't hav an id. The the system
-     * assumes is going to insertMethod a new party record.
-     */
-    public insert(object: any): Promise<any> {
-        this._log.debug("Call to insertMethod with object %j", object);
-        let associatedParty: JanuxPeople.Person | JanuxPeople.Organization;
-        let result: any;
-        const user: AccountEntity = new AccountEntity();
-        user.enabled = object.enabled;
-        user.userId = uuid.v4();
-        user.mdate = new Date();
-        user.cdate = new Date();
-        user.username = object.username;
-        user.password = object.password;
-        user.expirePassword = object.expirePassword;
-        user.expire = object.expire;
-        user.locked = object.locked;
-        user.roles = object.roles;
+	/**
+	 * Insert a new user.
+	 * @param object The account info to insertMethod.
+	 * object must have contact info.
+	 * If the contact info has an id. The system assumes
+	 * the account is going to be used by an existing party record.
+	 * If the contact info doesn't hav an id. The the system
+	 * assumes is going to insertMethod a new party record.
+	 */
+	public insert(object: any): Promise<any> {
+		this._log.debug("Call to insertMethod with object %j", object);
+		let associatedParty: JanuxPeople.Person | JanuxPeople.Organization;
+		let result: any;
+		const user: AccountEntity = new AccountEntity();
+		user.enabled = object.enabled;
+		user.userId = uuid.v4();
+		user.mdate = new Date();
+		user.cdate = new Date();
+		user.username = object.username;
+		user.password = object.password;
+		user.expirePassword = object.expirePassword;
+		user.expire = object.expire;
+		user.locked = object.locked;
+		user.roles = object.roles;
 
-        // Validate user
-        const errors = AccountValidator.validateAccountExceptContactId(user);
-        if (errors.length > 0) {
-            return Promise.reject(errors);
-        }
+		// Validate user
+		const errors = AccountValidator.validateAccountExceptContactId(user);
+		if (errors.length > 0) {
+			return Promise.reject(errors);
+		}
 
-        return this.definePartyInfo(object.contact)
-            .then((contacts: JanuxPeople.Person | JanuxPeople.Organization) => {
-                associatedParty = contacts;
-                user.contactId = associatedParty[this.ID_REFERENCE];
-                return this.accountDao.insert(user);
-            })
-            .then((insertedAccount: AccountEntity) => {
-                result = insertedAccount;
-                result.contact = associatedParty.toJSON();
-                result.contact.id = associatedParty.id;
-                result.contact.typeName = associatedParty.typeName;
-                this._log.debug("Returning %j", result);
-                return Promise.resolve(result);
-            });
-    }
+		return this.definePartyInfo(object.contact)
+			.then((contacts: JanuxPeople.Person | JanuxPeople.Organization) => {
+				associatedParty = contacts;
+				user.contactId = associatedParty[this.ID_REFERENCE];
+				return this.accountDao.insert(user);
+			})
+			.then((insertedAccount: AccountEntity) => {
+				result = insertedAccount;
+				result.contact = associatedParty.toJSON();
+				result.contact.id = associatedParty.id;
+				result.contact.typeName = associatedParty.typeName;
+				this._log.debug("Returning %j", result);
+				return Promise.resolve(result);
+			});
+	}
 
-    /**
-     * Update the account data. Just updateMethod the account info and the associated roles.
-     * One difference with insertMethod is the updateMethod will not updateMethod the contact data.
-     * Instead one must use partyDao.updateMethod().
-     * @param object The account to be updated.
-     */
-    public update(object: any): Promise<any> {
-        this._log.debug("Call to updateMethod with object:%j", object);
-        let result: any;
-        const user: AccountEntity = new AccountEntity();
-        // Find the user. This also helps to retrieve the contactId.
-        return this.accountDao.findOne(object.id)
-            .then((resultQuery) => {
-                if (resultQuery === null) {
-                    return Promise.reject([
-                        new ValidationErrorImpl(this.ACCOUNT, this.ACCOUNT_NOT_IN_DATABASE, object.id)
-                    ]);
-                } else {
-                    user.enabled = object.enabled;
-                    user.username = object.username;
-                    user.password = object.password;
-                    user.expirePassword = object.expirePassword;
-                    user.expire = object.expire;
-                    user.locked = object.locked;
-                    user.userId = object.userId;
-                    user.mdate = object.mdate;
-                    user.cdate = object.cdate;
-                    user.roles = object.roles;
-                    user.id = object.id;
-                    user.contactId = resultQuery.contactId;
-                    return this.accountDao.update(user);
-                }
-            })
-            .then((updatedAccount: AccountEntity) => {
-                result = updatedAccount;
-                // Now updateMethod the contact data.
-                const contact: any = object.contact;
-                let objectToUpdate: any;
-                if (contact.typeName === PartyValidator.PERSON) {
-                    objectToUpdate = JanuxPeople.Person.fromJSON(contact);
-                } else {
-                    objectToUpdate = JanuxPeople.Organization.fromJSON(contact);
-                }
-                objectToUpdate.id = contact.id;
-                return this.partyDao.update(objectToUpdate);
-            })
-            .then((updatedParty: any) => {
-                result.contact = updatedParty.toJSON();
-                result.contact.typeName = updatedParty.typeName;
-                result.contact.id = updatedParty.id;
-                return Promise.resolve(result);
-            });
-    }
+	/**
+	 * Update the account data. Just updateMethod the account info and the associated roles.
+	 * One difference with insertMethod is the updateMethod will not updateMethod the contact data.
+	 * Instead one must use partyDao.updateMethod().
+	 * @param object The account to be updated.
+	 */
+	public update(object: any): Promise<any> {
+		this._log.debug("Call to updateMethod with object:%j", object);
+		let result: any;
+		const user: AccountEntity = new AccountEntity();
+		// Find the user. This also helps to retrieve the contactId.
+		return this.accountDao.findOne(object.id)
+			.then((resultQuery) => {
+				if (resultQuery === null) {
+					return Promise.reject([
+						new ValidationErrorImpl(this.ACCOUNT, this.ACCOUNT_NOT_IN_DATABASE, object.id)
+					]);
+				} else {
+					user.enabled = object.enabled;
+					user.username = object.username;
+					user.password = object.password;
+					user.expirePassword = object.expirePassword;
+					user.expire = object.expire;
+					user.locked = object.locked;
+					user.userId = object.userId;
+					user.mdate = object.mdate;
+					user.cdate = object.cdate;
+					user.roles = object.roles;
+					user.id = object.id;
+					user.contactId = resultQuery.contactId;
+					return this.accountDao.update(user);
+				}
+			})
+			.then((updatedAccount: AccountEntity) => {
+				result = updatedAccount;
+				// Now updateMethod the contact data.
+				const contact: any = object.contact;
+				let objectToUpdate: any;
+				if (contact.typeName === PartyValidator.PERSON) {
+					objectToUpdate = JanuxPeople.Person.fromJSON(contact);
+				} else {
+					objectToUpdate = JanuxPeople.Organization.fromJSON(contact);
+				}
+				objectToUpdate.id = contact.id;
+				return this.partyDao.update(objectToUpdate);
+			})
+			.then((updatedParty: any) => {
+				result.contact = updatedParty.toJSON();
+				result.contact.typeName = updatedParty.typeName;
+				result.contact.id = updatedParty.id;
+				return Promise.resolve(result);
+			});
+	}
 
-    private populateUserData(contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]): Promise<any> {
-        this._log.debug("Call to populate populateUserData with contacts: %j", contacts);
-        const ids = _.map(contacts, (o: any) => o.id);
-        let result: any;
-        return this.accountDao.findByContactIdsIn(ids)
-            .then((users: AccountEntity[]) => {
-                result = this.mixData(users, contacts);
-                this._log.debug("populateUserData : returning %j", result);
-                return Promise.resolve(result);
-            });
-    }
+	private populateUserData(contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]): Promise<any> {
+		this._log.debug("Call to populate populateUserData with contacts: %j", contacts);
+		const ids = _.map(contacts, (o: any) => o.id);
+		let result: any;
+		return this.accountDao.findByContactIdsIn(ids)
+			.then((users: AccountEntity[]) => {
+				result = this.mixData(users, contacts);
+				this._log.debug("populateUserData : returning %j", result);
+				return Promise.resolve(result);
+			});
+	}
 
-    private populateContactData(users: AccountEntity[]) {
-        this._log.debug("Call to populateContactData with users: %j", users);
-        let result: any = users;
-        const contactIds = users.map((value) => value.contactId);
-        return this.partyDao.findByIds(contactIds)
-            .then((contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
-                result = this.mixData(result, contacts);
-                this._log.debug("populateContactData : returning %j", result);
-                return Promise.resolve(result);
-            });
-    }
+	private populateContactData(users: AccountEntity[]) {
+		this._log.debug("Call to populateContactData with users: %j", users);
+		let result: any = users;
+		const contactIds = users.map((value) => value.contactId);
+		return this.partyDao.findByIds(contactIds)
+			.then((contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
+				result = this.mixData(result, contacts);
+				this._log.debug("populateContactData : returning %j", result);
+				return Promise.resolve(result);
+			});
+	}
 
-    private mixData(users: any[], contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]): any[] {
-        this._log.debug("Call to mix data with users: %j contacts %j", users, contacts);
-        for (const user of users) {
-            const contact = _.find(contacts, (o) => {
-                return o.id === user.contactId;
-            });
-            this._log.debug("Founded contact %j", contact);
-            if (_.isNil(contact)) {
-                this._log.error("NOT CONTACT FOUNDED");
-            }
-            user.contact = contact.toJSON();
-            user.contact.id = contact.id;
-            user.contact.typeName = contact.typeName;
-        }
-        this._log.debug("Returning from mixData: %j", users);
-        return users;
-    }
+	private mixData(users: any[], contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]): any[] {
+		this._log.debug("Call to mix data with users: %j contacts %j", users, contacts);
+		for (const user of users) {
+			const contact = _.find(contacts, (o) => {
+				return o.id === user.contactId;
+			});
+			this._log.debug("Founded contact %j", contact);
+			if (_.isNil(contact)) {
+				this._log.error("NOT CONTACT FOUNDED");
+			}
+			user.contact = contact.toJSON();
+			user.contact.id = contact.id;
+			user.contact.typeName = contact.typeName;
+		}
+		this._log.debug("Returning from mixData: %j", users);
+		return users;
+	}
 
-    /**
-     * Validate the contact info before inserting the account.
-     * @param party The party to validate.
-     * @return {any}
-     */
-    private definePartyInfo(party: any): Promise<JanuxPeople.Person | JanuxPeople.Organization | ValidationErrorImpl[]> {
-        this._log.debug("Call to define party  info with party: %j", party);
-        let person: JanuxPeople.Person;
-        let organization: JanuxPeople.Organization;
-        // Check for an id
-        if (isBlankString(party.id) === true) {
-            // No id. Check port party type before inserting a new party.
-            if (_.isString(party.typeName) && party.typeName === PartyValidator.PERSON) {
-                person = JanuxPeople.Person.fromJSON(party);
-                this._log.debug("Inserting the person %j", person);
-                return this.partyDao.insert(person);
-            } else if (_.isString(party.typeName) && party.typeName === PartyValidator.ORGANIZATION) {
-                // Itś an organization
-                organization = JanuxPeople.Organization.fromJSON(party);
-                // Insert the organization.
-                this._log.debug("Inserting the organization %j", organization);
-                return this.partyDao.insert(organization);
-            } else {
-                this._log.warn("No correct party type, returning a reject");
-                // No party type, sending an error.
-                return Promise.reject([
-                    new ValidationErrorImpl(this.PARTY_TYPE, PartyValidator.TYPE_NOT_PERSON_OR_ORGANIZATION, "")
-                ]);
-            }
+	/**
+	 * Validate the contact info before inserting the account.
+	 * @param party The party to validate.
+	 * @return {any}
+	 */
+	private definePartyInfo(party: any): Promise<JanuxPeople.Person | JanuxPeople.Organization | ValidationErrorImpl[]> {
+		this._log.debug("Call to define party  info with party: %j", party);
+		let person: JanuxPeople.Person;
+		let organization: JanuxPeople.Organization;
+		// Check for an id
+		if (isBlankString(party.id) === true) {
+			// No id. Check port party type before inserting a new party.
+			if (_.isString(party.typeName) && party.typeName === PartyValidator.PERSON) {
+				person = JanuxPeople.Person.fromJSON(party);
+				this._log.debug("Inserting the person %j", person);
+				return this.partyDao.insert(person);
+			} else if (_.isString(party.typeName) && party.typeName === PartyValidator.ORGANIZATION) {
+				// Itś an organization
+				organization = JanuxPeople.Organization.fromJSON(party);
+				// Insert the organization.
+				this._log.debug("Inserting the organization %j", organization);
+				return this.partyDao.insert(organization);
+			} else {
+				this._log.warn("No correct party type, returning a reject");
+				// No party type, sending an error.
+				return Promise.reject([
+					new ValidationErrorImpl(this.PARTY_TYPE, PartyValidator.TYPE_NOT_PERSON_OR_ORGANIZATION, "")
+				]);
+			}
 
-        } else {
-            this._log.debug("The account to insertMethod has a contact id");
-            let referenceObject: JanuxPeople.Person | JanuxPeople.Organization;
-            // Look for if there is a party with the same id
-            return this.partyDao.findOne(party.id)
-                .then((resultQueryParty: JanuxPeople.Person | JanuxPeople.Organization) => {
-                    if (_.isNull(resultQueryParty)) {
-                        this._log.warn("The id %j does not exist in the database", party.id);
-                        return Promise.reject([
-                            new ValidationErrorImpl(this.PARTY, this.NO_CONTACT_IN_DATABASE, party.id)
-                        ]);
-                    } else {
-                        referenceObject = resultQueryParty;
-                        // Check if there is another account using this contact info.
-                        return this.accountDao.findOneByContactId(resultQueryParty[this.ID_REFERENCE]);
-                    }
-                })
-                .then((resultQueryAccount: AccountEntity) => {
-                    if (_.isNull(resultQueryAccount)) {
-                        this._log.debug("Returning %j", resultQueryAccount);
-                        return Promise.resolve(referenceObject);
-                    } else {
-                        this._log.warn("The contact founded has an associated account");
-                        return Promise.reject([
-                            new ValidationErrorImpl(this.ACCOUNT, this.ANOTHER_ACCOUNT_USING_CONTACT, "")
-                        ]);
-                    }
-                });
-        }
-    }
+		} else {
+			this._log.debug("The account to insertMethod has a contact id");
+			let referenceObject: JanuxPeople.Person | JanuxPeople.Organization;
+			// Look for if there is a party with the same id
+			return this.partyDao.findOne(party.id)
+				.then((resultQueryParty: JanuxPeople.Person | JanuxPeople.Organization) => {
+					if (_.isNull(resultQueryParty)) {
+						this._log.warn("The id %j does not exist in the database", party.id);
+						return Promise.reject([
+							new ValidationErrorImpl(this.PARTY, this.NO_CONTACT_IN_DATABASE, party.id)
+						]);
+					} else {
+						referenceObject = resultQueryParty;
+						// Check if there is another account using this contact info.
+						return this.accountDao.findOneByContactId(resultQueryParty[this.ID_REFERENCE]);
+					}
+				})
+				.then((resultQueryAccount: AccountEntity) => {
+					if (_.isNull(resultQueryAccount)) {
+						this._log.debug("Returning %j", resultQueryAccount);
+						return Promise.resolve(referenceObject);
+					} else {
+						this._log.warn("The contact founded has an associated account");
+						return Promise.reject([
+							new ValidationErrorImpl(this.ACCOUNT, this.ANOTHER_ACCOUNT_USING_CONTACT, "")
+						]);
+					}
+				});
+		}
+	}
 }

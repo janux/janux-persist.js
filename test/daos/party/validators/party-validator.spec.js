@@ -28,30 +28,30 @@ const postalCode = "05000";
 
 describe("Party validator", function () {
 
-    describe("When validating a person with correct values", function () {
-        it("The method should not return an error", function () {
-            var person = new PersonEntity();
-            person.name.first = name;
-            person.name.middle = middleName;
-            var emailObject = new EmailAddress(email);
-            person.setContactMethod(work, emailObject);
-            var errors = PartyValidator.validateParty(person);
-            expect(errors.length).eq(0);
-        })
-    });
+	describe("When validating a person with correct values", function () {
+		it("The method should not return an error", function () {
+			var person = new PersonEntity();
+			person.name.first = name;
+			person.name.middle = middleName;
+			var emailObject = new EmailAddress(email);
+			person.setContactMethod(work, emailObject);
+			var errors = PartyValidator.validateParty(person);
+			expect(errors.length).eq(0);
+		})
+	});
 
-    describe("When validating a organization with correct values", function () {
-        it("The method should not return an error", function () {
-            var organization = new OrganizationEntity();
-            organization.name = name;
-            var emailObject = new EmailAddress(email);
-            organization.setContactMethod(work, emailObject);
-            var errors = PartyValidator.validateParty(organization);
-            expect(errors.length).eq(0);
-        })
-    });
+	describe("When validating a organization with correct values", function () {
+		it("The method should not return an error", function () {
+			var organization = new OrganizationEntity();
+			organization.name = name;
+			var emailObject = new EmailAddress(email);
+			organization.setContactMethod(work, emailObject);
+			var errors = PartyValidator.validateParty(organization);
+			expect(errors.length).eq(0);
+		})
+	});
 
-    /*describe("When validating a party with no emails", function () {
+	/*describe("When validating a party with no emails", function () {
      it("The method should return an error", function () {
      var person = new PersonEntity();
      person.idAccount = idAccount;
@@ -66,7 +66,7 @@ describe("Party validator", function () {
      });
      });*/
 
-    /* describe("When validating a party with duplicated email addresses", function () {
+	/* describe("When validating a party with duplicated email addresses", function () {
      it("The method should return an error", function () {
      var person = new PersonEntity();
      person.idAccount = idAccount;
@@ -83,7 +83,7 @@ describe("Party validator", function () {
      });
      });*/
 
-    /*  describe("When validating a party with no valid type", function () {
+	/*  describe("When validating a party with no valid type", function () {
      it("The method should return an error", function () {
      var person = new PersonEntity();
      person.idAccount = idAccount;
@@ -109,7 +109,7 @@ describe("Party validator", function () {
      });
      });*/
 
-    /* describe("When validating emails with no primary email", function () {
+	/* describe("When validating emails with no primary email", function () {
      it("The method should return an error", function () {
      var person = new PersonEntity();
      person.idAccount = idAccount;

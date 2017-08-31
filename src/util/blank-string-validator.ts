@@ -12,15 +12,15 @@
 import * as _ from "lodash";
 
 export function isBlankString(value: any) {
-    let result: boolean = false;
-    if (_.isString(value) === false) {
-        result = true;
-    } else {
-        const trimmed = value.trim();
-        if (trimmed.length === 0) {
-            result = true;
-        }
-    }
+	let result: boolean = false;
+	if (_.isString(value) === false) {
+		result = true;
+	} else {
+		const trimmed = value.trim();
+		if (trimmed.length === 0) {
+			result = true;
+		}
+	}
 
-    return result;
+	return result;
 }

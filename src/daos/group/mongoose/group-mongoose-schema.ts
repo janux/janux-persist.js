@@ -10,28 +10,28 @@ import * as mongoose from 'mongoose';
  * @type {"mongoose".Schema}
  */
 export const GroupMongooseSchema = new mongoose.Schema({
-    id: {
-        type: String,
-        required: true,
-        index: true,
-        unique: true
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    code: {
-        type: String,
-        required: true,
-        index: true,
-        unique: true
-    },
-    type: {
-        type: String,
-        required: true,
-        index: true
-    },
-    description: {
-        type: String
-    }
+	id: {
+		type: String,
+		required: true,
+		index: true,
+		unique: true
+	},
+	name: {
+		type: String,
+		required: true
+	},
+	code: {
+		type: String,
+		required: true,
+		index: true,
+		unique: true
+	},
+	type: {
+		type: String,
+		required: true,
+		index: true
+	},
+	description: {
+		type: String
+	}
 }, {id: false});

@@ -16,19 +16,19 @@ const postalCode = "05000";
 const stateText = "CDMX";
 
 describe("Testing postal address validator", function () {
-    describe("When calling the method with valid data", function () {
-        it("The method should not return an error", function () {
-            var postalAddress = new PostalAddress();
-            postalAddress.line1 = line1;
-            postalAddress.cityText = cityText;
-            postalAddress.postalCode = postalCode;
-            postalAddress.stateText = stateText;
-            var error = PostalAddressValidator.validatePostalAddress(postalAddress);
-            expect(error.length).eq(0);
-        });
-    });
+	describe("When calling the method with valid data", function () {
+		it("The method should not return an error", function () {
+			var postalAddress = new PostalAddress();
+			postalAddress.line1 = line1;
+			postalAddress.cityText = cityText;
+			postalAddress.postalCode = postalCode;
+			postalAddress.stateText = stateText;
+			var error = PostalAddressValidator.validatePostalAddress(postalAddress);
+			expect(error.length).eq(0);
+		});
+	});
 
-    /*describe("When calling the method with an empty line1", function () {
+	/*describe("When calling the method with an empty line1", function () {
         it("The method should return an error", function () {
             var postalAddress = new PostalAddress(
                 home,
