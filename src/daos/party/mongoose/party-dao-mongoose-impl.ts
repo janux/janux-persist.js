@@ -17,51 +17,51 @@ import {PartyValidator} from "../party-validator";
  */
 export class PartyDaoMongooseImpl extends PartyDao {
 
-    private model: Model<any>;
+	private model: Model<any>;
 
-    constructor(dbEngineUtil: MongooseAdapter, entityProperties: EntityPropertiesImpl) {
-        super(dbEngineUtil, entityProperties);
-        this.model = dbEngineUtil.model;
-    }
+	constructor(dbEngineUtil: MongooseAdapter, entityProperties: EntityPropertiesImpl) {
+		super(dbEngineUtil, entityProperties);
+		this.model = dbEngineUtil.model;
+	}
 
-    /**
-     * Find all records that matches with the name.
-     * @param name The name to look for.
-     * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} The objects that matches with the name.
-     */
-    public findByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
-        const regexpName = new RegExp(name, "i");
-        const query = {
-            $or: [
-                {
-                    $and: [
-                        {
-                            $or: [
-                                {'name.first': regexpName},
-                                {'name.middle': regexpName},
-                                {'name.last': regexpName}
-                            ]
-                        },
-                        {typeName: {$eq: PartyValidator.PERSON}}
-                    ]
-                },
-                {
-                    $and: [
-                        {name: regexpName},
-                        {typeName: {$eq: PartyValidator.ORGANIZATION}}
-                    ]
-                }
-            ]
-        };
-        return this.findByQuery(query);
-    }
+	/**
+	 * Find all records that matches with the name.
+	 * @param name The name to look for.
+	 * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} The objects that matches with the name.
+	 */
+	public findByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+		const regexpName = new RegExp(name, "i");
+		const query = {
+			$or: [
+				{
+					$and: [
+						{
+							$or: [
+								{'name.first': regexpName},
+								{'name.middle': regexpName},
+								{'name.last': regexpName}
+							]
+						},
+						{typeName: {$eq: PartyValidator.PERSON}}
+					]
+				},
+				{
+					$and: [
+						{name: regexpName},
+						{typeName: {$eq: PartyValidator.ORGANIZATION}}
+					]
+				}
+			]
+		};
+		return this.findByQuery(query);
+	}
 
-    protected validateBeforeUpdate(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
-        return this.validateDuplicated(objectToUpdate);
-    }
+	protected validateBeforeUpdate(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
+		return this.validateDuplicated(objectToUpdate);
+	}
 
-    protected validateDuplicated(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
-        /*let emailAddressesToLookFor: string[];
+	protected validateDuplicated(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
+		/*let emailAddressesToLookFor: string[];
          emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value) => value.address);
          let personReference: JanuxPeople.PersonImpl;
          let organizationReference: JanuxPeople.OrganizationImpl;
@@ -109,6 +109,6 @@ export class PartyDaoMongooseImpl extends PartyDao {
          const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
          return Promise.resolve(errors);
          });*/
-        return Promise.resolve([]);
-    }
+		return Promise.resolve([]);
+	}
 }

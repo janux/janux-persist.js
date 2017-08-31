@@ -41,136 +41,136 @@ const lastName = "Smith";
 
 
 describe("Testing user dao example find methods", function () {
-    [userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
-        var insertedUsers;
+	[userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
+		var insertedUsers;
 
-        before(function (done) {
-            userDao.removeAll()
-                .then(function () {
-                    var user = new ExampleUser(name, lastName, email);
-                    var user2 = new ExampleUser(name, lastName, email2);
-                    userDao.insertMany([user, user2]).then(function (result) {
-                        insertedUsers = result;
-                        done();
-                    })
-                });
-        });
+		before(function (done) {
+			userDao.removeAll()
+				.then(function () {
+					var user = new ExampleUser(name, lastName, email);
+					var user2 = new ExampleUser(name, lastName, email2);
+					userDao.insertMany([user, user2]).then(function (result) {
+						insertedUsers = result;
+						done();
+					})
+				});
+		});
 
-        context("Given the records in the database", function () {
-            it("This query should return an array with one result", function (done) {
-                userDao.findByAttributeMethod("email", email2)
-                    .then(function (result) {
-                        expect(result.length).eq(1);
-                        done();
-                    }, function (error) {
-                        assert.fail(error, "Error");
-                        done();
-                    })
-            });
+		context("Given the records in the database", function () {
+			it("This query should return an array with one result", function (done) {
+				userDao.findByAttributeMethod("email", email2)
+					.then(function (result) {
+						expect(result.length).eq(1);
+						done();
+					}, function (error) {
+						assert.fail(error, "Error");
+						done();
+					})
+			});
 
-            it("This query should return an array with two results", function (done) {
-                userDao.findByAttributeMethod("name", name)
-                    .then(function (result) {
-                        expect(result.length).eq(2);
-                        done();
-                    }, function (error) {
-                        assert.fail(error, "Error");
-                        done();
-                    })
-            });
+			it("This query should return an array with two results", function (done) {
+				userDao.findByAttributeMethod("name", name)
+					.then(function (result) {
+						expect(result.length).eq(2);
+						done();
+					}, function (error) {
+						assert.fail(error, "Error");
+						done();
+					})
+			});
 
-            it("This query should return one result", function (done) {
-                userDao.findOneByAttributeMethod("email", email2)
-                    .then(function (result) {
-                        expect(result.email).eq(email2);
-                        done();
-                    }, function (error) {
-                        assert.fail(error, "Error");
-                        done();
-                    })
-            });
+			it("This query should return one result", function (done) {
+				userDao.findOneByAttributeMethod("email", email2)
+					.then(function (result) {
+						expect(result.email).eq(email2);
+						done();
+					}, function (error) {
+						assert.fail(error, "Error");
+						done();
+					})
+			});
 
-            it("This query (findOneByAttributeMethod) should return null", function (done) {
-                userDao.findOneByAttributeMethod("email", "emailTharDoesNoExits")
-                    .then(function (result) {
-                        assert.isNull(result);
-                        done();
-                    }, function (error) {
-                        assert.fail(error, "Error");
-                        done();
-                    });
-            });
+			it("This query (findOneByAttributeMethod) should return null", function (done) {
+				userDao.findOneByAttributeMethod("email", "emailTharDoesNoExits")
+					.then(function (result) {
+						assert.isNull(result);
+						done();
+					}, function (error) {
+						assert.fail(error, "Error");
+						done();
+					});
+			});
 
-            it("This query (findOneMethod) should return null", function (done) {
-                userDao.findOne("100000000000")
-                    .then(function (result) {
-                        assert.isNull(result);
-                        done();
-                    }, function (error) {
-                        assert.fail(error, "Error");
-                        done();
-                    });
-            });
+			it("This query (findOneMethod) should return null", function (done) {
+				userDao.findOne("100000000000")
+					.then(function (result) {
+						assert.isNull(result);
+						done();
+					}, function (error) {
+						assert.fail(error, "Error");
+						done();
+					});
+			});
 
-            it("This query should return a reject (the query returned two records while expecting only one)", function (done) {
-                userDao.findOneByAttributeMethod("name", name)
-                    .then(function (result) {
-                        assert.fail(result, "It shouldn't have returned any value");
-                        done();
-                    }, function (error) {
-                        assert(error, "The program returned an error. This is OK");
-                        done();
-                    });
-            });
+			it("This query should return a reject (the query returned two records while expecting only one)", function (done) {
+				userDao.findOneByAttributeMethod("name", name)
+					.then(function (result) {
+						assert.fail(result, "It shouldn't have returned any value");
+						done();
+					}, function (error) {
+						assert(error, "The program returned an error. This is OK");
+						done();
+					});
+			});
 
-            it("This query should return an array with two results", function (done) {
-                userDao.findByAttributeNameInMethod("email", [email, email2, "anotherEmail@gmail.com"])
-                    .then(function (result) {
-                        expect(result.length).eq(2);
-                        done();
-                    }, function (error) {
-                        assert.fail(error, "Error");
-                        done();
-                    })
-            });
+			it("This query should return an array with two results", function (done) {
+				userDao.findByAttributeNameInMethod("email", [email, email2, "anotherEmail@gmail.com"])
+					.then(function (result) {
+						expect(result.length).eq(2);
+						done();
+					}, function (error) {
+						assert.fail(error, "Error");
+						done();
+					})
+			});
 
 
-            it("This query should return an array with two results", function (done) {
-                var ids = _.map(insertedUsers, 'id');
-                userDao.findByIdsMethod(ids)
-                    .then(function (result) {
-                        expect(result.length).eq(2);
-                        done();
-                    }, function (err) {
-                        assert.fail(err, "Error");
-                        done();
-                    });
-            });
+			it("This query should return an array with two results", function (done) {
+				var ids = _.map(insertedUsers, 'id');
+				userDao.findByIdsMethod(ids)
+					.then(function (result) {
+						expect(result.length).eq(2);
+						done();
+					}, function (err) {
+						assert.fail(err, "Error");
+						done();
+					});
+			});
 
-            it("This query should return an array with zero results", function (done) {
-                userDao.findByIdsMethod(["100000000000", "200000000000"])
-                    .then(function (result) {
-                        expect(result.length).eq(0);
-                        done();
-                    }, function (err) {
-                        assert.fail(err, "Error");
-                        done();
-                    });
+			it("This query should return an array with zero results", function (done) {
+				userDao.findByIdsMethod(["100000000000", "200000000000"])
+					.then(function (result) {
+						expect(result.length).eq(0);
+						done();
+					}, function (err) {
+						assert.fail(err, "Error");
+						done();
+					});
 
-            });
+			});
 
-            it("This query should return the value of two", function (done) {
-                userDao.count()
-                    .then(function (result) {
-                        expect(result).eq(2);
-                        done();
-                    }, function (err) {
-                        assert.fail("Error");
-                        done();
-                    });
-            });
-        })
-    });
+			it("This query should return the value of two", function (done) {
+				userDao.count()
+					.then(function (result) {
+						expect(result).eq(2);
+						done();
+					}, function (err) {
+						assert.fail("Error");
+						done();
+					});
+			});
+		})
+	});
 
 });
 

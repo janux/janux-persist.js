@@ -7,19 +7,19 @@
  * User entity.
  */
 export class AccountEntity {
-    public id: any;
-    public username: string;
-    public password: string;
-    public userId: string;
-    public mdate: Date;
-    public cdate: Date;
-    public enabled: boolean;
-    public locked: boolean;
-    public expire: Date;
-    public expirePassword: Date;
+	public id: any;
+	public username: string;
+	public password: string;
+	public userId: string;
+	public mdate: Date;
+	public cdate: Date;
+	public enabled: boolean;
+	public locked: boolean;
+	public expire: Date;
+	public expirePassword: Date;
 
-    // With this id, you can know the contact associated with this account
-    public contactId: string;
+	// With this id, you can know the contact associated with this account
+	public contactId: string;
 
-    public roles: string[];
+	public roles: string[];
 }

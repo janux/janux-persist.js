@@ -36,7 +36,8 @@
         "interface-name": [
             false
         ],
-        "no-string-literal": false
+        "no-string-literal": false,
+		"indent": [true, "tabs"]
     },
     "rulesDirectory": []
 }

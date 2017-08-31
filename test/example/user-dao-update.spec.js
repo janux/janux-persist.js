@@ -44,83 +44,83 @@ const newEmail = "newEmail@mail.com";
 const invalidEmail = "email.com";
 
 describe("Testing user example dao updateMethod methods", function () {
-    [userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
-        var insertedUsers;
+	[userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
+		var insertedUsers;
 
-        beforeEach(function (done) {
-            userDao.removeAll()
-                .then(function () {
-                    var user = new ExampleUser(name, lastName, email);
-                    var user2 = new ExampleUser(name, lastName, email2);
-                    userDao.insertMany([user, user2]).then(function (result) {
-                        insertedUsers = result;
-                        done();
-                    })
-                });
-        });
+		beforeEach(function (done) {
+			userDao.removeAll()
+				.then(function () {
+					var user = new ExampleUser(name, lastName, email);
+					var user2 = new ExampleUser(name, lastName, email2);
+					userDao.insertMany([user, user2]).then(function (result) {
+						insertedUsers = result;
+						done();
+					})
+				});
+		});
 
-        context("Given the inserted users", function () {
-            it("This method should updateMethod with no problems", function (done) {
-                var user = insertedUsers[0];
-                var id = user.id;
-                user.name = newName;
-                user.lastName = newLastName;
-                user.email = newEmail;
-                userDao.update(user)
-                    .then(function (result) {
-                        //Perform a query
-                        expect(result.id).not.to.be.null;
-                        expect(result.lastUpdate).to.be.a("Date");
-                        expect(result.typeName).eq("an example of a getter");
-                        userDao.findOne(id)
-                            .then(function (queryResult) {
-                                expect(queryResult.id).eq(id);
-                                expect(queryResult.name).eq(newName);
-                                expect(queryResult.lastName).eq(newLastName);
-                                expect(queryResult.typeName).eq("an example of a getter");
-                                expect(queryResult.email).eq(newEmail);
-                                expect(queryResult.typeName).not.to.be.undefined;
-                                expect(queryResult).to.have.property("dateCreated");
-                                expect(queryResult).to.have.property('lastUpdate');
-                                expect(queryResult.lastUpdate).to.be.a("Date");
-                                done();
-                            }, function (error) {
-                                assert.fail(error, "The method shouldn't have returned a result");
-                                done();
-                            });
-                    }, function (error) {
-                        assert.fail(error, "The method shouldn't have returned an error");
-                        done();
-                    });
-            });
+		context("Given the inserted users", function () {
+			it("This method should updateMethod with no problems", function (done) {
+				var user = insertedUsers[0];
+				var id = user.id;
+				user.name = newName;
+				user.lastName = newLastName;
+				user.email = newEmail;
+				userDao.update(user)
+					.then(function (result) {
+						//Perform a query
+						expect(result.id).not.to.be.null;
+						expect(result.lastUpdate).to.be.a("Date");
+						expect(result.typeName).eq("an example of a getter");
+						userDao.findOne(id)
+							.then(function (queryResult) {
+								expect(queryResult.id).eq(id);
+								expect(queryResult.name).eq(newName);
+								expect(queryResult.lastName).eq(newLastName);
+								expect(queryResult.typeName).eq("an example of a getter");
+								expect(queryResult.email).eq(newEmail);
+								expect(queryResult.typeName).not.to.be.undefined;
+								expect(queryResult).to.have.property("dateCreated");
+								expect(queryResult).to.have.property('lastUpdate');
+								expect(queryResult.lastUpdate).to.be.a("Date");
+								done();
+							}, function (error) {
+								assert.fail(error, "The method shouldn't have returned a result");
+								done();
+							});
+					}, function (error) {
+						assert.fail(error, "The method shouldn't have returned an error");
+						done();
+					});
+			});
 
-            it("This method should send a reject due to an invalid email", function (done) {
-                var user = insertedUsers[0];
-                user.name = newName;
-                user.lastName = newLastName;
-                user.email = invalidEmail;
-                userDao.update(user)
-                    .then(function (result) {
-                        assert.fail(result, "The method should have sent an error");
-                        done();
-                    }, function (error) {
-                        expect(error.length).eq(1);
-                        done();
-                    });
-            });
+			it("This method should send a reject due to an invalid email", function (done) {
+				var user = insertedUsers[0];
+				user.name = newName;
+				user.lastName = newLastName;
+				user.email = invalidEmail;
+				userDao.update(user)
+					.then(function (result) {
+						assert.fail(result, "The method should have sent an error");
+						done();
+					}, function (error) {
+						expect(error.length).eq(1);
+						done();
+					});
+			});
 
-            it("This method should send a reject due to duplicated email", function (done) {
-                var user = insertedUsers[0];
-                user.email = email2;
-                userDao.update(user)
-                    .then(function (result) {
-                        assert.fail(result, "The method should have sent an error");
-                        done();
-                    }, function (error) {
-                        expect(error.length).eq(1);
-                        done();
-                    });
-            });
-        });
-    });
+			it("This method should send a reject due to duplicated email", function (done) {
+				var user = insertedUsers[0];
+				user.email = email2;
+				userDao.update(user)
+					.then(function (result) {
+						assert.fail(result, "The method should have sent an error");
+						done();
+					}, function (error) {
+						expect(error.length).eq(1);
+						done();
+					});
+			});
+		});
+	});
 });

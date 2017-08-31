@@ -8,17 +8,17 @@
  */
 export class ExampleUser {
 
-    public name: string;
-    public lastName: string;
-    public email: string;
+	public name: string;
+	public lastName: string;
+	public email: string;
 
-    public get typeName(): string {
-        return "an example of a getter";
-    }
+	public get typeName(): string {
+		return "an example of a getter";
+	}
 
-    constructor(name: string, lastName: string, email: string) {
-        this.name = name;
-        this.lastName = lastName;
-        this.email = email;
-    }
+	constructor(name: string, lastName: string, email: string) {
+		this.name = name;
+		this.lastName = lastName;
+		this.email = email;
+	}
 }

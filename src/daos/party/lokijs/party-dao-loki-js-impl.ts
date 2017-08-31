@@ -16,52 +16,52 @@ import {PartyValidator} from "../party-validator";
  */
 export class PartyDaoLokiJsImpl extends PartyDao {
 
-    constructor(dbAdapter: LokiJsAdapter, entityProperties: EntityPropertiesImpl) {
-        super(dbAdapter, entityProperties);
-    }
+	constructor(dbAdapter: LokiJsAdapter, entityProperties: EntityPropertiesImpl) {
+		super(dbAdapter, entityProperties);
+	}
 
-    /**
-     * Find all record that matches with the name.
-     * @param name the name to look for.
-     * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} The parties that matches with the name.
-     */
-    public findByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
-        const query = {
-            $or: [
-                {
-                    $and: [
-                        {
-                            $or: [
-                                {'name.first': {$contains: name}},
-                                {'name.middle': {$contains: name}},
-                                {'name.last': {$contains: name}}
-                            ]
-                        },
-                        {typeName: {$eq: PartyValidator.PERSON}}
-                    ]
-                },
-                {
-                    $and: [
-                        {name: {$contains: name}},
-                        {typeName: {$eq: PartyValidator.ORGANIZATION}}
-                    ]
-                }
-            ]
-        };
-        return this.findByQuery(query);
-    }
+	/**
+	 * Find all record that matches with the name.
+	 * @param name the name to look for.
+	 * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} The parties that matches with the name.
+	 */
+	public findByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+		const query = {
+			$or: [
+				{
+					$and: [
+						{
+							$or: [
+								{'name.first': {$contains: name}},
+								{'name.middle': {$contains: name}},
+								{'name.last': {$contains: name}}
+							]
+						},
+						{typeName: {$eq: PartyValidator.PERSON}}
+					]
+				},
+				{
+					$and: [
+						{name: {$contains: name}},
+						{typeName: {$eq: PartyValidator.ORGANIZATION}}
+					]
+				}
+			]
+		};
+		return this.findByQuery(query);
+	}
 
-    /**
-     * Validate the object before updateMethod to the database.
-     * @param objectToUpdate
-     * @return {Promise<ValidationErrorImpl[]>}
-     */
-    protected validateBeforeUpdate<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
-        return this.validateDuplicated(objectToUpdate);
-    }
+	/**
+	 * Validate the object before updateMethod to the database.
+	 * @param objectToUpdate
+	 * @return {Promise<ValidationErrorImpl[]>}
+	 */
+	protected validateBeforeUpdate<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
+		return this.validateDuplicated(objectToUpdate);
+	}
 
-    private validateDuplicated<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
-        /*let emailAddressesToLookFor: string[];
+	private validateDuplicated<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
+		/*let emailAddressesToLookFor: string[];
          emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value, index, array) => value.address);
          let personReference: JanuxPeople.PersonImpl;
          let organizationReference: JanuxPeople.OrganizationImpl;
@@ -107,7 +107,7 @@ export class PartyDaoLokiJsImpl extends PartyDao {
          return Promise.resolve(errors);
          });*/
 
-        return Promise.resolve([]);
-    }
+		return Promise.resolve([]);
+	}
 
 }

@@ -8,9 +8,9 @@
  */
 export class Dao {
 
-    public daoInstance: any;
-    public daoName: string;
-    public dbPath: string;
-    public dbEngine: string;
+	public daoInstance: any;
+	public daoName: string;
+	public dbPath: string;
+	public dbEngine: string;
 
 }

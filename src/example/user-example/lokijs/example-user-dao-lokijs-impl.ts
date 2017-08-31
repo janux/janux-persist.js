@@ -14,48 +14,48 @@ import {ExampleUserDao} from "../example-user-dao";
  */
 export class ExampleUserDaoLokiJsImpl extends ExampleUserDao {
 
-    public static createInstance(dbEngineUtil: LokiJsAdapter, entityProperties: EntityPropertiesImpl) {
-        return this.instance || (this.instance = new this(dbEngineUtil, entityProperties));
-    }
+	public static createInstance(dbEngineUtil: LokiJsAdapter, entityProperties: EntityPropertiesImpl) {
+		return this.instance || (this.instance = new this(dbEngineUtil, entityProperties));
+	}
 
-    private static instance: ExampleUserDaoLokiJsImpl;
+	private static instance: ExampleUserDaoLokiJsImpl;
 
-    private constructor(dbEngineUtil: LokiJsAdapter, entityProperties: EntityPropertiesImpl) {
-        super(dbEngineUtil, entityProperties);
-    }
+	private constructor(dbEngineUtil: LokiJsAdapter, entityProperties: EntityPropertiesImpl) {
+		super(dbEngineUtil, entityProperties);
+	}
 
-    /**
-     * Find all users whose name contains the name string.
-     * @param name
-     * @return {null}
-     */
-    public findByNameMatch(name: string): Promise<ExampleUser[]> {
-        return null;
-    }
+	/**
+	 * Find all users whose name contains the name string.
+	 * @param name
+	 * @return {null}
+	 */
+	public findByNameMatch(name: string): Promise<ExampleUser[]> {
+		return null;
+	}
 
-    /**
-     * Validates the entity before updateMethod it. In this case checks for duplicated emails.
-     * @param objectToUpdate
-     * @return {null}
-     */
-    protected validateBeforeUpdate<t>(objectToUpdate: ExampleUser): Promise<any> {
-        const errors: ValidationErrorImpl[] = [];
-        const query = {
-            $and: [
-                {id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
-                {email: {$eq: objectToUpdate.email}}
-            ]
-        };
+	/**
+	 * Validates the entity before updateMethod it. In this case checks for duplicated emails.
+	 * @param objectToUpdate
+	 * @return {null}
+	 */
+	protected validateBeforeUpdate<t>(objectToUpdate: ExampleUser): Promise<any> {
+		const errors: ValidationErrorImpl[] = [];
+		const query = {
+			$and: [
+				{id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
+				{email: {$eq: objectToUpdate.email}}
+			]
+		};
 
-        return this.findByQuery(query)
-            .then((resultQuery) => {
-                if (resultQuery.length > 0) {
-                    errors.push(new ValidationErrorImpl(
-                        'email',
-                        'There is another user with the same email',
-                        objectToUpdate.email));
-                }
-                return Promise.resolve(errors);
-            });
-    }
+		return this.findByQuery(query)
+			.then((resultQuery) => {
+				if (resultQuery.length > 0) {
+					errors.push(new ValidationErrorImpl(
+						'email',
+						'There is another user with the same email',
+						objectToUpdate.email));
+				}
+				return Promise.resolve(errors);
+			});
+	}
 }
