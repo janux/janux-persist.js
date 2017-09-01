@@ -5,8 +5,8 @@
 
 import Promise = require("bluebird");
 import * as _ from 'lodash';
-import * as logger from 'log4js';
 import {isBlankString} from "../../../util/blank-string-validator";
+import * as logger from '../../../util/logger-api/logger-api';
 import {CrudRepository} from "../../api/dao/crud-repository";
 import {TimeStampGenerator} from "../../util/TimeStampGenerator";
 import {UuidGenerator} from "../../util/UuidGenerator";

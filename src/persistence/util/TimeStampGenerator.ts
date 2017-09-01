@@ -2,7 +2,7 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
-import * as logger from 'log4js';
+import * as logger from '../../util/logger-api/logger-api';
 import {EntityPropertiesImpl} from "../implementations/dao/entity-properties";
 
 /**

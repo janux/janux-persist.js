@@ -4,8 +4,8 @@
  */
 
 import JanuxPeople = require("janux-people");
-import * as logger from 'log4js';
 import {ValidationErrorImpl} from "../../../../persistence/implementations/dao/validation-error";
+import * as logger from '../../../../util/logger-api/logger-api';
 
 export class PostalAddressValidator {
 

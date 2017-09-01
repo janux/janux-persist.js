@@ -5,13 +5,13 @@
 
 import Promise = require("bluebird");
 import JanuxPeople = require('janux-people');
-import * as logger from 'log4js';
 import md5 = require('MD5');
 import {PartyDao} from "../../daos/party/party-dao";
 import {PartyValidator} from "../../daos/party/party-validator";
 import {AccountDao} from "../../daos/user/account-dao";
 import {DaoFactory} from "../../services/dao-factory/dao-factory-service";
 import {UserService} from "../../services/user/user-service";
+import * as logger from '../../util/logger-api/logger-api';
 
 export class UserGenerator {
 

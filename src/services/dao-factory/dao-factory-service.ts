@@ -4,7 +4,6 @@
  */
 
 import * as _ from 'lodash';
-import * as logger from 'log4js';
 import {GroupAttributeValueDao} from "../../daos/group-attribute-value/group-attribute-value-dao";
 import {GroupAttributeValueMongooseSchema} from "../../daos/group-attribute-value/mongoose/group-attribute-value-schema";
 import {GroupContentDao} from "../../daos/group-content/group-content-dao";
@@ -22,6 +21,7 @@ import {AccountMongooseDbSchema} from "../../daos/user/mongoose/account-mongoose
 import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
 import {LokiJsAdapter} from "../../persistence/implementations/db-adapters/lokijs-db-adapter";
 import {MongooseAdapter} from "../../persistence/implementations/db-adapters/mongoose-db-adapter";
+import * as logger from '../../util/logger-api/logger-api';
 import {DataSource} from "../datasource-handler/datasource";
 import {DataSourceHandler} from "../datasource-handler/datasource-handler";
 import {Dao} from "./dao";
