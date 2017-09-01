@@ -4,7 +4,7 @@
  */
 import Promise = require("bluebird");
 import * as _ from 'lodash';
-import * as logger from 'log4js';
+import * as logger from "../../../util/logger-api/logger-api";
 import {DbAdapter} from "../../api/db-adapters/db-adapter";
 import {AttributeFilter} from "../dao/attribute-filter";
 

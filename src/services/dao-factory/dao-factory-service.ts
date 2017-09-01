@@ -4,7 +4,6 @@
  */
 
 import * as _ from 'lodash';
-import * as logger from 'log4js';
 import {PartyDaoLokiJsImpl} from "../../daos/party/lokijs/party-dao-loki-js-impl";
 import {PartyDaoMongooseImpl} from "../../daos/party/mongoose/party-dao-mongoose-impl";
 import {PartyMongooseSchema} from "../../daos/party/mongoose/party-mongoose-schema";
@@ -16,6 +15,7 @@ import {AccountMongooseDbSchema} from "../../daos/user/mongoose/account-mongoose
 import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
 import {LokiJsAdapter} from "../../persistence/implementations/db-adapters/lokijs-db-adapter";
 import {MongooseAdapter} from "../../persistence/implementations/db-adapters/mongoose-db-adapter";
+import * as logger from "../../util/logger-api/logger-api";
 import {DataSource} from "../datasource-handler/datasource";
 import {DataSourceHandler} from "../datasource-handler/datasource-handler";
 import {Dao} from "./dao";

@@ -3,9 +3,9 @@
  * Created by ernesto on 6/12/17.
  */
 import Promise = require("bluebird");
-import * as logger from 'log4js';
 import {Model} from "mongoose";
 import * as mongoose from "mongoose";
+import * as logger from "../../../util/logger-api/logger-api";
 import {DbAdapter} from "../../api/db-adapters/db-adapter";
 import {AttributeFilter} from "../dao/attribute-filter";
 

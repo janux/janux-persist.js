@@ -14,7 +14,7 @@ const username = "userName";
 const password = "password";
 const contactId = "313030303030303030303030";
 
-describe("Testing validate user", function () {
+describe("Testing validate account", function () {
 
 	describe("Given the account", function () {
 		var account = new AccountEntity();
