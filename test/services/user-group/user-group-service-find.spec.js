@@ -24,8 +24,8 @@ const name = 'name';
 const name2 = 'name2';
 const code = 'code';
 const code2 = 'code2';
-const attributes = {parent: "root"};
-const attributes2 = {parent: "glarus"};
+const attributes = {parent: "root", system: "true"};
+const attributes2 = {parent: "glarus", system: "true"};
 
 
 describe("Testing user group service find methods", function () {
@@ -161,6 +161,36 @@ describe("Testing user group service find methods", function () {
 					expect(result[1].values[0].id).eq(insertedUser3.id);
 					expect(result[1].values[0].username).eq(insertedUser3.username);
 					expect(result[1].values[0].typeName).eq(insertedUser3.typeName);
+					done();
+				})
+		});
+	});
+
+	describe("When calling findByFilter with filter with an attribute unique to one group", function () {
+		it("The method should return one group", function (done) {
+			userGroupService.findByFilter({parent: "root"})
+				.then(function (result) {
+					expect(result.length).eq(1);
+					expect(result[0].code).eq(code);
+					expect(result[0].name).eq(name);
+					expect(result[0].values.length).eq(2);
+					done();
+				})
+		});
+	});
+
+	describe("When calling findByFilter with filter with an attribute shared to the two groups", function () {
+		it("The method should return two groups", function (done) {
+			userGroupService.findByFilter({system: "true"})
+				.then(function (result) {
+					expect(result.length).eq(2);
+					expect(result[0].code).eq(code);
+					expect(result[0].name).eq(name);
+					expect(result[0].values.length).eq(2);
+
+					expect(result[1].code).eq(code2);
+					expect(result[1].name).eq(name2);
+					expect(result[1].values.length).eq(1);
 					done();
 				})
 		});
