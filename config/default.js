@@ -55,7 +55,7 @@ cfg.tsConfig = {
 //
 cfg.serverAppContext = {
 		db: {
-				dbEngine: "lokijs",
+				dbEngine: "mongoose",
 				mongoConnUrl: "mongodb://localhost/janux-persistence-test",
 				lokiJsDBPath: "./janux-persistence-test.db"
 		}

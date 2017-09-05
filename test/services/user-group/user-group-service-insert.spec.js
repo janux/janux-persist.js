@@ -18,8 +18,9 @@ const UserService = require("../../../dist/index").UserService;
 const serverAppContext = config.get("serverAppContext");
 const dbEngine = serverAppContext.db.dbEngine;
 const path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-
-
+const name = 'name';
+const code = 'code';
+const attributes = {parent: "root"};
 
 describe("Testing user groups service insert methods", function () {
 
@@ -83,19 +84,44 @@ describe("Testing user groups service insert methods", function () {
 
 	});
 
-	describe("Whn calling insert with the correct values",function () {
-		it("The method should insert the records",function (done) {
+	describe("When calling insert with the correct values", function () {
+		it("The method should insert the records", function (done) {
 			var group = new GroupImpl();
-			group.name = "group name";
-			group.code = "code1";
+			group.name = name;
+			group.code = code;
 			group.type = userGroupService.USERS_GROUP_TYPE;
-			group.attributes = {};
+			group.attributes = attributes;
 			group.values = [insertedUser1, insertedUser2, insertedUser3];
 			userGroupService.insert(group)
 				.then(function (insertedGroup) {
-					done();
+					expect(insertedGroup.name).eq(name);
+					expect(insertedGroup.code).eq(code);
+					expect(insertedGroup.attributes).eq(attributes);
+					expect(insertedGroup.values.length).eq(3);
+					expect(insertedGroup.values).to.deep.equal([insertedUser1, insertedUser2, insertedUser3]);
+					return groupContentDao.findAll();
 				})
-		})
-
-	})
+				.then(function (resultQuery) {
+					expect(resultQuery.length).eq(3);
+					expect(resultQuery[0].value).eq(insertedUser1.id);
+					expect(resultQuery[1].value).eq(insertedUser2.id);
+					expect(resultQuery[2].value).eq(insertedUser3.id);
+					expect(resultQuery[0].idGroup).eq(resultQuery[1].idGroup);
+					expect(resultQuery[0].idGroup).eq(resultQuery[2].idGroup);
+					const idGroup = resultQuery[0].idGroup;
+					return groupDao.findOne(idGroup);
+				})
+				.then(function (resultQuery) {
+					expect(resultQuery.name).eq(name);
+					expect(resultQuery.code).eq(code);
+					return groupAttributeValueDao.findAll();
+				})
+				.then(function (resultQuery) {
+					expect(resultQuery.length).eq(1);
+					expect(resultQuery[0].key).eq('parent');
+					expect(resultQuery[0].value).eq('root');
+					done();
+				});
+		});
+	});
 });

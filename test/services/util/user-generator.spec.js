@@ -32,12 +32,12 @@ describe("Testing users generator", function () {
 	});
 
 	describe("When calling the function.", function () {
-		it("The method should have inserted the records", function (done) {
-			UserGenerator.generateUserDateInTheDatabase(dbEngine, path)
-				.then(function (result) {
-					expect(result.length > 0);
-					done();
-				});
-		})
+		// it("The method should have inserted the records", function (done) {
+		// 	UserGenerator.generateUserDateInTheDatabase(dbEngine, path)
+		// 		.then(function (result) {
+		// 			expect(result.length > 0);
+		// 			done();
+		// 		});
+		// })
 	})
 });

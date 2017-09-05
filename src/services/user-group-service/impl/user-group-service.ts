@@ -46,7 +46,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 		return this.groupService.findOne(code)
 			.then((resultQuery: GroupImpl<any>) => {
 				// Map the ids to users.
-				result = resultQuery;
+				result = _.clone(resultQuery);
 				return this.userService.findByIdsIn(result.values);
 			})
 			.then((users: any[]) => {
@@ -76,7 +76,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 	insert(group: GroupImpl<any>): Promise<GroupImpl<any>> {
 		this.log.debug("Call to insert with group %j", group);
 		// Map the users data in order to insert only the ids
-		const newGroup: GroupImpl<any> = group;
+		const newGroup: GroupImpl<any> = _.clone(group);
 		newGroup.values = group.values.map((value) => value.id);
 		return this.groupService.insert(newGroup)
 			.then((result) => {
