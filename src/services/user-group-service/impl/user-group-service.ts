@@ -117,7 +117,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 		// Map the ids to users.
 		let usersIds: string[] = [];
 		for (const group of groups) {
-			usersIds.concat(group.values);
+			usersIds = usersIds.concat(group.values);
 		}
 		usersIds = _.uniq(usersIds);
 		return this.userService.findByIdsIn(usersIds)

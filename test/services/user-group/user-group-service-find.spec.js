@@ -103,14 +103,12 @@ describe("Testing user group service find methods", function () {
 				.then(function () {
 					done();
 				})
-		}, 50);
+		}, 10);
 
 	});
 
 	describe("When calling find one", function () {
 		it("The method must return the users group", function (done) {
-
-
 			userGroupService.findOne(code2)
 				.then(function (result) {
 					expect(result.name).eq(name2);
@@ -141,5 +139,30 @@ describe("Testing user group service find methods", function () {
 					done();
 				});
 		});
-	})
+	});
+
+	describe("When calling findAll", function () {
+		it("The method should return all groups", function (done) {
+			userGroupService.findAll()
+				.then(function (result) {
+					expect(result.length).eq(2);
+					expect(result[0].code).eq(code);
+					expect(result[0].values.length).eq(2);
+					expect(result[0].values[0].id).eq(insertedUser1.id);
+					expect(result[0].values[0].username).eq(insertedUser1.username);
+					expect(result[0].values[0].password).eq(insertedUser1.password);
+					expect(result[0].values[0].typeName).eq(insertedUser1.typeName);
+					expect(result[0].values[1].id).eq(insertedUser2.id);
+					expect(result[0].values[1].username).eq(insertedUser2.username);
+					expect(result[0].values[1].password).eq(insertedUser2.password);
+					expect(result[0].values[1].typeName).eq(insertedUser2.typeName);
+					expect(result[1].code).eq(code2);
+					expect(result[1].values.length).eq(1);
+					expect(result[1].values[0].id).eq(insertedUser3.id);
+					expect(result[1].values[0].username).eq(insertedUser3.username);
+					expect(result[1].values[0].typeName).eq(insertedUser3.typeName);
+					done();
+				})
+		});
+	});
 });
