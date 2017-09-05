@@ -95,6 +95,32 @@ export class UserService {
 
 	/**
 	 * Find one user by its id.
+	 * @param {string} id
+	 * @return {Bluebird<any>}
+	 */
+	public findOneById(id: string): Promise<any> {
+		this._log.debug("Call to findOneById with id: %j", id);
+		let result: any;
+		return this.accountDao.findOne(id)
+			.then((user: AccountEntity) => {
+				if (_.isNil(user)) {
+					this._log.error("No user with the id " + id);
+					return Promise.reject("No user with the id " + id);
+				}
+				result = user;
+				return this.partyDao.findOne(user.contactId);
+			})
+			.then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
+				result.contact = contact.toJSON();
+				result.contact.id = contact.id;
+				result.contact.typeName = contact.typeName;
+				this._log.debug("Returning %j", result);
+				return Promise.resolve(result);
+			});
+	}
+
+	/**
+	 * Find one user by its userId.
 	 * @param id The id
 	 * @return {Promise<any>}
 	 */

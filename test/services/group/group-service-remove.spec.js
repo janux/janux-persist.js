@@ -55,7 +55,7 @@ describe("Testing group service remove methods", function () {
 				.then(function () {
 					done();
 				})
-		}, 50);
+		}, 40);
 	});
 
 	function getSampleData() {
@@ -108,7 +108,39 @@ describe("Testing group service remove methods", function () {
 		});
 	});
 
-	describe("When calling remove item", function () {
+	describe("When calling remove with a code that does not exists in the database", function () {
+		it("The method should return an error", function (done) {
+			var group = getSampleData();
+			groupService.insert(group)
+				.then(function () {
+					return groupService.remove("invalidCode");
+				})
+				.then(function () {
+					expect.fail("The method should not have deleted the record");
+				}, function (err) {
+					expect(err).eq(GroupServiceValidator.NO_GROUP);
+					done();
+				});
+		});
+	});
+
+	describe("When calling remove with a null code", function () {
+		it("The method should return an error", function (done) {
+			var group = getSampleData();
+			groupService.insert(group)
+				.then(function () {
+					return groupService.remove(null);
+				})
+				.then(function () {
+					expect.fail("The method should not have deleted the record");
+				}, function (err) {
+					expect(err).eq(GroupServiceValidator.NO_GROUP);
+					done();
+				});
+		});
+	});
+
+	describe("When calling removeItem", function () {
 		it("The method should remove the item", function (done) {
 			var group = getSampleData();
 			expect(group.values.length).eq(2);
@@ -137,7 +169,7 @@ describe("Testing group service remove methods", function () {
 		});
 	});
 
-	describe("When calling remove item with a null item", function () {
+	describe("When calling removeItem with a null item", function () {
 		it("The method should send an error", function (done) {
 			var group = getSampleData();
 			expect(group.values.length).eq(2);

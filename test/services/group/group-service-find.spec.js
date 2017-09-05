@@ -128,7 +128,7 @@ describe("Testing group service find methods", function () {
 		});
 	});
 
-	describe("When calling the method findGroup with the correct code and attributes", function () {
+	describe("When calling the method findOne with the correct code", function () {
 		it("The method should return the group", function (done) {
 			var groups = getSampleData();
 			groupService.insert(groups[0])
@@ -156,7 +156,7 @@ describe("Testing group service find methods", function () {
 		});
 	});
 
-	describe("When calling the method findGroup with the incorrect code", function () {
+	describe("When calling the method findOne with the incorrect code", function () {
 		it("The method should return a null", function (done) {
 			var groups = getSampleData();
 			groupService.insert(groups[0])

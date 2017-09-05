@@ -1,11 +1,8 @@
 /**
- * Project janux-persist
- * Created by ernesto on 2007/09/04.
+ * Project janux-persist.js
+ * Created by ernesto on 9/5/17.
  */
-
-
 var chai = require('chai');
-var _ = require('lodash');
 var expect = chai.expect;
 var config = require('config');
 const DaoFactory = require("../../../dist/index").DaoFactory;
@@ -14,6 +11,7 @@ const DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 const UserGroupService = require("../../../dist/index").UserGroupServiceImpl;
 const GroupService = require("../../../dist/index").GroupServiceImpl;
 const GroupImpl = require("../../../dist/index").GroupImpl;
+const GroupServiceValidator = require("../../../dist/index").GroupServiceValidator;
 const UserService = require("../../../dist/index").UserService;
 
 //Config files
@@ -21,14 +19,14 @@ const serverAppContext = config.get("serverAppContext");
 const dbEngine = serverAppContext.db.dbEngine;
 const path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
 const name = 'name';
-const name2 = 'name2';
 const code = 'code';
+const name2 = 'name2';
 const code2 = 'code2';
-const attributes = {parent: "root", system: "true"};
 const attributes2 = {parent: "glarus", system: "true"};
+const attributes = {parent: "root"};
 
+describe("Testing user groups service remove methods", function () {
 
-describe("Testing user group service find methods", function () {
 	var groupContentDao;
 	var accountDao;
 	var partyDao;
@@ -41,7 +39,6 @@ describe("Testing user group service find methods", function () {
 	var insertedUser1;
 	var insertedUser2;
 	var insertedUser3;
-
 	beforeEach(function (done) {
 		accountDao = DaoFactory.createAccountDao(dbEngine, path);
 		partyDao = DaoFactory.createPartyDao(dbEngine, path);
@@ -75,6 +72,7 @@ describe("Testing user group service find methods", function () {
 					var user2 = SampleData.createUser2();
 					insertedUser1 = insertedUser;
 					return userService.insert(user2);
+
 				})
 				.then(function (insertedUser) {
 					var user3 = SampleData.createUser3();
@@ -107,92 +105,48 @@ describe("Testing user group service find methods", function () {
 
 	});
 
-	describe("When calling find one", function () {
-		it("The method must return the users group", function (done) {
-			userGroupService.findOne(code2)
+	describe("When calling remove", function () {
+		it("The method should remove the group", function (done) {
+			userGroupService.remove(code2)
+				.then(function () {
+					return userGroupService.findOne(code2);
+				})
 				.then(function (result) {
-					expect(result.name).eq(name2);
-					expect(result.code).eq(code2);
-					expect(result.attributes).to.deep.equal(attributes2);
-					expect(result.values.length).eq(1);
-					expect(result.values[0].id).eq(insertedUser3.id);
-					expect(result.values[0].username).eq(insertedUser3.username);
+					expect(result).to.be.null;
 					return userGroupService.findOne(code);
 				})
 				.then(function (result) {
 					expect(result.name).eq(name);
 					expect(result.code).eq(code);
-					expect(result.attributes).to.deep.equal(attributes);
 					expect(result.values.length).eq(2);
-					var value1 = _.find(result.values, function (o) {
-						return o.id === insertedUser1.id;
-					});
-					var value2 = _.find(result.values, function (o) {
-						return o.id === insertedUser2.id;
-					});
-					expect(value1.id).eq(insertedUser1.id);
-					expect(value1.username).eq(insertedUser1.username);
-					expect(value1.password).eq(insertedUser1.password);
-					expect(value2.id).eq(insertedUser2.id);
-					expect(value2.username).eq(insertedUser2.username);
-					expect(value2.password).eq(insertedUser2.password);
 					done();
 				});
 		});
 	});
 
-	describe("When calling findAll", function () {
-		it("The method should return all groups", function (done) {
-			userGroupService.findAll()
-				.then(function (result) {
-					expect(result.length).eq(2);
-					expect(result[0].code).eq(code);
-					expect(result[0].values.length).eq(2);
-					expect(result[0].values[0].id).eq(insertedUser1.id);
-					expect(result[0].values[0].username).eq(insertedUser1.username);
-					expect(result[0].values[0].password).eq(insertedUser1.password);
-					expect(result[0].values[0].typeName).eq(insertedUser1.typeName);
-					expect(result[0].values[1].id).eq(insertedUser2.id);
-					expect(result[0].values[1].username).eq(insertedUser2.username);
-					expect(result[0].values[1].password).eq(insertedUser2.password);
-					expect(result[0].values[1].typeName).eq(insertedUser2.typeName);
-					expect(result[1].code).eq(code2);
-					expect(result[1].values.length).eq(1);
-					expect(result[1].values[0].id).eq(insertedUser3.id);
-					expect(result[1].values[0].username).eq(insertedUser3.username);
-					expect(result[1].values[0].typeName).eq(insertedUser3.typeName);
+
+	describe("When calling remove with invalid code", function () {
+		it("The method should return an error", function (done) {
+			userGroupService.remove("invalidCode")
+				.then(function () {
+					expect.fail("The method should not have removed the group");
+				}, function (err) {
+					expect(err).eq(GroupServiceValidator.NO_GROUP);
 					done();
 				})
 		});
 	});
 
-	describe("When calling findByFilter with filter with an attribute unique to one group", function () {
-		it("The method should return one group", function (done) {
-			userGroupService.findByFilter({parent: "root"})
-				.then(function (result) {
-					expect(result.length).eq(1);
-					expect(result[0].code).eq(code);
-					expect(result[0].name).eq(name);
-					expect(result[0].values.length).eq(2);
-					done();
+	describe("When calling removeItem", function () {
+		it("The method should remove the item of the group", function (done) {
+			userGroupService.removeItem(code2, insertedUser3)
+				.then(function () {
+					return userGroupService.findOne(code2);
 				})
-		});
-	});
-
-	describe("When calling findByFilter with filter with an attribute shared to the two groups", function () {
-		it("The method should return two groups", function (done) {
-			userGroupService.findByFilter({system: "true"})
 				.then(function (result) {
-					expect(result.length).eq(2);
-					expect(result[0].code).eq(code);
-					expect(result[0].name).eq(name);
-					expect(result[0].values.length).eq(2);
-
-					expect(result[1].code).eq(code2);
-					expect(result[1].name).eq(name2);
-					expect(result[1].values.length).eq(1);
+					expect(result.values.length).eq(0);
 					done();
-				})
+				});
 		});
 	});
 });

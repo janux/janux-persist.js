@@ -402,7 +402,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * Returns a reject if the object to remove is null or undefined.
 	 */
 	removeItem(code: string, objectToRemove: t): Promise<any> {
-		this.log.debug("Call to removeIte with code %j", code);
+		this.log.debug("Call to removeItem with code %j", code);
 		if (objectToRemove == null) {
 			const error: ValidationErrorImpl = new ValidationErrorImpl(
 				GroupServiceValidator.ITEM,

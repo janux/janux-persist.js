@@ -14,6 +14,7 @@ import {UserGroupService} from "../api/user-group-service";
 export class UserGroupServiceImpl implements UserGroupService {
 
 	public readonly USERS_GROUP_TYPE: string = "users groups";
+	public readonly NO_USERS = "There are some users in the group that does not exits in the database";
 	private log = logger.getLogger("UserGroupServiceImpl");
 	private userService: UserService;
 	private readonly REFERENCE_ID = 'id';
@@ -45,16 +46,17 @@ export class UserGroupServiceImpl implements UserGroupService {
 		let result: GroupImpl<any>;
 		return this.groupService.findOne(code)
 			.then((resultQuery: GroupImpl<any>) => {
+				if (resultQuery == null) return Promise.resolve(null);
 				// Map the ids to users.
 				result = _.clone(resultQuery);
-				return this.userService.findByIdsIn(result.values);
-			})
-			.then((users: any[]) => {
-				if (result.values.length !== users.length) {
-					this.log.warn("The amount of users associated does not match with the users in the database");
-				}
-				result.values = users;
-				return Promise.resolve(result);
+				return this.userService.findByIdsIn(result.values)
+					.then((users: any[]) => {
+						if (result.values.length !== users.length) {
+							this.log.warn("The amount of users associated does not match with the users in the database");
+						}
+						result.values = users;
+						return Promise.resolve(result);
+					});
 			});
 	}
 
@@ -70,42 +72,99 @@ export class UserGroupServiceImpl implements UserGroupService {
 	}
 
 	/**
-	 * Inserts a users groups.
+	 * Inserts a new group.
 	 * @param {GroupImpl<any>} group
+	 * Return the inserted group.
+	 * Returns a reject if the users to associate to the group does not exists in
+	 * the database.
 	 */
 	insert(group: GroupImpl<any>): Promise<GroupImpl<any>> {
 		this.log.debug("Call to insert with group %j", group);
 		// Map the users data in order to insert only the ids
 		const newGroup: GroupImpl<any> = _.clone(group);
-		newGroup.values = group.values.map((value) => value.id);
-		return this.groupService.insert(newGroup)
+		const ids = group.values.map((value) => value.id);
+		newGroup.values = ids;
+		return this.userService.findByIdsIn(ids)
+			.then((resultQuery: any[]) => {
+				if (resultQuery.length !== ids.length) {
+					return Promise.reject(this.NO_USERS);
+				}
+				return this.groupService.insert(newGroup);
+			})
 			.then((result) => {
 				return Promise.resolve(group);
 			});
 	}
 
+	/**
+	 * Updates a group and it's values.
+	 * @param {Group} group The group to be updated.
+	 * @return {Promise<Group>} Returns a reject if there is no group with the specified type an properties.
+	 * Returns a reject if the content of the groups has duplicated values.
+	 * Returns a reject if the content of the groups has duplicated values or any of the  users does not exists in the database.
+	 */
 	update(group: GroupImpl<any>): Promise<GroupImpl<any>> {
 		// Map the ids
 		const groupToUpdate: GroupImpl<any> = _.clone(group);
-		groupToUpdate.values = group.values.map((value) => value.id);
-		return this.groupService.update(groupToUpdate)
+		const ids = group.values.map((value) => value.id);
+		groupToUpdate.values = ids;
+
+		return this.userService.findByIdsIn(ids)
+			.then((resultQuery: any[]) => {
+				if (resultQuery.length !== ids.length) {
+					return Promise.reject(this.NO_USERS);
+				}
+				return this.groupService.update(groupToUpdate);
+			})
 			.then((result) => {
 				return Promise.resolve(group);
 			});
 	}
 
+	/**
+	 * Delete group.
+	 * @param {Group} code
+	 * @return {Promise<any>} Returns a reject if there is no group with the specified code.
+	 */
 	remove(code: string): Promise<any> {
 		return this.groupService.remove(code);
 	}
 
+	/**
+	 * Insert an element to an existing group.
+	 * @param {string} code
+	 * @param {t} user The value to insert.
+	 * @return {Bluebird<any>} Return a promise indicating the item is inserted.
+	 * Returns a reject if the method was not able to identify a group given the code.
+	 * Returns a reject if the objectToInsert exists already in the group.
+	 * Return a reject if the objectToInsert is null or does not exits in the database.
+	 */
 	addItem(code: string, user: any): Promise<any> {
-		return this.groupService.addItem(code, user[this.REFERENCE_ID]);
+		return this.userService.findOneById(user.id)
+			.then((resultQuery) => {
+				return this.groupService.addItem(code, user[this.REFERENCE_ID]);
+			});
 	}
 
+	/**
+	 * Removes an item of the group.
+	 * @param {string} code.
+	 * @param user The object to remove.
+	 * Return a promise if the remove was successful.
+	 * Returns a reject if there is no group given the code.
+	 * Returns a reject if the object to remove is null or undefined.
+	 */
 	removeItem(code: string, user: any): Promise<any> {
-		return this.groupService.removeItem(this.USERS_GROUP_TYPE, user[this.REFERENCE_ID]);
+		return this.groupService.removeItem(code, user[this.REFERENCE_ID]);
 	}
 
+	/**
+	 * Find many groups and it's content.
+	 * @param {} filter A key-value map that will help to filter the groups that shares the same type. This is as a AND filter.
+	 * If there is an empty map then the method will return all records of the same type.
+	 * @return {Bluebird<Group[]>} Return a list of groups. Returns an empty array if there is no group that qualifies
+	 * with the type and filter.
+	 */
 	findByFilter(filter: { [p: string]: string }): Promise<Array<GroupImpl<any>>> {
 		return this.groupService.findByTypeAndFilter(this.USERS_GROUP_TYPE, filter)
 			.then((groups: Array<GroupImpl<string>>) => {

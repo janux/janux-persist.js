@@ -15,8 +15,8 @@ export class GroupServiceValidator {
 	public static readonly ITEM: string = "Item";
 	public static readonly ITEM_EMPTY: string = "The item is null or undefined";
 	public static readonly ATTRIBUTE_VALUE_EMPTY: string = "The attribute with the key does not have a valid string value";
-	public static readonly DUPLICATED_GROUP: string = "There is a group with the same key an attributes";
-	public static readonly NO_GROUP: string = "There is no group given the type and attributes";
+	public static readonly DUPLICATED_GROUP: string = "There is a group with the same code";
+	public static readonly NO_GROUP: string = "There is no group given the code";
 	public static log = log4js.getLogger("GroupServiceValidator");
 
 	/**

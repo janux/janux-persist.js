@@ -4,6 +4,7 @@
  */
 
 var chai = require('chai');
+var _ = require('lodash');
 var expect = chai.expect;
 var config = require('config');
 const DaoFactory = require("../../../dist/index").DaoFactory;
@@ -123,5 +124,99 @@ describe("Testing user groups service insert methods", function () {
 					done();
 				});
 		});
+	});
+
+
+	describe("When calling insert with users not associated to the database", function () {
+		it("The method should return an error", function (done) {
+			var group = new GroupImpl();
+			group.name = name;
+			group.code = code;
+			group.type = userGroupService.USERS_GROUP_TYPE;
+			group.attributes = attributes;
+			insertedUser3.id = "invalidId";
+			group.values = [insertedUser1, insertedUser2, insertedUser3];
+			userGroupService.insert(group)
+				.then(function (result) {
+					expect.fail("The method should not have inserted the record");
+				}, function (err) {
+					expect(err).eq(userGroupService.NO_USERS);
+					done();
+				})
+		});
+	});
+
+
+	describe("When calling addItem", function () {
+		it("The method should add an item", function (done) {
+			var group = new GroupImpl();
+			group.name = name;
+			group.code = code;
+			group.type = userGroupService.USERS_GROUP_TYPE;
+			group.attributes = attributes;
+			group.values = [insertedUser1];
+			userGroupService.insert(group)
+				.then(function () {
+					return userGroupService.addItem(code, insertedUser2);
+				})
+				.then(function () {
+					return userGroupService.findOne(code);
+				})
+				.then(function (updatedGroup) {
+					expect(updatedGroup.name).eq(name);
+					expect(updatedGroup.values.length).eq(2);
+					const user1 = _.find([insertedUser1, insertedUser2], function (o) {
+						return o.id === updatedGroup.values[0].id;
+					});
+					const user2 = _.find([insertedUser1, insertedUser2], function (o) {
+						return o.id === updatedGroup.values[1].id;
+					});
+					expect(user1).not.to.be.undefined;
+					expect(user2).not.to.be.undefined;
+					done();
+				});
+		});
+	});
+
+
+	describe("When calling addItem with an user that does not exists in the database", function () {
+		it("The method should return an error", function (done) {
+			var group = new GroupImpl();
+			group.name = name;
+			group.code = code;
+			group.type = userGroupService.USERS_GROUP_TYPE;
+			group.attributes = attributes;
+			group.values = [insertedUser1];
+			userGroupService.insert(group)
+				.then(function () {
+					insertedUser2.id = 'invalidId';
+					return userGroupService.addItem(code, insertedUser2);
+				})
+				.then(function () {
+					expect.fail("The method should not have inserted the record");
+				}, function (err) {
+					done();
+				});
+		});
+	});
+
+	describe("When calling addItem with undefined id", function () {
+		it("The method should return an error", function (done) {
+			var group = new GroupImpl();
+			group.name = name;
+			group.code = code;
+			group.type = userGroupService.USERS_GROUP_TYPE;
+			group.attributes = attributes;
+			group.values = [insertedUser1];
+			userGroupService.insert(group)
+				.then(function () {
+					return userGroupService.addItem(code, undefined);
+				})
+				.then(function () {
+					expect.fail("The method should not have inserted the record");
+				}, function (err) {
+					done();
+				});
+		})
 	});
 });

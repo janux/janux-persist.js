@@ -203,4 +203,26 @@ describe("Testing group service insert methods", function () {
 				});
 		});
 	});
+
+
+	describe("When calling addItem with null code",function () {
+		it("The method should return an error",function (done) {
+			var group = getSampleData();
+			groupService.insert(group)
+				.then(function () {
+					return groupService.addItem(null, item3);
+				})
+				.then(function () {
+					expect.fail("The method should not have inserted the item");
+				}, function (err) {
+					expect(err).eq(GroupServiceValidator.NO_GROUP);
+					return groupContentDao.findAll();
+				})
+				.then(function (result) {
+					// Make sure any record is not inserted.
+					expect(result.length).eq(2);
+					done();
+				});
+		})
+	})
 });

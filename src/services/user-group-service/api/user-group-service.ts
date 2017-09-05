@@ -44,9 +44,9 @@ export interface UserGroupService {
 	/**
 	 * Inserts a new group.
 	 * @param {GroupImpl} group to insert.
-	 * @return {Promise<GroupImpl>} Returns a promise if the object was inserted correctly. Return a reject if
+	 * @return {Promise<GroupImpl>} Returns a promise if the object was inserted correctly. Returns a reject if
 	 * there is another group with the same code. Returns a reject if the content of the groups
-	 * has duplicated values.
+	 * has duplicated values or any of the  users does not exists in the database.
 	 */
 	insert(group: GroupImpl<any>): Promise<GroupImpl<any>>;
 
@@ -55,6 +55,7 @@ export interface UserGroupService {
 	 * @param {Group} group The group to be updated.
 	 * @return {Promise<Group>} Returns a reject if there is no group with the specified type an properties.
 	 * Returns a reject if the content of the groups has duplicated values.
+	 * Returns a reject if the content of the groups has duplicated values or any of the  users does not exists in the database.
 	 */
 	update(group: GroupImpl<any>): Promise<GroupImpl<any>>;
 
@@ -72,7 +73,7 @@ export interface UserGroupService {
 	 * @return {Bluebird<any>} Return a promise indicating the item is inserted.
 	 * Returns a reject if the method was not able to identify a group given the code.
 	 * Returns a reject if the objectToInsert exists already in the group.
-	 * Return a reject if the objectToInsert is null.
+	 * Return a reject if the objectToInsert is null or does not exits in the database.
 	 */
 	addItem(code: string, user: any): Promise<null>;
 
