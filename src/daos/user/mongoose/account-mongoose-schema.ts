@@ -34,7 +34,8 @@ export const AccountMongooseDbSchema = new mongoose.Schema({
 	},
 	contactId: {
 		type: String,
-		required: true
+		required: true,
+		index: true
 	},
 	lastUpdate: {
 		type: Date

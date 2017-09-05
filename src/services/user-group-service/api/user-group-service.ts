@@ -25,7 +25,7 @@ export interface UserGroupService {
 	 * @param {JanuxPeople.Person | JanuxPeople.Organization} user
 	 * @return {Bluebird<GroupPropertiesImpl[]>}
 	 */
-	findPropertiesByTypeAndItem(type: string, user: JanuxPeople.Person | JanuxPeople.Organization): Promise<GroupPropertiesImpl[]>;
+	findPropertiesByTypeAndItem(type: string, user: any): Promise<GroupPropertiesImpl[]>;
 
 	/**
 	 * Find one group
@@ -33,13 +33,13 @@ export interface UserGroupService {
 	 * @return {Bluebird<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>}
 	 * Return the group or null if there is no group given the code.
 	 */
-	findOne(code: string): Promise<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>;
+	findOne(code: string): Promise<GroupImpl<any>>;
 
 	/**
 	 * Return all groups (including content) of all groups of the users type.
 	 * @return {Bluebird<Array<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>>}
 	 */
-	findAll(): Promise<Array<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>>;
+	findAll(): Promise<Array<GroupImpl<any>>>;
 
 	/**
 	 * Inserts a new group.
@@ -48,7 +48,7 @@ export interface UserGroupService {
 	 * there is another group with the same code. Returns a reject if the content of the groups
 	 * has duplicated values.
 	 */
-	insert(group: GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>): Promise<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>;
+	insert(group: GroupImpl<any>): Promise<GroupImpl<any>>;
 
 	/**
 	 * Updates a group and it's values.
@@ -56,7 +56,7 @@ export interface UserGroupService {
 	 * @return {Promise<Group>} Returns a reject if there is no group with the specified type an properties.
 	 * Returns a reject if the content of the groups has duplicated values.
 	 */
-	update(group: GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>): Promise<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>;
+	update(group: GroupImpl<any>): Promise<GroupImpl<any>>;
 
 	/**
 	 * Delete group.
@@ -74,7 +74,7 @@ export interface UserGroupService {
 	 * Returns a reject if the objectToInsert exists already in the group.
 	 * Return a reject if the objectToInsert is null.
 	 */
-	addItem(code: string, user: JanuxPeople.Person | JanuxPeople.Organization): Promise<null>;
+	addItem(code: string, user: any): Promise<null>;
 
 	/**
 	 * Removes an item of the group.
@@ -84,7 +84,7 @@ export interface UserGroupService {
 	 * Returns a reject if there is no group given the code.
 	 * Returns a reject if the object to remove is null or undefined.
 	 */
-	removeItem(code: string, user: JanuxPeople.Person | JanuxPeople.Organization): Promise<null>;
+	removeItem(code: string, user: any): Promise<null>;
 
 	/**
 	 * Find many groups and it's content.
@@ -93,5 +93,5 @@ export interface UserGroupService {
 	 * @return {Bluebird<Group[]>} Return a list of groups. Returns an empty array if there is no group that qualifies
 	 * with the type and filter.
 	 */
-	findByFilter(filter: { [p: string]: string }): Promise<Array<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>>;
+	findByFilter(filter: { [p: string]: string }): Promise<Array<GroupImpl<any>>>;
 }
