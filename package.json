@@ -24,6 +24,7 @@
 		"config": "1.26.1",
 		"email-validator": "1.0.7",
 		"janux-people": "file:vendor/janux-people.js",
+		"janux-authorize": "file:vendor/janux-authorize.js",
 		"lodash": "4.17.4",
 		"lokijs": "1.5.0",
 		"mongoose": "4.10.5",
