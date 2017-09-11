@@ -7,6 +7,11 @@
  * This file helps to make the ts files
  * available to js test
  */
+export * from "./daos/auth-context/auth-context-validator";
+export * from "./daos/auth-context/auth-context-dao";
+export * from "./daos/auth-context/lokijs/auth-context-dao-lokijs-impl";
+export * from "./daos/auth-context/mongoose/auth-context-dao-mongoose-impl";
+export * from "./daos/auth-context/mongoose/auth-context-mongoose-schema";
 export * from "./daos/user/account-validator";
 export * from "./daos/user/account-dao";
 export * from "./daos/user/account-entity";
@@ -41,6 +46,7 @@ export * from "./persistence/api/dao/entity-properties";
 export * from "./persistence/api/dao/validation-error";
 export * from "./persistence/util/TimeStampGenerator";
 export * from "./persistence/util/UuidGenerator";
+export * from "./services/auth-context/auth-context-service";
 export * from "./services/user/user-service";
 export * from "./services/dao-factory/dao";
 export * from "./services/dao-factory/dao-factory-service";

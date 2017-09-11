@@ -4,6 +4,10 @@
  */
 
 import * as _ from 'lodash';
+import {AuthContextDao} from "../../daos/auth-context/auth-context-dao";
+import {AuthContextDaoLokiJsImpl} from "../../daos/auth-context/lokijs/auth-context-dao-lokijs-impl";
+import {AuthContextDaoMongooseImpl} from "../../daos/auth-context/mongoose/auth-context-dao-mongoose-impl";
+import {AuthContextMongooseDbSchema} from "../../daos/auth-context/mongoose/auth-context-mongoose-schema";
 import {PartyDaoLokiJsImpl} from "../../daos/party/lokijs/party-dao-loki-js-impl";
 import {PartyDaoMongooseImpl} from "../../daos/party/mongoose/party-dao-mongoose-impl";
 import {PartyMongooseSchema} from "../../daos/party/mongoose/party-mongoose-schema";
@@ -91,8 +95,42 @@ export class DaoFactory {
 		}
 	}
 
+	/**
+	 * Gets a new AuthContext dao, or a existing one with the same db engine and dbPath.
+	 * @param dbEngine
+	 * @param {string} dbPath
+	 * @return {AuthContextDao}
+	 */
+	public static createAuthContextDao(dbEngine: any, dbPath: string): AuthContextDao {
+		this._log.debug("Call to createAuthContextDao with dbEngine %j , dbPath %j", dbEngine, dbPath);
+		const existingDao: Dao = this.getDao(dbEngine, dbPath, this.AUTHCONTEXT_DEFAULT_COLLECTION_NAME);
+		let authContextDao: AuthContextDao;
+		if (_.isUndefined(existingDao)) {
+			this._log.debug("Creating a new createAuthContextDao");
+			const dataSource: DataSource = this.getDataSource(dbEngine, dbPath);
+			if (dbEngine === DataSourceHandler.MONGOOSE) {
+				authContextDao = new AuthContextDaoMongooseImpl(
+					new MongooseAdapter(dataSource.dbConnection.model(this.AUTHCONTEXT_DEFAULT_COLLECTION_NAME, AuthContextMongooseDbSchema)),
+					new EntityPropertiesImpl(true, true));
+			} else {
+				authContextDao = new AuthContextDaoLokiJsImpl(
+					new LokiJsAdapter(this.AUTHCONTEXT_DEFAULT_COLLECTION_NAME, dataSource.dbConnection),
+					new EntityPropertiesImpl(true, true)
+				);
+			}
+			this.insertDao(dbEngine, dbPath, this.AUTHCONTEXT_DEFAULT_COLLECTION_NAME, authContextDao);
+			this._log.debug("Returning inserted promise");
+			return authContextDao;
+		} else {
+			this._log.debug("Returning an existing AuthContextDao");
+			authContextDao = existingDao.daoInstance;
+			return authContextDao;
+		}
+	}
+
 	private static PARTY_DEFAULT_COLLECTION_NAME: string = "contact";
 	private static ACCOUNT_DEFAULT_COLLECTION_NAME: string = "account";
+	private static AUTHCONTEXT_DEFAULT_COLLECTION_NAME: string = "authcontext";
 	private static _log = logger.getLogger("DaoFactoryService");
 	private static daos: Dao[] = [];
 
