@@ -6,11 +6,11 @@ var chai = require('chai');
 var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
-var AuthorizationContext = require("janux-authorize").AuthorizationContext;
 var AuthContextService = require("../../../dist/index").AuthContextService;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var AuthContextValidator = require("../../../dist/index").AuthContextValidator;
 var DaoFactory = require("../../../dist/index").DaoFactory;
+var authContextSample = require('./auth-context.json');
 var serverAppContext = config.get("serverAppContext");
 var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
 var mongoConnUrl = serverAppContext.db.mongoConnUrl;
@@ -38,14 +38,7 @@ describe("Testing authorization context service insert method", function () {
 	describe("When inserting an authorization context", function () {
 		it("It should not return any error", function (done) {
 
-			var authContext = AuthorizationContext.createInstance(name, description);
-			// Add a permission bit
-			authContext.addPermissionBit('READ', 'Grants permission to READ a PERSON');
-
-			// Add a permission bit providing the name. Optionally description and sortOrder.
-			authContext.addPermissionBit('UPDATE', 'Grants permission to UPDATE a PERSON', 99);
-
-			authContextService.insert(authContext)
+			authContextService.insert(authContextSample[0])
 				.then(function (resultInsert) {
 					return authContextService.findOneById(resultInsert.id);
 				}).then(function (result) {
@@ -69,11 +62,9 @@ describe("Testing authorization context service insert method", function () {
 	describe("When inserting an authorization context with a duplicated name", function () {
 		it("The method should return an error", function (done) {
 
-			var authContext = AuthorizationContext.createInstance(name, description);
-
-			authContextService.insert(authContext)
+			authContextService.insert(authContextSample[0])
 				.then(function (result) {
-					return authContextService.insert(authContext);
+					return authContextService.insert(authContextSample[0]);
 				}).then(function (result2) {
 					expect.fail("The method should not have inserted the record");
 					done();
