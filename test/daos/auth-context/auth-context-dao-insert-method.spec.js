@@ -38,6 +38,11 @@ describe("Testing authorization context dao insertMethod methods", function () {
 			it("It should have been inserted correctly", function (done) {
 
 				var authContext = AuthorizationContext.createInstance(name, description);
+				// Add a permission bit
+				authContext.addPermissionBit('READ', 'Grants permission to READ a PERSON');
+
+				// Add a permission bit providing the name. Optionally description and sortOrder.
+				authContext.addPermissionBit('UPDATE', 'Grants permission to UPDATE a PERSON', 99);
 
 				authContextDao.insert(authContext)
 					.then(function (insertedRecord) {
@@ -63,6 +68,11 @@ describe("Testing authorization context dao insertMethod methods", function () {
 				expect(entity).to.have.property("id");
 				expect(entity.name).eq(name);
 				expect(entity.description).eq(description);
+
+				var bit = entity.permissionBit('UPDATE');
+
+				expect(bit.name).to.equal('UPDATE');
+				expect(bit.label).to.equal('UPDATE');
 			}
 		});
 
