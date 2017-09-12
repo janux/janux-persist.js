@@ -1,0 +1,42 @@
+[
+	{
+		"name": "PERSON",
+		"description": "Defines permissions available on a Person entity",
+		"sortOrder": 0,
+		"enabled": true,
+		"bit": {
+			"READ": {
+				"position": 0,
+				"label": "READ",
+				"description": "Grants permission to READ a PERSON",
+				"sortOrder": 0
+			},
+			"UPDATE": {
+				"position": 1,
+				"label": "UPDATE",
+				"description": "Grants permission to UPDATE a PERSON",
+				"sortOrder": 99
+			}
+		}
+	},
+	{
+		"name": "WIDGET",
+		"description": "Widget that we want to track in our system",
+		"sortOrder": 1,
+		"enabled": true,
+		"bit": {
+			"READ": {
+				"position": 0,
+				"label": "READ",
+				"description": "Grants permission to READ a WIDGET",
+				"sortOrder": 0
+			},
+			"UPDATE": {
+				"position": 1,
+				"label": "UPDATE",
+				"description": "Grants permission to UPDATE a WIDGET",
+				"sortOrder": 1
+			}
+		}
+	}
+]
