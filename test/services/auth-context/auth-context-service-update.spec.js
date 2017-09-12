@@ -7,7 +7,6 @@ var expect = chai.expect;
 var config = require('config');
 var AuthorizationContext = require("janux-authorize").AuthorizationContext;
 var AuthContextService = require("../../../dist/index").AuthContextService;
-var AuthContextValidator = require("../../../dist/index").AuthContextValidator;
 var DaoFactory = require("../../../dist/index").DaoFactory;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var serverAppContext = config.get("serverAppContext");
@@ -22,15 +21,14 @@ const description = 'Defines permissions available on a Person entity';
 const description2 =  'Widget that we want to track in our system';
 const newDescription =  'New authorization context description';
 
-describe("Testing authorization context service update methods", function () {
+describe("Testing authorization context service update method", function () {
 
 	var insertedRecord1;
 	var authContextDao;
 	var authContextService;
 
 	beforeEach(function (done) {
-		var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-		authContextDao = DaoFactory.createAuthContextDao(dbEngine, path);
+		authContextDao = DaoFactory.createAuthContextDao(dbEngine, dbPath);
 		authContextService = AuthContextService.createInstance(authContextDao);
 
 		// Wait for lokijs to initialize
@@ -64,9 +62,23 @@ describe("Testing authorization context service update methods", function () {
 					expect(resultQuery.id).eq(insertedRecord1.id);
 					expect(resultQuery.description).eq(newDescription);
 					done();
+				});
+		});
+	});
+
+	describe("When updating an authorization context with a duplicated name", function () {
+		it("The method should return an error", function (done) {
+
+			insertedRecord1.name = name2; // already exists
+
+			authContextService.update(insertedRecord1)
+				.then(function (result) {
+					//Perform a query with the same id.
+					return authContextDao.findOne(insertedRecord1.id);
 				})
 				.catch(function (err) {
-					expect.fail("Error");
+					expect(err.length).eq(1);
+					expect(err[0].attribute).eq("name");
 					done();
 				});
 		});

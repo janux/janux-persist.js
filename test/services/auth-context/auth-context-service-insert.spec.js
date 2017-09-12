@@ -39,12 +39,28 @@ describe("Testing authorization context service insert method", function () {
 		it("It should not return any error", function (done) {
 
 			var authContext = AuthorizationContext.createInstance(name, description);
+			// Add a permission bit
+			authContext.addPermissionBit('READ', 'Grants permission to READ a PERSON');
+
+			// Add a permission bit providing the name. Optionally description and sortOrder.
+			authContext.addPermissionBit('UPDATE', 'Grants permission to UPDATE a PERSON', 99);
 
 			authContextService.insert(authContext)
-				.then(function (result) {
+				.then(function (resultInsert) {
+					return authContextService.findOneById(resultInsert.id);
+				}).then(function (result) {
 					expect(result.id).not.to.be.undefined;
 					expect(result.name).eq(name);
 					expect(result.description).eq(description);
+
+					var bit = result.permissionBit('READ');
+
+					// expect(bit).to.be.instanceof(PermissionBit);
+					expect(bit.name).to.equal('READ');
+					expect(bit.label).to.equal('READ');
+					expect(bit.position).to.equal(0);
+					expect(bit.sortOrder).to.equal(0);
+
 					done();
 				});
 		});
