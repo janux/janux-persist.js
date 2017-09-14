@@ -1,41 +1,42 @@
 /**
  * Project janux-persistence
- * Created by alejandro janux on 2017-09-07
+ * Created by alejandro janux on 2017-09-13
  */
 var chai = require('chai');
 var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
-var AuthorizationContext = require("janux-authorize").AuthorizationContext;
+var Role = require("janux-authorize").Role;
 var DaoFactory = require("../../../dist/index").DaoFactory;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
-const name = 'PERSON';
-const name2 = 'WIDGET';
-const description = 'Defines permissions available on a Person entity';
-const description2 =  'Widget that we want to track in our system';
-const newDescription =  'New authorization context description';
+const ROLE_NAME = 'HUMAN_RESOURCES_MANAGER';
+const ROLE_DESCR = 'Can view, modify, create and delete personnel records';
+const ROLE_NAME2 = 'ANOTHER_ROLE';
+const ROLE_DESCR2 = 'Another role in the system';
+const newDescription =  'New role description';
 
 //Config files
 var serverAppContext = config.get("serverAppContext");
 
-describe("Testing authorization context dao update methods", function () {
+describe("Testing role dao update methods", function () {
 	[DataSourceHandler.LOKIJS, DataSourceHandler.MONGOOSE].forEach(function (dbEngine) {
 
 		describe("Given the inserted records", function () {
-			var authContextDao;
+			var roleDao;
 			var insertedRecord1;
 			var insertedRecord2;
 
 			beforeEach(function (done) {
 				var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-				authContextDao = DaoFactory.createAuthContextDao(dbEngine, path);
-				authContextDao.removeAll()
+				roleDao = DaoFactory.createRoleDao(dbEngine, path);
+				
+				roleDao.removeAll()
 					.then(function () {
-						var authContext1 = AuthorizationContext.createInstance(name, description);
-						var authContext2 = AuthorizationContext.createInstance(name2, description2);
+						var role1 = Role.createInstance(ROLE_NAME, ROLE_DESCR);
+						var role2 = Role.createInstance(ROLE_NAME2, ROLE_DESCR2);
 
-						return authContextDao.insertMany([authContext1, authContext2])
+						return roleDao.insertMany([role1, role2])
 					})
 					.then(function (result) {
 						insertedRecord1 = result[0];
@@ -45,13 +46,13 @@ describe("Testing authorization context dao update methods", function () {
 
 			});
 
-			describe("When updating an authorization context", function () {
+			describe("When updating a role", function () {
 				it("It should not send an error", function (done) {
 					insertedRecord1.description = newDescription;
-					authContextDao.update(insertedRecord1)
+					roleDao.update(insertedRecord1)
 						.then(function (res) {
 							//Perform a query with the same id.
-							return authContextDao.findOne(insertedRecord1.id);
+							return roleDao.findOne(res.id);
 						})
 						.then(function (resultQuery) {
 							expect(resultQuery.id).eq(insertedRecord1.id);
@@ -65,10 +66,10 @@ describe("Testing authorization context dao update methods", function () {
 				})
 			});
 
-			describe("When updating an authorization context without an id", function () {
+			describe("When updating a role without an id", function () {
 				it("It should return an error", function (done) {
-					var authContext = AuthorizationContext.createInstance(name, description);
-					authContextDao.update(authContext)
+					var role = Role.createInstance(ROLE_NAME, ROLE_DESCR);
+					roleDao.update(role)
 						.then(function (res) {
 							assert.fail("The method should not have updated the record");
 							done();
@@ -79,10 +80,10 @@ describe("Testing authorization context dao update methods", function () {
 				})
 			});
 
-			describe("When updating an authorization context with a duplicated name", function () {
+			describe("When updating a role with a duplicated name", function () {
 				it("It should send an error", function (done) {
-					insertedRecord1.name = name2;
-					authContextDao.update(insertedRecord1)
+					insertedRecord1.name = ROLE_NAME2;
+					roleDao.update(insertedRecord1)
 						.then(function (res) {
 							assert.fail("The method should not have updated the record");
 							done();

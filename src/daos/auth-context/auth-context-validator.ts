@@ -47,7 +47,7 @@ export class AuthContextValidator {
 	 * @return {ValidationErrorImpl[]}
 	 */
 	public static validateResultQueryBeforeBdOperation(authContexts: JanuxAuthorize.AuthorizationContext[], reference: JanuxAuthorize.AuthorizationContext): ValidationErrorImpl[] {
-		this._log.debug("Call to validateResultQueryBeforeBdOperation with accounts: %j reference: %j",
+		this._log.debug("Call to validateResultQueryBeforeBdOperation with authContexts: %j reference: %j",
 			authContexts, reference);
 		const errors: ValidationErrorImpl[] = [];
 		if (authContexts.length > 0) {

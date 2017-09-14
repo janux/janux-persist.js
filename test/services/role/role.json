@@ -1,0 +1,58 @@
+[
+	{
+		"name": "HUMAN_RESOURCES_MANAGER",
+		"description": "Can view, modify, create and delete personnel records",
+		"enabled": true,
+		"sortOrder": 0,
+		"authContexts": [
+			{
+				"name": "PERSON",
+				"bit": {
+					"READ": {
+						"position": 0
+					},
+					"UPDATE": {
+						"position": 1
+					},
+					"CREATE": {
+						"position": 2
+					},
+					"TRASH": {
+						"position": 3
+					},
+					"DELETE": {
+						"position": 4
+					}
+				}
+			},
+			{
+				"name": "ACCOUNT",
+				"bit": {
+					"READ": {
+						"position": 0
+					},
+					"UPDATE": {
+						"position": 1
+					},
+					"CREATE": {
+						"position": 2
+					},
+					"TRASH": {
+						"position": 3
+					},
+					"DELETE": {
+						"position": 4
+					}
+				}
+			}
+		],
+		"permissions": {
+			"ACCOUNT": {
+				"grant": 3
+			},
+			"PERSON": {
+				"grant": 11
+			}
+		}
+	}
+]

@@ -12,6 +12,10 @@ import {PartyDaoLokiJsImpl} from "../../daos/party/lokijs/party-dao-loki-js-impl
 import {PartyDaoMongooseImpl} from "../../daos/party/mongoose/party-dao-mongoose-impl";
 import {PartyMongooseSchema} from "../../daos/party/mongoose/party-mongoose-schema";
 import {PartyDao} from "../../daos/party/party-dao";
+import {RoleDaoLokiJsImpl} from "../../daos/role/lokijs/role-dao-lokijs-impl";
+import {RoleDaoMongooseImpl} from "../../daos/role/mongoose/role-dao-mongoose-impl";
+import {RoleMongooseDbSchema} from "../../daos/role/mongoose/role-mongoose-schema";
+import {RoleDao} from "../../daos/role/role-dao";
 import {AccountDao} from "../../daos/user/account-dao";
 import {AccountDaoLokiJsImpl} from "../../daos/user/lokijs/account-dao-lokijs-impl";
 import {AccountDaoMongooseImpl} from "../../daos/user/mongoose/account-dao-mongoose-impl";
@@ -128,9 +132,43 @@ export class DaoFactory {
 		}
 	}
 
+	/**
+	 * Gets a new Role dao, or a existing one with the same db engine and dbPath.
+	 * @param dbEngine
+	 * @param {string} dbPath
+	 * @return {RoleDao}
+	 */
+	public static createRoleDao(dbEngine: any, dbPath: string): RoleDao {
+		this._log.debug("Call to createRoleDao with dbEngine %j , dbPath %j", dbEngine, dbPath);
+		const existingDao: Dao = this.getDao(dbEngine, dbPath, this.ROLE_DEFAULT_COLLECTION_NAME);
+		let RoleDao: RoleDao;
+		if (_.isUndefined(existingDao)) {
+			this._log.debug("Creating a new createRoleDao");
+			const dataSource: DataSource = this.getDataSource(dbEngine, dbPath);
+			if (dbEngine === DataSourceHandler.MONGOOSE) {
+				RoleDao = new RoleDaoMongooseImpl(
+					new MongooseAdapter(dataSource.dbConnection.model(this.ROLE_DEFAULT_COLLECTION_NAME, RoleMongooseDbSchema)),
+					new EntityPropertiesImpl(true, true));
+			} else {
+				RoleDao = new RoleDaoLokiJsImpl(
+					new LokiJsAdapter(this.ROLE_DEFAULT_COLLECTION_NAME, dataSource.dbConnection),
+					new EntityPropertiesImpl(true, true)
+				);
+			}
+			this.insertDao(dbEngine, dbPath, this.ROLE_DEFAULT_COLLECTION_NAME, RoleDao);
+			this._log.debug("Returning inserted promise");
+			return RoleDao;
+		} else {
+			this._log.debug("Returning an existing RoleDao");
+			RoleDao = existingDao.daoInstance;
+			return RoleDao;
+		}
+	}
+
 	private static PARTY_DEFAULT_COLLECTION_NAME: string = "contact";
 	private static ACCOUNT_DEFAULT_COLLECTION_NAME: string = "account";
 	private static AUTHCONTEXT_DEFAULT_COLLECTION_NAME: string = "authcontext";
+	private static ROLE_DEFAULT_COLLECTION_NAME: string = "role";
 	private static _log = logger.getLogger("DaoFactoryService");
 	private static daos: Dao[] = [];
 

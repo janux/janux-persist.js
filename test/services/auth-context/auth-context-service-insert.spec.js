@@ -1,6 +1,6 @@
 /**
  * Project janux-persistence
- * Created by ernesto on 6/29/17.
+ * Created by alejandro janux 2017-09-07
  */
 var chai = require('chai');
 var expect = chai.expect;
