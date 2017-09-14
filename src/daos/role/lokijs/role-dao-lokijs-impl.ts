@@ -1,6 +1,6 @@
 /**
  * Project janux-persistence
- * Created by alejandro janux on 2017-09-07
+ * Created by alejandro janux on 2017-09-12
  */
 
 import Promise = require("bluebird");
@@ -8,13 +8,13 @@ import JanuxAuthorize = require("janux-authorize");
 import {EntityPropertiesImpl} from "../../../persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {LokiJsAdapter} from "../../../persistence/implementations/db-adapters/lokijs-db-adapter";
-import {AuthContextDao} from "../auth-context-dao";
-import {AuthContextValidator} from "../auth-context-validator";
+import {RoleDao} from "../role-dao";
+import {RoleValidator} from "../role-validator";
 
 /**
- * AuthContextDao implementation for mongoose library.
+ * RoleDao implementation for mongoose library.
  */
-export class AuthContextDaoLokiJsImpl extends AuthContextDao {
+export class RoleDaoLokiJsImpl extends RoleDao {
 
 	constructor(dbAdapter: LokiJsAdapter, entityProperties: EntityPropertiesImpl) {
 		super(dbAdapter, entityProperties);
@@ -22,11 +22,11 @@ export class AuthContextDaoLokiJsImpl extends AuthContextDao {
 
 	/**
 	 * Validate the object before inserting to the database.
-	 * In this case the method validates for duplicated authorization context names.
+	 * In this case the method validates for duplicated Role names.
 	 * @param objectToInsert The object to validate.
 	 * @return {Promise<ValidationErrorImpl[]>} A list of validation errors.
 	 */
-	protected validateBeforeInsert(objectToInsert: JanuxAuthorize.AuthorizationContext): Promise<ValidationErrorImpl[]> {
+	protected validateBeforeInsert(objectToInsert: JanuxAuthorize.Role): Promise<ValidationErrorImpl[]> {
 		const query = {
 			$or: [
 				{name: {$eq: objectToInsert.name}}
@@ -34,17 +34,17 @@ export class AuthContextDaoLokiJsImpl extends AuthContextDao {
 		};
 		return this.findByQuery(query)
 			.then((result) => {
-				return Promise.resolve(AuthContextValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
+				return Promise.resolve(RoleValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
 			});
 	}
 
 	/**
 	 * Validate the object before updating to the database.
-	 * In this case the method validates for authorization context with same name.
+	 * In this case the method validates for Role with same name.
 	 * @param objectToUpdate The object to updateMethod.
 	 * @return {Promise<ValidationErrorImpl[]>} A list of validation errors.
 	 */
-	protected validateBeforeUpdate(objectToUpdate: JanuxAuthorize.AuthorizationContext): Promise<ValidationErrorImpl[]> {
+	protected validateBeforeUpdate(objectToUpdate: JanuxAuthorize.Role): Promise<ValidationErrorImpl[]> {
 		const query = {
 			$and: [
 				{id: {$ne: objectToUpdate.id}},
@@ -56,8 +56,8 @@ export class AuthContextDaoLokiJsImpl extends AuthContextDao {
 			]
 		};
 		return this.findByQuery(query)
-			.then((result: JanuxAuthorize.AuthorizationContext[]) => {
-				return Promise.resolve(AuthContextValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
+			.then((result: JanuxAuthorize.Role[]) => {
+				return Promise.resolve(RoleValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
 			});
 	}
 }
