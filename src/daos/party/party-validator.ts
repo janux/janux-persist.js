@@ -6,7 +6,7 @@
 import JanuxPeople = require("janux-people");
 import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
-import * as logger from "../../util/logger-api/logger-api";
+import * as logger from '../../util/logger-api/logger-api';
 import {OrganizationValidator} from "./organization/organization-validator";
 import {PersonValidator} from "./person/person-validator";
 
@@ -121,7 +121,7 @@ export class PartyValidator {
          person = element as PersonEntity;
          if (PersonName.validateSameName(person.name, personReference.name) === true) {
          errors.push(new ValidationErrorImpl(
-         PersonValidator.NAME,
+         PersonValidator.ATTRIBUTES,
          PersonValidator.PERSON_NAME_DUPLICATED,
          JSON.stringify(person.name)));
          }
@@ -130,8 +130,8 @@ export class PartyValidator {
          organization = element as OrganizationEntity;
          if (organization.name === organizationReference.name) {
          errors.push(new ValidationErrorImpl(
-         OrganizationValidator.NAME,
-         OrganizationValidator.NAME_DUPLICATED,
+         OrganizationValidator.ATTRIBUTES,
+         OrganizationValidator.CODE_DUPLICATED,
          organization.name));
          }
          }

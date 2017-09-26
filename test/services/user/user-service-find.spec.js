@@ -48,7 +48,7 @@ const personMiddleName2 = "Smith";
 const contactEmail2 = "dev_full_stack@glarus.com";
 
 
-describe("Testing auth context service find method", function () {
+describe("Testing user service find method", function () {
 	describe("Given the inserted roles and accounts", function () {
 
 		var partyDao;

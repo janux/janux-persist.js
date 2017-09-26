@@ -140,8 +140,8 @@ describe("Testing party dao updateMethod methods", function () {
 			//             })
 			//             .catch(function (err) {
 			//                 expect(err.length).eq(1);
-			//                 expect(err[0].attribute).eq(OrganizationValidator.NAME);
-			//                 expect(err[0].message).eq(OrganizationValidator.NAME_DUPLICATED);
+			//                 expect(err[0].attribute).eq(OrganizationValidator.ATTRIBUTES);
+			//                 expect(err[0].message).eq(OrganizationValidator.CODE_DUPLICATED);
 			//                 expect(err[0].value).eq(organizationName);
 			//                 done();
 			//             })
@@ -161,7 +161,7 @@ describe("Testing party dao updateMethod methods", function () {
 			//             })
 			//             .catch(function (err) {
 			//                 expect(err.length).eq(1);
-			//                 expect(err[0].attribute).eq(PersonValidator.NAME);
+			//                 expect(err[0].attribute).eq(PersonValidator.ATTRIBUTES);
 			//                 expect(err[0].message).eq(PersonValidator.PERSON_NAME_DUPLICATED);
 			//                 done();
 			//             })

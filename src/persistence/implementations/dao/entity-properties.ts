@@ -6,8 +6,8 @@ import {EntityProperties} from "../../api/dao/entity-properties";
  */
 
 /**
- * This class helps to define extra properties to the entity.
- * The purpose to this object is to define the extra properties that
+ * This class helps to define extra attributes to the entity.
+ * The purpose to this object is to define the extra attributes that
  * are the same for each every entity.
  */
 export class EntityPropertiesImpl implements EntityProperties {

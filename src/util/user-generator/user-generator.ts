@@ -11,7 +11,7 @@ import {PartyValidator} from "../../daos/party/party-validator";
 import {AccountDao} from "../../daos/user/account-dao";
 import {DaoFactory} from "../../services/dao-factory/dao-factory-service";
 import {UserService} from "../../services/user/user-service";
-import * as logger from "../logger-api/logger-api";
+import * as logger from '../../util/logger-api/logger-api';
 
 export class UserGenerator {
 

@@ -14,7 +14,7 @@ import {AccountEntity} from "../../daos/user/account-entity";
 import {AccountValidator} from "../../daos/user/account-validator";
 import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../util/blank-string-validator";
-import * as logger from "../../util/logger-api/logger-api";
+import * as logger from '../../util/logger-api/logger-api';
 
 /**
  * This class has basic user service methods.
@@ -75,7 +75,7 @@ export class UserService {
 
 	/**
 	 * Find all users and adds its contact info.
-	 * @return {Promise<U>}
+	 * @return {Promise<any[]>}
 	 */
 	public findAll(): Promise<any[]> {
 		this._log.debug("Call to findAllMethod");
@@ -85,8 +85,42 @@ export class UserService {
 			});
 	}
 
+	public findByIdsIn(ids: string[]): Promise<any[]> {
+		this._log.debug("Call to findByIdsIn with ids %j", ids);
+		return this.accountDao.findByIds(ids)
+			.then((users: AccountEntity[]) => {
+				return this.populateContactData(users);
+			});
+	}
+
 	/**
 	 * Find one user by its id.
+	 * @param {string} id
+	 * @return {Bluebird<any>}
+	 */
+	public findOneById(id: string): Promise<any> {
+		this._log.debug("Call to findOneById with id: %j", id);
+		let result: any;
+		return this.accountDao.findOne(id)
+			.then((user: AccountEntity) => {
+				if (_.isNil(user)) {
+					this._log.error("No user with the id " + id);
+					return Promise.reject("No user with the id " + id);
+				}
+				result = user;
+				return this.partyDao.findOne(user.contactId);
+			})
+			.then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
+				result.contact = contact.toJSON();
+				result.contact.id = contact.id;
+				result.contact.typeName = contact.typeName;
+				this._log.debug("Returning %j", result);
+				return Promise.resolve(result);
+			});
+	}
+
+	/**
+	 * Find one user by its userId.
 	 * @param id The id
 	 * @return {Promise<any>}
 	 */
