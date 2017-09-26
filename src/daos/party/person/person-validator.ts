@@ -6,10 +6,10 @@
 import JanuxPeople = require("janux-people");
 import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../../util/blank-string-validator";
-import * as logger from "../../../util/logger-api/logger-api";
+import * as logger from '../../../util/logger-api/logger-api';
 
 /**
- * Validates the content of the person.
+ * Validates the values of the person.
  */
 export class PersonValidator {
 
@@ -19,7 +19,7 @@ export class PersonValidator {
 	public static readonly PERSON_NAME_DUPLICATED = "There is another person with the same name";
 
 	/**
-	 * Validate the content of the person.
+	 * Validate the values of the person.
 	 * @param person
 	 * @return {ValidationErrorImpl[]}
 	 */

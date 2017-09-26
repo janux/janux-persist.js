@@ -5,7 +5,7 @@
 import Promise = require("bluebird");
 import {Model} from "mongoose";
 import * as mongoose from "mongoose";
-import * as logger from "../../../util/logger-api/logger-api";
+import * as logger from '../../../util/logger-api/logger-api';
 import {DbAdapter} from "../../api/db-adapters/db-adapter";
 import {AttributeFilter} from "../dao/attribute-filter";
 
@@ -77,7 +77,7 @@ export class MongooseAdapter implements DbAdapter {
 
 	/**
 	 * Counts the amount of documents in a collection.
-	 * @return {Bluebird<number>} Returns the amount of documents.
+	 * @return {Promise<number>} Returns the amount of documents.
 	 */
 	count(): Promise<number> {
 		this._log.debug("Call to count");
@@ -288,7 +288,7 @@ export class MongooseAdapter implements DbAdapter {
 	/**
 	 * Find all documents that matches with the query criteria. The query is a mongo-like query object.
 	 * @param query The query criteria.
-	 * @return {Bluebird} The objects that matches the query criteria. If no records are founded, then the method
+	 * @return {Promise} The objects that matches the query criteria. If no records are founded, then the method
 	 * returns an empty array.
 	 */
 	public findByQueryMethod(query: any): Promise<any[]> {

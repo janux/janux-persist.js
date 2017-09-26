@@ -4,13 +4,13 @@
  */
 
 import * as _ from 'lodash';
-import * as logger from "../../../util/logger-api/logger-api";
+import * as logger from '../../../util/logger-api/logger-api';
 import {DbAdapter} from "../../api/db-adapters/db-adapter";
 import {AbstractDataAccessObject} from "./abstract-data-access-object";
 import {EntityPropertiesImpl} from "./entity-properties";
 
 /**
- * This class, inside their properties, contains an object implementing the interface DbAdapter where you can do
+ * This class, inside their attributes, contains an object implementing the interface DbAdapter where you can do
  * db operations.
  * The purpose of this class is to encapsulate the db calls inside an object. And that object re-use ti
  * in different dao implementations.

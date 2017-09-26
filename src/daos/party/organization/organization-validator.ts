@@ -6,10 +6,10 @@
 import JanuxPeople = require("janux-people");
 import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
 import {isBlankString} from "../../../util/blank-string-validator";
-import * as logger from "../../../util/logger-api/logger-api";
+import * as logger from '../../../util/logger-api/logger-api';
 
 /**
- * Validates the content of the organization.
+ * Validates the values of the organization.
  */
 export class OrganizationValidator {
 
@@ -18,7 +18,7 @@ export class OrganizationValidator {
 	public static readonly NAME_EMPTY = "Organization name is empty";
 
 	/**
-	 * Validate if the organization content is valid.
+	 * Validate if the organization values is valid.
 	 * @param organization The organization to validate.
 	 * @return {ValidationErrorImpl[]}
 	 */

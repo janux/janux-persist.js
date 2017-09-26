@@ -4,7 +4,7 @@
  */
 
 /**
- * This interface defines the content of a validation error.
+ * This interface defines the values of a validation error.
  */
 export interface ValidationError {
 	attribute: string;

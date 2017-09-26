@@ -3,9 +3,9 @@
  * Created by ernesto on 7/19/17.
  */
 
+import * as log4js from "log4js";
 import * as lokijs from "lokijs";
 import * as mongoose from "mongoose";
-import * as logger from "../../util/logger-api/logger-api";
 import {DataSourceHandler} from "./datasource-handler";
 import {DataSourceStatus} from "./datasource-status";
 
@@ -22,7 +22,7 @@ export class DataSource {
 	public status: DataSourceStatus;
 	// For mongodb this is a mongoose is a connection instance, for lokijs is the db itself.
 	public dbConnection: any;
-	private log = logger.getLogger("DataSource");
+	private log = log4js.getLogger("DataSource");
 
 	public connect(): DataSource {
 		this.log.debug("Call to connect with dbEngine: %j path:%j extraParams %j", this.dbEngine, this.path, this.extraParams);
