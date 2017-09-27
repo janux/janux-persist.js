@@ -109,6 +109,8 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * the database.
 	 */
 	insert(group: GroupImpl<any>): Promise<GroupImpl<any>> {
+		// Ensure authorization context group type
+		group.type = this.AUTHCONTEXT_GROUP_TYPE;
 		this.log.debug("Call to insert with group %j", group);
 		// Map the authContext data in order to insert only the ids
 		const newGroup: GroupImpl<any> = _.clone(group);
