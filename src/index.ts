@@ -64,6 +64,7 @@ export * from "./persistence/api/dao/validation-error";
 export * from "./persistence/util/TimeStampGenerator";
 export * from "./persistence/util/UuidGenerator";
 export * from "./services/auth-context/auth-context-service";
+export * from "./services/auth-context-group/impl/auth-context-group-service";
 export * from "./services/user/user-service";
 export * from "./services/role/role-service";
 export * from "./services/dao-factory/dao";

@@ -43,6 +43,20 @@ export class AuthContextService {
 	}
 
 	/**
+	 * Find all authorization contexts whose ids belongs to the list.
+	 * @param arrayOfIds The ids to look for.
+	 * @return {Promise<any[]>} A promise containing the authorization contexts.
+	 * If no records are founded, then the method returns an empty array.
+	 */
+	public findByIdsIn(ids: string[]): Promise<any[]> {
+		this._log.debug("Call to findByIdsIn with ids %j", ids);
+		return this.authContextDao.findByIds(ids)
+			.then((authContexts: JanuxAuthorize.AuthorizationContext[]) => {
+				return authContexts;
+			});
+	}
+
+	/**
 	 * Find one authorization context by its name.
 	 * @param authContextname
 	 * @return {Promise<any>}
