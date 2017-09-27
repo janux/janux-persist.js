@@ -80,13 +80,13 @@ describe("Testing authContext groups service insert methods", function () {
 			var group = new GroupImpl();
 			group.name = name;
 			group.code = code;
-			group.type = authContextGroupService.AUTHCONTEXT_GROUP_TYPE;
 			group.attributes = attributes;
 			group.values = [insertedAuthContext1, insertedAuthContext2];
 			authContextGroupService.insert(group)
 				.then(function (insertedGroup) {
 					expect(insertedGroup.name).eq(name);
 					expect(insertedGroup.code).eq(code);
+					expect(insertedGroup.type).eq(authContextGroupService.AUTHCONTEXT_GROUP_TYPE);
 					expect(insertedGroup.attributes).eq(attributes);
 					expect(insertedGroup.values.length).eq(2);
 					expect(insertedGroup.values).to.deep.equal([insertedAuthContext1, insertedAuthContext2]);
@@ -120,7 +120,6 @@ describe("Testing authContext groups service insert methods", function () {
 			var group = new GroupImpl();
 			group.name = name;
 			group.code = code;
-			group.type = authContextGroupService.AUTHCONTEXT_GROUP_TYPE;
 			group.attributes = attributes;
 			insertedAuthContext2.id = "invalidId";
 			group.values = [insertedAuthContext1, insertedAuthContext2];
@@ -140,7 +139,6 @@ describe("Testing authContext groups service insert methods", function () {
 			var group = new GroupImpl();
 			group.name = name;
 			group.code = code;
-			group.type = authContextGroupService.AUTHCONTEXT_GROUP_TYPE;
 			group.attributes = attributes;
 			group.values = [insertedAuthContext1];
 			authContextGroupService.insert(group)
@@ -172,7 +170,6 @@ describe("Testing authContext groups service insert methods", function () {
 			var group = new GroupImpl();
 			group.name = name;
 			group.code = code;
-			group.type = authContextGroupService.AUTHCONTEXT_GROUP_TYPE;
 			group.attributes = attributes;
 			group.values = [insertedAuthContext1];
 			authContextGroupService.insert(group)
@@ -193,7 +190,6 @@ describe("Testing authContext groups service insert methods", function () {
 			var group = new GroupImpl();
 			group.name = name;
 			group.code = code;
-			group.type = authContextGroupService.AUTHCONTEXT_GROUP_TYPE;
 			group.attributes = attributes;
 			group.values = [insertedAuthContext1];
 			authContextGroupService.insert(group)
