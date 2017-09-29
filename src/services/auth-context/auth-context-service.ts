@@ -65,7 +65,9 @@ export class AuthContextService {
 		this._log.debug("Call to findOneByName with authContextName: %j", authContextName);
 		let result: any;
 		return this.authContextDao.findOneByName(authContextName)
-			.then((authContext: JanuxAuthorize.AuthorizationContext) => {
+			.then((authContextStored: any) => {
+				const authContext: JanuxAuthorize.AuthorizationContext = authContextStored;
+				authContext.id = authContextStored.id;
 				if (_.isNil(authContext)) return Promise.reject("No authContext with the authContextname " + authContextName);
 				result = authContext;
 				this._log.debug("Returning %j", result);
@@ -117,7 +119,7 @@ export class AuthContextService {
 		this._log.debug("Call to updateMethod with object:%j", object);
 
 		let authContext: JanuxAuthorize.AuthorizationContext;
-		// Find the authContext. This also helps to retrieve the contactId.
+		// Find the authContext
 		return this.authContextDao.findOne(object.id)
 			.then((resultQuery) => {
 				if (resultQuery === null) {
