@@ -4,8 +4,8 @@
  */
 
 import * as _ from 'lodash';
-import * as logger from '../../../util/logger-api/logger-api';
-import {DbAdapter} from "../../api/db-adapters/db-adapter";
+import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
+import * as logger from 'util/logger-api/logger-api';
 import {AbstractDataAccessObject} from "./abstract-data-access-object";
 import {EntityPropertiesImpl} from "./entity-properties";
 

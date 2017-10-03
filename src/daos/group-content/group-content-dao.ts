@@ -3,10 +3,10 @@
  * Created by ernesto on 8/16/17.
  */
 import Promise = require("bluebird");
+import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
+import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {EntityPropertiesImpl} from "../../index";
-import {DbAdapter} from "../../persistence/api/db-adapters/db-adapter";
-import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
-import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
 import {GroupContentEntity} from "./group-content-entity";
 import {GroupContentValidator} from "./group-content-validator";
 

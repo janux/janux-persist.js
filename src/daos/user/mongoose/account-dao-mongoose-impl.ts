@@ -4,9 +4,9 @@
  */
 
 import Promise = require("bluebird");
-import {EntityPropertiesImpl} from "../../../index";
-import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
-import {MongooseAdapter} from "../../../persistence/implementations/db-adapters/mongoose-db-adapter";
+import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {MongooseAdapter} from "persistence/implementations/db-adapters/mongoose-db-adapter";
 import {AccountDao} from "../account-dao";
 import {AccountEntity} from "../account-entity";
 import {AccountValidator} from "../account-validator";

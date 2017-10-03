@@ -5,9 +5,9 @@
 
 import Promise = require("bluebird");
 import JanuxAuthorize = require("janux-authorize");
-import {EntityPropertiesImpl} from "../../../persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
-import {MongooseAdapter} from "../../../persistence/implementations/db-adapters/mongoose-db-adapter";
+import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {MongooseAdapter} from "persistence/implementations/db-adapters/mongoose-db-adapter";
 import {AuthContextDao} from "../auth-context-dao";
 import {AuthContextValidator} from "../auth-context-validator";
 

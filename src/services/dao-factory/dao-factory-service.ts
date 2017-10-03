@@ -3,35 +3,35 @@
  * Created by ernesto on 7/19/17.
  */
 
+import {AuthContextDao} from "daos/auth-context/auth-context-dao";
+import {AuthContextDaoLokiJsImpl} from "daos/auth-context/lokijs/auth-context-dao-lokijs-impl";
+import {AuthContextDaoMongooseImpl} from "daos/auth-context/mongoose/auth-context-dao-mongoose-impl";
+import {AuthContextMongooseDbSchema} from "daos/auth-context/mongoose/auth-context-mongoose-schema";
+import {GroupAttributeValueDao} from "daos/group-attribute-value/group-attribute-value-dao";
+import {GroupAttributeValueMongooseSchema} from "daos/group-attribute-value/mongoose/group-attribute-value-schema";
+import {GroupContentDao} from "daos/group-content/group-content-dao";
+import {GroupContentMongooseSchema} from "daos/group-content/mongoose/group-value-mongoose-schema";
+import {GroupDao} from "daos/group/group-dao";
+import {GroupMongooseSchema} from "daos/group/mongoose/group-mongoose-schema";
+import {PartyDaoLokiJsImpl} from "daos/party/lokijs/party-dao-loki-js-impl";
+import {PartyDaoMongooseImpl} from "daos/party/mongoose/party-dao-mongoose-impl";
+import {PartyMongooseSchema} from "daos/party/mongoose/party-mongoose-schema";
+import {PartyDao} from "daos/party/party-dao";
+import {RoleDaoLokiJsImpl} from "daos/role/lokijs/role-dao-lokijs-impl";
+import {RoleDaoMongooseImpl} from "daos/role/mongoose/role-dao-mongoose-impl";
+import {RoleMongooseDbSchema} from "daos/role/mongoose/role-mongoose-schema";
+import {RoleDao} from "daos/role/role-dao";
+import {AccountDao} from "daos/user/account-dao";
+import {AccountDaoLokiJsImpl} from "daos/user/lokijs/account-dao-lokijs-impl";
+import {AccountDaoMongooseImpl} from "daos/user/mongoose/account-dao-mongoose-impl";
+import {AccountMongooseDbSchema} from "daos/user/mongoose/account-mongoose-schema";
 import * as _ from 'lodash';
-import {AuthContextDao} from "../../daos/auth-context/auth-context-dao";
-import {AuthContextDaoLokiJsImpl} from "../../daos/auth-context/lokijs/auth-context-dao-lokijs-impl";
-import {AuthContextDaoMongooseImpl} from "../../daos/auth-context/mongoose/auth-context-dao-mongoose-impl";
-import {AuthContextMongooseDbSchema} from "../../daos/auth-context/mongoose/auth-context-mongoose-schema";
-import {GroupAttributeValueDao} from "../../daos/group-attribute-value/group-attribute-value-dao";
-import {GroupAttributeValueMongooseSchema} from "../../daos/group-attribute-value/mongoose/group-attribute-value-schema";
-import {GroupContentDao} from "../../daos/group-content/group-content-dao";
-import {GroupContentMongooseSchema} from "../../daos/group-content/mongoose/group-value-mongoose-schema";
-import {GroupDao} from "../../daos/group/group-dao";
-import {GroupMongooseSchema} from "../../daos/group/mongoose/group-mongoose-schema";
-import {PartyDaoLokiJsImpl} from "../../daos/party/lokijs/party-dao-loki-js-impl";
-import {PartyDaoMongooseImpl} from "../../daos/party/mongoose/party-dao-mongoose-impl";
-import {PartyMongooseSchema} from "../../daos/party/mongoose/party-mongoose-schema";
-import {PartyDao} from "../../daos/party/party-dao";
-import {RoleDaoLokiJsImpl} from "../../daos/role/lokijs/role-dao-lokijs-impl";
-import {RoleDaoMongooseImpl} from "../../daos/role/mongoose/role-dao-mongoose-impl";
-import {RoleMongooseDbSchema} from "../../daos/role/mongoose/role-mongoose-schema";
-import {RoleDao} from "../../daos/role/role-dao";
-import {AccountDao} from "../../daos/user/account-dao";
-import {AccountDaoLokiJsImpl} from "../../daos/user/lokijs/account-dao-lokijs-impl";
-import {AccountDaoMongooseImpl} from "../../daos/user/mongoose/account-dao-mongoose-impl";
-import {AccountMongooseDbSchema} from "../../daos/user/mongoose/account-mongoose-schema";
-import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
-import {LokiJsAdapter} from "../../persistence/implementations/db-adapters/lokijs-db-adapter";
-import {MongooseAdapter} from "../../persistence/implementations/db-adapters/mongoose-db-adapter";
-import * as logger from '../../util/logger-api/logger-api';
-import {DataSource} from "../datasource-handler/datasource";
-import {DataSourceHandler} from "../datasource-handler/datasource-handler";
+import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
+import {LokiJsAdapter} from "persistence/implementations/db-adapters/lokijs-db-adapter";
+import {MongooseAdapter} from "persistence/implementations/db-adapters/mongoose-db-adapter";
+import {DataSource} from "services/datasource-handler/datasource";
+import {DataSourceHandler} from "services/datasource-handler/datasource-handler";
+import * as logger from 'util/logger-api/logger-api';
 import {Dao} from "./dao";
 
 /**

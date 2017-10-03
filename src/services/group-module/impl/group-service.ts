@@ -3,15 +3,15 @@
  * Created by ernesto on 8/16/17.
  */
 import Promise = require("bluebird");
-import * as log4js from "log4js";
-import {GroupAttributeValueEntity} from "../../../daos/group-attribute-value/group-attribute-value";
-import {GroupAttributeValueDao} from "../../../daos/group-attribute-value/group-attribute-value-dao";
-import {GroupContentDao} from "../../../daos/group-content/group-content-dao";
-import {GroupContentEntity} from "../../../daos/group-content/group-content-entity";
-import {GroupDao} from "../../../daos/group/group-dao";
-import {GroupEntity} from "../../../daos/group/group-entity";
-import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
-import {GroupService} from "../api/group-service";
+import {GroupAttributeValueEntity} from "daos/group-attribute-value/group-attribute-value";
+import {GroupAttributeValueDao} from "daos/group-attribute-value/group-attribute-value-dao";
+import {GroupContentDao} from "daos/group-content/group-content-dao";
+import {GroupContentEntity} from "daos/group-content/group-content-entity";
+import {GroupDao} from "daos/group/group-dao";
+import {GroupEntity} from "daos/group/group-entity";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {GroupService} from "services/group-module/api/group-service";
+import * as logger from "util/logger-api/logger-api";
 import {GroupImpl} from "./group";
 import {GroupPropertiesImpl} from "./group-properties";
 import {GroupServiceValidator} from "./group-service-validator";
@@ -27,7 +27,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	private groupDao: GroupDao;
 	private groupContentDao: GroupContentDao;
 	private groupAttributeValueDao: GroupAttributeValueDao;
-	private log = log4js.getLogger("GroupServiceImpl");
+	private log = logger.getLogger("GroupServiceImpl");
 
 	constructor(groupDao: GroupDao, groupContentDao: GroupContentDao, groupAttributeValueDao: GroupAttributeValueDao) {
 		this.groupDao = groupDao;

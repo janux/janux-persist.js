@@ -5,12 +5,12 @@
 
 import Promise = require("bluebird");
 import * as _ from 'lodash';
-import * as logger from '../../../util/logger-api/logger-api';
-import {AuthContextService} from "../../auth-context/auth-context-service";
-import {GroupImpl} from "../../group-module/impl/group";
-import {GroupPropertiesImpl} from "../../group-module/impl/group-properties";
-import {GroupServiceImpl} from "../../group-module/impl/group-service";
-import {AuthContextGroupService} from "../api/auth-context-group-service";
+import {AuthContextGroupService} from "services/auth-context-group/api/auth-context-group-service";
+import {AuthContextService} from "services/auth-context/auth-context-service";
+import {GroupImpl} from "services/group-module/impl/group";
+import {GroupPropertiesImpl} from "services/group-module/impl/group-properties";
+import {GroupServiceImpl} from "services/group-module/impl/group-service";
+import * as logger from 'util/logger-api/logger-api';
 
 export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 

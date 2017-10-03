@@ -4,13 +4,13 @@
  */
 
 import * as Promise from "bluebird";
+import {AuthContextDao} from "daos/auth-context/auth-context-dao";
+import {AuthContextValidator} from "daos/auth-context/auth-context-validator";
 import JanuxAuthorize = require("janux-authorize");
 import * as _ from 'lodash';
-import {AuthContextDao} from "../../daos/auth-context/auth-context-dao";
-import {AuthContextValidator} from "../../daos/auth-context/auth-context-validator";
-import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
-import {isBlankString} from "../../util/blank-string-validator";
-import * as logger from "../../util/logger-api/logger-api";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {isBlankString} from "util/blank-string-validator";
+import * as logger from "util/logger-api/logger-api";
 
 /**
  * This class has basic authContext service methods.

@@ -4,10 +4,10 @@
  */
 
 import Promise = require("bluebird");
-import {DbAdapter} from "../../persistence/api/db-adapters/db-adapter";
-import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
-import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
+import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
+import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
+import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {AccountEntity} from "./account-entity";
 import {AccountValidator} from "./account-validator";
 

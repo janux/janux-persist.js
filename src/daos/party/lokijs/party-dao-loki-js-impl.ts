@@ -5,9 +5,9 @@
 
 import * as Promise from "bluebird";
 import JanuxPeople = require("janux-people");
-import {EntityPropertiesImpl} from "../../../persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "../../../persistence/implementations/dao/validation-error";
-import {LokiJsAdapter} from "../../../persistence/implementations/db-adapters/lokijs-db-adapter";
+import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {LokiJsAdapter} from "persistence/implementations/db-adapters/lokijs-db-adapter";
 import {PartyDao} from "../party-dao";
 import {PartyValidator} from "../party-validator";
 

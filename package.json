@@ -46,7 +46,8 @@
 		"gulp-tslint": "8.1.0",
 		"gulp-typescript": "3.1.7",
 		"gulp-typedoc": "2.0.2",
-		"log4js": "2.3.3"
+		"log4js": "2.3.3",
+		"through2": "2.0.3"
 	},
 	"author": "Janux",
 	"license": "ISC"

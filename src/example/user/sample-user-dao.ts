@@ -5,20 +5,20 @@
 
 import Promise = require("bluebird");
 import * as _ from "lodash";
-import {DbAdapter} from "../../persistence/api/db-adapters/db-adapter";
-import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
-import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
-import * as logger from '../../util/logger-api/logger-api';
-import {ExampleUser} from "./example-user";
-import {validateExampleUser} from "./example-validate-user";
+import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
+import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
+import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import * as logger from 'util/logger-api/logger-api';
+import {SampleUser} from "./sample-user";
+import {validateExampleUser} from "./sample-user-validator";
 
 /**
- * This is the base dao class of the entity ExampleUser.
+ * This is the base dao class of the entity SampleUser.
  */
-export abstract class ExampleUserDao extends AbstractDataAccessObjectWithAdapter<ExampleUser, string> {
+export abstract class SampleUserDao extends AbstractDataAccessObjectWithAdapter<SampleUser, string> {
 
-	private _logExampleUserDao = logger.getLogger("ExampleUserDao");
+	private _logExampleUserDao = logger.getLogger("SampleUserDao");
 
 	constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
 		super(dbAdapter, entityProperties);
@@ -28,9 +28,9 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithAdapter
 	 * Find all users by a last name.
 	 * This is an example method where you can implement the query without the need to implement it for each db engine
 	 * @param lastName
-	 * @return {Promise<ExampleUser[]>}
+	 * @return {Promise<SampleUser[]>}
 	 */
-	public findByLastName(lastName: string): Promise<ExampleUser[]> {
+	public findByLastName(lastName: string): Promise<SampleUser[]> {
 		return this.findByAttribute("lastName", lastName);
 	}
 
@@ -38,9 +38,9 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithAdapter
 	 * This is a method where you need to implement it for every db engine.
 	 * @param name
 	 */
-	public abstract findByNameMatch(name: string): Promise<ExampleUser[]>;
+	public abstract findByNameMatch(name: string): Promise<SampleUser[]>;
 
-	protected validateEntity<t>(objectToValidate: ExampleUser): ValidationErrorImpl[] {
+	protected validateEntity<t>(objectToValidate: SampleUser): ValidationErrorImpl[] {
 		return validateExampleUser(objectToValidate);
 	}
 
@@ -50,9 +50,9 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithAdapter
 	 * @param objectToInsert
 	 * @return {Promise<ValidationErrorImpl[]>}
 	 */
-	protected validateBeforeInsert<t>(objectToInsert: ExampleUser): Promise<ValidationErrorImpl[]> {
+	protected validateBeforeInsert<t>(objectToInsert: SampleUser): Promise<ValidationErrorImpl[]> {
 		return this.findOneByAttribute("email", objectToInsert.email)
-			.then((result: ExampleUser) => {
+			.then((result: SampleUser) => {
 				const errors: ValidationErrorImpl[] = [];
 				if (!_.isNull(result)) {
 					errors.push(
@@ -71,9 +71,9 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithAdapter
 	 * In this case, we mark the method as abstract in order to be implemented for each db engine.
 	 * @param objectToUpdate
 	 */
-	protected abstract validateBeforeUpdate<t>(objectToUpdate: ExampleUser): Promise<any>;
+	protected abstract validateBeforeUpdate<t>(objectToUpdate: SampleUser): Promise<any>;
 
-	protected convertBeforeSave(object: ExampleUser): any {
+	protected convertBeforeSave(object: SampleUser): any {
 		this._logExampleUserDao.debug("Call to convertBeforeSave with object: %j", object);
 		return {
 			id: object[this.ID_REFERENCE],
@@ -84,8 +84,8 @@ export abstract class ExampleUserDao extends AbstractDataAccessObjectWithAdapter
 		};
 	}
 
-	protected convertAfterDbOperation(object: any): ExampleUser {
-		const result = new ExampleUser(object.name, object.lastName, object.email);
+	protected convertAfterDbOperation(object: any): SampleUser {
+		const result = new SampleUser(object.name, object.lastName, object.email);
 		result[this.ID_REFERENCE] = object[this.ID_REFERENCE];
 		return result;
 	}

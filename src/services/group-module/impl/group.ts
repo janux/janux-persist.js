@@ -4,7 +4,6 @@
  */
 
 import {Group} from "../api/group";
-import {GroupPropertiesImpl} from "./group-properties";
 
 /**
  * This class saves the group information

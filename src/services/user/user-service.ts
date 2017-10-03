@@ -4,17 +4,17 @@
  */
 
 import * as Promise from "bluebird";
+import {PartyDao} from "daos/party/party-dao";
+import {PartyValidator} from "daos/party/party-validator";
+import {AccountDao} from "daos/user/account-dao";
+import {AccountEntity} from "daos/user/account-entity";
+import {AccountValidator} from "daos/user/account-validator";
 import JanuxPeople = require("janux-people");
 import * as _ from 'lodash';
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {isBlankString} from "util/blank-string-validator";
+import * as logger from 'util/logger-api/logger-api';
 import * as uuid from 'uuid';
-import {PartyDao} from "../../daos/party/party-dao";
-import {PartyValidator} from "../../daos/party/party-validator";
-import {AccountDao} from "../../daos/user/account-dao";
-import {AccountEntity} from "../../daos/user/account-entity";
-import {AccountValidator} from "../../daos/user/account-validator";
-import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
-import {isBlankString} from "../../util/blank-string-validator";
-import * as logger from '../../util/logger-api/logger-api';
 
 /**
  * This class has basic user service methods.

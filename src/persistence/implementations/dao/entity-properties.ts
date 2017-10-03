@@ -1,9 +1,9 @@
-import {EntityProperties} from "../../api/dao/entity-properties";
-
 /**
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
+
+import {EntityProperties} from "persistence/api/dao/entity-properties";
 
 /**
  * This class helps to define extra attributes to the entity.

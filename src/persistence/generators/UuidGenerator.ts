@@ -3,9 +3,9 @@
  * Created by ernesto on 6/12/17.
  */
 
+import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
+import * as logger from 'util/logger-api/logger-api';
 import uuid = require("uuid");
-import * as logger from '../../util/logger-api/logger-api';
-import {EntityPropertiesImpl} from "../implementations/dao/entity-properties";
 
 /**
  * Generates a uuid to the object before insertMethod it.

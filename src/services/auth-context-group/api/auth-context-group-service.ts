@@ -5,8 +5,8 @@
 
 import Promise = require("bluebird");
 import JanuxAuthorize = require("janux-authorize");
-import {GroupImpl} from "../../group-module/impl/group";
-import {GroupPropertiesImpl} from "../../group-module/impl/group-properties";
+import {GroupImpl} from "services/group-module/impl/group";
+import {GroupPropertiesImpl} from "services/group-module/impl/group-properties";
 
 export interface AuthContextGroupService {
 

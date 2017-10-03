@@ -4,32 +4,33 @@
 //
 
 var typedoc = require("gulp-typedoc"),
-    path = require('path');
+	path = require('path');
 
 module.exports = function (gulp) {
 
-    var cfg = gulp.cfg;
+	var cfg = gulp.cfg;
 
-    gulp.task("typedoc", function () {
-        return gulp
-            .src([cfg.fileset.ts])
-            .pipe(typedoc({
-                // TypeScript options (see typescript docs)
-                module: "commonjs",
-                target: "es5",
-                includeDeclarations: true,
-                excludeExternals: true,
+	gulp.task("typedoc", function () {
+		return gulp
+			.src([cfg.fileset.ts])
+			.pipe(typedoc({
+				// TypeScript options (see typescript docs)
+				module: "commonjs",
+				target: "es5",
+				baseUrl: "./src",
+				includeDeclarations: true,
+				excludeExternals: true,
 
-                // Output options (see typedoc docs)
-                out: cfg.dir.doc,
-                json: path.join(cfg.dir.doc, cfg.pkg.name + '.json'),
+				// Output options (see typedoc docs)
+				out: cfg.dir.doc,
+				json: path.join(cfg.dir.doc, cfg.pkg.name + '.json'),
 
-                // TypeDoc options (see typedoc docs)
-                name: cfg.pkg.name,
-                ignoreCompilerErrors: false,
-                version: true
-            }));
-    });
+				// TypeDoc options (see typedoc docs)
+				name: cfg.pkg.name,
+				ignoreCompilerErrors: false,
+				version: true
+			}));
+	});
 };
 
 

@@ -5,11 +5,11 @@
 
 import Promise = require("bluebird");
 import * as _ from 'lodash';
-import {isBlankString} from "../../../util/blank-string-validator";
-import * as logger from '../../../util/logger-api/logger-api';
-import {CrudRepository} from "../../api/dao/crud-repository";
-import {TimeStampGenerator} from "../../util/TimeStampGenerator";
-import {UuidGenerator} from "../../util/UuidGenerator";
+import {CrudRepository} from "persistence/api/dao/crud-repository";
+import {TimeStampGenerator} from "persistence/generators/TimeStampGenerator";
+import {UuidGenerator} from "persistence/generators/UuidGenerator";
+import {isBlankString} from "util/blank-string-validator";
+import * as logger from 'util/logger-api/logger-api';
 import {AttributeFilter} from "./attribute-filter";
 import {EntityPropertiesImpl} from "./entity-properties";
 import {ValidationErrorImpl} from "./validation-error";
