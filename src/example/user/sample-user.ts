@@ -6,7 +6,7 @@
 /**
  * This is the entity
  */
-export class ExampleUser {
+export class SampleUser {
 
 	public name: string;
 	public lastName: string;

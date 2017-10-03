@@ -4,13 +4,13 @@
  */
 
 import * as Promise from "bluebird";
+import {RoleDao} from "daos/role/role-dao";
+import {RoleValidator} from "daos/role/role-validator";
 import JanuxAuthorize = require("janux-authorize");
 import * as _ from 'lodash';
-import {RoleDao} from "../../daos/role/role-dao";
-import {RoleValidator} from "../../daos/role/role-validator";
-import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
-import {isBlankString} from "../../util/blank-string-validator";
-import * as logger from "../../util/logger-api/logger-api";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {isBlankString} from "util/blank-string-validator";
+import * as logger from "util/logger-api/logger-api";
 
 /**
  * This class has basic role service methods.

@@ -3,17 +3,17 @@
  * Created by ernesto on 6/12/17.
  */
 import * as EmailValidator from "email-validator";
-import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
-import {isBlankString} from "../../util/blank-string-validator";
-import * as logger from '../../util/logger-api/logger-api';
-import {ExampleUser} from "./example-user";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {isBlankString} from "util/blank-string-validator";
+import * as logger from 'util/logger-api/logger-api';
+import {SampleUser} from "./sample-user";
 
 /**
  * Validate the entity
  * @param exampleUser The object to be validated
  * @return {ValidationErrorImpl[]} A list of errors founded.
  */
-export function validateExampleUser(exampleUser: ExampleUser): ValidationErrorImpl[] {
+export function validateExampleUser(exampleUser: SampleUser): ValidationErrorImpl[] {
 	const log = logger.getLogger("validateExampleUser");
 	const errors: ValidationErrorImpl[] = [];
 	log.debug("Call to validateExampleUser with exampleUser:%j", exampleUser);

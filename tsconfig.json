@@ -1,23 +1,41 @@
 {
-    "compilerOptions": {
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "module": "commonjs",
-        "target": "ES5",
-        "outDir": "./dist",
-        "moduleResolution": "node",
-        "rootDir": "./src",
-        "sourceMap": true,
-        "declaration": true,
-        "skipLibCheck": true,
-        "removeComments": true
-    },
-    "exclude": [
-        "**/node_modules/*",
-        "vendor",
-        "dist",
-        "gulp",
-        "docker",
-        "config"
-    ]
+	"compilerOptions": {
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"module": "commonjs",
+		"target": "ES5",
+		"outDir": "./dist",
+		"moduleResolution": "node",
+		"rootDir": "./src",
+		"sourceMap": true,
+		"declaration": true,
+		"skipLibCheck": true,
+		"removeComments": true,
+		"baseUrl": "./src",
+		"paths": {
+			"daos/*": [
+				"daos/*"
+			],
+			"example/*": [
+				"example/*"
+			],
+			"persistence/*": [
+				"persistence/*"
+			],
+			"services/*": [
+				"services/*"
+			],
+			"util/*": [
+				"util/*"
+			]
+		}
+	},
+	"exclude": [
+		"**/node_modules/*",
+		"vendor",
+		"dist",
+		"gulp",
+		"docker",
+		"config"
+	]
 }

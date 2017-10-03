@@ -7,7 +7,7 @@
 require('bluebird');
 var chai = require('chai');
 var expect = chai.expect;
-var ExampleUser = require("../../dist/index").ExampleUser;
+var ExampleUser = require("../../dist/index").SampleUser;
 var validateExampleUser = require("../../dist/index").validateExampleUser;
 
 const incorrectEmail = "jonSmith.com";

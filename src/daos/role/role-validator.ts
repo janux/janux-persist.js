@@ -4,9 +4,9 @@
  */
 
 import JanuxAuthorize = require("janux-authorize");
-import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
-import {isBlankString} from "../../util/blank-string-validator";
-import * as logger from "../../util/logger-api/logger-api";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {isBlankString} from "util/blank-string-validator";
+import * as logger from "util/logger-api/logger-api";
 
 /**
  * Validates if the role has the correct values.

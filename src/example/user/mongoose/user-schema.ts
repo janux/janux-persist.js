@@ -5,7 +5,7 @@
 import * as mongoose from 'mongoose';
 
 /*
- * The mongoose schema associated with ExampleUser
+ * The mongoose schema associated with SampleUser
  */
 export const MongooseUserSchemaExample = new mongoose.Schema({
 	id: {

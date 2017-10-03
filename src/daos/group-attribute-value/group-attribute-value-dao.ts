@@ -3,11 +3,11 @@
  * Created by ernesto on 8/28/17.
  */
 import * as Promise from 'bluebird';
-import {DbAdapter} from "../../persistence/api/db-adapters/db-adapter";
-import {AbstractDataAccessObjectWithAdapter} from "../../persistence/implementations/dao/abstract-data-access-object-with-adapter";
-import {EntityPropertiesImpl} from "../../persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "../../persistence/implementations/dao/validation-error";
-import * as logger from '../../util/logger-api/logger-api';
+import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
+import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
+import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import * as logger from 'util/logger-api/logger-api';
 import {GroupAttributeValueValidator} from "./group-atribute-value-validator";
 import {GroupAttributeValueEntity} from "./group-attribute-value";
 

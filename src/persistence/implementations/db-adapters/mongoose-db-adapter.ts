@@ -5,8 +5,8 @@
 import Promise = require("bluebird");
 import {Model} from "mongoose";
 import * as mongoose from "mongoose";
-import * as logger from '../../../util/logger-api/logger-api';
-import {DbAdapter} from "../../api/db-adapters/db-adapter";
+import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
+import * as logger from 'util/logger-api/logger-api';
 import {AttributeFilter} from "../dao/attribute-filter";
 
 /**

@@ -4,7 +4,7 @@
  */
 
 import config = require('config');
-import {DataSourceHandler} from "../../services/datasource-handler/datasource-handler";
+import {DataSourceHandler} from "services/datasource-handler/datasource-handler";
 import {UserGenerator} from "./user-generator";
 
 const serverAppContext: any = config.get("serverAppContext");

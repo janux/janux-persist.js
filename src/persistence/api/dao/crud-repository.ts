@@ -3,7 +3,7 @@
  * Created by ernesto on 6/9/17.
  */
 import Promise = require("bluebird");
-import {AttributeFilter} from "../../implementations/dao/attribute-filter";
+import {AttributeFilter} from "persistence/implementations/dao/attribute-filter";
 import {ReadOnlyRepository} from "./read-only-repository";
 
 /**
