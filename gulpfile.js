@@ -33,13 +33,3 @@ gulp.task('test', ['run-tests']);
 // Generate documentation from typescript project
 //
 gulp.task('doc', ['clean:doc', 'typedoc']);
-
-
-//Init the server and also
-//compile the typescript files and restart the
-//server when the development files are changed
-gulp.task('watch', ['compile'], function () {
-    gulp.watch(gulp.cfg.fileset.filesToWatch, ['compile:fast']);
-});
-
-
