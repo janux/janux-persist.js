@@ -28,6 +28,9 @@ After cloning the project you need to do `npm install` in order to install the d
 
 To compile the project run `gulp`. To see the other tasks available: `gulp -T`.
 
+**Debugging**
+
+You can run `gulp compile-test`. This command generates the sourcemap inside the javascript files.
 
 **Test**
 
@@ -181,6 +184,6 @@ The project for the moment has two IGenericDaoCRUD instances. One for mongodb (M
     carDaoMongoDb.insert(car);
     carDaoLokiJs.insert(car);
 
-**Using janux-persist inside antoher node project.**
+**Using janux-persist inside another node project.**
 
 Make sure the version of bluebird and @types/bluebird of janux-persist are the same in you project. Otherwise the typescript compiler will crash..
