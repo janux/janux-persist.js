@@ -146,21 +146,43 @@ describe("Testing user group service find methods", function () {
 			userGroupService.findAll()
 				.then(function (result) {
 					expect(result.length).eq(2);
-					expect(result[0].code).eq(code);
-					expect(result[0].values.length).eq(2);
-					expect(result[0].values[0].id).eq(insertedUser1.id);
-					expect(result[0].values[0].username).eq(insertedUser1.username);
-					expect(result[0].values[0].password).eq(insertedUser1.password);
-					expect(result[0].values[0].typeName).eq(insertedUser1.typeName);
-					expect(result[0].values[1].id).eq(insertedUser2.id);
-					expect(result[0].values[1].username).eq(insertedUser2.username);
-					expect(result[0].values[1].password).eq(insertedUser2.password);
-					expect(result[0].values[1].typeName).eq(insertedUser2.typeName);
-					expect(result[1].code).eq(code2);
-					expect(result[1].values.length).eq(1);
-					expect(result[1].values[0].id).eq(insertedUser3.id);
-					expect(result[1].values[0].username).eq(insertedUser3.username);
-					expect(result[1].values[0].typeName).eq(insertedUser3.typeName);
+
+					var element0 = _.find(result, function (o) {
+						return o.code === code;
+					});
+
+					var element1 = _.find(result, function (o) {
+						return o.code === code2;
+					});
+
+					expect(element0.code).eq(code);
+					expect(element0.values.length).eq(2);
+
+					var subElement0 = _.find(element0.values, function (o) {
+						return o.id === insertedUser1.id;
+					});
+
+					expect(subElement0.id).eq(insertedUser1.id);
+					expect(subElement0.username).eq(insertedUser1.username);
+					expect(subElement0.password).eq(insertedUser1.password);
+					expect(subElement0.typeName).eq(insertedUser1.typeName);
+
+
+					var subElement1 = _.find(element0.values, function (o) {
+						return o.id === insertedUser2.id;
+					});
+
+					expect(subElement1.id).eq(insertedUser2.id);
+					expect(subElement1.username).eq(insertedUser2.username);
+					expect(subElement1.password).eq(insertedUser2.password);
+					expect(subElement1.typeName).eq(insertedUser2.typeName);
+
+
+					expect(element1.code).eq(code2);
+					expect(element1.values.length).eq(1);
+					expect(element1.values[0].id).eq(insertedUser3.id);
+					expect(element1.values[0].username).eq(insertedUser3.username);
+					expect(element1.values[0].typeName).eq(insertedUser3.typeName);
 					done();
 				})
 		});
@@ -184,13 +206,22 @@ describe("Testing user group service find methods", function () {
 			userGroupService.findByFilter({system: "true"})
 				.then(function (result) {
 					expect(result.length).eq(2);
-					expect(result[0].code).eq(code);
-					expect(result[0].name).eq(name);
-					expect(result[0].values.length).eq(2);
 
-					expect(result[1].code).eq(code2);
-					expect(result[1].name).eq(name2);
-					expect(result[1].values.length).eq(1);
+					var result0 = _.find(result, function (o) {
+						return o.code === code;
+					});
+
+					expect(result0.code).eq(code);
+					expect(result0.name).eq(name);
+					expect(result0.values.length).eq(2);
+
+					var result1 = _.find(result, function (o) {
+						return o.code === code2;
+					});
+
+					expect(result1.code).eq(code2);
+					expect(result1.name).eq(name2);
+					expect(result1.values.length).eq(1);
 					done();
 				})
 		});
