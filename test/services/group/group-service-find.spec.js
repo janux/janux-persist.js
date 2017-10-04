@@ -4,6 +4,7 @@
  */
 
 var chai = require('chai');
+var _ = require('lodash');
 var expect = chai.expect;
 var config = require('config');
 const DaoFactory = require("../../../dist/index").DaoFactory;
@@ -117,12 +118,22 @@ describe("Testing group service find methods", function () {
 				})
 				.then(function (groupProperties) {
 					expect(groupProperties.length).eq(2);
-					expect(groupProperties[0].name).eq(name);
-					expect(groupProperties[1].name).eq(nameB);
-					expect(groupProperties[0].type).eq(type);
-					expect(groupProperties[1].type).eq(type);
-					expect(groupProperties[0].code).eq(code);
-					expect(groupProperties[1].code).eq(codeB);
+
+					var element0 = _.find(groupProperties, function (o) {
+						return o.code === code;
+					});
+
+					var element1 = _.find(groupProperties, function (o) {
+						return o.code === codeB;
+					});
+
+					expect(element0.name).eq(name);
+					expect(element0.type).eq(type);
+					expect(element0.code).eq(code);
+
+					expect(element1.name).eq(nameB);
+					expect(element1.type).eq(type);
+					expect(element1.code).eq(codeB);
 					done();
 				});
 		});
@@ -148,9 +159,22 @@ describe("Testing group service find methods", function () {
 					expect(result.attributes).to.deep.equals(attributes);
 					expect(result.type).eq(type);
 					expect(result.values.length).eq(3);
-					expect(result.values[0]).eq(item1);
-					expect(result.values[1]).eq(item2);
-					expect(result.values[2]).eq(sharedItem);
+
+					var element0 = _.find(result.values, function (o) {
+						return o === item1;
+					});
+
+					var element1 = _.find(result.values, function (o) {
+						return o === item2;
+					});
+
+					var element2 = _.find(result.values, function (o) {
+						return o === sharedItem;
+					});
+
+					expect(element0).eq(item1);
+					expect(element1).eq(item2);
+					expect(element2).eq(sharedItem);
 					done();
 				});
 		});
@@ -213,10 +237,20 @@ describe("Testing group service find methods", function () {
 				})
 				.then(function (groups) {
 					expect(groups.length).eq(2);
-					expect(groups[0].type).eq(type);
-					expect(groups[1].type).eq(type);
-					expect(groups[0].name).eq(name);
-					expect(groups[1].name).eq(nameB);
+
+					var element0 = _.find(groups, function (o) {
+						return o.name === name;
+					});
+
+					var element1 = _.find(groups, function (o) {
+						return o.name === nameB;
+					});
+
+					expect(element0.type).eq(type);
+					expect(element0.name).eq(name);
+
+					expect(element1.type).eq(type);
+					expect(element1.name).eq(nameB);
 					done();
 				});
 		});
@@ -259,8 +293,17 @@ describe("Testing group service find methods", function () {
 				})
 				.then(function (result) {
 					expect(result.length).eq(2);
-					expect(result[0].name).eq(name);
-					expect(result[1].name).eq(nameB);
+
+					var element0 = _.find(result, function (o) {
+						return o.name === name;
+					});
+
+					var element1 = _.find(result, function (o) {
+						return o.name === nameB;
+					});
+
+					expect(element0.name).eq(name);
+					expect(element1.name).eq(nameB);
 					done();
 				})
 		})
