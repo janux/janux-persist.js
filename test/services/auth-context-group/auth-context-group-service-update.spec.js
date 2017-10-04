@@ -5,6 +5,7 @@
 
 var chai = require('chai');
 var expect = chai.expect;
+var _ = require('lodash');
 var config = require('config');
 
 const DaoFactory = require("../../../dist/index").DaoFactory;
@@ -111,8 +112,13 @@ describe("Testing authContext groups service update methods", function () {
 					expect(result.name).eq(name2);
 					expect(result.type).eq(authContextGroupService.AUTHCONTEXT_GROUP_TYPE);
 					expect(result.values.length).eq(2);
-					expect(result.values[0].id).eq(insertedAuthContext1.id);
-					expect(result.values[0].name).eq(insertedAuthContext1.name);
+
+					var element0 = _.find(result.values, function (v) {
+						return v.id === insertedAuthContext1.id;
+					});
+
+					expect(element0.id).eq(insertedAuthContext1.id);
+					expect(element0.name).eq(insertedAuthContext1.name);
 					done();
 				})
 		});
@@ -139,8 +145,13 @@ describe("Testing authContext groups service update methods", function () {
 					expect(updatedGroup.description).eq(description2);
 					expect(updatedGroup.type).eq(authContextGroupService.AUTHCONTEXT_GROUP_TYPE);
 					expect(updatedGroup.values.length).eq(2);
-					expect(updatedGroup.values[1].id).eq(insertedAuthContext2.id);
-					expect(updatedGroup.values[1].name).eq(insertedAuthContext2.name);
+
+					var element1 = _.find(updatedGroup.values, function (v) {
+						return v.id === insertedAuthContext2.id;
+					});
+
+					expect(element1.id).eq(insertedAuthContext2.id);
+					expect(element1.name).eq(insertedAuthContext2.name);
 					return authContextGroupService.findOne(updatedGroup.code);
 				})
 				.then(function (result) {
@@ -148,8 +159,13 @@ describe("Testing authContext groups service update methods", function () {
 					expect(result.description).eq(description2);
 					expect(result.type).eq(authContextGroupService.AUTHCONTEXT_GROUP_TYPE);
 					expect(result.values.length).eq(2);
-					expect(result.values[1].id).eq(insertedAuthContext2.id);
-					expect(result.values[1].name).eq(insertedAuthContext2.name);
+
+					var element1 = _.find(result.values, function (v) {
+						return v.id === insertedAuthContext2.id;
+					});
+
+					expect(element1.id).eq(insertedAuthContext2.id);
+					expect(element1.name).eq(insertedAuthContext2.name);
 					done();
 				});
 		});

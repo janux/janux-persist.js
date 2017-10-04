@@ -4,6 +4,7 @@
  */
 
 var chai = require('chai');
+var _ = require('lodash');
 var expect = chai.expect;
 var config = require('config');
 const DaoFactory = require("../../../dist/index").DaoFactory;
@@ -215,8 +216,17 @@ describe("Testing group service remove methods", function () {
 				})
 				.then(function (resultQuery2) {
 					expect(resultQuery2.values.length).eq(2);
-					expect(resultQuery2.values[0]).eq(item2);
-					expect(resultQuery2.values[1]).eq(item2B);
+
+					var element0 = _.find(resultQuery2.values, function (o) {
+						return o === item2;
+					});
+
+					var element1 = _.find(resultQuery2.values, function (o) {
+						return o === item2B;
+					});
+
+					expect(element0).eq(item2);
+					expect(element1).eq(item2B);
 					done();
 				});
 		})
