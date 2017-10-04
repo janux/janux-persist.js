@@ -51,7 +51,7 @@ describe("Testing user group service find methods", function () {
 		groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 		authContextService = AuthContextService.createInstance(authContextDao);
 		authContextGroupService = new AuthContextGroupService(authContextService, groupService);
-		
+
 		setTimeout(function () {
 			// Delete all records.
 			authContextDao.removeAll()
@@ -130,16 +130,25 @@ describe("Testing user group service find methods", function () {
 			authContextGroupService.findAll()
 				.then(function (result) {
 					expect(result.length).eq(2);
-					expect(result[0].code).eq(code);
-					expect(result[0].values.length).eq(1);
-					expect(result[0].values[0].id).eq(insertedAuthContext1.id);
-					expect(result[0].values[0].name).eq(insertedAuthContext1.name);
-					expect(result[0].values[0].typeName).eq(insertedAuthContext1.typeName);
-					expect(result[1].code).eq(code2);
-					expect(result[1].values.length).eq(1);
-					expect(result[1].values[0].id).eq(insertedAuthContext2.id);
-					expect(result[1].values[0].name).eq(insertedAuthContext2.name);
-					expect(result[1].values[0].typeName).eq(insertedAuthContext2.typeName);
+
+					var element0 = _.find(result, function (o) {
+						return o.code === code;
+					});
+
+					var element1 = _.find(result, function (o) {
+						return o.code === code2;
+					});
+
+					expect(element0.code).eq(code);
+					expect(element0.values.length).eq(1);
+					expect(element0.values[0].id).eq(insertedAuthContext1.id);
+					expect(element0.values[0].name).eq(insertedAuthContext1.name);
+					expect(element0.values[0].typeName).eq(insertedAuthContext1.typeName);
+					expect(element1.code).eq(code2);
+					expect(element1.values.length).eq(1);
+					expect(element1.values[0].id).eq(insertedAuthContext2.id);
+					expect(element1.values[0].name).eq(insertedAuthContext2.name);
+					expect(element1.values[0].typeName).eq(insertedAuthContext2.typeName);
 					done();
 				})
 		});
@@ -163,13 +172,22 @@ describe("Testing user group service find methods", function () {
 			authContextGroupService.findByFilter({system: "true"})
 				.then(function (result) {
 					expect(result.length).eq(2);
-					expect(result[0].code).eq(code);
-					expect(result[0].name).eq(name);
-					expect(result[0].values.length).eq(1);
 
-					expect(result[1].code).eq(code2);
-					expect(result[1].name).eq(name2);
-					expect(result[1].values.length).eq(1);
+					var element0 = _.find(result, function (o) {
+						return o.code === code;
+					});
+
+					var element1 = _.find(result, function (o) {
+						return o.code === code2;
+					});
+
+					expect(element0.code).eq(code);
+					expect(element0.name).eq(name);
+					expect(element0.values.length).eq(1);
+
+					expect(element1.code).eq(code2);
+					expect(element1.name).eq(name2);
+					expect(element1.values.length).eq(1);
 					done();
 				})
 		});
