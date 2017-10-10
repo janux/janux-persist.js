@@ -31,23 +31,24 @@
 		"uuid": "3.0.1"
 	},
 	"devDependencies": {
-		"merge2": "1.0.3",
-		"require-dir": "0.3.1",
-		"tslint": "5.6.0",
-		"typescript": "2.4.2",
-		"del": "3.0.0",
 		"chai": "4.0.2",
-		"mocha": "3.4.2",
-		"typedoc": "0.7.1",
+		"del": "3.0.0",
 		"gulp": "3.9.1",
 		"gulp-concat": "2.6.1",
 		"gulp-mocha": "4.3.1",
+		"gulp-sequence": "^0.4.6",
 		"gulp-sourcemaps": "2.6.0",
 		"gulp-tslint": "8.1.0",
-		"gulp-typescript": "3.1.7",
 		"gulp-typedoc": "2.0.2",
+		"gulp-typescript": "3.1.7",
 		"log4js": "2.3.3",
-		"through2": "2.0.3"
+		"merge2": "1.0.3",
+		"mocha": "3.4.2",
+		"require-dir": "0.3.1",
+		"through2": "2.0.3",
+		"tslint": "5.6.0",
+		"typedoc": "0.7.1",
+		"typescript": "2.4.2"
 	},
 	"author": "Janux",
 	"license": "ISC"
