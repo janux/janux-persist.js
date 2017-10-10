@@ -1,7 +1,8 @@
 /**
- * Project janux-persis
- * Created by ernesto on 10/2/17.
+ * Project janux-persist.js
+ * Created by ernesto on 10/9/17.
  */
+
 var fs = require("fs");
 var path = require("path");
 
@@ -12,11 +13,9 @@ module.exports = function (code, filePath, rootPath, targetPaths, outDir) {
 
 	return lines.map(function (line) {
 		var matches = [];
-		var require_matches = line.match(/require\(('|")(.*)('|")\)/g);
-		// var import_matches = line.match(/import ('|")(.*)('|")/g);
+		var import_matches = line.match(/import.+\sfrom\s".+";/g);
 
-		Array.prototype.push.apply(matches, require_matches);
-		// Array.prototype.push.apply(matches, import_matches);
+		Array.prototype.push.apply(matches, import_matches);
 
 		if (!matches) {
 			return line;
@@ -52,8 +51,6 @@ module.exports = function (code, filePath, rootPath, targetPaths, outDir) {
 			}
 
 		}
-
-
 		return line;
 	}).join("\n");
 };

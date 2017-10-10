@@ -4,19 +4,23 @@
 //
 
 var path = require('path'),
-    ts = require('gulp-typescript'),
-    mocha = require('gulp-mocha'),
-    sourcemaps = require('gulp-sourcemaps'),
-	tsimport = require('./convert/ts-import');
+	ts = require('gulp-typescript'),
+	mocha = require('gulp-mocha'),
+	sourcemaps = require('gulp-sourcemaps'),
+	tsimport = require('./convert/ts-import'),
+	gulpSequence = require('gulp-sequence');
 
 module.exports = function (gulp) {
 
-    var cfg = gulp.cfg;
+	var cfg = gulp.cfg;
+
+
+	gulp.task('compile-test',  gulpSequence('compile-files-test', 'fixDeclarationFilesPath'));
 
 	/**
 	 * Compile with source maps in the js files, useful for debugging.
 	 */
-	gulp.task('compile-test', ['ts-lint'], function (done) {
+	gulp.task('compile-files-test', ['ts-lint'], function (done) {
 
 		var tsProject = ts.createProject('tsconfig.json', {
 			typescript: require('typescript')
@@ -34,8 +38,8 @@ module.exports = function (gulp) {
 			.on("end", done);
 	});
 
-    gulp.task('run-tests', ['ts-lint', 'compile-test'], function () {
-        return gulp.src(cfg.fileset.test, {read: false})
-            .pipe(mocha({reporter: cfg.mocha.reporter}));
-    });
+	gulp.task('run-tests', ['compile-test'], function () {
+		return gulp.src(cfg.fileset.test, {read: false})
+			.pipe(mocha({reporter: cfg.mocha.reporter}));
+	});
 };
