@@ -158,7 +158,6 @@ export class DaoFactory {
 	}
 
 	private static PARTY_DEFAULT_COLLECTION_NAME: string = "contact";
-
 	private static ACCOUNT_DEFAULT_COLLECTION_NAME: string = "account";
 	private static AUTHCONTEXT_DEFAULT_COLLECTION_NAME: string = "authcontext";
 	private static ROLE_DEFAULT_COLLECTION_NAME: string = "role";
@@ -196,8 +195,10 @@ export class DaoFactory {
 		const existingDaos: Dao[] = this.daos.filter((value) => value.dbEngine === dbEngine && value.daoName === daoName && value.dbPath === dbPath);
 		let result: Dao;
 		if (existingDaos.length === 1) {
+			this._log.debug("Returning existing dao");
 			result = existingDaos[0];
 		} else if (existingDaos.length === 0) {
+			this._log.debug("There is no dao");
 			result = undefined;
 		} else {
 			throw  new Error("There is more than one dao with the same features");
