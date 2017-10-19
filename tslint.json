@@ -42,7 +42,8 @@
 			true,
 			"tabs"
 		],
-		"no-empty": false
+		"no-empty": false,
+		"align": false
 	},
 	"rulesDirectory": []
 }
