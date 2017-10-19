@@ -12,6 +12,10 @@ import {EntityProperties} from "persistence/api/dao/entity-properties";
  */
 export class EntityPropertiesImpl implements EntityProperties {
 
+	public static createDefaultProperties(): EntityPropertiesImpl {
+		return new EntityPropertiesImpl(true, true);
+	}
+
 	// If true, then the system generates an unique uuid v4 value.
 	// If the dao implementation has a 'number' id, the system stores the id
 	// as number.
