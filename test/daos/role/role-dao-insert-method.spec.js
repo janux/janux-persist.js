@@ -9,7 +9,7 @@ var config = require('config');
 var util = require('util');
 var Role = require("janux-authorize").Role;
 var AuthorizationContext = require("janux-authorize").AuthorizationContext;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 //Config files
@@ -40,7 +40,7 @@ describe("Testing role dao insertMethod methods", function () {
 				accountAuthContext.addPermissionBit(bitName, util.format('Grants permission to %s a %s', bitName, 'ACCOUNT'));
 			});
 
-			roleDao = DaoFactory.createRoleDao(dbEngine, path);
+			roleDao = DaoUtil.createRoleDao(dbEngine, path);
 			roleDao.removeAll()
 				.then(function () {
 					done();

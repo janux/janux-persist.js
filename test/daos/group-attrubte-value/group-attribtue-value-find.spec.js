@@ -9,7 +9,7 @@ var expect = chai.expect;
 var config = require('config');
 
 var serverAppContext = config.get("serverAppContext");
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../dao-util");
 var GroupAttributeValueEntity = require("../../../dist/index").GroupAttributeValueEntity;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
@@ -32,7 +32,7 @@ describe("Testing group attribute-value dao find methods", function () {
 		var insertedRecord4;
 		beforeEach(function (done) {
 			var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-			dao = DaoFactory.createGroupAttributesDao(dbEngine, path);
+			dao = DaoUtil.createGroupAttributesDao(dbEngine, path);
 			dao.removeAll()
 				.then(function () {
 					var keyValue1 = new GroupAttributeValueEntity();

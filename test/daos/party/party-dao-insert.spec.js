@@ -15,7 +15,7 @@ var PostalAddress = require("janux-people").PostalAddress;
 var PhoneNumber = require("janux-people").PhoneNumber;
 var PersonEntity = require("janux-people").Person;
 var OrganizationEntity = require("janux-people").Organization;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 //Config files
@@ -49,7 +49,7 @@ describe("Testing party dao insertMethod methods", function () {
 		var partyDao;
 		beforeEach(function (done) {
 			var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-			partyDao = DaoFactory.createPartyDao(dbEngine, path)
+			partyDao = DaoUtil.createPartyDao(dbEngine, path)
 			partyDao.removeAll()
 				.then(function () {
 					done()

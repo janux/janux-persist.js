@@ -10,7 +10,7 @@ var UserService = require("../../../dist/index").UserService;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var AccountValidator = require("../../../dist/index").AccountValidator;
 var SampleData = require("../../util/sample-data");
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../../daos/dao-util");
 var serverAppContext = config.get("serverAppContext");
 var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
 var mongoConnUrl = serverAppContext.db.mongoConnUrl;
@@ -29,8 +29,8 @@ describe("Testing user service service insertMethod method", function () {
 		var userService;
 
 		beforeEach(function (done) {
-			partyDao = DaoFactory.createPartyDao(dbEngine, dbPath);
-			accountDao = DaoFactory.createAccountDao(dbEngine, dbPath);
+			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
+			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
 			userService = UserService.createInstance(accountDao, partyDao);
 			setTimeout(function () {
 				accountDao.removeAll()

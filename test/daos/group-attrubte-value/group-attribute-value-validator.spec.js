@@ -6,7 +6,6 @@
 
 var chai = require('chai');
 var expect = chai.expect;
-var config = require('config');
 
 var GroupAttributeValueValidator = require("../../../dist/index").GroupAttributeValueValidator;
 var GroupAttributeValueEntity = require("../../../dist/index").GroupAttributeValueEntity;

@@ -6,7 +6,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var config = require('config');
 var Role = require("janux-authorize").Role;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 //Config files
@@ -29,7 +29,7 @@ describe("Testing role dao find methods", function () {
 			var roleDao;
 			beforeEach(function (done) {
 				var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-				roleDao = DaoFactory.createRoleDao(dbEngine, path);
+				roleDao = DaoUtil.createRoleDao(dbEngine, path);
 				roleDao.removeAll()
 					.then(function () {
 						var role1 = Role.createInstance(ROLE_NAME, ROLE_DESCR);

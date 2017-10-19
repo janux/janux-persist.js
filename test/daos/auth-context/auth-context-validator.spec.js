@@ -6,7 +6,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var config = require('config');
 //Config files
-var serverAppContext = config.get("serverAppContext");
 var AuthContextValidator = require("../../../dist/index").AuthContextValidator;
 var AuthorizationContext = require("janux-authorize").AuthorizationContext;
 

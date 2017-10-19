@@ -6,7 +6,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var config = require('config');
 var AccountEntity = require("../../../dist/index").AccountEntity;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 //Config files
 var serverAppContext = config.get("serverAppContext");
@@ -31,7 +31,7 @@ describe("Testing account dao delete methods", function () {
 				var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
 				//We need to wait for lokijs to be property initialized. I know it is a ugly hack,
 				// but the alternative is to make promises for each method in DaoFactory and dataSource.
-				accountDao = DaoFactory.createAccountDao(dbEngine, path);
+				accountDao = DaoUtil.createAccountDao(dbEngine, path);
 				setTimeout(function () {
 					var account1 = new AccountEntity();
 					account1.username = username;

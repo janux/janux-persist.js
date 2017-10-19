@@ -9,7 +9,7 @@ var _ = require('lodash');
 var expect = chai.expect;
 var config = require('config');
 
-const DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../../daos/dao-util");
 const DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 const AuthContextGroupService = require("../../../dist/index").AuthContextGroupServiceImpl;
 const GroupService = require("../../../dist/index").GroupServiceImpl;
@@ -44,10 +44,10 @@ describe("Testing user group service find methods", function () {
 	var insertedAuthContext2;
 
 	beforeEach(function (done) {
-		authContextDao = DaoFactory.createAuthContextDao(dbEngine, path);
-		groupContentDao = DaoFactory.createGroupContentDao(dbEngine, path);
-		groupDao = DaoFactory.createGroupDao(dbEngine, path);
-		groupAttributeValueDao = DaoFactory.createGroupAttributesDao(dbEngine, path);
+		authContextDao = DaoUtil.createAuthContextDao(dbEngine, path);
+		groupContentDao = DaoUtil.createGroupContentDao(dbEngine, path);
+		groupDao = DaoUtil.createGroupDao(dbEngine, path);
+		groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, path);
 		groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 		authContextService = AuthContextService.createInstance(authContextDao);
 		authContextGroupService = new AuthContextGroupService(authContextService, groupService);

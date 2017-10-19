@@ -7,7 +7,7 @@ var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
 var Role = require("janux-authorize").Role;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 const ROLE_NAME = 'HUMAN_RESOURCES_MANAGER';
@@ -29,8 +29,8 @@ describe("Testing role dao update methods", function () {
 
 			beforeEach(function (done) {
 				var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-				roleDao = DaoFactory.createRoleDao(dbEngine, path);
-				
+				roleDao = DaoUtil.createRoleDao(dbEngine, path);
+
 				roleDao.removeAll()
 					.then(function () {
 						var role1 = Role.createInstance(ROLE_NAME, ROLE_DESCR);

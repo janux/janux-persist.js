@@ -9,7 +9,7 @@ var config = require('config');
 var AuthContextService = require("../../../dist/index").AuthContextService;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var AuthContextValidator = require("../../../dist/index").AuthContextValidator;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../../daos/dao-util");
 var authContextSample = require('./auth-context.json');
 var serverAppContext = config.get("serverAppContext");
 var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
@@ -26,7 +26,7 @@ describe("Testing authorization context service insert method", function () {
 	var authContextService;
 
 	beforeEach(function (done) {
-		authContextDao = DaoFactory.createAuthContextDao(dbEngine, dbPath);
+		authContextDao = DaoUtil.createAuthContextDao(dbEngine, dbPath);
 		authContextService = AuthContextService.createInstance(authContextDao);
 		authContextDao.removeAll()
 			.then(function () {

@@ -7,14 +7,10 @@ var expect = chai.expect;
 var config = require('config');
 var AuthorizationContext = require("janux-authorize").AuthorizationContext;
 var AuthContextService = require("../../../dist/index").AuthContextService;
-var AuthContextValidator = require("../../../dist/index").AuthContextValidator;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../../daos/dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var serverAppContext = config.get("serverAppContext");
-var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
-var mongoConnUrl = serverAppContext.db.mongoConnUrl;
 var dbEngine = serverAppContext.db.dbEngine;
-var dbPath = dbEngine === DataSourceHandler.LOKIJS ? lokiJsDBPath : mongoConnUrl;
 
 const name = 'PERSON';
 const name2 = 'WIDGET';
@@ -33,7 +29,7 @@ describe("Testing authorization context service find methods", function () {
 
 		beforeEach(function (done) {
 			var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-			authContextDao = DaoFactory.createAuthContextDao(dbEngine, path);
+			authContextDao = DaoUtil.createAuthContextDao(dbEngine, path);
 			authContextService = AuthContextService.createInstance(authContextDao);
 
 			authContextDao.removeAll()

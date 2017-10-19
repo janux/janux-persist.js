@@ -9,7 +9,7 @@ var config = require('config');
 var RoleService = require("../../../dist/index").RoleService;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var RoleValidator = require("../../../dist/index").RoleValidator;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../../daos/dao-util");
 var roleSample = require('./role.json');
 var serverAppContext = config.get("serverAppContext");
 var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
@@ -26,7 +26,7 @@ describe("Testing role service insert method", function () {
 	var roleService;
 
 	beforeEach(function (done) {
-		roleDao = DaoFactory.createRoleDao(dbEngine, dbPath);
+		roleDao = DaoUtil.createRoleDao(dbEngine, dbPath);
 		roleService = RoleService.createInstance(roleDao);
 		roleDao.removeAll()
 			.then(function () {

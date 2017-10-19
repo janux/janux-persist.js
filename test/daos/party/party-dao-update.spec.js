@@ -6,15 +6,13 @@ var chai = require('chai');
 var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
-var lokijs = require('lokijs');
-var mongoose = require('mongoose');
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
 var PhoneNumber = require("janux-people").PhoneNumber;
 var PersonEntity = require("janux-people").Person;
 var OrganizationEntity = require("janux-people").Organization;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 //Config files
@@ -52,7 +50,7 @@ describe("Testing party dao updateMethod methods", function () {
 			var partyDao;
 			beforeEach(function (done) {
 				var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-				partyDao = DaoFactory.createPartyDao(dbEngine, path)
+				partyDao = DaoUtil.createPartyDao(dbEngine, path)
 				partyDao.removeAll()
 					.then(function () {
 						var organization = new OrganizationEntity();
