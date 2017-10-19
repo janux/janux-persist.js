@@ -6,7 +6,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var config = require('config');
 //Config files
-var serverAppContext = config.get("serverAppContext");
 var AccountValidator = require("../../../dist/index").AccountValidator;
 var AccountEntity = require("../../../dist/index").AccountEntity;
 

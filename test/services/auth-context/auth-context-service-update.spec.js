@@ -7,7 +7,7 @@ var expect = chai.expect;
 var config = require('config');
 var AuthorizationContext = require("janux-authorize").AuthorizationContext;
 var AuthContextService = require("../../../dist/index").AuthContextService;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../../daos/dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var serverAppContext = config.get("serverAppContext");
 var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
@@ -28,7 +28,7 @@ describe("Testing authorization context service update method", function () {
 	var authContextService;
 
 	beforeEach(function (done) {
-		authContextDao = DaoFactory.createAuthContextDao(dbEngine, dbPath);
+		authContextDao = DaoUtil.createAuthContextDao(dbEngine, dbPath);
 		authContextService = AuthContextService.createInstance(authContextDao);
 
 		// Wait for lokijs to initialize

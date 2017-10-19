@@ -6,7 +6,7 @@
 var chai = require('chai');
 var expect = chai.expect;
 var config = require('config');
-const DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../../daos/dao-util");
 const SampleData = require("../../util/sample-data");
 const DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 const UserGroupService = require("../../../dist/index").UserGroupServiceImpl;
@@ -40,11 +40,11 @@ describe("Testing user groups service update methods", function () {
 	var insertedUser2;
 	var insertedUser3;
 	beforeEach(function (done) {
-		accountDao = DaoFactory.createAccountDao(dbEngine, path);
-		partyDao = DaoFactory.createPartyDao(dbEngine, path);
-		groupContentDao = DaoFactory.createGroupContentDao(dbEngine, path);
-		groupDao = DaoFactory.createGroupDao(dbEngine, path);
-		groupAttributeValueDao = DaoFactory.createGroupAttributesDao(dbEngine, path);
+		accountDao = DaoUtil.createAccountDao(dbEngine, path);
+		partyDao = DaoUtil.createPartyDao(dbEngine, path);
+		groupContentDao = DaoUtil.createGroupContentDao(dbEngine, path);
+		groupDao = DaoUtil.createGroupDao(dbEngine, path);
+		groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, path);
 		groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 		userService = UserService.createInstance(accountDao, partyDao);
 		userGroupService = new UserGroupService(userService, groupService);

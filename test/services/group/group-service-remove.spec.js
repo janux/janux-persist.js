@@ -7,7 +7,7 @@ var chai = require('chai');
 var _ = require('lodash');
 var expect = chai.expect;
 var config = require('config');
-const DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../../daos/dao-util");
 const DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 const GroupService = require("../../../dist/index").GroupServiceImpl;
 const Group = require("../../../dist/index").GroupImpl;
@@ -41,9 +41,9 @@ describe("Testing group service remove methods", function () {
 
 	beforeEach("Cleaning data and define daos", function (done) {
 
-		groupContentDao = DaoFactory.createGroupContentDao(dbEngine, path);
-		groupDao = DaoFactory.createGroupDao(dbEngine, path);
-		groupAttributeValueDao = DaoFactory.createGroupAttributesDao(dbEngine, path);
+		groupContentDao = DaoUtil.createGroupContentDao(dbEngine, path);
+		groupDao = DaoUtil.createGroupDao(dbEngine, path);
+		groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, path);
 		groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 		setTimeout(function () {
 			groupContentDao.removeAll()

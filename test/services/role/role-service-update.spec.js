@@ -7,7 +7,7 @@ var expect = chai.expect;
 var config = require('config');
 var Role = require("janux-authorize").Role;
 var RoleService = require("../../../dist/index").RoleService;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../../daos/dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var serverAppContext = config.get("serverAppContext");
 var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
@@ -28,7 +28,7 @@ describe("Testing role service update method", function () {
 	var roleService;
 
 	beforeEach(function (done) {
-		roleDao = DaoFactory.createRoleDao(dbEngine, dbPath);
+		roleDao = DaoUtil.createRoleDao(dbEngine, dbPath);
 		roleService = RoleService.createInstance(roleDao);
 
 		// Wait for lokijs to initialize

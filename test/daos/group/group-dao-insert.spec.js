@@ -8,7 +8,7 @@ var assert = chai.assert;
 var config = require('config');
 
 
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../dao-util");
 var GroupEntity = require("../../../dist/index").GroupEntity;
 var GroupValidator = require("../../../dist/index").GroupValidator;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
@@ -31,7 +31,7 @@ describe("Testing group dao insert methods", function () {
 
 		beforeEach(function (done) {
 			var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-			groupDao = DaoFactory.createGroupDao(dbEngine, path);
+			groupDao = DaoUtil.createGroupDao(dbEngine, path);
 			groupDao.removeAll()
 				.then(function () {
 					done();

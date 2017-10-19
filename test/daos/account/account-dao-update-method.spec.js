@@ -7,7 +7,7 @@ var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
 var AccountEntity = require("../../../dist/index").AccountEntity;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 const username = "username";
@@ -32,7 +32,7 @@ describe("Testing user dao updateMethod methods", function () {
 
 			beforeEach(function (done) {
 				var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-				accountDao = DaoFactory.createAccountDao(dbEngine, path);
+				accountDao = DaoUtil.createAccountDao(dbEngine, path);
 				accountDao.removeAll()
 					.then(function () {
 						var account1 = new AccountEntity();

@@ -7,7 +7,7 @@ var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
 var AuthorizationContext = require("janux-authorize").AuthorizationContext;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 //Config files
@@ -27,7 +27,7 @@ describe("Testing authorization context dao insertMethod methods", function () {
 		beforeEach(function (done) {
 			var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
 
-			authContextDao = DaoFactory.createAuthContextDao(dbEngine, path);
+			authContextDao = DaoUtil.createAuthContextDao(dbEngine, path);
 			authContextDao.removeAll()
 				.then(function () {
 					done();
@@ -96,7 +96,7 @@ describe("Testing authorization context dao insertMethod methods", function () {
 					});
 			});
 		});
-		
+
 		describe("When inserting many records", function () {
 			it("The method should have inserted the records", function (done) {
 

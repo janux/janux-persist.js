@@ -7,7 +7,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var config = require('config');
 var AuthorizationContext = require("janux-authorize").AuthorizationContext;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 //Config files
 var serverAppContext = config.get("serverAppContext");
@@ -28,7 +28,7 @@ describe("Testing authorization context dao delete methods", function () {
 			beforeEach(function (done) {
 				var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
 
-				authContextDao = DaoFactory.createAuthContextDao(dbEngine, path);
+				authContextDao = DaoUtil.createAuthContextDao(dbEngine, path);
 
 				// Wait for lokijs to initialize
 				setTimeout(function () {

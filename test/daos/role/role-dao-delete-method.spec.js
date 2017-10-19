@@ -7,7 +7,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var config = require('config');
 var Role = require("janux-authorize").Role;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../../daos/dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 //Config files
 var serverAppContext = config.get("serverAppContext");
@@ -16,7 +16,6 @@ const ROLE_NAME = 'HUMAN_RESOURCES_MANAGER';
 const ROLE_DESCR = 'Can view, modify, create and delete personnel records';
 const ROLE_NAME2 = 'ANOTHER_ROLE';
 const ROLE_DESCR2 = 'Another role in the system';
-const description2 =  'Widget that we want to track in our system';
 
 describe("Testing role dao delete methods", function () {
 
@@ -29,7 +28,7 @@ describe("Testing role dao delete methods", function () {
 			beforeEach(function (done) {
 				var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
 
-				roleDao = DaoFactory.createRoleDao(dbEngine, path);
+				roleDao = DaoUtil.createRoleDao(dbEngine, path);
 
 				// Wait for lokijs to initialize
 				setTimeout(function () {

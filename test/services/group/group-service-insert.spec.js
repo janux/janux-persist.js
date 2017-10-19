@@ -6,7 +6,7 @@
 var chai = require('chai');
 var expect = chai.expect;
 var config = require('config');
-const DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../../daos/dao-util");
 const DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 const GroupServiceValidator = require("../../../dist/index").GroupServiceValidator;
 const GroupContentValidator = require("../../../dist/index").GroupContentValidator;
@@ -36,9 +36,9 @@ describe("Testing group service insert methods", function () {
 
 	beforeEach(function (done) {
 
-		groupContentDao = DaoFactory.createGroupContentDao(dbEngine, path);
-		groupDao = DaoFactory.createGroupDao(dbEngine, path);
-		groupAttributeValueDao = DaoFactory.createGroupAttributesDao(dbEngine, path);
+		groupContentDao = DaoUtil.createGroupContentDao(dbEngine, path);
+		groupDao = DaoUtil.createGroupDao(dbEngine, path);
+		groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, path);
 		groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 		setTimeout(function () {
 			groupContentDao.removeAll()

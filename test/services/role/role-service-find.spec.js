@@ -7,14 +7,10 @@ var expect = chai.expect;
 var config = require('config');
 var Role = require("janux-authorize").Role;
 var RoleService = require("../../../dist/index").RoleService;
-var RoleValidator = require("../../../dist/index").RoleValidator;
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../../daos/dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var serverAppContext = config.get("serverAppContext");
-var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
-var mongoConnUrl = serverAppContext.db.mongoConnUrl;
 var dbEngine = serverAppContext.db.dbEngine;
-var dbPath = dbEngine === DataSourceHandler.LOKIJS ? lokiJsDBPath : mongoConnUrl;
 
 const ROLE_NAME = 'HUMAN_RESOURCES_MANAGER';
 const ROLE_DESCR = 'Can view, modify, create and delete personnel records';
@@ -33,7 +29,7 @@ describe("Testing role service find methods", function () {
 
 		beforeEach(function (done) {
 			var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-			roleDao = DaoFactory.createRoleDao(dbEngine, path);
+			roleDao = DaoUtil.createRoleDao(dbEngine, path);
 			roleService = RoleService.createInstance(roleDao);
 
 			roleDao.removeAll()

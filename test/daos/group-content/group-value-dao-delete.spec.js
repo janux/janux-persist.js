@@ -9,7 +9,7 @@ var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
 
-var DaoFactory = require("../../../dist/index").DaoFactory;
+var DaoUtil = require("../dao-util");
 var GroupValueEntity = require("../../../dist/index").GroupContentEntity;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
@@ -27,7 +27,7 @@ describe("Testing group value dao delete methods", function () {
 		var insertedRecord2;
 		beforeEach(function (done) {
 			var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-			groupValueDao = DaoFactory.createGroupContentDao(dbEngine, path);
+			groupValueDao = DaoUtil.createGroupContentDao(dbEngine, path);
 			groupValueDao.removeAll()
 				.then(function () {
 					var groupValue = new GroupValueEntity();
