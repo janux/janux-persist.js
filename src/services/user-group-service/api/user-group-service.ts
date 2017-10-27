@@ -5,8 +5,8 @@
 
 import Promise = require("bluebird");
 import JanuxPeople = require("janux-people");
-import {GroupImpl} from "services/group-module/impl/group";
-import {GroupPropertiesImpl} from "services/group-module/impl/group-properties";
+import {Group} from "services/group-module/api/group";
+import {GroupProperties} from "services/group-module/api/group-properties";
 
 export interface UserGroupService {
 
@@ -17,7 +17,7 @@ export interface UserGroupService {
 	 * Return all group properties.
 	 * @return {Bluebird<GroupPropertiesImpl[]>}
 	 */
-	findGroupProperties(): Promise<GroupPropertiesImpl[]>;
+	findGroupProperties(): Promise<GroupProperties[]>;
 
 	/**
 	 * Find all groups ( not content ) that belong to the user.
@@ -25,7 +25,7 @@ export interface UserGroupService {
 	 * @param {JanuxPeople.Person | JanuxPeople.Organization} user
 	 * @return {Bluebird<GroupPropertiesImpl[]>}
 	 */
-	findPropertiesByTypeAndItem(type: string, user: any): Promise<GroupPropertiesImpl[]>;
+	findPropertiesByTypeAndItem(type: string, user: any): Promise<GroupProperties[]>;
 
 	/**
 	 * Find one group
@@ -33,13 +33,13 @@ export interface UserGroupService {
 	 * @return {Bluebird<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>}
 	 * Return the group or null if there is no group given the code.
 	 */
-	findOne(code: string): Promise<GroupImpl<any>>;
+	findOne(code: string): Promise<Group<any>>;
 
 	/**
 	 * Return all groups (including content) of all groups of the users type.
 	 * @return {Bluebird<Array<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>>}
 	 */
-	findAll(): Promise<Array<GroupImpl<any>>>;
+	findAll(): Promise<Array<Group<any>>>;
 
 	/**
 	 * Inserts a new group.
@@ -48,7 +48,7 @@ export interface UserGroupService {
 	 * there is another group with the same code. Returns a reject if the content of the groups
 	 * has duplicated values or any of the  users does not exists in the database.
 	 */
-	insert(group: GroupImpl<any>): Promise<GroupImpl<any>>;
+	insert(group: Group<any>): Promise<Group<any>>;
 
 	/**
 	 * Updates a group and it's values.
@@ -57,7 +57,7 @@ export interface UserGroupService {
 	 * Returns a reject if the content of the groups has duplicated values.
 	 * Returns a reject if the content of the groups has duplicated values or any of the  users does not exists in the database.
 	 */
-	update(group: GroupImpl<any>): Promise<GroupImpl<any>>;
+	update(group: Group<any>): Promise<Group<any>>;
 
 	/**
 	 * Delete group.
@@ -94,5 +94,5 @@ export interface UserGroupService {
 	 * @return {Bluebird<Group[]>} Return a list of groups. Returns an empty array if there is no group that qualifies
 	 * with the type and filter.
 	 */
-	findByFilter(filter: { [p: string]: string }): Promise<Array<GroupImpl<any>>>;
+	findByFilter(filter: { [p: string]: string }): Promise<Array<Group<any>>>;
 }

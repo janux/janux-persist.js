@@ -76,5 +76,8 @@ export * from "./services/datasource-handler/datasource-status";
 export * from "./services/group-module/impl/group";
 export * from "./services/group-module/impl/group-service";
 export * from "./services/group-module/impl/group-service-validator";
+export * from "./services/group-module/api/group";
+export * from "./services/group-module/api/group-service";
+export * from "./services/group-module/api/group-properties";
 export * from "./services/user-group-service/impl/user-group-service";
 export * from "./util/blank-string-validator";
