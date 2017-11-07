@@ -41,15 +41,15 @@ export class DataSource {
 	}
 
 	private connectToMongodb(): DataSource {
-		this.log.debug("Call to connectToMongodb with url %j", this.path);
+		this.log.debug("Call to connectToMongodb with url", this.path);
 		const conn: mongoose.Connection = mongoose.createConnection(this.path);
 		this.dbConnection = conn;
 		conn.on("error", (err) => {
-			this.log.error("Error connecting to mongodb %j \n %j", this.path, err);
+			this.log.error("Error connecting to mongodb \n %j", this.path, err);
 			throw  new Error("Error connecting to mongodb database");
 		});
 		conn.once("open", () => {
-			this.log.info("Connection to mongodb database %j successful", this.path);
+			this.log.info("Connection to mongodb database successful", this.path);
 			this.status = DataSourceStatus.CONNECTED;
 		});
 		return this;
