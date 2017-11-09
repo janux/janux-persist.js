@@ -4,7 +4,6 @@
  */
 
 import * as Promise from "bluebird";
-import {PartyDao} from "daos/party/party-dao";
 import {PartyValidator} from "daos/party/party-validator";
 import {AccountDao} from "daos/user/account-dao";
 import {AccountEntity} from "daos/user/account-entity";
@@ -12,6 +11,7 @@ import {AccountValidator} from "daos/user/account-validator";
 import JanuxPeople = require("janux-people");
 import * as _ from 'lodash';
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {PartyService} from "services/party/api/party-service";
 import {isBlankString} from "util/blank-string-validator";
 import * as logger from 'util/logger-api/logger-api';
 import * as uuid from 'uuid';
@@ -20,8 +20,8 @@ import * as uuid from 'uuid';
  * This class has basic user service methods.
  */
 export class UserService {
-	public static createInstance(accountDao: AccountDao, partyDao: PartyDao) {
-		return this._instance || (this._instance = new this(accountDao, partyDao));
+	public static createInstance(accountDao: AccountDao, partyService: PartyService) {
+		return this._instance || (this._instance = new this(accountDao, partyService));
 	}
 
 	private static _instance: UserService;
@@ -34,11 +34,11 @@ export class UserService {
 	private _log = logger.getLogger("UserService");
 	private ID_REFERENCE: string = "id";
 	private accountDao: AccountDao;
-	private partyDao: PartyDao;
+	private partyService: PartyService;
 
-	private constructor(accountDao: AccountDao, partyDao: PartyDao) {
+	private constructor(accountDao: AccountDao, partyService: PartyService) {
 		this.accountDao = accountDao;
-		this.partyDao = partyDao;
+		this.partyService = partyService;
 	}
 
 	/**
@@ -52,7 +52,7 @@ export class UserService {
 		return this.accountDao.findOneByUserId(userId)
 			.then((resultQuery: AccountEntity) => {
 				user = resultQuery;
-				return this.partyDao.removeById(user.contactId);
+				return this.partyService.remove(user.contactId);
 			})
 			.then(() => {
 				return this.accountDao.remove(user);
@@ -96,7 +96,7 @@ export class UserService {
 	/**
 	 * Find one user by its id.
 	 * @param {string} id
-	 * @return {Bluebird<any>}
+	 * @return {Promise<any>}
 	 */
 	public findOneById(id: string): Promise<any> {
 		this._log.debug("Call to findOneById with id: %j", id);
@@ -108,7 +108,7 @@ export class UserService {
 					return Promise.reject("No user with the id " + id);
 				}
 				result = user;
-				return this.partyDao.findOne(user.contactId);
+				return this.partyService.findOne(user.contactId);
 			})
 			.then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
 				result.contact = contact.toJSON();
@@ -131,7 +131,7 @@ export class UserService {
 			.then((user: AccountEntity) => {
 				if (_.isNil(user)) return Promise.reject("No user with the id " + id);
 				result = user;
-				return this.partyDao.findOne(user.contactId);
+				return this.partyService.findOne(user.contactId);
 			})
 			.then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
 				result.contact = contact.toJSON();
@@ -154,7 +154,7 @@ export class UserService {
 			.then((user: AccountEntity) => {
 				if (_.isNil(user)) return Promise.reject("No user with the username " + username);
 				result = user;
-				return this.partyDao.findOne(user.contactId);
+				return this.partyService.findOne(user.contactId);
 			})
 			.then((contact: JanuxPeople.Person | JanuxPeople.Organization[]) => {
 				result.contact = contact.toJSON();
@@ -185,7 +185,7 @@ export class UserService {
 	 */
 	public findAllByContactNameMatch(name: string): Promise<any[]> {
 		this._log.debug("Call to findByContactNameContaining with name %j", name);
-		return this.partyDao.findByName(name)
+		return this.partyService.findByName(name)
 			.then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
 				return this.populateUserData(resultQuery);
 			});
@@ -193,7 +193,7 @@ export class UserService {
 
 	public findAllByEmail(email: string): Promise<any[]> {
 		this._log.debug("Call to findByEmail with email %j", email);
-		return this.partyDao.findByEmail(email)
+		return this.partyService.findByEmail(email)
 			.then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
 				return this.populateUserData(resultQuery);
 			});
@@ -201,7 +201,7 @@ export class UserService {
 
 	public findAllByPhone(phone: string): Promise<any[]> {
 		this._log.debug("Call to findByPhone with email %j", phone);
-		return this.partyDao.findByPhone(phone)
+		return this.partyService.findByPhone(phone)
 			.then((resultQuery: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
 				return this.populateUserData(resultQuery);
 			});
@@ -257,7 +257,7 @@ export class UserService {
 	/**
 	 * Update the account data. Just updateMethod the account info and the associated roles.
 	 * One difference with insertMethod is the updateMethod will not updateMethod the contact data.
-	 * Instead one must use partyDao.updateMethod().
+	 * Instead one must use partyService.updateMethod().
 	 * @param object The account to be updated.
 	 */
 	public update(object: any): Promise<any> {
@@ -298,7 +298,7 @@ export class UserService {
 					objectToUpdate = JanuxPeople.Organization.fromJSON(contact);
 				}
 				objectToUpdate.id = contact.id;
-				return this.partyDao.update(objectToUpdate);
+				return this.partyService.update(objectToUpdate);
 			})
 			.then((updatedParty: any) => {
 				result.contact = updatedParty.toJSON();
@@ -324,7 +324,7 @@ export class UserService {
 		this._log.debug("Call to populateContactData with users: %j", users);
 		let result: any = users;
 		const contactIds = users.map((value) => value.contactId);
-		return this.partyDao.findByIds(contactIds)
+		return this.partyService.findByIds(contactIds)
 			.then((contacts: JanuxPeople.Person[] | JanuxPeople.Organization[]) => {
 				result = this.mixData(result, contacts);
 				this._log.debug("populateContactData : returning %j", result);
@@ -365,13 +365,13 @@ export class UserService {
 			if (_.isString(party.typeName) && party.typeName === PartyValidator.PERSON) {
 				person = JanuxPeople.Person.fromJSON(party);
 				this._log.debug("Inserting the person %j", person);
-				return this.partyDao.insert(person);
+				return this.partyService.insert(person);
 			} else if (_.isString(party.typeName) && party.typeName === PartyValidator.ORGANIZATION) {
 				// Itś an organization
 				organization = JanuxPeople.Organization.fromJSON(party);
 				// Insert the organization.
 				this._log.debug("Inserting the organization %j", organization);
-				return this.partyDao.insert(organization);
+				return this.partyService.insert(organization);
 			} else {
 				this._log.warn("No correct party type, returning a reject");
 				// No party type, sending an error.
@@ -384,7 +384,7 @@ export class UserService {
 			this._log.debug("The account to insertMethod has a contact id");
 			let referenceObject: JanuxPeople.Person | JanuxPeople.Organization;
 			// Look for if there is a party with the same id
-			return this.partyDao.findOne(party.id)
+			return this.partyService.findOne(party.id)
 				.then((resultQueryParty: JanuxPeople.Person | JanuxPeople.Organization) => {
 					if (_.isNull(resultQueryParty)) {
 						this._log.warn("The id %j does not exist in the database", party.id);

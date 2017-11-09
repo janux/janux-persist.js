@@ -22,7 +22,7 @@ export class GroupAttributeValueDao extends AbstractDataAccessObjectWithAdapter<
 	/**
 	 * Find all attributes that belongs to a group.
 	 * @param {string} idGroup
-	 * @return {Bluebird<GroupAttributeValueEntity[]>}
+	 * @return {Promise<GroupAttributeValueEntity[]>}
 	 */
 	public findByIdGroup(idGroup: string): Promise<GroupAttributeValueEntity[]> {
 		return this.findByAttribute("idGroup", idGroup);
@@ -31,7 +31,7 @@ export class GroupAttributeValueDao extends AbstractDataAccessObjectWithAdapter<
 	/**
 	 * Find all attributes that belongs to several groups.
 	 * @param {string[]} idGroups
-	 * @return {Bluebird<GroupAttributeValueEntity[]>}
+	 * @return {Promise<GroupAttributeValueEntity[]>}
 	 */
 	public findByIdsGroupIn(idGroups: string[]): Promise<GroupAttributeValueEntity[]> {
 		return this.findByAttributeNameIn("idGroup", idGroups);
@@ -41,7 +41,7 @@ export class GroupAttributeValueDao extends AbstractDataAccessObjectWithAdapter<
 	 * Find all record with the same idGroup and key.
 	 * @param {string} idGroup
 	 * @param {string} key
-	 * @return {Bluebird<GroupAttributeValueEntity[]>}
+	 * @return {Promise<GroupAttributeValueEntity[]>}
 	 */
 	public findByIdGroupAndKey(idGroup: string, key: string): Promise<GroupAttributeValueEntity[]> {
 		this.log.debug("Call to findByIdGroupAndKey with idGroup %j , key: %j", idGroup, key);

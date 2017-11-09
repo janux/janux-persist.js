@@ -39,7 +39,7 @@ export class PartyValidator {
 	 * @param party
 	 * @return {ValidationErrorImpl[]} A list of errors. If the record is valid. The the method returns an empty array.
 	 */
-	public static validateParty(party: JanuxPeople.Person | JanuxPeople.Organization): ValidationErrorImpl[] {
+	public static validateParty(party: JanuxPeople.PartyAbstract): ValidationErrorImpl[] {
 		this._log.debug("Call to validateParty with party: %j", party);
 		let errors: ValidationErrorImpl[] = [];
 		if (isBlankString(party.typeName)) {
@@ -76,7 +76,7 @@ export class PartyValidator {
 	 * @param reference
 	 * @return {ValidationErrorImpl[]}
 	 */
-	public static validateDuplicatedRecords(resultQuery: JanuxPeople.Person | JanuxPeople.Organization[], emailAddressesToLookFor: string[], reference: JanuxPeople.Person | JanuxPeople.Organization): ValidationErrorImpl[] {
+	public static validateDuplicatedRecords(resultQuery: JanuxPeople.PartyAbstract[], emailAddressesToLookFor: string[], reference: JanuxPeople.PartyAbstract): ValidationErrorImpl[] {
 		this._log.debug(
 			"Call to validateDuplicatedRecords with resultQuery: %j  emailAddressesToLookFor: %j reference : %j",
 			resultQuery,
@@ -148,7 +148,7 @@ export class PartyValidator {
 	 * @param party
 	 * @return {ValidationErrorImpl[]} A list of errors. If the record is valid. The the method returns an empty array.
 	 */
-	private static validateContactData(party: JanuxPeople.Person | JanuxPeople.Organization) {
+	private static validateContactData(party: JanuxPeople.PartyAbstract) {
 		const errors: ValidationErrorImpl[] = [];
 		// Check there is at least one primary email
 		/*if (_.isArray(party.emailAddresses) === false || party.emailAddresses.length === 0) {

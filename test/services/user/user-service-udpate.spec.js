@@ -6,6 +6,7 @@ var chai = require('chai');
 var config = require('config');
 var DaoUtil = require("../../daos/dao-util");
 var UserService = require("../../../dist/index").UserService;
+var PartyService = require("../../../dist/index").PartyServiceImpl;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var serverAppContext = config.get("serverAppContext");
 var EmailAddress = require("janux-people").EmailAddress;
@@ -56,13 +57,14 @@ describe("Testing auth context service updateMethod method", function () {
 		var userService;
 		var insertedUser1;
 		var insertedUser2;
-
+		var partyService;
 
 		beforeEach(function (done) {
 
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
-			userService = UserService.createInstance(accountDao, partyDao);
+			partyService = new PartyService(partyDao);
+			userService = UserService.createInstance(accountDao, partyService);
 			accountDao.removeAll()
 				.then(function () {
 					return partyDao.removeAll();

@@ -16,7 +16,7 @@ import {PartyValidator} from "./party-validator";
  * This is the base class of the partyDao. In this class we define the object we are going to use
  *  is JanuxPeople.Person or JanuxPeople.Organization.
  */
-export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<JanuxPeople.Person | JanuxPeople.Organization, string> {
+export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<JanuxPeople.PartyAbstract, string> {
 
 	private partyDaoLogger = logger.getLogger("PartyDao");
 
@@ -30,60 +30,57 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 	 * @param name The name to look for.
 	 * @return A list of parties that matches with the name.
 	 */
-	public abstract findByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]>;
+	public abstract findByName(name: string): Promise<JanuxPeople.PartyAbstract[]>;
 
 	/**
 	 * Find all records that has the email address.
-	 * @param email The email address to look for.
-	 * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} A list of parties that matches with the name.
+	 * @param {string} email
+	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
 	 */
-	public findByEmail(email: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+	public findByEmail(email: string): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.findByAttribute("emails.address", email);
 	}
 
 	/**
 	 * Find all records that hast the phone number.
-	 * @param phone The phone number to look for.
-	 * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} A list of parties that matches with the
-	 * criteria.
+	 * @param {string} phone
+	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
 	 */
-	public findByPhone(phone: string) {
+	public findByPhone(phone: string): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.findByAttribute("phones.number", phone);
 	}
 
 	/**
 	 * Find all people
-	 * @return {Promise<any[]>} The records
+	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
 	 */
-	public findPeople(): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+	public findPeople(): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.findByAttribute("typeName", PartyValidator.PERSON);
 	}
 
 	/**
 	 * Find all organizations
-	 * @return {Promise<any[]>} The records.
+	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
 	 */
-	public findOrganizations(): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+	public findOrganizations(): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.findByAttribute("typeName", PartyValidator.ORGANIZATION);
 	}
 
 	/**
 	 * Implementation of the method validateEntity.
-	 * @param objectToValidate The object to validate.
-	 * @return {ValidationErrorImpl[]} An array containing the validation errors. If there are no errors then
-	 * returns an empty array.
+	 * @param {JanuxPeople.PartyAbstract} objectToValidate
+	 * @return {ValidationErrorImpl[]}
 	 */
-	protected validateEntity<t>(objectToValidate: JanuxPeople.Person | JanuxPeople.Organization): ValidationErrorImpl[] {
+	protected validateEntity<t>(objectToValidate: JanuxPeople.PartyAbstract): ValidationErrorImpl[] {
 		return PartyValidator.validateParty(objectToValidate);
 	}
 
 	/**
 	 * Validate the record is valid before inserting to the database.
-	 * @param objectToInsert The object to validate.
-	 * @return {Promise<Array>} An array containing the validation errors. If there are no errors then
-	 * returns an empty array.
+	 * @param {JanuxPeople.PartyAbstract} objectToInsert
+	 * @return {Promise<ValidationErrorImpl[]>}
 	 */
-	protected validateBeforeInsert(objectToInsert: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
+	protected validateBeforeInsert(objectToInsert: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
 		// let emailAddressesToLookFor: string[];
 		// let personReference: JanuxPeople.PersonImpl;
 		// let organizationReference: JanuxPeople.OrganizationImpl;
@@ -132,7 +129,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 	 * @param object The object to transforms.
 	 * @return {any} the transformed object.
 	 */
-	protected convertBeforeSave(object: JanuxPeople.Person | JanuxPeople.Organization): any {
+	protected convertBeforeSave(object: JanuxPeople.PartyAbstract): any {
 		this.partyDaoLogger.debug("Call to convertBeforeSave with object: %j ", object);
 		let result: any = object.toJSON();
 
@@ -149,7 +146,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 	 * @param object The data retrieved form the database.
 	 * @return {any} Ans instance of JanuxPeople.Person or JanuxPeople.Organization.
 	 */
-	protected convertAfterDbOperation(object: any): JanuxPeople.Person | JanuxPeople.Organization {
+	protected convertAfterDbOperation(object: any): JanuxPeople.PartyAbstract {
 		let result: any;
 		if (object.typeName === PartyValidator.PERSON) {
 			result = JanuxPeople.Person.fromJSON(object);

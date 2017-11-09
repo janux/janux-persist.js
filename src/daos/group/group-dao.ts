@@ -23,7 +23,7 @@ export class GroupDao extends AbstractDataAccessObjectWithAdapter<GroupEntity, s
 	/**
 	 * Returns all records that has the same type.
 	 * @param {string} type
-	 * @return {Bluebird<GroupEntity[]>}
+	 * @return {Promise<GroupEntity[]>}
 	 */
 	public findByType(type: string): Promise<GroupEntity[]> {
 		return this.findByAttribute("type", type);

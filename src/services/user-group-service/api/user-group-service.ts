@@ -15,7 +15,7 @@ export interface UserGroupService {
 
 	/**
 	 * Return all group properties.
-	 * @return {Bluebird<GroupPropertiesImpl[]>}
+	 * @return {Promise<GroupPropertiesImpl[]>}
 	 */
 	findGroupProperties(): Promise<GroupProperties[]>;
 
@@ -23,21 +23,21 @@ export interface UserGroupService {
 	 * Find all groups ( not content ) that belong to the user.
 	 * @param {string} type
 	 * @param {JanuxPeople.Person | JanuxPeople.Organization} user
-	 * @return {Bluebird<GroupPropertiesImpl[]>}
+	 * @return {Promise<GroupPropertiesImpl[]>}
 	 */
 	findPropertiesByTypeAndItem(type: string, user: any): Promise<GroupProperties[]>;
 
 	/**
 	 * Find one group
 	 * @param {string} code
-	 * @return {Bluebird<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>}
+	 * @return {Promise<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>}
 	 * Return the group or null if there is no group given the code.
 	 */
 	findOne(code: string): Promise<Group<any>>;
 
 	/**
 	 * Return all groups (including content) of all groups of the users type.
-	 * @return {Bluebird<Array<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>>}
+	 * @return {Promise<Array<GroupImpl<JanuxPeople.Person | JanuxPeople.Organization>>>}
 	 */
 	findAll(): Promise<Array<Group<any>>>;
 
@@ -70,7 +70,7 @@ export interface UserGroupService {
 	 * Insert an element to an existing group.
 	 * @param {string} code
 	 * @param {t} user The value to insert.
-	 * @return {Bluebird<any>} Return a promise indicating the item is inserted.
+	 * @return {Promise<any>} Return a promise indicating the item is inserted.
 	 * Returns a reject if the method was not able to identify a group given the code.
 	 * Returns a reject if the objectToInsert exists already in the group.
 	 * Return a reject if the objectToInsert is null or does not exits in the database.
@@ -91,7 +91,7 @@ export interface UserGroupService {
 	 * Find many groups and it's content.
 	 * @param {} filter A key-value map that will help to filter the groups that shares the same type. This is as a AND filter.
 	 * If there is an empty map then the method will return all records of the same type.
-	 * @return {Bluebird<Group[]>} Return a list of groups. Returns an empty array if there is no group that qualifies
+	 * @return {Promise<Group[]>} Return a list of groups. Returns an empty array if there is no group that qualifies
 	 * with the type and filter.
 	 */
 	findByFilter(filter: { [p: string]: string }): Promise<Array<Group<any>>>;

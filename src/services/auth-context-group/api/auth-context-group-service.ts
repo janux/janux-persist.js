@@ -15,7 +15,7 @@ export interface AuthContextGroupService {
 
 	/**
 	 * Return all group properties.
-	 * @return {Bluebird<GroupPropertiesImpl[]>}
+	 * @return {Promise<GroupPropertiesImpl[]>}
 	 */
 	findGroupProperties(): Promise<GroupPropertiesImpl[]>;
 
@@ -23,21 +23,21 @@ export interface AuthContextGroupService {
 	 * Find all groups ( not content ) that belong to the authContext.
 	 * @param {string} type
 	 * @param {JanuxAuthorize.AuthorizationContext} authContext
-	 * @return {Bluebird<GroupPropertiesImpl[]>}
+	 * @return {Promise<GroupPropertiesImpl[]>}
 	 */
 	findPropertiesByTypeAndItem(type: string, authContext: any): Promise<GroupPropertiesImpl[]>;
 
 	/**
 	 * Find one group
 	 * @param {string} code
-	 * @return {Bluebird<GroupImpl<JanuxAuthorize.AuthorizationContext>>}
+	 * @return {Promise<GroupImpl<JanuxAuthorize.AuthorizationContext>>}
 	 * Return the group or null if there is no group given the code.
 	 */
 	findOne(code: string): Promise<GroupImpl<any>>;
 
 	/**
 	 * Return all groups (including content) of all groups of the authContexts type.
-	 * @return {Bluebird<Array<GroupImpl<JanuxAuthorize.AuthorizationContext>>>}
+	 * @return {Promise<Array<GroupImpl<JanuxAuthorize.AuthorizationContext>>>}
 	 */
 	findAll(): Promise<Array<GroupImpl<any>>>;
 
@@ -48,7 +48,7 @@ export interface AuthContextGroupService {
 	 *
 	 * @param authContext
 	 * @param newGroupCode
-	 * @return {Bluebird<any>} Return a promise indicating the item is inserted.
+	 * @return {Promise<any>} Return a promise indicating the item is inserted.
 	 */
 	switchToNewGroup(authContext: any, newGroupCode: string): Promise<any>;
 
@@ -81,7 +81,7 @@ export interface AuthContextGroupService {
 	 * Insert an element to an existing group.
 	 * @param {string} code
 	 * @param {t} authContext The value to insert.
-	 * @return {Bluebird<any>} Return a promise indicating the item is inserted.
+	 * @return {Promise<any>} Return a promise indicating the item is inserted.
 	 * Returns a reject if the method was not able to identify a group given the code.
 	 * Returns a reject if the objectToInsert exists already in the group.
 	 * Return a reject if the objectToInsert is null or does not exits in the database.
@@ -102,7 +102,7 @@ export interface AuthContextGroupService {
 	 * Find many groups and it's content.
 	 * @param {} filter A key-value map that will help to filter the groups that shares the same type. This is as a AND filter.
 	 * If there is an empty map then the method will return all records of the same type.
-	 * @return {Bluebird<Group[]>} Return a list of groups. Returns an empty array if there is no group that qualifies
+	 * @return {Promise<Group[]>} Return a list of groups. Returns an empty array if there is no group that qualifies
 	 * with the type and filter.
 	 */
 	findByFilter(filter: { [p: string]: string }): Promise<Array<GroupImpl<any>>>;

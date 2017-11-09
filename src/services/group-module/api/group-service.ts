@@ -11,7 +11,7 @@ export interface GroupService<t> {
 	/**
 	 * Return all group properties that shares the same type.
 	 * @param {string} type
-	 * @return {Bluebird<GroupProperties[]>} Return a list of group references.
+	 * @return {Promise<GroupProperties[]>} Return a list of group references.
 	 */
 	findPropertiesByType(type: string): Promise<GroupProperties[]>;
 
@@ -19,7 +19,7 @@ export interface GroupService<t> {
 	 * Return all groups where the object is defined.
 	 * @param {string} type The type of groups to filter.
 	 * @param {t} object The object to look for.
-	 * @return {Bluebird<GroupPropertiesImpl[]>} Returns a promise indicating the groups where the object
+	 * @return {Promise<GroupPropertiesImpl[]>} Returns a promise indicating the groups where the object
 	 * is defined.
 	 */
 	findPropertiesByTypeAndItem(type: string, object: t): Promise<GroupProperties[]>;
@@ -27,7 +27,7 @@ export interface GroupService<t> {
 	/**
 	 * Find all groups that belongs to the same type.
 	 * @param {string} type The type to look for.
-	 * @return {Bluebird<Array<Group<t>>>} Return a list of groups. Returns an empty array if there is no
+	 * @return {Promise<Array<Group<t>>>} Return a list of groups. Returns an empty array if there is no
 	 * group with this type.
 	 */
 	findAll(type: string): Promise<Array<Group<t>>>;
@@ -35,7 +35,7 @@ export interface GroupService<t> {
 	/**
 	 * Find one group given the code.
 	 * @param {string} code
-	 * @return {Bluebird<Group<t>>} Return the group or null if there is no group given the code.
+	 * @return {Promise<Group<t>>} Return the group or null if there is no group given the code.
 	 */
 	findOne(code: string): Promise<Group<t>>;
 
@@ -44,7 +44,7 @@ export interface GroupService<t> {
 	 * @param {string} type. The type to look for.
 	 * @param {} filter A key-value map that will help to filter the groups that shares the same type. This is as a AND filter.
 	 * If there is an empty map then the method will return all records of the same type.
-	 * @return {Bluebird<Group[]>} Return a list of groups. Returns an empty array if there is no group that qualifies
+	 * @return {Promise<Group[]>} Return a list of groups. Returns an empty array if there is no group that qualifies
 	 * with the type and filter.
 	 */
 	findByTypeAndFilter(type: string, filter: { [p: string]: string }): Promise<Array<Group<t>>>;
@@ -77,7 +77,7 @@ export interface GroupService<t> {
 	 * Insert an element to an existing group.
 	 * @param {string} code
 	 * @param {t} objectToInsert The value to insert.
-	 * @return {Bluebird<any>} Return a promise indicating the item is inserted.
+	 * @return {Promise<any>} Return a promise indicating the item is inserted.
 	 * Returns a reject if the method was not able to identify a group given the code.
 	 * Returns a reject if the objectToInsert exists already in the group.
 	 * Return a reject if the objectToInsert is null.
@@ -98,7 +98,7 @@ export interface GroupService<t> {
 	 * Removes the object to all groups that has the same type.
 	 * @param {string} type the type of the groups to look for.
 	 * @param {t} objectToRemove The object to remove.
-	 * @return {Bluebird<any>} Returns a promise indicating the operation was done.
+	 * @return {Promise<any>} Returns a promise indicating the operation was done.
 	 * Returns a reject if the object to remove is null or undefined.
 	 */
 	removeItemByType(type: string, objectToRemove: t): Promise<any>;
