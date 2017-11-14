@@ -44,5 +44,11 @@ export const PartyMongooseSchema = new mongoose.Schema({
 	},
 	dateCreated: {
 		type: Date
+	},
+	contractNumber: {
+		type: String
+	},
+	currentEarnings: {
+		type: Number
 	}
 }, {id: false});

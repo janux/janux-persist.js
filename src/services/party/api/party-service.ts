@@ -71,7 +71,7 @@ export interface PartyService {
 	 * @return {Bluebird<JanuxPeople.Party[]>} Return and instance with the id.
 	 * Returns a reject if there are validation errors.
 	 */
-	insert(party: JanuxPeople.Party): Promise<JanuxPeople.Party[]>;
+	insert(party: JanuxPeople.Party): Promise<JanuxPeople.Party>;
 
 	/**
 	 * Update a record.
@@ -79,7 +79,7 @@ export interface PartyService {
 	 * @return {Bluebird<JanuxPeople.Party[]>} Return and instance with the id.
 	 * Returns a reject if there are validation errors.
 	 */
-	update(party: JanuxPeople.Party): Promise<JanuxPeople.Party[]>;
+	update(party: JanuxPeople.Party): Promise<JanuxPeople.Party>;
 
 	/**
 	 * Remove an object.

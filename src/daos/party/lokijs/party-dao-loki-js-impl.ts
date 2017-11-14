@@ -25,7 +25,7 @@ export class PartyDaoLokiJsImpl extends PartyDao {
 	 * @param name the name to look for.
 	 * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} The parties that matches with the name.
 	 */
-	public findByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+	public findByName(name: string): Promise<JanuxPeople.PartyAbstract[]> {
 		const query = {
 			$or: [
 				{
@@ -56,11 +56,11 @@ export class PartyDaoLokiJsImpl extends PartyDao {
 	 * @param objectToUpdate
 	 * @return {Promise<ValidationErrorImpl[]>}
 	 */
-	protected validateBeforeUpdate<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
+	protected validateBeforeUpdate<t>(objectToUpdate: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
 		return this.validateDuplicated(objectToUpdate);
 	}
 
-	private validateDuplicated<t>(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
+	private validateDuplicated<t>(objectToUpdate: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
 		/*let emailAddressesToLookFor: string[];
          emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value, index, array) => value.address);
          let personReference: JanuxPeople.PersonImpl;

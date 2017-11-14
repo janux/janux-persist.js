@@ -95,7 +95,7 @@ export abstract class AbstractDataAccessObject<t, ID>  implements CrudRepository
 	 * @param objectToInsert
 	 * @return {any}
 	 */
-	public insert(objectToInsert: t): Promise<t | ValidationErrorImpl[]> {
+	public insert(objectToInsert: t): Promise<t> {
 		this._log.debug('Call to insertMethod with %j', objectToInsert);
 		let entityErrors: ValidationErrorImpl[];
 		// Check for an null id in case the dao allows id generation by the dao itself.
@@ -193,7 +193,7 @@ export abstract class AbstractDataAccessObject<t, ID>  implements CrudRepository
 	 * @param objectToUpdate The object to updateMethod
 	 * @returns {any} A promise containing the updated object or a reject if something went wrong.
 	 */
-	public update(objectToUpdate: t): Promise<t | ValidationErrorImpl[]> {
+	public update(objectToUpdate: t): Promise<t> {
 		this._log.debug('Call to updateMethod with %j', objectToUpdate);
 
 		let entityErrors: ValidationErrorImpl[];

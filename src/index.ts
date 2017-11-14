@@ -51,6 +51,7 @@ export * from "./example/user/lokijs/sample-user-dao-lokijs-impl";
 export * from "./example/user/mongoose/sample-user-dao-mongoose-impl";
 export * from "./example/user/sample-user-validator";
 export * from "./example/user/mongoose/user-schema";
+export * from "./example/people-extends/staff";
 export * from "./persistence/api/db-adapters/db-adapter";
 export * from "./persistence/implementations/db-adapters/lokijs-db-adapter";
 export * from "./persistence/implementations/db-adapters/mongoose-db-adapter";

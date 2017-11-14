@@ -23,7 +23,7 @@ export class PersonValidator {
 	 * @param person
 	 * @return {ValidationErrorImpl[]}
 	 */
-	public static validatePerson(person: JanuxPeople.PersonImpl): ValidationErrorImpl[] {
+	public static validatePerson(person: JanuxPeople.Person): ValidationErrorImpl[] {
 		this._log.debug("Call to validatePerson with person: %j", person);
 		const errors: ValidationErrorImpl[] = [];
 		if (isBlankString(person.name.first)) {

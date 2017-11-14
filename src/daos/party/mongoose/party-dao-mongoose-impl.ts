@@ -26,10 +26,10 @@ export class PartyDaoMongooseImpl extends PartyDao {
 
 	/**
 	 * Find all records that matches with the name.
-	 * @param name The name to look for.
-	 * @return {Promise<(JanuxPeople.Person|JanuxPeople.Organization)[]>} The objects that matches with the name.
+	 * @param {string} name
+	 * @return {Bluebird<PartyAbstract[]>}
 	 */
-	public findByName(name: string): Promise<JanuxPeople.Person[] | JanuxPeople.Organization[]> {
+	public findByName(name: string): Promise<JanuxPeople.PartyAbstract[]> {
 		const regexpName = new RegExp(name, "i");
 		const query = {
 			$or: [
@@ -56,11 +56,11 @@ export class PartyDaoMongooseImpl extends PartyDao {
 		return this.findByQuery(query);
 	}
 
-	protected validateBeforeUpdate(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
+	protected validateBeforeUpdate(objectToUpdate: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
 		return this.validateDuplicated(objectToUpdate);
 	}
 
-	protected validateDuplicated(objectToUpdate: JanuxPeople.Person | JanuxPeople.Organization): Promise<ValidationErrorImpl[]> {
+	protected validateDuplicated(objectToUpdate: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
 		/*let emailAddressesToLookFor: string[];
          emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value) => value.address);
          let personReference: JanuxPeople.PersonImpl;

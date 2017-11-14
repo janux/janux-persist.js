@@ -66,7 +66,7 @@ export class PartyServiceImpl implements PartyService {
 	 * @return {Bluebird<ValidationError>} Return an array with the founded errors. If there is no
 	 * error then the method return an empty array.
 	 */
-	validate(party: JanuxPeople.Party): ValidationErrorImpl[] {
+	validate(party: JanuxPeople.PartyAbstract): ValidationErrorImpl[] {
 		return PartyValidator.validateParty(party);
 	}
 
@@ -96,7 +96,7 @@ export class PartyServiceImpl implements PartyService {
 	 * @return {Bluebird<JanuxPeople.Party[]>} Return and instance with the id.
 	 * Returns a reject if there are validation errors.
 	 */
-	insert(party: JanuxPeople.PartyAbstract): Bluebird<JanuxPeople.PartyAbstract[]> {
+	insert(party: JanuxPeople.PartyAbstract): Bluebird<JanuxPeople.PartyAbstract> {
 		return this.partyDao.insert(party);
 	}
 
@@ -106,7 +106,7 @@ export class PartyServiceImpl implements PartyService {
 	 * @return {Bluebird<JanuxPeople.Party[]>} Return and instance with the id.
 	 * Returns a reject if there are validation errors.
 	 */
-	update(party: JanuxPeople.PartyAbstract): Bluebird<JanuxPeople.PartyAbstract[]> {
+	update(party: JanuxPeople.PartyAbstract): Bluebird<JanuxPeople.PartyAbstract> {
 		return this.partyDao.update(party);
 	}
 
