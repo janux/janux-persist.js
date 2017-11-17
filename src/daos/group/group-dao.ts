@@ -29,6 +29,15 @@ export class GroupDao extends AbstractDataAccessObjectWithAdapter<GroupEntity, s
 		return this.findByAttribute("type", type);
 	}
 
+	/**
+	 * Return all records sharing a list of types.
+	 * @param {string[]} types
+	 * @return {Promise<GroupEntity[]>}
+	 */
+	public findByTypeIn(types: string[]): Promise<GroupEntity[]> {
+		return this.findByAttributeNameIn("type", types);
+	}
+
 	public findOneByCode(code: string): Promise<GroupEntity> {
 		return this.findOneByAttribute("code", code);
 	}

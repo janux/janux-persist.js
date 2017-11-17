@@ -27,7 +27,7 @@ export class PartyDaoMongooseImpl extends PartyDao {
 	/**
 	 * Find all records that matches with the name.
 	 * @param {string} name
-	 * @return {Bluebird<PartyAbstract[]>}
+	 * @return {Promise<PartyAbstract[]>}
 	 */
 	public findByName(name: string): Promise<JanuxPeople.PartyAbstract[]> {
 		const regexpName = new RegExp(name, "i");

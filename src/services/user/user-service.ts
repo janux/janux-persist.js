@@ -347,7 +347,7 @@ export class UserService {
 			user.contact.id = contact['id'];
 			user.contact.typeName = contact.typeName;
 		}
-		this._log.debug("Returning from mixData: %j", users);
+		this._log.debug("Returning from mapData: %j", users);
 		return users;
 	}
 

@@ -65,6 +65,11 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 			});
 	}
 
+	findPropertiesByTypes(types: string[]): Promise<GroupPropertiesImpl[]> {
+		this.log.debug("Call to findPropertiesByTypes with types %j", types);
+		return null;
+	}
+
 	/**
 	 * Return all groups properties (no content) where the object is defined.
 	 * @param {string} type The type of groups to filter.
@@ -74,34 +79,18 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 */
 	findPropertiesByTypeAndItem(type: string, object: t): Promise<GroupPropertiesImpl[]> {
 		this.log.debug("Call to findAllPropertiesByTypeAndItem with type: %j, object: %j", type, object);
-		let groups: GroupEntity[];
-		let groupsMatchCriteria: GroupEntity[];
 		return this.groupDao.findByType(type)
 			.then((resultQuery: GroupEntity[]) => {
-				const ids = resultQuery.map((value) => value.id);
-				groups = resultQuery;
-				return this.groupContentDao.findByIdGroupsInAndValue(ids, object);
-			})
-			.then((resultQuery: GroupContentEntity[]) => {
-				const idsMatchFilter = resultQuery.map((value) => value.idGroup);
-				groupsMatchCriteria = groups.filter((value) => {
-					return idsMatchFilter.indexOf(value.id) >= 0;
-				});
-				return this.groupAttributeValueDao.findByIdsGroupIn(idsMatchFilter);
-			})
-			.then((attributesValues: GroupAttributeValueEntity[]) => {
-				let result: GroupPropertiesImpl[];
-				result = groupsMatchCriteria.map((value) => {
-					const element: GroupPropertiesImpl = new GroupPropertiesImpl();
-					const subAttributesValues: GroupAttributeValueEntity[] = attributesValues.filter((value) => value.idGroup === value.id);
-					element.name = value.name;
-					element.code = value.code;
-					element.description = value.description;
-					element.type = value.type;
-					element.attributes = this.attributesToDictionary(subAttributesValues);
-					return element;
-				});
-				return Promise.resolve(result);
+				return this.mapGroupDataWithItem(resultQuery, object);
+			});
+
+	}
+
+	findPropertiesByTypesAndItem(types: string[], object: t): Promise<GroupPropertiesImpl[]> {
+		this.log.debug("Call to findPropertiesOwnedByPartyAndTypes with types: %j, object: %j", types, object);
+		return this.groupDao.findByTypeIn(types)
+			.then((resultQuery: GroupEntity[]) => {
+				return this.mapGroupDataWithItem(resultQuery, object);
 			});
 	}
 
@@ -112,24 +101,18 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * group with this type.
 	 */
 	findAll(type: string): Promise<Array<GroupImpl<t>>> {
-		this.log.debug("Call to findAll");
-		let groups: GroupEntity[];
-		let ids: string[];
-		let attributesValues: GroupAttributeValueEntity[];
-		let groupContent: GroupContentEntity[];
+		this.log.debug("Call to findAll with type %j", type);
 		return this.groupDao.findByType(type)
-			.then((resultQuery: GroupEntity[]) => {
-				groups = resultQuery;
-				ids = groups.map((value) => value.id);
-				return this.groupAttributeValueDao.findByIdsGroupIn(ids);
-			})
-			.then((resultQuery: GroupAttributeValueEntity[]) => {
-				attributesValues = resultQuery;
-				return this.groupContentDao.findByIdGroupsIn(ids);
-			})
-			.then((resultQuery: GroupContentEntity[]) => {
-				groupContent = resultQuery;
-				return Promise.resolve(this.mixData(groups, attributesValues, groupContent));
+			.then((result: GroupEntity[]) => {
+				return this.mapCompleteGroupData(result);
+			});
+	}
+
+	findAllByTypes(types: string[]): Promise<Array<GroupImpl<t>>> {
+		this.log.debug("Call to findAllByTypes with types %j ", types);
+		return this.groupDao.findByTypeIn(types)
+			.then((result: GroupEntity[]) => {
+				return this.mapCompleteGroupData(result);
 			});
 	}
 
@@ -141,27 +124,15 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	findOne(code: string): Promise<GroupImpl<t>> {
 		this.log.debug("Call to findOne with code %j", code);
 		let groupReference: GroupEntity;
-		let attributes: {};
 		return this.groupDao.findOneByCode(code)
 			.then((group: GroupEntity) => {
 				if (group == null) {
 					return Promise.resolve(null);
 				} else {
 					groupReference = group;
-					return this.groupAttributeValueDao.findByIdGroup(groupReference.id)
-						.then((resultQuery: GroupAttributeValueEntity[]) => {
-							attributes = this.attributesToDictionary(resultQuery);
-							return this.groupContentDao.findByIdGroup(group.id);
-						})
-						.then((resultQuery: GroupContentEntity[]) => {
-							const result: GroupImpl<t> = new GroupImpl<t>();
-							result.type = groupReference.type;
-							result.name = groupReference.name;
-							result.description = groupReference.description;
-							result.code = groupReference.code;
-							result.attributes = attributes;
-							result.values = resultQuery.map((value) => value.value);
-							return Promise.resolve(result);
+					return this.mapCompleteGroupData([groupReference])
+						.then((result: Array<GroupImpl<t>>) => {
+							return result[0];
 						});
 				}
 			});
@@ -180,7 +151,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 		let groups: GroupEntity[];
 		let groupsMathCriteria: GroupEntity[];
 		let ids: string[];
-		const lengtKeys = Object.keys(filter).length;
+		const lengthKeys = Object.keys(filter).length;
 		let attributesValues: GroupAttributeValueEntity[];
 		let groupContent: GroupContentEntity[];
 		const amountKeys = Object.keys(filter).length;
@@ -190,7 +161,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 				groups = resultQuery;
 				ids = groups.map((value) => value.id);
 				// Get all key-value attributes.
-				if (lengtKeys === 0) {
+				if (lengthKeys === 0) {
 					groupsMathCriteria = resultQuery;
 					return this.groupAttributeValueDao.findByIdsGroupIn(ids);
 				} else {
@@ -212,7 +183,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 			})
 			.then((resultQuery: GroupContentEntity[]) => {
 				groupContent = resultQuery;
-				return Promise.resolve(this.mixData(groupsMathCriteria, attributesValues, groupContent));
+				return Promise.resolve(this.mapData(groupsMathCriteria, attributesValues, groupContent));
 			});
 	}
 
@@ -429,6 +400,33 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 			});
 	}
 
+	private mapGroupDataWithItem(groups: GroupEntity[], object: t): Promise<GroupPropertiesImpl[]> {
+		const ids: string[] = groups.map((value) => value.id);
+		let groupsMatchCriteria: GroupEntity[];
+		return this.groupContentDao.findByIdGroupsInAndValue(ids, object)
+			.then((resultQuery: GroupContentEntity[]) => {
+				const idsMatchFilter = resultQuery.map((value) => value.idGroup);
+				groupsMatchCriteria = groups.filter((value) => {
+					return idsMatchFilter.indexOf(value.id) >= 0;
+				});
+				return this.groupAttributeValueDao.findByIdsGroupIn(idsMatchFilter);
+			})
+			.then((attributesValues: GroupAttributeValueEntity[]) => {
+				let result: GroupPropertiesImpl[];
+				result = groupsMatchCriteria.map((value) => {
+					const element: GroupPropertiesImpl = new GroupPropertiesImpl();
+					const subAttributesValues: GroupAttributeValueEntity[] = attributesValues.filter((value) => value.idGroup === value.id);
+					element.name = value.name;
+					element.code = value.code;
+					element.description = value.description;
+					element.type = value.type;
+					element.attributes = this.attributesToDictionary(subAttributesValues);
+					return element;
+				});
+				return Promise.resolve(result);
+			});
+	}
+
 	/**
 	 * Insert a group to a database once validated.
 	 * @param {GroupImpl<t>} group
@@ -485,6 +483,21 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 		return result;
 	}
 
+	private mapCompleteGroupData(groups: GroupEntity[]): Promise<Array<GroupImpl<t>>> {
+		const ids: string[] = groups.map((value) => value.id);
+		let attributesValues: GroupAttributeValueEntity[];
+		let groupContent: GroupContentEntity[];
+		return this.groupAttributeValueDao.findByIdsGroupIn(ids)
+			.then((resultQuery: GroupAttributeValueEntity[]) => {
+				attributesValues = resultQuery;
+				return this.groupContentDao.findByIdGroupsIn(ids);
+			})
+			.then((resultQuery: GroupContentEntity[]) => {
+				groupContent = resultQuery;
+				return Promise.resolve(this.mapData(groups, attributesValues, groupContent));
+			});
+	}
+
 	/**
 	 * This method map the input in a list of GroupImpl.
 	 * @param {GroupEntity[]} groups
@@ -492,8 +505,8 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * @param {GroupContentEntity[]} groupContent
 	 * @return {Array<GroupImpl<t>>}
 	 */
-	private mixData(groups: GroupEntity[], attributeValues: GroupAttributeValueEntity[], groupContent: GroupContentEntity[]): Array<GroupImpl<t>> {
-		this.log.debug("Call to mixData");
+	private mapData(groups: GroupEntity[], attributeValues: GroupAttributeValueEntity[], groupContent: GroupContentEntity[]): Array<GroupImpl<t>> {
+		this.log.debug("Call to mapData");
 		const result: Array<GroupImpl<t>> = [];
 		let group: GroupImpl<t>;
 		for (const element of groups) {

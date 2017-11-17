@@ -16,6 +16,13 @@ export interface GroupService<t> {
 	findPropertiesByType(type: string): Promise<GroupProperties[]>;
 
 	/**
+	 * Return all groups (no content) tha shares the same types.
+	 * @param {string[]} types The types to look for.
+	 * @return {Bluebird<GroupProperties[]>} The groups.
+	 */
+	findPropertiesByTypes(types: string[]): Promise<GroupProperties[]>;
+
+	/**
 	 * Return all groups where the object is defined.
 	 * @param {string} type The type of groups to filter.
 	 * @param {t} object The object to look for.
@@ -25,12 +32,27 @@ export interface GroupService<t> {
 	findPropertiesByTypeAndItem(type: string, object: t): Promise<GroupProperties[]>;
 
 	/**
+	 * Return all groups where the object is defined.
+	 * @param {string} types The type of groups to filter.
+	 * @param {t} object The object to look for.
+	 * @return {Promise<GroupPropertiesImpl[]>} Returns a promise indicating the groups where the object
+	 * is defined.
+	 */
+	findPropertiesByTypesAndItem(types: string[], object: t): Promise<GroupProperties[]>;
+
+	/**
 	 * Find all groups that belongs to the same type.
 	 * @param {string} type The type to look for.
 	 * @return {Promise<Array<Group<t>>>} Return a list of groups. Returns an empty array if there is no
 	 * group with this type.
 	 */
 	findAll(type: string): Promise<Array<Group<t>>>;
+
+	/**
+	 * Return all groups (including content) of all groups of a given types.
+	 * @return {Promise<Array<Group<any>>>}
+	 */
+	findAllByTypes(types: string[]): Promise<Array<Group<any>>>;
 
 	/**
 	 * Find one group given the code.
@@ -102,4 +124,5 @@ export interface GroupService<t> {
 	 * Returns a reject if the object to remove is null or undefined.
 	 */
 	removeItemByType(type: string, objectToRemove: t): Promise<any>;
+
 }

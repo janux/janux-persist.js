@@ -1,0 +1,210 @@
+/**
+ * Project glarus-services
+ * Created by ernesto on 10/27/17.
+ */
+import Promise = require("bluebird");
+import {PartyAbstract} from "janux-people";
+import * as _ from 'lodash';
+import {GroupImpl} from "services/group-module/impl/group";
+import {GroupPropertiesImpl} from "services/group-module/impl/group-properties";
+import {GroupServiceImpl} from "services/group-module/impl/group-service";
+import {PartyGroupService} from "services/party-group-service/api/party-group-service";
+import {PartyServiceImpl} from "services/party/impl/party-service-impl";
+import * as logger from "util/logger-api/logger-api";
+
+export class PartyGroupServiceImpl implements PartyGroupService {
+
+	public static readonly NO_CONTACTS: string = "No contacts";
+	public static readonly NO_CONTACT: string = "No contact";
+	public static readonly ATTRIBUTE_PARTY_ID: string = 'partyIdOwner';
+	private partyService: PartyServiceImpl;
+	private groupService: GroupServiceImpl<string>;
+	private log = logger.getLogger("PartyGroupServiceImpl");
+
+	constructor(partyService: PartyServiceImpl, groupService: GroupServiceImpl<string>) {
+		this.partyService = partyService;
+		this.groupService = groupService;
+	}
+
+	/**
+	 * Find all group where the party is the owner fo the groups.
+	 * @param {string[]} types The group types to look for.
+	 * @param {PartyAbstract} partyId The party to look for.
+	 * @return {Bluebird<GroupPropertiesImpl[]>} The groups where the party is associated.
+	 */
+	findPropertiesOwnedByPartyAndTypes(partyId: string, types: string[]): Promise<GroupPropertiesImpl[]> {
+		this.log.debug("Call to findPropertiesOwnedByPartyAndTypes with types %j and party %j", types, partyId);
+		return null;
+	}
+
+	/**
+	 * Find the group (no content) given the type and party.
+	 * @param {string} partyId The party to look for
+	 * @param {string} type
+	 * @return {Bluebird<GroupPropertiesImpl>}
+	 */
+	findPropertiesOwnedByPartyAndType(partyId: string, type: string): Promise<GroupPropertiesImpl> {
+		return this.groupService.findPropertiesByType(type)
+			.then((resultQuery: GroupPropertiesImpl[]) => {
+				const filteredGroup = resultQuery.filter((value) => value.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID] != null);
+				if (filteredGroup.length > 1) {
+					this.log.error("There is a party who belongs to more that one group of the same type  and attribute %j", filteredGroup);
+				}
+				const result: GroupPropertiesImpl = filteredGroup.length === 0 ? null : filteredGroup[0];
+				return Promise.reject(result);
+			});
+	}
+
+	/**
+	 * Find one group
+	 * @param {string} code the group code.
+	 * @return {Bluebird<GroupImpl<PartyAbstract>>}
+	 */
+	findOne(code: string): Promise<GroupImpl<PartyAbstract>> {
+		this.log.debug("Call to find one with code: %j", code);
+		let group: GroupImpl<PartyAbstract>;
+		return this.groupService.findOne(code)
+			.then((result: any) => {
+				if (result == null) return Promise.resolve(null);
+				group = result;
+				return this.partyService.findByIds(result.values);
+			})
+			.then((result: PartyAbstract[]) => {
+				group.values = result;
+				return Promise.resolve(group);
+			});
+	}
+
+	/**
+	 * Find one group given the type and the owner of the group.
+	 * @param {string} partyId partyId The owner of the group.
+	 * @param {string} type type The type too look for.
+	 * @return {Bluebird<GroupImpl<PartyAbstract>>} Returns the group or null if there is no group given
+	 * the conditions.
+	 */
+	findOneOwnedByPartyAndType(partyId: string, type: string): Promise<GroupImpl<PartyAbstract>> {
+		this.log.debug("Call to findOneOwnedByPartyAndType by partyId %j, type  %j", partyId, type);
+		const filter: {} = {};
+		filter[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID] = partyId;
+		return this.groupService.findByTypeAndFilter(type, filter)
+			.then((result: Array<GroupImpl<string>>) => {
+				if (result.length > 1) {
+					this.log.error("There is more that one party group with the same type and party id \n %j", result);
+					// Maybe consider throwing an error.
+				} else if (result.length === 0) {
+					return Promise.resolve(null);
+				} else {
+					return this.findOne(result[0].code);
+				}
+			});
+	}
+
+	/**
+	 * Return all groups (including content) of all groups of a given types.
+	 * @param {string[]} types
+	 * @return {Bluebird<Array<GroupImpl<PartyAbstract>>>}
+	 */
+	findAllByTypes(types: string[]): Promise<Array<GroupImpl<PartyAbstract>>> {
+		this.log.debug("Call to findAllByTypes with types: %j", types);
+		return this.groupService.findAllByTypes(types)
+			.then((result: Array<GroupImpl<string>>) => {
+				let ids: string[] = [];
+				for (const group of result) {
+					ids = ids.concat(group.values);
+				}
+				ids = _.uniq(ids);
+				return this.partyService.findByIds(ids);
+			})
+			.then((result: PartyAbstract[]) => {
+				return null;
+			});
+	}
+
+	/**
+	 * Inserts a new group.
+	 * @param {GroupImpl<PartyAbstract>} group group to insert.
+	 * @return {Bluebird<GroupImpl<PartyAbstract>>} Returns a Promise if the object was inserted correctly. Returns a reject if
+	 * there is another group with the same code. Returns a reject if the content of the groups
+	 * has duplicated values or any of the  users does not exists in the database.
+	 */
+	insert(group: GroupImpl<PartyAbstract>): Promise<GroupImpl<PartyAbstract>> {
+		this.log.debug("Call to insert with group: %j", group);
+		const newGroup: GroupImpl<any> = _.clone(group);
+		const ids = group.values.map((value) => value['id']);
+		newGroup.values = ids;
+		return this.partyService.findByIds(ids)
+			.then((result) => {
+				if (result.length !== ids.length) {
+					return Promise.reject(PartyGroupServiceImpl.NO_CONTACTS);
+				}
+				return this.groupService.insert(newGroup);
+			}).then((result) => {
+				return Promise.resolve(group);
+			});
+	}
+
+	/**
+	 * Updates a group and it's values.
+	 * @param {GroupImpl<any>} group The group to be updated.
+	 * @return {Bluebird<GroupImpl<PartyAbstract>>} Returns a reject if there is no group with the specified type an properties.
+	 * Returns a reject if the content of the groups has duplicated values.
+	 * Returns a reject if the content of the groups has duplicated values or any of the  users does not exists in the database.
+	 */
+	update(group: GroupImpl<any>): Promise<GroupImpl<PartyAbstract>> {
+		this.log.debug("Call to update with group: %j", group);
+		const groupToUpdate: GroupImpl<any> = _.clone(group);
+		const ids = group.values.map((value) => value.id);
+		groupToUpdate.values = ids;
+		return this.partyService.findByIds(ids)
+			.then((resultQuery: any[]) => {
+				if (resultQuery.length !== ids.length) {
+					return Promise.reject(PartyGroupServiceImpl.NO_CONTACTS);
+				}
+				return this.groupService.update(groupToUpdate);
+			})
+			.then((result) => {
+				return Promise.resolve(group);
+			});
+	}
+
+	/**
+	 * Delete group.
+	 * @param {Group} code
+	 * @return {Promise<any>} Returns a reject if there is no group with the specified code.
+	 */
+	remove(code: string): Promise<any> {
+		this.log.debug("Call to remove with code %j", code);
+		return this.groupService.remove(code);
+	}
+
+	/**
+	 * Insert an element to an existing group.
+	 * @param {string} code The group code.
+	 * @param {t} party The value to insert.
+	 * @return {Promise<any>} Return a Promise indicating the item is inserted.
+	 * Returns a reject if the method was not able to identify a group given the code.
+	 * Returns a reject if the objectToInsert exists already in the group.
+	 * Return a reject if the objectToInsert is null or does not exits in the database.
+	 */
+	addItem(code: string, party: PartyAbstract): Promise<any> {
+		this.log.debug("Call to addItem with code: %j, party: %j", code, party);
+		return this.partyService.findOne(party['id'])
+			.then((resultQuery) => {
+				if (resultQuery == null) return Promise.reject(PartyGroupServiceImpl.NO_CONTACT);
+				return this.groupService.addItem(code, resultQuery['id']);
+			});
+	}
+
+	/**
+	 * Removes an item of the group.
+	 * @param {string} code.
+	 * @param party The object to remove.
+	 * Return a Promise if the remove was successful.
+	 * Returns a reject if there is no group given the code.
+	 * Returns a reject if the object to remove is null or undefined.
+	 */
+	removeItem(code: string, party: PartyAbstract): Promise<any> {
+		this.log.debug("Call to removeItem with code:%j , party: %j", code, party);
+		return this.groupService.removeItem(code, party['id']);
+	}
+}

@@ -18,33 +18,33 @@ export interface PartyService {
 	/**
 	 * Find all records that has the email address.
 	 * @param {string} email
-	 * @return {Bluebird<JanuxPeople.Party[]>}
+	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
 	findByEmail(email: string): Promise<JanuxPeople.Party[]>;
 
 	/**
 	 * Find all records that hast the phone number.
 	 * @param {string} phone
-	 * @return {Bluebird<JanuxPeople.Party[]>}
+	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
 	findByPhone(phone: string): Promise<JanuxPeople.Party[]>;
 
 	/**
 	 * Find all people
-	 * @return {Bluebird<JanuxPeople.Party[]>}
+	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
 	findPeople(): Promise<JanuxPeople.Party[]>;
 
 	/**
 	 * Find all organizations
-	 * @return {Bluebird<JanuxPeople.Party[]>}
+	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
 	findOrganizations(): Promise<JanuxPeople.Party[]>;
 
 	/**
 	 * Find one record.
 	 * @param {string} id
-	 * @return {Bluebird<JanuxPeople.Party>} Return the record, or a null value
+	 * @return {Promise<JanuxPeople.Party>} Return the record, or a null value
 	 * if there is no record given the id.
 	 */
 	findOne(id: string): Promise<JanuxPeople.Party>;
@@ -52,7 +52,7 @@ export interface PartyService {
 	/**
 	 * Find several record given the ids.
 	 * @param {string[]} ids
-	 * @return {Bluebird<JanuxPeople.Party[]>} Return the parties founded. If there are no records
+	 * @return {Promise<JanuxPeople.Party[]>} Return the parties founded. If there are no records
 	 * founded then the method returns an empty array.
 	 */
 	findByIds(ids: string[]): Promise<JanuxPeople.Party[]>;
@@ -60,7 +60,7 @@ export interface PartyService {
 	/**
 	 * Validate in an object has correct values. For example email regexp validation.
 	 * @param {JanuxPeople.Party} party
-	 * @return {Bluebird<ValidationError>} Return an array with the founded errors. If there is no
+	 * @return {Promise<ValidationError>} Return an array with the founded errors. If there is no
 	 * error then the method return an empty array.
 	 */
 	validate(party: JanuxPeople.Party): ValidationError[];
@@ -68,7 +68,7 @@ export interface PartyService {
 	/**
 	 * Insert a record.
 	 * @param {JanuxPeople.Party} party
-	 * @return {Bluebird<JanuxPeople.Party[]>} Return and instance with the id.
+	 * @return {Promise<JanuxPeople.Party[]>} Return and instance with the id.
 	 * Returns a reject if there are validation errors.
 	 */
 	insert(party: JanuxPeople.Party): Promise<JanuxPeople.Party>;
@@ -76,7 +76,7 @@ export interface PartyService {
 	/**
 	 * Update a record.
 	 * @param {JanuxPeople.Party} party
-	 * @return {Bluebird<JanuxPeople.Party[]>} Return and instance with the id.
+	 * @return {Promise<JanuxPeople.Party[]>} Return and instance with the id.
 	 * Returns a reject if there are validation errors.
 	 */
 	update(party: JanuxPeople.Party): Promise<JanuxPeople.Party>;
@@ -84,7 +84,7 @@ export interface PartyService {
 	/**
 	 * Remove an object.
 	 * @param {string} id The id of the object to remove.
-	 * @return {Bluebird<>} A promise indicating the object was removed.
+	 * @return {Promise<>} A promise indicating the object was removed.
 	 * Returns a reject if the ir no object given the id.
 	 */
 	remove(id: string): Promise<any>;
@@ -92,7 +92,7 @@ export interface PartyService {
 	/**
 	 * Remove several objects.
 	 * @param {string[]} id
-	 * @return {Bluebird<any>}
+	 * @return {Promise<any>}
 	 */
 	removeByIds(id: string[]): Promise<any>;
 }
