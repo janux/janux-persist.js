@@ -22,7 +22,7 @@ export interface PartyGroupService {
 	 * Find the group (no content) given the type and party as th owner.
 	 * @param {string} partyId The party to look for.
 	 * @param {string} type the group type to look for.
-	 * @return {Bluebird<GroupProperties>} Returns the group where the party is associated.
+	 * @return {Promise<GroupProperties>} Returns the group where the party is associated.
 	 */
 	findPropertiesOwnedByPartyAndType(partyId: string, type: string): Promise<GroupProperties>;
 
@@ -38,7 +38,7 @@ export interface PartyGroupService {
 	 * Find one group given the type and the owner of the group.
 	 * @param {string} partyId The owner of the group.
 	 * @param {string} type The type too look for.
-	 * @return {Bluebird<Group<any>>} Returns the group or null if there is no group given
+	 * @return {Promise<Group<any>>} Returns the group or null if there is no group given
 	 * the conditions.
 	 */
 	findOneOwnedByPartyAndType(partyId: string, type: string): Promise<Group<PartyAbstract>>;

@@ -2,7 +2,7 @@
  * Project janux-persist.js
  * Created by ernesto on 11/9/17.
  */
-import Bluebird = require("bluebird");
+import Promise = require("bluebird");
 import {PartyDao} from "daos/party/party-dao";
 import {PartyValidator} from "daos/party/party-validator";
 import JanuxPeople = require("janux-people");
@@ -22,48 +22,48 @@ export class PartyServiceImpl implements PartyService {
 	 * @param {string} name
 	 * @return {Promise}
 	 */
-	findByName(name: string): Bluebird<JanuxPeople.PartyAbstract[]> {
+	findByName(name: string): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.partyDao.findByName(name);
 	}
 
 	/**
 	 * Find all records that has the email address.
 	 * @param {string} email
-	 * @return {Bluebird<JanuxPeople.Party[]>}
+	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
-	findByEmail(email: string): Bluebird<JanuxPeople.PartyAbstract[]> {
+	findByEmail(email: string): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.partyDao.findByEmail(email);
 	}
 
 	/**
 	 * Find all records that hast the phone number.
 	 * @param {string} phone
-	 * @return {Bluebird<JanuxPeople.Party[]>}
+	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
-	findByPhone(phone: string): Bluebird<JanuxPeople.PartyAbstract[]> {
+	findByPhone(phone: string): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.partyDao.findByPhone(phone);
 	}
 
 	/**
 	 * Find all people
-	 * @return {Bluebird<JanuxPeople.Party[]>}
+	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
-	findPeople(): Bluebird<JanuxPeople.PartyAbstract[]> {
+	findPeople(): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.partyDao.findPeople();
 	}
 
 	/**
 	 * Find all organizations
-	 * @return {Bluebird<JanuxPeople.Party[]>}
+	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
-	findOrganizations(): Bluebird<JanuxPeople.PartyAbstract[]> {
+	findOrganizations(): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.partyDao.findOrganizations();
 	}
 
 	/**
 	 * Validate in an object has correct values. For example email regexp validation.
 	 * @param {JanuxPeople.Party} party
-	 * @return {Bluebird<ValidationError>} Return an array with the founded errors. If there is no
+	 * @return {Promise<ValidationError>} Return an array with the founded errors. If there is no
 	 * error then the method return an empty array.
 	 */
 	validate(party: JanuxPeople.PartyAbstract): ValidationErrorImpl[] {
@@ -73,59 +73,59 @@ export class PartyServiceImpl implements PartyService {
 	/**
 	 * Find one record.
 	 * @param {string} id
-	 * @return {Bluebird<JanuxPeople.Party>} Return the record, or a null value
+	 * @return {Promise<JanuxPeople.Party>} Return the record, or a null value
 	 * if there is no record given the id.
 	 */
-	findOne(id: string): Bluebird<JanuxPeople.PartyAbstract> {
+	findOne(id: string): Promise<JanuxPeople.PartyAbstract> {
 		return this.partyDao.findOne(id);
 	}
 
 	/**
 	 * Find several record given the ids.
 	 * @param {string[]} ids
-	 * @return {Bluebird<JanuxPeople.Party[]>} Return the parties founded. If there are no records
+	 * @return {Promise<JanuxPeople.Party[]>} Return the parties founded. If there are no records
 	 * founded then the method returns an empty array.
 	 */
-	findByIds(ids: string[]): Bluebird<JanuxPeople.PartyAbstract[]> {
+	findByIds(ids: string[]): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.partyDao.findByIds(ids);
 	}
 
 	/**
 	 * Insert a record.
 	 * @param {JanuxPeople.Party} party
-	 * @return {Bluebird<JanuxPeople.Party[]>} Return and instance with the id.
+	 * @return {Promise<JanuxPeople.Party[]>} Return and instance with the id.
 	 * Returns a reject if there are validation errors.
 	 */
-	insert(party: JanuxPeople.PartyAbstract): Bluebird<JanuxPeople.PartyAbstract> {
+	insert(party: JanuxPeople.PartyAbstract): Promise<JanuxPeople.PartyAbstract> {
 		return this.partyDao.insert(party);
 	}
 
 	/**
 	 * Update a record.
 	 * @param {JanuxPeople.Party} party
-	 * @return {Bluebird<JanuxPeople.Party[]>} Return and instance with the id.
+	 * @return {Promise<JanuxPeople.Party[]>} Return and instance with the id.
 	 * Returns a reject if there are validation errors.
 	 */
-	update(party: JanuxPeople.PartyAbstract): Bluebird<JanuxPeople.PartyAbstract> {
+	update(party: JanuxPeople.PartyAbstract): Promise<JanuxPeople.PartyAbstract> {
 		return this.partyDao.update(party);
 	}
 
 	/**
 	 * Remove an object.
 	 * @param {string} id The id of the object to remove.
-	 * @return {Bluebird<>} A promise indicating the object was removed.
+	 * @return {Promise<>} A promise indicating the object was removed.
 	 * Returns a reject if the ir no object given the id.
 	 */
-	remove(id: string): Bluebird<any> {
+	remove(id: string): Promise<any> {
 		return this.partyDao.removeById(id);
 	}
 
 	/**
 	 * Remove several objects.
 	 * @param {string[]} id
-	 * @return {Bluebird<any>}
+	 * @return {Promise<any>}
 	 */
-	removeByIds(ids: string[]): Bluebird<any> {
+	removeByIds(ids: string[]): Promise<any> {
 		return this.partyDao.removeById(ids);
 	}
 }

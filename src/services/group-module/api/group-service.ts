@@ -18,7 +18,7 @@ export interface GroupService<t> {
 	/**
 	 * Return all groups (no content) tha shares the same types.
 	 * @param {string[]} types The types to look for.
-	 * @return {Bluebird<GroupProperties[]>} The groups.
+	 * @return {Promise<GroupProperties[]>} The groups.
 	 */
 	findPropertiesByTypes(types: string[]): Promise<GroupProperties[]>;
 

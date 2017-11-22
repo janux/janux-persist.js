@@ -30,7 +30,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * Find all group where the party is the owner fo the groups.
 	 * @param {string[]} types The group types to look for.
 	 * @param {PartyAbstract} partyId The party to look for.
-	 * @return {Bluebird<GroupPropertiesImpl[]>} The groups where the party is associated.
+	 * @return {Promise<GroupPropertiesImpl[]>} The groups where the party is associated.
 	 */
 	findPropertiesOwnedByPartyAndTypes(partyId: string, types: string[]): Promise<GroupPropertiesImpl[]> {
 		this.log.debug("Call to findPropertiesOwnedByPartyAndTypes with types %j and party %j", types, partyId);
@@ -41,7 +41,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * Find the group (no content) given the type and party.
 	 * @param {string} partyId The party to look for
 	 * @param {string} type
-	 * @return {Bluebird<GroupPropertiesImpl>}
+	 * @return {Promise<GroupPropertiesImpl>}
 	 */
 	findPropertiesOwnedByPartyAndType(partyId: string, type: string): Promise<GroupPropertiesImpl> {
 		return this.groupService.findPropertiesByType(type)
@@ -58,7 +58,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	/**
 	 * Find one group
 	 * @param {string} code the group code.
-	 * @return {Bluebird<GroupImpl<PartyAbstract>>}
+	 * @return {Promise<GroupImpl<PartyAbstract>>}
 	 */
 	findOne(code: string): Promise<GroupImpl<PartyAbstract>> {
 		this.log.debug("Call to find one with code: %j", code);
@@ -79,7 +79,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * Find one group given the type and the owner of the group.
 	 * @param {string} partyId partyId The owner of the group.
 	 * @param {string} type type The type too look for.
-	 * @return {Bluebird<GroupImpl<PartyAbstract>>} Returns the group or null if there is no group given
+	 * @return {Promise<GroupImpl<PartyAbstract>>} Returns the group or null if there is no group given
 	 * the conditions.
 	 */
 	findOneOwnedByPartyAndType(partyId: string, type: string): Promise<GroupImpl<PartyAbstract>> {
@@ -102,7 +102,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	/**
 	 * Return all groups (including content) of all groups of a given types.
 	 * @param {string[]} types
-	 * @return {Bluebird<Array<GroupImpl<PartyAbstract>>>}
+	 * @return {Promise<Array<GroupImpl<PartyAbstract>>>}
 	 */
 	findAllByTypes(types: string[]): Promise<Array<GroupImpl<PartyAbstract>>> {
 		this.log.debug("Call to findAllByTypes with types: %j", types);
@@ -123,7 +123,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	/**
 	 * Inserts a new group.
 	 * @param {GroupImpl<PartyAbstract>} group group to insert.
-	 * @return {Bluebird<GroupImpl<PartyAbstract>>} Returns a Promise if the object was inserted correctly. Returns a reject if
+	 * @return {Promise<GroupImpl<PartyAbstract>>} Returns a Promise if the object was inserted correctly. Returns a reject if
 	 * there is another group with the same code. Returns a reject if the content of the groups
 	 * has duplicated values or any of the  users does not exists in the database.
 	 */
@@ -146,7 +146,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	/**
 	 * Updates a group and it's values.
 	 * @param {GroupImpl<any>} group The group to be updated.
-	 * @return {Bluebird<GroupImpl<PartyAbstract>>} Returns a reject if there is no group with the specified type an properties.
+	 * @return {Promise<GroupImpl<PartyAbstract>>} Returns a reject if there is no group with the specified type an properties.
 	 * Returns a reject if the content of the groups has duplicated values.
 	 * Returns a reject if the content of the groups has duplicated values or any of the  users does not exists in the database.
 	 */
