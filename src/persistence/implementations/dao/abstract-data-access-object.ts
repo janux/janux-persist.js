@@ -599,4 +599,13 @@ export abstract class AbstractDataAccessObject<t, ID>  implements CrudRepository
 		}
 		return obj;
 	}
+
+	/**
+	 * If the dao is is configured with the attribute "timeStamp" as true, this method validates if the attributes are dates.
+	 * @return {ValidationErrorImpl[]}
+	 */
+	// private validateDateAttributes(object: t): ValidationErrorImpl[] {
+	// const result: ValidationErrorImpl[] = [];
+	// return result;
+	// }
 }
