@@ -122,7 +122,7 @@ export class PartyServiceImpl implements PartyService {
 
 	/**
 	 * Remove several objects.
-	 * @param {string[]} id
+	 * @param ids
 	 * @return {Promise<any>}
 	 */
 	removeByIds(ids: string[]): Promise<any> {
