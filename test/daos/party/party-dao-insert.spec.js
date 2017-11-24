@@ -12,6 +12,7 @@ var mongoose = require('mongoose');
 var PartyValidator = require("../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
 var PostalAddress = require("janux-people").PostalAddress;
+var PostalAddressMX = require("janux-people").PostalAddressMX;
 var PhoneNumber = require("janux-people").PhoneNumber;
 var PersonEntity = require("janux-people").Person;
 var OrganizationEntity = require("janux-people").Organization;
@@ -33,6 +34,7 @@ const email = "glarus@mail.com";
 const email2 = "glarus_sales@mail.com";
 const work = "work";
 const home = "home";
+const extra = "extra";
 const phone = "55-55-55-55";
 const extension = "11";
 const areaCode = "55";
@@ -43,6 +45,16 @@ const line1Address = "Line 1 address";
 const line2Address = "Line 2 address";
 const line3Address = "Line 3 address";
 const postalCode = "05000";
+
+
+const streetNumberMX = "10 int 2";
+const streetNameMX = "Alvarado Rodriguez";
+const localityMX = "Lomas de Sotelo";
+const municipalityMX = "Azcapotzalco";
+const cityTextMX = "CDMX";
+const stateTextMX = "EDOMX";
+const postalCodeMX = "11111";
+const countryTextMX = "MX";
 
 describe("Testing party dao insertMethod methods", function () {
 	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
@@ -87,6 +99,18 @@ describe("Testing party dao insertMethod methods", function () {
 
 				person.setContactMethod(home, postalAddressObject);
 
+				var anotherPostalAddrMX = new PostalAddressMX();
+
+				anotherPostalAddrMX.streetNumber = streetNumberMX;
+				anotherPostalAddrMX.streetName = streetNameMX;
+				anotherPostalAddrMX.locality = localityMX;
+				anotherPostalAddrMX.municipality = municipalityMX;
+				anotherPostalAddrMX.cityText = cityTextMX;
+				anotherPostalAddrMX.stateText = stateTextMX;
+				anotherPostalAddrMX.postalCode = postalCodeMX;
+				anotherPostalAddrMX.countryText = countryTextMX;
+
+				person.setContactMethod(extra, anotherPostalAddrMX);
 
 				var phoneNumberObject = new PhoneNumber();
 				phoneNumberObject.number = phone;
@@ -120,10 +144,9 @@ describe("Testing party dao insertMethod methods", function () {
 				expect(record.emailAddresses(false)[0].type).eq(work);
 				expect(record.emailAddresses(false)[0].primary).eq(true);
 				expect(record.emailAddresses(false)[0].address).eq(email);
-				//expect(record.emailAddresses(false)[1].type).eq(home);
-				//expect(record.emailAddresses(false)[1].primary).eq(false);
-				//expect(record.emailAddresses(false)[1].address).eq(email2);
-				expect(record.postalAddresses(false).length).eq(1);
+
+
+				expect(record.postalAddresses(false).length).eq(2);
 				expect(record.postalAddresses(false)[0].type).eq(home);
 				expect(record.postalAddresses(false)[0].primary).eq(true);
 				expect(record.postalAddresses(false)[0].line1).eq(line1Address);
@@ -132,6 +155,18 @@ describe("Testing party dao insertMethod methods", function () {
 				expect(record.postalAddresses(false)[0].cityText).eq(cityText);
 				expect(record.postalAddresses(false)[0].postalCode).eq(postalCode);
 				expect(record.postalAddresses(false)[0].stateText).eq(stateText);
+
+
+				expect(record.postalAddresses(false)[1].type).eq(extra);
+				expect(record.postalAddresses(false)[1].streetName).eq(streetNameMX);
+				expect(record.postalAddresses(false)[1].streetNumber).eq(streetNumberMX);
+				expect(record.postalAddresses(false)[1].locality).eq(localityMX);
+				expect(record.postalAddresses(false)[1].municipality).eq(municipalityMX);
+				expect(record.postalAddresses(false)[1].cityText).eq(cityTextMX);
+				expect(record.postalAddresses(false)[1].postalCode).eq(postalCodeMX);
+				expect(record.postalAddresses(false)[1].stateText).eq(stateTextMX);
+
+				//Postal address mx.
 				expect(record.phoneNumbers(false).length).eq(1);
 				expect(record.phoneNumbers(false)[0].type).eq(work);
 				expect(record.phoneNumbers(false)[0].primary).eq(true);
