@@ -7,7 +7,6 @@ import JanuxPeople = require("janux-people");
 import {ValidationError} from "persistence/api/dao/validation-error";
 
 export interface PartyService {
-
 	/**
 	 * Find all record that matches with the name,
 	 * @param {string} name
@@ -95,4 +94,20 @@ export interface PartyService {
 	 * @return {Promise<any>}
 	 */
 	removeByIds(id: string[]): Promise<any>;
+
+	// Util methods.
+
+	/**
+	 * Convert a party instance to a JSON object
+	 * @param {Party} party
+	 * @return {any}
+	 */
+	toJSON(party: JanuxPeople.Party): any;
+
+	/**
+	 * Convert a object to a party instance.
+	 * @param object
+	 * @return {Party}
+	 */
+	fromJSON(object: any): JanuxPeople.Party;
 }
