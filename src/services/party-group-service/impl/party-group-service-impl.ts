@@ -27,6 +27,15 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	}
 
 	/**
+	 * Find all groups ( no content ) given a type.
+	 * @param {string} type
+	 * @return {Bluebird<GroupPropertiesImpl[]>}
+	 */
+	findPropertiesByType(type: string): Promise<GroupPropertiesImpl[]> {
+		return this.groupService.findPropertiesByType(type);
+	}
+
+	/**
 	 * Find all group where the party is the owner fo the groups.
 	 * @param {string[]} types The group types to look for.
 	 * @param {PartyAbstract} partyId The party to look for.

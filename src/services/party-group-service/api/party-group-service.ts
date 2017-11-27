@@ -27,6 +27,12 @@ export interface PartyGroupService {
 	findPropertiesOwnedByPartyAndType(partyId: string, type: string): Promise<GroupProperties>;
 
 	/**
+	 * Find all group properties given the type.
+	 * @param {string} type
+	 */
+	findPropertiesByType(type: string): Promise<GroupProperties[]>;
+
+	/**
 	 * Find one group
 	 * @param {string} code
 	 * @return {Promise<GroupImpl<PartyAbstract >>}
