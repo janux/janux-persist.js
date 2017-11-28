@@ -73,6 +73,13 @@ export interface PartyService {
 	insert(party: JanuxPeople.Party): Promise<JanuxPeople.Party>;
 
 	/**
+	 * Insert many records.
+	 * @param {Party[]} parties
+	 * @return {Bluebird<Party[]>}
+	 */
+	insertMany(parties: JanuxPeople.Party[]): Promise<JanuxPeople.Party[]>;
+
+	/**
 	 * Update a record.
 	 * @param {JanuxPeople.Party} party
 	 * @return {Promise<JanuxPeople.Party[]>} Return and instance with the id.

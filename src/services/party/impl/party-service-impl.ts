@@ -104,6 +104,15 @@ export class PartyServiceImpl implements PartyService {
 	}
 
 	/**
+	 * Insert many records.
+	 * @param {Party[]} parties
+	 * @return {Bluebird<Party[]>}
+	 */
+	insertMany(parties: PartyAbstract[]): Promise<PartyAbstract[]> {
+		return this.partyDao.insertMany(parties);
+	}
+
+	/**
 	 * Update a record.
 	 * @param {JanuxPeople.Party} party
 	 * @return {Promise<JanuxPeople.Party[]>} Return and instance with the id.
