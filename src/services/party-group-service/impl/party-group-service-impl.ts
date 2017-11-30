@@ -9,6 +9,8 @@ import {GroupImpl} from "services/group-module/impl/group";
 import {GroupPropertiesImpl} from "services/group-module/impl/group-properties";
 import {GroupServiceImpl} from "services/group-module/impl/group-service";
 import {PartyGroupService} from "services/party-group-service/api/party-group-service";
+import {InternalPartyGroupItem} from "services/party-group-service/impl/group-item-internal";
+import {PartyGroupItemImpl} from "services/party-group-service/impl/party-group-item-impl";
 import {PartyServiceImpl} from "services/party/impl/party-service-impl";
 import * as logger from "util/logger-api/logger-api";
 
@@ -18,10 +20,10 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	public static readonly NO_CONTACT: string = "No contact";
 	public static readonly ATTRIBUTE_PARTY_ID: string = 'partyIdOwner';
 	private partyService: PartyServiceImpl;
-	private groupService: GroupServiceImpl<string>;
+	private groupService: GroupServiceImpl<InternalPartyGroupItem>;
 	private log = logger.getLogger("PartyGroupServiceImpl");
 
-	constructor(partyService: PartyServiceImpl, groupService: GroupServiceImpl<string>) {
+	constructor(partyService: PartyServiceImpl, groupService: GroupServiceImpl<InternalPartyGroupItem>) {
 		this.partyService = partyService;
 		this.groupService = groupService;
 	}
@@ -32,6 +34,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * @return {Bluebird<GroupPropertiesImpl[]>}
 	 */
 	findPropertiesByType(type: string): Promise<GroupPropertiesImpl[]> {
+		this.log.debub("Call to findPropertiesByType with type: %j  " + type);
 		return this.groupService.findPropertiesByType(type);
 	}
 
@@ -69,18 +72,26 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * @param {string} code the group code.
 	 * @return {Promise<GroupImpl<PartyAbstract>>}
 	 */
-	findOne(code: string): Promise<GroupImpl<PartyAbstract>> {
+	findOne(code: string): Promise<GroupImpl<PartyGroupItemImpl>> {
 		this.log.debug("Call to find one with code: %j", code);
-		let group: GroupImpl<PartyAbstract>;
+		let resultGroup: GroupImpl<any>;
+		let referenceGroup: GroupImpl<InternalPartyGroupItem>;
 		return this.groupService.findOne(code)
-			.then((result: any) => {
+			.then((result: GroupImpl<InternalPartyGroupItem>) => {
 				if (result == null) return Promise.resolve(null);
-				group = result;
-				return this.partyService.findByIds(result.values);
+				referenceGroup = result;
+				const ids = _.uniq(result.values.map((value) => value.partyId));
+				return this.partyService.findByIds(ids);
 			})
 			.then((result: PartyAbstract[]) => {
-				group.values = result;
-				return Promise.resolve(group);
+				resultGroup = _.clone(referenceGroup);
+				resultGroup.values = referenceGroup.values.map((value) => {
+					const item: PartyGroupItemImpl = new PartyGroupItemImpl();
+					item.party = _.find(result, (o) => o['id'] === value.partyId);
+					item.attributes = value.attributes;
+					return item;
+				});
+				return Promise.resolve(resultGroup);
 			});
 	}
 
@@ -91,12 +102,12 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * @return {Promise<GroupImpl<PartyAbstract>>} Returns the group or null if there is no group given
 	 * the conditions.
 	 */
-	findOneOwnedByPartyAndType(partyId: string, type: string): Promise<GroupImpl<PartyAbstract>> {
+	findOneOwnedByPartyAndType(partyId: string, type: string): Promise<GroupImpl<PartyGroupItemImpl>> {
 		this.log.debug("Call to findOneOwnedByPartyAndType by partyId %j, type  %j", partyId, type);
 		const filter: {} = {};
 		filter[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID] = partyId;
 		return this.groupService.findByTypeAndFilter(type, filter)
-			.then((result: Array<GroupImpl<string>>) => {
+			.then((result: Array<GroupImpl<InternalPartyGroupItem>>) => {
 				if (result.length > 1) {
 					this.log.error("There is more that one party group with the same type and party id \n %j", result);
 					// Maybe consider throwing an error.
@@ -113,19 +124,32 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * @param {string[]} types
 	 * @return {Promise<Array<GroupImpl<PartyAbstract>>>}
 	 */
-	findAllByTypes(types: string[]): Promise<Array<GroupImpl<PartyAbstract>>> {
+	findAllByTypes(types: string[]): Promise<Array<GroupImpl<PartyGroupItemImpl>>> {
 		this.log.debug("Call to findAllByTypes with types: %j", types);
+		let referenceGroups: Array<GroupImpl<InternalPartyGroupItem>>;
 		return this.groupService.findAllByTypes(types)
-			.then((result: Array<GroupImpl<string>>) => {
+			.then((result: Array<GroupImpl<InternalPartyGroupItem>>) => {
+				referenceGroups = result;
 				let ids: string[] = [];
 				for (const group of result) {
-					ids = ids.concat(group.values);
+					ids = ids.concat(group.values.map(value => value.partyId));
 				}
 				ids = _.uniq(ids);
 				return this.partyService.findByIds(ids);
 			})
-			.then((result: PartyAbstract[]) => {
-				return null;
+			.then((resultQuery: PartyAbstract[]) => {
+				let resultGroup: any[];
+				resultGroup = referenceGroups.map(value => {
+					const item: any = value;
+					item.values = value.values.map(value2 => {
+						const item2: PartyGroupItemImpl = new PartyGroupItemImpl();
+						item2.party = _.find(resultQuery, (o) => o['id'] === value2.partyId);
+						item2.attributes = value.attributes;
+						return item2;
+					});
+					return item;
+				});
+				return Promise.resolve(resultGroup);
 			});
 	}
 
@@ -136,11 +160,16 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * there is another group with the same code. Returns a reject if the content of the groups
 	 * has duplicated values or any of the  users does not exists in the database.
 	 */
-	insert(group: GroupImpl<PartyAbstract>): Promise<GroupImpl<PartyAbstract>> {
+	insert(group: GroupImpl<PartyGroupItemImpl>): Promise<GroupImpl<PartyGroupItemImpl>> {
 		this.log.debug("Call to insert with group: %j", group);
 		const newGroup: GroupImpl<any> = _.clone(group);
 		const ids = group.values.map((value) => value['id']);
-		newGroup.values = ids;
+		newGroup.values = group.values.map(value => {
+			const item: PartyGroupItemImpl = new PartyGroupItemImpl();
+			item.party = value.party['id'];
+			item.attributes = value.attributes;
+			return item;
+		});
 		return this.partyService.findByIds(ids)
 			.then((result) => {
 				if (result.length !== ids.length) {
@@ -148,6 +177,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 				}
 				return this.groupService.insert(newGroup);
 			}).then((result) => {
+				group.code = result.code;
 				return Promise.resolve(group);
 			});
 	}
@@ -159,7 +189,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * Returns a reject if the content of the groups has duplicated values.
 	 * Returns a reject if the content of the groups has duplicated values or any of the  users does not exists in the database.
 	 */
-	update(group: GroupImpl<any>): Promise<GroupImpl<PartyAbstract>> {
+	update(group: GroupImpl<any>): Promise<GroupImpl<PartyGroupItemImpl>> {
 		this.log.debug("Call to update with group: %j", group);
 		const groupToUpdate: GroupImpl<any> = _.clone(group);
 		const ids = group.values.map((value) => value.id);

@@ -52,7 +52,7 @@ export interface GroupService<t> {
 	 * Return all groups (including content) of all groups of a given types.
 	 * @return {Promise<Array<Group<any>>>}
 	 */
-	findAllByTypes(types: string[]): Promise<Array<Group<any>>>;
+	findAllByTypes(types: string[]): Promise<Array<Group<t>>>;
 
 	/**
 	 * Find one group given the code.

@@ -37,12 +37,15 @@
 			false
 		],
 		"no-string-literal": false,
-		"forin": false,
 		"indent": [
 			true,
 			"tabs"
 		],
 		"no-empty": false,
+		"arrow-parens": [
+			true,
+			"ban-single-arg-parens"
+		],
 		"align": false
 	},
 	"rulesDirectory": []
