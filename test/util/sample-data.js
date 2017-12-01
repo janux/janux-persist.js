@@ -6,7 +6,6 @@
 var Person = require("janux-people").Person;
 var Organization = require("janux-people").Organization;
 var EmailAddress = require("janux-people").EmailAddress;
-const GroupImpl = require("../../dist/index").GroupImpl;
 
 function createPerson1() {
 	const personName = "John";
@@ -139,6 +138,7 @@ function createUser3() {
 
 module.exports = {
 	createPerson1: createPerson1,
+	createPerson2: createPerson2,
 	createOrganization1: createOrganization1,
 	createEmptyUserAccount1: createEmptyUserAccount1,
 	createEmptyUserAccount2: createEmptyUserAccount2,

@@ -456,13 +456,16 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 			.then(() => {
 				// Insert attributes-values.
 				const attributeValues: GroupAttributeValueEntity[] = [];
-				for (const key in group.attributes) {
-					const attributeValue = new GroupAttributeValueEntity();
-					attributeValue.idGroup = insertedGroup.id;
-					attributeValue.key = key;
-					attributeValue.value = group.attributes[key];
-					attributeValues.push(attributeValue);
+				if (group.attributes != null) {
+					for (const key in group.attributes) {
+						const attributeValue = new GroupAttributeValueEntity();
+						attributeValue.idGroup = insertedGroup.id;
+						attributeValue.key = key;
+						attributeValue.value = group.attributes[key];
+						attributeValues.push(attributeValue);
+					}
 				}
+
 				return this.groupAttributeValueDao.insertMany(attributeValues);
 			})
 			.then(() => {

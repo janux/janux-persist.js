@@ -81,6 +81,7 @@ export * from "./services/group-module/api/group";
 export * from "./services/group-module/api/group-service";
 export * from "./services/group-module/api/group-properties";
 export * from "./services/user-group-service/impl/user-group-service";
+export * from "./services/party-group-service/impl/party-group-service-impl";
 export * from "./services/party/api/party-service";
 export * from "./services/party/impl/party-service-impl";
 export * from "./util/blank-string-validator";

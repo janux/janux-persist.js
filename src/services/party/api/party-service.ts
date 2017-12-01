@@ -102,6 +102,12 @@ export interface PartyService {
 	 */
 	removeByIds(id: string[]): Promise<any>;
 
+	/**
+	 * Remove all records
+	 * @return {Bluebird<any>}
+	 */
+	removeAll(): Promise<any>;
+
 	// Util methods.
 
 	/**

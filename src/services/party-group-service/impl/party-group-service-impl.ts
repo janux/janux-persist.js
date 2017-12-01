@@ -5,6 +5,7 @@
 import Promise = require("bluebird");
 import {PartyAbstract} from "janux-people";
 import * as _ from 'lodash';
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {GroupImpl} from "services/group-module/impl/group";
 import {GroupPropertiesImpl} from "services/group-module/impl/group-properties";
 import {GroupServiceImpl} from "services/group-module/impl/group-service";
@@ -16,9 +17,13 @@ import * as logger from "util/logger-api/logger-api";
 
 export class PartyGroupServiceImpl implements PartyGroupService {
 
-	public static readonly NO_CONTACTS: string = "No contacts";
-	public static readonly NO_CONTACT: string = "No contact";
-	public static readonly ATTRIBUTE_PARTY_ID: string = 'partyIdOwner';
+	public static readonly ATTRIBUTE_PARTY_ID: string = '___partyIdOwner';
+	public static readonly PARTY_OWNER: string = "partyOwner";
+	public static readonly PARTY_ITEM: string = "partyOwner";
+	public static readonly PARTY_ITEM_DUPLICATED: string = "The group contain duplicated party items";
+	public static readonly PARTY_OWNER_DOES_NOT_EXIST = 'There is no party given the id';
+	public static readonly PARTY_OWNER_DUPLICATED_GROUP = 'There is another party group with the same party owner and the same type';
+	public static readonly PARTY_ITEM_DOES_NOT_EXIST: string = "Some party items does not exist in the database";
 	private partyService: PartyServiceImpl;
 	private groupService: GroupServiceImpl<InternalPartyGroupItem>;
 	private log = logger.getLogger("PartyGroupServiceImpl");
@@ -155,49 +160,85 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 
 	/**
 	 * Inserts a new group.
-	 * @param {GroupImpl<PartyAbstract>} group group to insert.
-	 * @return {Promise<GroupImpl<PartyAbstract>>} Returns a Promise if the object was inserted correctly. Returns a reject if
-	 * there is another group with the same code. Returns a reject if the content of the groups
-	 * has duplicated values or any of the  users does not exists in the database.
+	 * @param partyId Owner of the group. This variables in inserted as an group attribute.
+	 * @param {GroupImpl} group to insert.
+	 * @return {Promise<GroupImpl>} Returns a Promise if the object was inserted correctly.
+	 * Returns a reject if there is another group with the same code.
+	 * Returns a reject if the content of the groups has duplicated values or any of the parties does not exists in the database.
+	 * Returns a reject if the owner does not exist in the database.
+	 * Returns a reject if there is a party group with the same owner and type.
 	 */
-	insert(group: GroupImpl<PartyGroupItemImpl>): Promise<GroupImpl<PartyGroupItemImpl>> {
+	insert(partyId: string, group: GroupImpl<PartyGroupItemImpl>): Promise<GroupImpl<PartyGroupItemImpl>> {
 		this.log.debug("Call to insert with group: %j", group);
+
+		const errors: ValidationErrorImpl[] = this.validatePartyGroup(group);
+		if (errors.length > 0) return Promise.reject(errors);
 		const newGroup: GroupImpl<any> = _.clone(group);
-		const ids = group.values.map((value) => value['id']);
+		const contactIds = group.values.map((value) => value.party['id']);
 		newGroup.values = group.values.map(value => {
-			const item: PartyGroupItemImpl = new PartyGroupItemImpl();
-			item.party = value.party['id'];
+			const item: InternalPartyGroupItem = new InternalPartyGroupItem();
+			item.partyId = value.party['id'];
 			item.attributes = value.attributes;
 			return item;
 		});
-		return this.partyService.findByIds(ids)
+		if (newGroup.attributes == null) {
+			newGroup.attributes = {};
+		}
+		newGroup.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID] = partyId;
+		return this.partyService.findOne(partyId)
 			.then((result) => {
-				if (result.length !== ids.length) {
-					return Promise.reject(PartyGroupServiceImpl.NO_CONTACTS);
+				if (result == null) {
+					return Promise.reject([new ValidationErrorImpl(
+						PartyGroupServiceImpl.PARTY_OWNER,
+						PartyGroupServiceImpl.PARTY_OWNER_DOES_NOT_EXIST,
+						partyId)]);
+				}
+				return this.partyService.findByIds(contactIds);
+			})
+			.then((result) => {
+				if (result.length !== contactIds.length) {
+					return Promise.reject([new ValidationErrorImpl(
+						PartyGroupServiceImpl.PARTY_ITEM,
+						PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST,
+						"")]);
+				}
+				return this.groupService.findPropertiesByType(group.type);
+			}).then((result: GroupPropertiesImpl[]) => {
+				const duplicatedGroup: GroupPropertiesImpl[] = result.filter(value => value.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID] === partyId);
+				if (duplicatedGroup.length > 0) {
+					return Promise.reject([new ValidationErrorImpl(
+						PartyGroupServiceImpl.PARTY_OWNER,
+						PartyGroupServiceImpl.PARTY_OWNER_DUPLICATED_GROUP,
+						duplicatedGroup[0].code)]);
 				}
 				return this.groupService.insert(newGroup);
-			}).then((result) => {
-				group.code = result.code;
+			}).then(() => {
+				group.attributes = newGroup.attributes;
 				return Promise.resolve(group);
 			});
 	}
 
 	/**
 	 * Updates a group and it's values.
-	 * @param {GroupImpl<any>} group The group to be updated.
-	 * @return {Promise<GroupImpl<PartyAbstract>>} Returns a reject if there is no group with the specified type an properties.
+	 * @param {Group} group The group to be updated.
+	 * @return {Promise<Group>}
+	 * Returns a reject if there is no group with the specified code.
+	 * Returns a reject if there is an attempt to modify the owner the the group.
 	 * Returns a reject if the content of the groups has duplicated values.
-	 * Returns a reject if the content of the groups has duplicated values or any of the  users does not exists in the database.
+	 * Returns a reject if the content of the groups has duplicated values or any of the parties does not exists in the database.
 	 */
-	update(group: GroupImpl<any>): Promise<GroupImpl<PartyGroupItemImpl>> {
+	update(group: GroupImpl<PartyGroupItemImpl>): Promise<GroupImpl<PartyGroupItemImpl>> {
 		this.log.debug("Call to update with group: %j", group);
 		const groupToUpdate: GroupImpl<any> = _.clone(group);
-		const ids = group.values.map((value) => value.id);
+		const ids = group.values.map((value) => value.party['id']);
 		groupToUpdate.values = ids;
 		return this.partyService.findByIds(ids)
 			.then((resultQuery: any[]) => {
 				if (resultQuery.length !== ids.length) {
-					return Promise.reject(PartyGroupServiceImpl.NO_CONTACTS);
+					return Promise.reject([new ValidationErrorImpl(
+						PartyGroupServiceImpl.PARTY_ITEM,
+						PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST,
+						"")]);
 				}
 				return this.groupService.update(groupToUpdate);
 			})
@@ -229,7 +270,10 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 		this.log.debug("Call to addItem with code: %j, party: %j", code, party);
 		return this.partyService.findOne(party['id'])
 			.then((resultQuery) => {
-				if (resultQuery == null) return Promise.reject(PartyGroupServiceImpl.NO_CONTACT);
+				if (resultQuery == null) return Promise.reject([new ValidationErrorImpl(
+					PartyGroupServiceImpl.PARTY_ITEM,
+					PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST,
+					party['id'])]);
 				return this.groupService.addItem(code, resultQuery['id']);
 			});
 	}
@@ -245,5 +289,20 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	removeItem(code: string, party: PartyAbstract): Promise<any> {
 		this.log.debug("Call to removeItem with code:%j , party: %j", code, party);
 		return this.groupService.removeItem(code, party['id']);
+	}
+
+	/**
+	 * Validate the party groups.
+	 * @param {GroupImpl<PartyGroupItemImpl>} group
+	 */
+	private validatePartyGroup(group: GroupImpl<PartyGroupItemImpl>): ValidationErrorImpl[] {
+		const errors: ValidationErrorImpl[] = [];
+		const groupedValues = _.groupBy(group.values, (o) => o.party['id']);
+		for (const key in groupedValues) {
+			if (groupedValues[key].length > 1) {
+				errors.push(new ValidationErrorImpl(PartyGroupServiceImpl.PARTY_ITEM, PartyGroupServiceImpl.PARTY_ITEM_DUPLICATED, key));
+			}
+		}
+		return errors;
 	}
 }

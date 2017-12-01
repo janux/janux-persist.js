@@ -25,6 +25,7 @@
 			false
 		],
 		"curly": false,
+		"forin": false,
 		"member-access": [
 			false,
 			"check-accessor",

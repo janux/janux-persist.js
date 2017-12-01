@@ -5,7 +5,7 @@
 import {PartyAbstract} from "janux-people/dist/impl/Party";
 import {PartyGroupItem} from "services/party-group-service/api/party-group-item";
 
-export class PartyGroupItemImpl implements PartyGroupItem{
+export class PartyGroupItemImpl implements PartyGroupItem {
 
 	// The party itself.
 	party: PartyAbstract;

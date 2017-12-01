@@ -36,14 +36,17 @@ export class GroupServiceValidator {
 		errors = GroupValidator.validate(groupEntity);
 
 		// Add the attributes validation.
-		const keys: string[] = Object.keys(group.attributes);
-		for (const key of keys) {
-			if (isBlankString(group.attributes[key])) {
-				errors.push(new ValidationErrorImpl(
-					this.ATTRIBUTE,
-					this.ATTRIBUTE_VALUE_EMPTY,
-					key
-				));
+
+		if (group.attributes != null) {
+			const keys: string[] = Object.keys(group.attributes);
+			for (const key of keys) {
+				if (isBlankString(group.attributes[key])) {
+					errors.push(new ValidationErrorImpl(
+						this.ATTRIBUTE,
+						this.ATTRIBUTE_VALUE_EMPTY,
+						key
+					));
+				}
 			}
 		}
 

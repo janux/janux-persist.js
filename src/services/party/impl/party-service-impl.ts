@@ -129,8 +129,16 @@ export class PartyServiceImpl implements PartyService {
 	 * Returns a reject if the ir no object given the id.
 	 */
 	remove(id: string): Promise<any> {
-		// TODO: Validate main relations.
+		// TODO: Maybe we need to validate main relations.
 		return this.partyDao.removeById(id);
+	}
+
+	/**
+	 * Remove all records.
+	 * @return {Bluebird<any>}
+	 */
+	removeAll(): Promise<any> {
+		return this.partyDao.removeAll();
 	}
 
 	/**

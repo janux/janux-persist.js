@@ -57,19 +57,24 @@ export interface PartyGroupService {
 
 	/**
 	 * Inserts a new group.
+	 * @param partyId Owner of the group. This variables in inserted as an group attribute.
 	 * @param {GroupImpl} group to insert.
-	 * @return {Promise<GroupImpl>} Returns a Promise if the object was inserted correctly. Returns a reject if
-	 * there is another group with the same code. Returns a reject if the content of the groups
-	 * has duplicated values or any of the  users does not exists in the database.
+	 * @return {Promise<GroupImpl>} Returns a Promise if the object was inserted correctly.
+	 * Returns a reject if there is another group with the same code.
+	 * Returns a reject if the content of the groups has duplicated values or any of the parties does not exists in the database.
+	 * Returns a reject if the owner does not exist in the database.
+	 * Returns a reject if there is a party group with the same owner and type.
 	 */
-	insert(group: Group<any>): Promise<Group<PartyGroupItem>>;
+	insert(partyId: string, group: Group<any>): Promise<Group<PartyGroupItem>>;
 
 	/**
 	 * Updates a group and it's values.
 	 * @param {Group} group The group to be updated.
-	 * @return {Promise<Group>} Returns a reject if there is no group with the specified type an properties.
+	 * @return {Promise<Group>}
+	 * Returns a reject if there is no group with the specified code.
+	 * Returns a reject if there is an attempt to modify the owner the the group.
 	 * Returns a reject if the content of the groups has duplicated values.
-	 * Returns a reject if the content of the groups has duplicated values or any of the  users does not exists in the database.
+	 * Returns a reject if the content of the groups has duplicated values or any of the parties does not exists in the database.
 	 */
 	update(group: Group<any>): Promise<Group<PartyGroupItem>>;
 
