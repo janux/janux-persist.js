@@ -19,14 +19,6 @@ export interface PartyGroupService {
 	findPropertiesOwnedByPartyAndTypes(partyId: string, types: string[]): Promise<GroupProperties[]>;
 
 	/**
-	 * Find the group (no content) given the type and party as th owner.
-	 * @param {string} partyId The owner of the group.
-	 * @param {string} type the group type to look for.
-	 * @return {Promise<GroupProperties>} Returns the group where the party is associated.
-	 */
-	findPropertiesOwnedByPartyAndType(partyId: string, type: string): Promise<GroupProperties>;
-
-	/**
 	 * Find all group (no content) given the type.
 	 * @param {string} type
 	 */

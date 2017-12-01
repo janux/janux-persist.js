@@ -46,6 +46,16 @@ function createOrganization1() {
 	return organization;
 }
 
+function createOrganization2() {
+	const organizationName = "Valvo games";
+	const organizationContactEmail = "sales@valvoGames.com";
+	const contactType = "work";
+	var organization = new Organization();
+	organization.name = organizationName;
+	organization.setContactMethod(contactType, new EmailAddress(organizationContactEmail));
+	return organization;
+}
+
 function createEmptyUserAccount1() {
 	const accountUsername = "username";
 	const accountPassword = "password";
@@ -140,6 +150,7 @@ module.exports = {
 	createPerson1: createPerson1,
 	createPerson2: createPerson2,
 	createOrganization1: createOrganization1,
+	createOrganization2: createOrganization2,
 	createEmptyUserAccount1: createEmptyUserAccount1,
 	createEmptyUserAccount2: createEmptyUserAccount2,
 	createUser1: createUser1,

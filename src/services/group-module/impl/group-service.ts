@@ -44,6 +44,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	findPropertiesByType(type: string): Promise<GroupPropertiesImpl[]> {
 		this.log.debug("Call to findPropertiesByType with type %j", type);
 		let groups: GroupEntity[];
+		// TODO refactor this method with findPropertiesByTypes.
 		return this.groupDao.findByType(type)
 			.then((resultQuery: GroupEntity[]) => {
 				groups = resultQuery;
@@ -67,7 +68,26 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 
 	findPropertiesByTypes(types: string[]): Promise<GroupPropertiesImpl[]> {
 		this.log.debug("Call to findPropertiesByTypes with types %j", types);
-		return null;
+		let groups: GroupEntity[];
+		return this.groupDao.findByTypeIn(types)
+			.then((resultQuery: GroupEntity[]) => {
+				groups = resultQuery;
+				const ids: string[] = groups.map((value) => value.id);
+				return this.groupAttributeValueDao.findByIdsGroupIn(ids);
+			})
+			.then((resultQuery: GroupAttributeValueEntity[]) => {
+				let result: GroupPropertiesImpl[];
+				result = groups.map((value) => {
+					const element: GroupPropertiesImpl = new GroupPropertiesImpl();
+					element.name = value.name;
+					element.description = value.description;
+					element.code = value.code;
+					element.type = value.type;
+					element.attributes = this.attributesToDictionary(resultQuery.filter((value2) => value2.idGroup === value.id));
+					return element;
+				});
+				return Promise.resolve(result);
+			});
 	}
 
 	/**

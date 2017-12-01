@@ -39,7 +39,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * @return {Bluebird<GroupPropertiesImpl[]>}
 	 */
 	findPropertiesByType(type: string): Promise<GroupPropertiesImpl[]> {
-		this.log.debub("Call to findPropertiesByType with type: %j  " + type);
+		this.log.debug("Call to findPropertiesByType with type: %j  " + type);
 		return this.groupService.findPropertiesByType(type);
 	}
 
@@ -51,24 +51,10 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 */
 	findPropertiesOwnedByPartyAndTypes(partyId: string, types: string[]): Promise<GroupPropertiesImpl[]> {
 		this.log.debug("Call to findPropertiesOwnedByPartyAndTypes with types %j and party %j", types, partyId);
-		return null;
-	}
-
-	/**
-	 * Find the group (no content) given the type and party.
-	 * @param {string} partyId The party to look for
-	 * @param {string} type
-	 * @return {Promise<GroupPropertiesImpl>}
-	 */
-	findPropertiesOwnedByPartyAndType(partyId: string, type: string): Promise<GroupPropertiesImpl> {
-		return this.groupService.findPropertiesByType(type)
+		return this.groupService.findPropertiesByTypes(types)
 			.then((resultQuery: GroupPropertiesImpl[]) => {
-				const filteredGroup = resultQuery.filter((value) => value.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID] != null);
-				if (filteredGroup.length > 1) {
-					this.log.error("There is a party who belongs to more that one group of the same type  and attribute %j", filteredGroup);
-				}
-				const result: GroupPropertiesImpl = filteredGroup.length === 0 ? null : filteredGroup[0];
-				return Promise.reject(result);
+				const filteredGroup = resultQuery.filter((value) => value.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID] === partyId);
+				return Promise.resolve(filteredGroup);
 			});
 	}
 
