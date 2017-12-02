@@ -112,7 +112,7 @@ describe("Testing party group service find methods", function () {
 					insertedGroup4 = result.group4;
 					done();
 				});
-		}, 20);
+		}, 5);
 	});
 
 
@@ -189,8 +189,88 @@ describe("Testing party group service find methods", function () {
 			partyGroupService.findPropertiesOwnedByPartyAndTypes(insertedParty1.id, [type, type2])
 				.then(function (value) {
 					expect(value.length).eq(2);
+
+					var group1 = _.find(value, function (o) {
+						return o.code === code3;
+					});
+
+					var group2 = _.find(value, function (o) {
+						return o.code === code4;
+					});
+
+					expect(group1.code).eq(code3);
+					expect(group2.code).eq(code4);
+
 					done();
 				});
 		});
 	});
+
+	describe("When calling findPropertiesByType", function () {
+		it("The method should return the correct groups", function (done) {
+			partyGroupService.findPropertiesByType(type)
+				.then(function (value) {
+					expect(value.length).eq(2);
+
+					var group1 = _.find(value, function (o) {
+						return o.code === code;
+					});
+
+					var group2 = _.find(value, function (o) {
+						return o.code === code3;
+					});
+
+					expect(group1.code).eq(code);
+					expect(group2.code).eq(code3);
+					done();
+				});
+		});
+	});
+
+	describe("When calling find one", function () {
+		it("The method should return the correct group", function (done) {
+			partyGroupService.findOne(code)
+				.then(function (result) {
+					expect(result).not.to.be.null;
+					expect(result).not.to.be.undefined;
+					expect(result.code).eq(code);
+					done();
+				});
+		});
+	});
+
+	describe("When calling findOneOwnedByPartyAndType", function () {
+		it("The method should return the correct group", function (done) {
+			partyGroupService.findOneOwnedByPartyAndType(insertedParty3.id, type)
+				.then(function (value) {
+					expect(value).not.to.be.undefined;
+					expect(value).not.to.be.null;
+					expect(value.code).eq(code);
+					done();
+				});
+		});
+	});
+
+
+	describe("When calling findAllByTypes", function () {
+		it("The method should return the correct groups", function (done) {
+			partyGroupService.findAllByTypes([type, type2])
+				.then(function (value) {
+					expect(value.length).eq(4);
+					done();
+				});
+		});
+	});
+
+	describe("When calling findAllByTypes with only one type", function () {
+		it("The method should return the correct groups", function (done) {
+			partyGroupService.findAllByTypes([type2])
+				.then(function (value) {
+					expect(value.length).eq(2);
+					done();
+				});
+		});
+	});
+
+
 });

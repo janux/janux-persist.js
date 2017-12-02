@@ -102,6 +102,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 				if (result.length > 1) {
 					this.log.error("There is more that one party group with the same type and party id \n %j", result);
 					// Maybe consider throwing an error.
+					return this.findOne(result[0].code);
 				} else if (result.length === 0) {
 					return Promise.resolve(null);
 				} else {
