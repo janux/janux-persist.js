@@ -40,7 +40,7 @@ const name4 = "a fourth group";
 const code4 = "a fourth code";
 const description4 = "a fourth description";
 
-describe("Testing party group service item item methods", function () {
+describe("Testing party group service update method", function () {
 
 	var partyDao;
 	var groupContentDao;
@@ -185,33 +185,131 @@ describe("Testing party group service item item methods", function () {
 	}
 
 	describe("When calling update with the correct parameters", function () {
-	    it("The method should update the group", function (done) {
-			assert.fail();
-			done();
+		it("The method should update the group", function (done) {
+			var aValue = 'a';
+			var attributes = {a: "a", b: "b"};
+			var updatedName = "updated name";
+			var updatedDescription = "updated description";
+			insertedGroup1.values.splice(0, 1);
+			var notDeleted = insertedGroup1.values[0].party;
+			insertedGroup1.values.push({
+				party: insertedParty4,
+				attributes: attributes
+			});
+			insertedGroup1.name = updatedName;
+			insertedGroup1.description = updatedDescription;
+			insertedGroup1.attributes.a = aValue;
+			partyGroupService.update(insertedGroup1)
+				.then(function (result) {
+					expect(result.name).eq(updatedName);
+					expect(result.type).eq(insertedGroup1.type);
+					expect(result.description).eq(updatedDescription);
+					expect(result.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID]).eq(insertedParty3.id);
+					expect(result.attributes.a).eq(aValue);
+					expect(result.values.length).eq(2);
+
+					var notDeletedParty = _.find(result.values, function (o) {
+						return o.party.id === notDeleted.id;
+					});
+
+					expect(notDeletedParty).not.to.be.undefined;
+
+					var addedParty = _.find(result.values, function (o) {
+						return o.party.id === insertedParty4.id;
+					});
+
+					expect(addedParty).not.to.be.undefined;
+					expect(addedParty.attributes).equal(attributes);
+					return groupService.findOne(result.code);
+				})
+				.then(function (result) {
+					expect(result.name).eq(updatedName);
+					expect(result.description).eq(updatedDescription);
+					expect(result.attributes.a).eq(aValue);
+					expect(result.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID]).eq(insertedParty3.id);
+					expect(result.values.length).eq(2);
+
+					var notDeletedParty = _.find(result.values, function (o) {
+						return o.partyId === notDeleted.id;
+					});
+
+					expect(notDeletedParty).not.to.be.undefined;
+
+					var addedParty = _.find(result.values, function (o) {
+						return o.partyId === insertedParty4.id;
+					});
+
+					expect(addedParty).not.to.be.undefined;
+					expect(_.isEqual(addedParty.attributes, attributes)).equals(true);
+					done();
+				});
 		});
 	});
 
 
 	describe("When calling update when trying to change the party owner", function () {
 		it("The method should return an error", function (done) {
-			assert.fail();
-			done();
+			insertedGroup1.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID] = insertedParty4.id;
+			partyGroupService.update(insertedGroup1)
+				.then(function () {
+					expect.fail("The method should not have updated the group");
+				}, function (err) {
+					expect(err.length).eq(1);
+					expect(err[0].attribute).eq(PartyGroupServiceImpl.PARTY_OWNER);
+					expect(err[0].message).eq(PartyGroupServiceImpl.ATTRIBUTE_CHANGE);
+					done();
+				});
+		});
+	});
+
+	describe("When calling update when trying to change the type", function () {
+		it("The method should return an error", function (done) {
+			insertedGroup1.type = "new type";
+			partyGroupService.update(insertedGroup1)
+				.then(function () {
+					expect.fail("The method should not have updated the group");
+				}, function (err) {
+					expect(err.length).eq(1);
+					expect(err[0].attribute).eq(PartyGroupServiceImpl.TYPE);
+					expect(err[0].message).eq(PartyGroupServiceImpl.ATTRIBUTE_CHANGE);
+					done();
+				});
 		});
 	});
 
 
 	describe("When calling update with duplicated party items", function () {
 		it("The method should return an error", function (done) {
-			assert.fail();
-			done();
+			insertedGroup1.values.push({
+				party: insertedParty1
+			});
+			partyGroupService.update(insertedGroup1)
+				.then(function () {
+					expect.fail("The method should not have updated the group");
+				}, function (err) {
+					expect(err.length).eq(1);
+					expect(err[0].attribute).eq(PartyGroupServiceImpl.PARTY_ITEM);
+					expect(err[0].message).eq(PartyGroupServiceImpl.PARTY_ITEM_DUPLICATED);
+					done();
+				});
 		});
 	});
 
 
 	describe("When calling updated with party items that does not exist in the database", function () {
 		it("The method should return an error", function (done) {
-			assert.fail();
-			done();
+			insertedGroup1.values.push({
+				party: 'invalid'
+			});
+			partyGroupService.update(insertedGroup1)
+				.then(function () {
+					expect.fail("The method should not have updated the group");
+				}, function (err) {
+					expect(err.length).eq(1);
+					expect(err[0].attribute).eq(PartyGroupServiceImpl.PARTY_ITEM);
+					expect(err[0].message).eq(PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST);
+					done();
+				});
 		});
 	});
 

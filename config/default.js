@@ -7,19 +7,19 @@
 var path = require('path');
 //Gulp compiler options
 var cfg = {
-    dir: {
-        src: 'src',
-        dist: 'dist',
-        test: 'test',
-        doc: 'doc',
-        config: 'config'
-    },
-    file: {
-        app: 'app.js'
-    },
-		log4js: require('./log4js'),
-    debugPort: 30000,
-    fileset: {}
+	dir: {
+		src: 'src',
+		dist: 'dist',
+		test: 'test',
+		doc: 'doc',
+		config: 'config'
+	},
+	file: {
+		app: 'app.js'
+	},
+	log4js: require('./log4js'),
+	debugPort: 30000,
+	fileset: {}
 };
 
 cfg.fileset.ts = path.join(cfg.dir.src, '**', '*.ts');
@@ -34,35 +34,35 @@ cfg.fileset.watch = [];
 
 // The test specs; override this locally to run a single test suite
 cfg.fileset.test = [
-    path.join(cfg.dir.test, '**', '*.spec.js')
+	path.join(cfg.dir.test, '**', '*.spec.js')
 ];
 
 cfg.jshint = {
-    rcfile: '.jshintrc',
-    reporter: 'default'
+	rcfile: '.jshintrc',
+	reporter: 'default'
 };
 
 cfg.tsConfig = {
-    module: "commonjs",
-    removeComments: true,
-    target: 'ES5',
-    skipLibCheck: true,
-    declaration: true
+	module: "commonjs",
+	removeComments: true,
+	target: 'ES5',
+	skipLibCheck: true,
+	declaration: true
 };
 
 //
 // Configure tests
 //
 cfg.serverAppContext = {
-		db: {
-				dbEngine: "mongoose",
-				mongoConnUrl: "mongodb://localhost/janux-persistence-test",
-				lokiJsDBPath: "./janux-persistence-test.db"
-		}
-},
+	db: {
+		dbEngine: "lokijs",
+		mongoConnUrl: "mongodb://localhost/janux-persistence-test",
+		lokiJsDBPath: "./janux-persistence-test.db"
+	}
+};
 
 cfg.mocha = {
 	reporter: 'dot'
-}
+};
 
 module.exports = cfg;

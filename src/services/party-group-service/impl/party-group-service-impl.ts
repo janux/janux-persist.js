@@ -18,13 +18,15 @@ import * as logger from "util/logger-api/logger-api";
 
 export class PartyGroupServiceImpl implements PartyGroupService {
 
-	public static readonly ATTRIBUTE_PARTY_ID: string = '___partyIdOwner';
+	public static readonly ATTRIBUTE_PARTY_ID: string = '___partyOwnerId';
 	public static readonly PARTY_OWNER: string = "partyOwner";
 	public static readonly PARTY_ITEM: string = "partyOwner";
 	public static readonly PARTY_ITEM_DUPLICATED: string = "The group contain duplicated party items";
 	public static readonly PARTY_OWNER_DOES_NOT_EXIST = 'There is no party given the id';
 	public static readonly PARTY_OWNER_DUPLICATED_GROUP = 'There is another party group with the same party owner and the same type';
 	public static readonly PARTY_ITEM_DOES_NOT_EXIST: string = "Some party items does not exist in the database";
+	public static readonly TYPE: string = "type";
+	public static readonly ATTRIBUTE_CHANGE: string = "You can't change the attribute value";
 	private partyService: PartyServiceImpl;
 	private groupService: GroupServiceImpl<InternalPartyGroupItem>;
 	private log = logger.getLogger("PartyGroupServiceImpl");
@@ -217,19 +219,58 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	update(group: GroupImpl<PartyGroupItemImpl>): Promise<GroupImpl<PartyGroupItemImpl>> {
 		this.log.debug("Call to update with group: %j", group);
 		const groupToUpdate: GroupImpl<any> = _.clone(group);
-		const ids = group.values.map((value) => value.party['id']);
-		groupToUpdate.values = ids;
+		let ids = group.values.map((value) => value.party['id']);
+		ids = _.uniq(ids);
+		if (ids.length !== group.values.length) {
+			this.log.error("Attempting to update a party group with duplicated party items");
+			return Promise.reject([
+				new ValidationErrorImpl(
+					PartyGroupServiceImpl.PARTY_ITEM,
+					PartyGroupServiceImpl.PARTY_ITEM_DUPLICATED,
+					'')
+			]);
+		}
 		return this.partyService.findByIds(ids)
 			.then((resultQuery: any[]) => {
 				if (resultQuery.length !== ids.length) {
+					this.log.error("Attempting to update with items that does not exist in the database");
 					return Promise.reject([new ValidationErrorImpl(
 						PartyGroupServiceImpl.PARTY_ITEM,
 						PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST,
 						"")]);
 				}
+
+				return this.findOne(group.code);
+
+			})
+			.then((result: GroupImpl<InternalPartyGroupItem>) => {
+
+				if (result.type !== group.type) {
+					this.log.error("Attempting to modify type");
+					return Promise.reject([new ValidationErrorImpl(
+						PartyGroupServiceImpl.TYPE,
+						PartyGroupServiceImpl.ATTRIBUTE_CHANGE,
+						"")]);
+				}
+
+				if (result.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID] !== group.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID]) {
+					this.log.error("Attempting to modify party owner");
+					return Promise.reject([new ValidationErrorImpl(
+						PartyGroupServiceImpl.PARTY_OWNER,
+						PartyGroupServiceImpl.ATTRIBUTE_CHANGE,
+						"")]);
+				}
+
+				// All validations done. Let's update the group.
+				groupToUpdate.values = group.values.map(value => {
+					const item = new InternalPartyGroupItem();
+					item.partyId = value.party['id'];
+					item.attributes = value.attributes;
+					return item;
+				});
 				return this.groupService.update(groupToUpdate);
 			})
-			.then((result) => {
+			.then(() => {
 				return Promise.resolve(group);
 			});
 	}
@@ -300,8 +341,8 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 		return this.groupService.findOne(code)
 			.then((group: GroupImpl<InternalPartyGroupItem>) => {
 				if (group == null) return Promise.reject(GroupServiceValidator.NO_GROUP);
-				const duplicated = group.values.filter(value => value.partyId === party['id']);
-				if (duplicated.length === 0) {
+				const founded = group.values.filter(value => value.partyId === party['id']);
+				if (founded.length === 0) {
 					this.log.error("Attempting to add a duplicated party item ( %j ) to group %j", party, code);
 					return Promise.reject([
 						new ValidationErrorImpl(
@@ -310,7 +351,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 							party['id'])
 					]);
 				} else {
-					return this.groupService.removeItem(code, duplicated[0]);
+					return this.groupService.removeItem(code, founded[0]);
 				}
 			});
 	}
