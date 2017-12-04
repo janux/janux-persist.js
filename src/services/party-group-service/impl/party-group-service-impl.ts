@@ -9,6 +9,7 @@ import {ValidationErrorImpl} from "persistence/implementations/dao/validation-er
 import {GroupImpl} from "services/group-module/impl/group";
 import {GroupPropertiesImpl} from "services/group-module/impl/group-properties";
 import {GroupServiceImpl} from "services/group-module/impl/group-service";
+import {GroupServiceValidator} from "services/group-module/impl/group-service-validator";
 import {PartyGroupService} from "services/party-group-service/api/party-group-service";
 import {InternalPartyGroupItem} from "services/party-group-service/impl/group-item-internal";
 import {PartyGroupItemImpl} from "services/party-group-service/impl/party-group-item-impl";
@@ -211,7 +212,6 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * @return {Promise<Group>}
 	 * Returns a reject if there is no group with the specified code.
 	 * Returns a reject if there is an attempt to modify the owner the the group.
-	 * Returns a reject if the content of the groups has duplicated values.
 	 * Returns a reject if the content of the groups has duplicated values or any of the parties does not exists in the database.
 	 */
 	update(group: GroupImpl<PartyGroupItemImpl>): Promise<GroupImpl<PartyGroupItemImpl>> {
@@ -247,22 +247,44 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	/**
 	 * Insert an element to an existing group.
 	 * @param {string} code The group code.
-	 * @param {t} party The value to insert.
+	 * @param item The item to insert.
 	 * @return {Promise<any>} Return a Promise indicating the item is inserted.
 	 * Returns a reject if the method was not able to identify a group given the code.
 	 * Returns a reject if the objectToInsert exists already in the group.
 	 * Return a reject if the objectToInsert is null or does not exits in the database.
 	 */
-	addItem(code: string, party: PartyAbstract): Promise<any> {
-		this.log.debug("Call to addItem with code: %j, party: %j", code, party);
-		return this.partyService.findOne(party['id'])
+	addItem(code: string, item: PartyGroupItemImpl): Promise<any> {
+		this.log.debug("Call to addItem with code: %j, item: %j", code, item);
+		return this.partyService.findOne(item.party['id'])
 			.then((resultQuery) => {
 				if (resultQuery == null) return Promise.reject([new ValidationErrorImpl(
 					PartyGroupServiceImpl.PARTY_ITEM,
 					PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST,
-					party['id'])]);
-				return this.groupService.addItem(code, resultQuery['id']);
+					item.party['id'])]);
+
+				return this.groupService.findOne(code);
+			})
+			.then((result: GroupImpl<InternalPartyGroupItem>) => {
+
+				if (result == null) return Promise.reject(GroupServiceValidator.NO_GROUP);
+
+				const duplicated = result.values.filter(value => value.partyId === item.party['id']);
+				if (duplicated.length > 0) {
+					this.log.error("Attempting to add a duplicated party item ( %j ) to group %j", item, code);
+					return Promise.reject([
+						new ValidationErrorImpl(
+							PartyGroupServiceImpl.PARTY_ITEM,
+							PartyGroupServiceImpl.PARTY_ITEM_DUPLICATED,
+							item.party['id'])
+					]);
+				}
+
+				const itemToAdd: InternalPartyGroupItem = new InternalPartyGroupItem();
+				itemToAdd.partyId = item.party['id'];
+				itemToAdd.attributes = item.attributes;
+				return this.groupService.addItem(code, itemToAdd);
 			});
+
 	}
 
 	/**
@@ -275,7 +297,22 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 */
 	removeItem(code: string, party: PartyAbstract): Promise<any> {
 		this.log.debug("Call to removeItem with code:%j , party: %j", code, party);
-		return this.groupService.removeItem(code, party['id']);
+		return this.groupService.findOne(code)
+			.then((group: GroupImpl<InternalPartyGroupItem>) => {
+				if (group == null) return Promise.reject(GroupServiceValidator.NO_GROUP);
+				const duplicated = group.values.filter(value => value.partyId === party['id']);
+				if (duplicated.length === 0) {
+					this.log.error("Attempting to add a duplicated party item ( %j ) to group %j", party, code);
+					return Promise.reject([
+						new ValidationErrorImpl(
+							PartyGroupServiceImpl.PARTY_ITEM,
+							PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST,
+							party['id'])
+					]);
+				} else {
+					return this.groupService.removeItem(code, duplicated[0]);
+				}
+			});
 	}
 
 	/**

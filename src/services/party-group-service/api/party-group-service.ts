@@ -80,14 +80,13 @@ export interface PartyGroupService {
 	/**
 	 * Insert an element to an existing group.
 	 * @param {string} code The group code.
-	 * @param {t} party The value to insert.
-	 * @param attributes The attributes associated to the item.
+	 * @param item The item to insert.
 	 * @return {Promise<any>} Return a Promise indicating the item is inserted.
 	 * Returns a reject if the method was not able to identify a group given the code.
 	 * Returns a reject if the objectToInsert exists already in the group.
 	 * Return a reject if the objectToInsert is null or does not exits in the database.
 	 */
-	addItem(code: string, party: PartyAbstract, attributes: { [p: string]: string }): Promise<any>;
+	addItem(code: string, item: PartyGroupItem): Promise<any>;
 
 	/**
 	 * Removes an item of the group.

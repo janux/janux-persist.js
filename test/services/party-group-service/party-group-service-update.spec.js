@@ -1,9 +1,7 @@
 /**
  * Project janux-persist.js
- * Created by ernesto on 12/04/17.
+ * Created by ernesto on 12/4/17.
  */
-
-
 var chai = require('chai');
 var _ = require('lodash');
 var SampleData = require("../../util/sample-data");
@@ -12,7 +10,6 @@ var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var PartyServiceImpl = require("../../../dist/index").PartyServiceImpl;
 var GroupServiceImpl = require("../../../dist/index").GroupServiceImpl;
 var PartyGroupServiceImpl = require("../../../dist/index").PartyGroupServiceImpl;
-var GroupServiceValidator = require("../../../dist/index").GroupServiceValidator;
 var expect = chai.expect;
 var config = require('config');
 var Promise = require('bluebird');
@@ -187,130 +184,34 @@ describe("Testing party group service item item methods", function () {
 		};
 	}
 
-	describe("When calling addItem with the correct parameters", function () {
-		it("The method should insert the item", function (done) {
-			var attributes = {a: "a", b: "b"};
-			var item = {
-				party: insertedParty4,
-				attributes: attributes
-			};
-			partyGroupService.addItem(code, item)
-				.then(function () {
-					return partyGroupService.findOne(code);
-				})
-				.then(function (result) {
-					expect(result.values.length).eq(3);
-					var item = _.find(result.values, function (o) {
-						return o.party.id === insertedParty4.id;
-					});
-					expect(item.party.id).eq(insertedParty4.id);
-					expect(_.isEqual(item.attributes, attributes)).eq(true);
-					done();
-				});
+	describe("When calling update with the correct parameters", function () {
+	    it("The method should update the group", function (done) {
+			assert.fail();
+			done();
 		});
 	});
 
-	describe("When calling addItem whit an item that does not exist in the database", function () {
+
+	describe("When calling update when trying to change the party owner", function () {
 		it("The method should return an error", function (done) {
-			var invalid = 'invalid';
-			var item = {
-				party: {id: invalid},
-				attributes: {a: "a", b: "b"}
-			};
-			partyGroupService.addItem(code, item)
-				.then(function () {
-					expect.fail("The method should not have inserted the record");
-				}, function (err) {
-					expect(err.length).eq(1);
-					expect(err[0].attribute).eq(PartyGroupServiceImpl.PARTY_ITEM);
-					expect(err[0].message).eq(PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST);
-					expect(err[0].value).eq(invalid);
-					done();
-				});
+			assert.fail();
+			done();
 		});
 	});
 
-	describe("When calling addItem with a group code that does not exist in the database", function () {
+
+	describe("When calling update with duplicated party items", function () {
 		it("The method should return an error", function (done) {
-			var attributes = {a: "a", b: "b"};
-			var item = {
-				party: insertedParty4,
-				attributes: attributes
-			};
-			var invalid = 'invalid';
-			partyGroupService.addItem(invalid, item)
-				.then(function () {
-					expect.fail("The method should not have inserted the record");
-					done();
-				}, function (err) {
-					expect(err).eq(GroupServiceValidator.NO_GROUP);
-					done();
-				});
+			assert.fail();
+			done();
 		});
 	});
 
-	describe("When calling addItem whit an item that exists in the group", function () {
+
+	describe("When calling updated with party items that does not exist in the database", function () {
 		it("The method should return an error", function (done) {
-			var attributes = {a: "a", b: "b"};
-			var item = {
-				party: insertedParty1,
-				attributes: attributes
-			};
-
-			partyGroupService.addItem(code, item)
-				.then(function () {
-					expect.fail("The method should not have inserted the record");
-					done();
-				}, function (err) {
-					expect(err.length).eq(1);
-					expect(err[0].attribute).eq(PartyGroupServiceImpl.PARTY_ITEM);
-					expect(err[0].message).eq(PartyGroupServiceImpl.PARTY_ITEM_DUPLICATED);
-					expect(err[0].value).eq(insertedParty1.id);
-					done();
-				});
-		});
-	});
-
-
-	describe("When calling removeItem with the correct values", function () {
-		it("The method should remove the item", function (done) {
-			partyGroupService.removeItem(code, insertedParty1)
-				.then(function () {
-					return partyGroupService.findOne(code);
-				})
-				.then(function (result) {
-					expect(result.values.length).eq(1);
-					expect(result.values[0].party.id).not.eq(insertedParty1.id);
-					done();
-				});
-		});
-	});
-
-	describe("When removing an item that does not exist in the group", function () {
-		it("The method should return an error", function (done) {
-			partyGroupService.removeItem(code, insertedParty3)
-				.then(function () {
-					expect.fail("The method should have returned en error");
-				}, function (err) {
-					expect(err.length).eq(1);
-					expect(err[0].attribute).eq(PartyGroupServiceImpl.PARTY_ITEM);
-					expect(err[0].message).eq(PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST);
-					expect(err[0].value).eq(insertedParty3.id);
-					done();
-				});
-		});
-	});
-
-	describe("When calling removeItem with a group code that does not exist in the database", function () {
-		it("The method should return an error", function (done) {
-			var invalid = 'invalid';
-			partyGroupService.removeItem(invalid, insertedParty1)
-				.then(function () {
-					expect.fail("The method should have returned en error");
-				}, function (err) {
-					expect(err).eq(GroupServiceValidator.NO_GROUP);
-					done();
-				});
+			assert.fail();
+			done();
 		});
 	});
 
