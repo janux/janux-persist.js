@@ -45,7 +45,7 @@ export interface PartyGroupService {
 	 * @param {string[]} types
 	 * @return {Bluebird<Array<Group<PartyGroupItem>>>}
 	 */
-	findAllByTypes(types: string[]): Promise<Array<Group<PartyGroupItem>>>;
+	findByTypes(types: string[]): Promise<Array<Group<PartyGroupItem>>>;
 
 	/**
 	 * Inserts a new group.

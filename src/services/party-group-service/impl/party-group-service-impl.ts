@@ -119,8 +119,8 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * @param {string[]} types
 	 * @return {Promise<Array<GroupImpl<PartyAbstract>>>}
 	 */
-	findAllByTypes(types: string[]): Promise<Array<GroupImpl<PartyGroupItemImpl>>> {
-		this.log.debug("Call to findAllByTypes with types: %j", types);
+	findByTypes(types: string[]): Promise<Array<GroupImpl<PartyGroupItemImpl>>> {
+		this.log.debug("Call to findByTypes with types: %j", types);
 		let referenceGroups: Array<GroupImpl<InternalPartyGroupItem>>;
 		return this.groupService.findAllByTypes(types)
 			.then((result: Array<GroupImpl<InternalPartyGroupItem>>) => {

@@ -252,9 +252,9 @@ describe("Testing party group service find methods", function () {
 	});
 
 
-	describe("When calling findAllByTypes", function () {
+	describe("When calling findByTypes", function () {
 		it("The method should return the correct groups", function (done) {
-			partyGroupService.findAllByTypes([type, type2])
+			partyGroupService.findByTypes([type, type2])
 				.then(function (value) {
 					expect(value.length).eq(4);
 					done();
@@ -262,9 +262,9 @@ describe("Testing party group service find methods", function () {
 		});
 	});
 
-	describe("When calling findAllByTypes with only one type", function () {
+	describe("When calling findByTypes with only one type", function () {
 		it("The method should return the correct groups", function (done) {
-			partyGroupService.findAllByTypes([type2])
+			partyGroupService.findByTypes([type2])
 				.then(function (value) {
 					expect(value.length).eq(2);
 					done();

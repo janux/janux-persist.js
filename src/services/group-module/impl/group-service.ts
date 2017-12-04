@@ -129,7 +129,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	}
 
 	findAllByTypes(types: string[]): Promise<Array<GroupImpl<t>>> {
-		this.log.debug("Call to findAllByTypes with types %j ", types);
+		this.log.debug("Call to findByTypes with types %j ", types);
 		return this.groupDao.findByTypeIn(types)
 			.then((result: GroupEntity[]) => {
 				return this.mapCompleteGroupData(result);
