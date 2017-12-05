@@ -236,7 +236,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 			return Promise.reject([
 				new ValidationErrorImpl(
 					PartyGroupServiceImpl.ATTRIBUTE_VALUE_PARTY_SERVICE_SIGNATURE,
-					PartyGroupServiceImpl.ATTRIBUTE_VALUE_PARTY_SERVICE_SIGNATUREATTRIBUTE_VALUE_PARTY_SERVICE_SIGNATURE_INVALID,
+					PartyGroupServiceImpl.ATTRIBUTE_VALUE_PARTY_SERVICE_SIGNATURE_INVALID,
 					'')
 			]);
 		}
