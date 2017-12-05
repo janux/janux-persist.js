@@ -105,6 +105,7 @@ describe("Testing party group service insert methods", function () {
 				.then(function (result) {
 					expect(result.values.length).eq(2);
 					expect(result.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID]).eq(insertedParty3.id);
+					expect(result.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_SERVICE_SIGNATURE]).eq(PartyGroupServiceImpl.ATTRIBUTE_VALUE_PARTY_SERVICE_SIGNATURE);
 					expect(result.attributes.customValue).eq(customValue);
 					expect(result.type).eq(type);
 					expect(result.code).eq(code);
@@ -124,6 +125,7 @@ describe("Testing party group service insert methods", function () {
 				.then(function (result) {
 					expect(result.values.length).eq(2);
 					expect(result.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID]).eq(insertedParty3.id);
+					expect(result.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_SERVICE_SIGNATURE]).eq(PartyGroupServiceImpl.ATTRIBUTE_VALUE_PARTY_SERVICE_SIGNATURE);
 					expect(result.attributes.customValue).eq(customValue);
 					expect(result.type).eq(type);
 					expect(result.code).eq(code);

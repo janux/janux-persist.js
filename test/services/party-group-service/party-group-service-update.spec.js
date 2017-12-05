@@ -277,6 +277,21 @@ describe("Testing party group service update method", function () {
 		});
 	});
 
+	describe("When calling update when trying to change the attribute that identifies the group is inserted by the service", function () {
+		it("The method should return an error", function (done) {
+			insertedGroup1.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_SERVICE_SIGNATURE]=undefined;
+			partyGroupService.update(insertedGroup1)
+				.then(function () {
+					expect.fail("The method should not have updated the group");
+				}, function (err) {
+					expect(err.length).eq(1);
+					expect(err[0].attribute).eq(PartyGroupServiceImpl.ATTRIBUTE_VALUE_PARTY_SERVICE_SIGNATURE);
+					expect(err[0].message).eq(PartyGroupServiceImpl.ATTRIBUTE_VALUE_PARTY_SERVICE_SIGNATURE_INVALID);
+					done();
+				});
+		});
+	});
+
 
 	describe("When calling update with duplicated party items", function () {
 		it("The method should return an error", function (done) {

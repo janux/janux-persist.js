@@ -55,7 +55,7 @@ export interface PartyGroupService {
 	 * Returns a reject if there is another group with the same code.
 	 * Returns a reject if the content of the groups has duplicated values or any of the parties does not exists in the database.
 	 * Returns a reject if the owner does not exist in the database.
-	 * Returns a reject if there is a party group with the same owner and type.
+	 * Returns a reject if there is a party group with the same owner and type, but different code.
 	 */
 	insert(partyId: string, group: Group<any>): Promise<Group<PartyGroupItem>>;
 
