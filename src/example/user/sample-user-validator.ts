@@ -4,8 +4,8 @@
  */
 import * as EmailValidator from "email-validator";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import {isBlankString} from "util/blank-string-validator";
-import * as logger from 'util/logger-api/logger-api';
+import * as logger from 'utils/logger-api/logger-api';
+import {isBlankString} from "utils/string/blank-string-validator";
 import {SampleUser} from "./sample-user";
 
 /**

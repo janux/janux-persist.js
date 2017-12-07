@@ -2,8 +2,8 @@
  * Project janux-persistence
  * Created by ernesto on 7/19/17.
  */
-import {isBlankString} from "util/blank-string-validator";
-import * as logger from 'util/logger-api/logger-api';
+import * as logger from 'utils/logger-api/logger-api';
+import {isBlankString} from "utils/string/blank-string-validator";
 import {DataSource} from "./datasource";
 import {DataSourceStatus} from "./datasource-status";
 

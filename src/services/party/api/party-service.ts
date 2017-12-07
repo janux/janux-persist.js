@@ -116,11 +116,4 @@ export interface PartyService {
 	 * @return {any}
 	 */
 	toJSON(party: JanuxPeople.Party): any;
-
-	/**
-	 * Convert a object to a party instance.
-	 * @param object
-	 * @return {Party}
-	 */
-	fromJSON(object: any): JanuxPeople.Party;
 }

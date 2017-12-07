@@ -6,7 +6,7 @@ import Promise = require("bluebird");
 import * as _ from 'lodash';
 import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
 import {AttributeFilter} from "persistence/implementations/dao/attribute-filter";
-import * as logger from 'util/logger-api/logger-api';
+import * as logger from 'utils/logger-api/logger-api';
 
 /**
  * Generic implementation of lokijs db functions

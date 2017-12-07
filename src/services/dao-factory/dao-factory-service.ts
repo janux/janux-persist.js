@@ -9,7 +9,7 @@ import {MongooseAdapter} from "persistence/implementations/db-adapters/mongoose-
 import {DaoSettings} from "services/dao-factory/dao-settings";
 import {DataSource} from "services/datasource-handler/datasource";
 import {DataSourceHandler} from "services/datasource-handler/datasource-handler";
-import * as logger from 'util/logger-api/logger-api';
+import * as logger from 'utils/logger-api/logger-api';
 import {Dao} from "./dao";
 
 /**

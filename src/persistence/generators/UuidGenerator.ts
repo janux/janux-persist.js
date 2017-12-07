@@ -4,7 +4,7 @@
  */
 
 import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import * as logger from 'util/logger-api/logger-api';
+import * as logger from 'utils/logger-api/logger-api';
 import uuid = require("uuid");
 
 /**

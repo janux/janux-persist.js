@@ -9,11 +9,36 @@ import JanuxPeople = require("janux-people");
 import {PartyAbstract} from "janux-people";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {PartyService} from "services/party/api/party-service";
+import {DateUtil} from "utils/date/date-util";
 
 export class PartyServiceImpl implements PartyService {
 
 	public static readonly PERSON: string = "PersonImpl";
 	public static readonly ORGANIZATION: string = "OrganizationImpl";
+
+	/**
+	 * Convert a object to a party instance.
+	 * @param object
+	 * @return {Party}
+	 */
+	public static fromJSON(object: any): PartyAbstract {
+		if (object == null) return object;
+		const id = object.id;
+		const typeName = object.typeName;
+		const dateCreated = DateUtil.stringToDate(object.dateCreated);
+		const lastUpdate = DateUtil.stringToDate(object.lastUpdate);
+		let result: any;
+		if (typeName === PartyServiceImpl.PERSON) {
+			result = JanuxPeople.Person.fromJSON(object);
+		} else {
+			result = JanuxPeople.Organization.fromJSON(object);
+		}
+		result.id = id;
+		result.dateCreated = dateCreated;
+		result.lastUpdate = lastUpdate;
+		return result;
+	}
+
 	private partyDao: PartyDao;
 
 	constructor(partyDao: PartyDao) {
@@ -164,29 +189,6 @@ export class PartyServiceImpl implements PartyService {
 		const lastUpdate = party['lastUpdate'];
 		result.id = id;
 		result.typeName = typeName;
-		result.dateCreated = dateCreated;
-		result.lastUpdate = lastUpdate;
-		return result;
-	}
-
-	/**
-	 * Convert a object to a party instance.
-	 * @param object
-	 * @return {Party}
-	 */
-	fromJSON(object: any): PartyAbstract {
-		if (object == null) return object;
-		const id = object.id;
-		const typeName = object.typeName;
-		const dateCreated = object.dateCreated;
-		const lastUpdate = object.lastUpdate;
-		let result: any;
-		if (typeName === PartyServiceImpl.PERSON) {
-			result = JanuxPeople.Person.fromJSON(object);
-		} else {
-			result = JanuxPeople.Organization.fromJSON(object);
-		}
-		result.id = id;
 		result.dateCreated = dateCreated;
 		result.lastUpdate = lastUpdate;
 		return result;

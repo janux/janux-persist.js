@@ -3,8 +3,8 @@
  * Created by ernesto on 8/17/17.
  */
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import {isBlankString} from "util/blank-string-validator";
-import * as logger from 'util/logger-api/logger-api';
+import * as logger from 'utils/logger-api/logger-api';
+import {isBlankString} from "utils/string/blank-string-validator";
 import {GroupContentEntity} from "./group-content-entity";
 
 export class GroupContentValidator {

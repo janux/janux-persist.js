@@ -11,7 +11,7 @@ import {GroupDao} from "daos/group/group-dao";
 import {GroupEntity} from "daos/group/group-entity";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {GroupService} from "services/group-module/api/group-service";
-import * as logger from "util/logger-api/logger-api";
+import * as logger from "utils/logger-api/logger-api";
 import {GroupImpl} from "./group";
 import {GroupPropertiesImpl} from "./group-properties";
 import {GroupServiceValidator} from "./group-service-validator";

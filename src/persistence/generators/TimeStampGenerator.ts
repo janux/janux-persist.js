@@ -3,7 +3,7 @@
  * Created by ernesto on 6/12/17.
  */
 import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import * as logger from 'util/logger-api/logger-api';
+import * as logger from 'utils/logger-api/logger-api';
 
 /**
  * This class generates the timestamp values and insertMethod the values inside the object.

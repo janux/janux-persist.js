@@ -10,7 +10,7 @@ import {AuthContextService} from "services/auth-context/auth-context-service";
 import {GroupImpl} from "services/group-module/impl/group";
 import {GroupPropertiesImpl} from "services/group-module/impl/group-properties";
 import {GroupServiceImpl} from "services/group-module/impl/group-service";
-import * as logger from 'util/logger-api/logger-api';
+import * as logger from 'utils/logger-api/logger-api';
 
 export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 

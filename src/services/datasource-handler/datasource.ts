@@ -5,7 +5,7 @@
 
 import * as lokijs from "lokijs";
 import * as mongoose from "mongoose";
-import * as logger from "util/logger-api/logger-api";
+import * as logger from "utils/logger-api/logger-api";
 import {DataSourceHandler} from "./datasource-handler";
 import {DataSourceStatus} from "./datasource-status";
 

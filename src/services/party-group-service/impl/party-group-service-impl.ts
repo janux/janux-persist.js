@@ -14,7 +14,7 @@ import {PartyGroupService} from "services/party-group-service/api/party-group-se
 import {InternalPartyGroupItem} from "services/party-group-service/impl/group-item-internal";
 import {PartyGroupItemImpl} from "services/party-group-service/impl/party-group-item-impl";
 import {PartyServiceImpl} from "services/party/impl/party-service-impl";
-import * as logger from "util/logger-api/logger-api";
+import * as logger from "utils/logger-api/logger-api";
 
 export class PartyGroupServiceImpl implements PartyGroupService {
 

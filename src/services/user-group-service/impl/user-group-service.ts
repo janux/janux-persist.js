@@ -9,7 +9,7 @@ import {GroupPropertiesImpl} from "services/group-module/impl/group-properties";
 import {GroupServiceImpl} from "services/group-module/impl/group-service";
 import {UserGroupService} from "services/user-group-service/api/user-group-service";
 import {UserService} from "services/user/user-service";
-import * as logger from 'util/logger-api/logger-api';
+import * as logger from 'utils/logger-api/logger-api';
 
 export class UserGroupServiceImpl implements UserGroupService {
 
