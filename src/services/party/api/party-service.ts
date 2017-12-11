@@ -107,13 +107,4 @@ export interface PartyService {
 	 * @return {Bluebird<any>}
 	 */
 	removeAll(): Promise<any>;
-
-	// Util methods.
-
-	/**
-	 * Convert a party instance to a JSON object
-	 * @param {Party} party
-	 * @return {any}
-	 */
-	toJSON(party: JanuxPeople.Party): any;
 }

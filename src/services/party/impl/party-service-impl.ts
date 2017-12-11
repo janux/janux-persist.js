@@ -16,6 +16,21 @@ export class PartyServiceImpl implements PartyService {
 	public static readonly PERSON: string = "PersonImpl";
 	public static readonly ORGANIZATION: string = "OrganizationImpl";
 
+	public static toJSON(party: PartyAbstract): any {
+		if (party == null) return party;
+
+		const result: any = party.toJSON();
+		const id = party['id'];
+		const typeName = party.typeName;
+		const dateCreated = party['dateCreated'];
+		const lastUpdate = party['lastUpdate'];
+		result.id = id;
+		result.typeName = typeName;
+		result.dateCreated = dateCreated;
+		result.lastUpdate = lastUpdate;
+		return result;
+	}
+
 	/**
 	 * Convert a object to a party instance.
 	 * @param object
@@ -173,24 +188,5 @@ export class PartyServiceImpl implements PartyService {
 	 */
 	removeByIds(ids: string[]): Promise<any> {
 		return this.partyDao.removeById(ids);
-	}
-
-	/**
-	 * Convert a party instance to a JSON object
-	 * @param {Party} party
-	 * @return {any}
-	 */
-	toJSON(party: PartyAbstract): any {
-		if (party == null) return party;
-		const id = party['id'];
-		const typeName = party.typeName;
-		const result: any = party.toJSON();
-		const dateCreated = party['dateCreated'];
-		const lastUpdate = party['lastUpdate'];
-		result.id = id;
-		result.typeName = typeName;
-		result.dateCreated = dateCreated;
-		result.lastUpdate = lastUpdate;
-		return result;
 	}
 }
