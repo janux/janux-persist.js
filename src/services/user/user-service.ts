@@ -48,14 +48,22 @@ export class UserService {
 	 */
 	public deleteUserByUserId(userId: string): Promise<any> {
 		this._log.debug("Call to deleteUserByUserId with userId: %j", userId);
-		let user: AccountEntity;
 		return this.accountDao.findOneByUserId(userId)
 			.then((resultQuery: AccountEntity) => {
-				user = resultQuery;
-				return this.partyService.remove(user.contactId);
-			})
-			.then(() => {
-				return this.accountDao.remove(user);
+				return this.accountDao.remove(resultQuery);
+			});
+	}
+
+	/**
+	 * Remove several accounts by its user ids.
+	 * @param {string[]} userIds
+	 * @return {Bluebird<any>}
+	 */
+	public deleteByUserIds(userIds: string[]): Promise<any> {
+		this._log.debug("Call to deleteByUserIds with %j", userIds);
+		return this.accountDao.findByContactIdsIn(userIds)
+			.then((resultQuery: AccountEntity[]) => {
+				return this.accountDao.removeByIds(resultQuery.map(value => value.id));
 			});
 	}
 
@@ -256,7 +264,7 @@ export class UserService {
 
 	/**
 	 * Update the account data. Just updateMethod the account info and the associated roles.
-	 * One difference with insertMethod is the updateMethod will not updateMethod the contact data.
+	 * One difference with insertMethod is the updateMethod will not update; the contact data.
 	 * Instead one must use partyService.updateMethod().
 	 * @param object The account to be updated.
 	 */

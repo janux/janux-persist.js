@@ -47,6 +47,15 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<Acc
 	}
 
 	/**
+	 * Find several users with the attribute  "userId"
+	 * @param {string[]} userIds
+	 * @return {Bluebird<AccountEntity[]>}
+	 */
+	public findByUserIdIn(userIds: string[]): Promise<AccountEntity[]> {
+		return this.findByAttributeNameIn("userId", userIds);
+	}
+
+	/**
 	 * Find one user whose attribute "contactId" matches with the value.
 	 * @param contactId The value to look for.
 	 * @return {Promise<AccountEntity>} The user, if no record is founded then it return a null.
