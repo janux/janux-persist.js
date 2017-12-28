@@ -36,6 +36,25 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	public static readonly PARTY_ITEM_DOES_NOT_EXIST: string = "Some party items does not exist in the database";
 	public static readonly TYPE: string = "type";
 	public static readonly ATTRIBUTE_CHANGE: string = "You can't change the attribute value";
+
+	public static fromJSON(object: any): GroupImpl<PartyGroupItemImpl> {
+		const result: GroupImpl<PartyGroupItemImpl> = new GroupImpl<PartyGroupItemImpl>();
+		result.name = object.name;
+		result.attributes = object.attributes;
+		result.type = object.type;
+		result.code = object.code;
+		result.description = object.description;
+		result.values = _.map(object.values, (it: any) => this.fromJSONItem(it));
+		return result;
+	}
+
+	public static fromJSONItem(object: any): PartyGroupItemImpl {
+		const result: PartyGroupItemImpl = new PartyGroupItemImpl();
+		result.attributes = object.attributes;
+		result.party = PartyServiceImpl.fromJSON(object.party);
+		return result;
+	}
+
 	private partyService: PartyServiceImpl;
 	private groupService: GroupServiceImpl<InternalPartyGroupItem>;
 	private log = logger.getLogger("PartyGroupServiceImpl");
@@ -351,24 +370,24 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	/**
 	 * Removes an item of the group.
 	 * @param {string} code.
-	 * @param party The object to remove.
+	 * @param partyId The id of object to remove.
 	 * Return a Promise if the remove was successful.
 	 * Returns a reject if there is no group given the code.
 	 * Returns a reject if the object to remove is null or undefined.
 	 */
-	removeItem(code: string, party: PartyAbstract): Promise<any> {
-		this.log.debug("Call to removeItem with code:%j , party: %j", code, party);
+	removeItem(code: string, partyId: string): Promise<any> {
+		this.log.debug("Call to removeItem with code:%j , partyId: %j", code, partyId);
 		return this.groupService.findOne(code)
 			.then((group: GroupImpl<InternalPartyGroupItem>) => {
 				if (group == null) return Promise.reject(GroupServiceValidator.NO_GROUP);
-				const founded = group.values.filter(value => value.partyId === party['id']);
+				const founded = group.values.filter(value => value.partyId === partyId);
 				if (founded.length === 0) {
-					this.log.error("Attempting to add a duplicated party item ( %j ) to group %j", party, code);
+					this.log.error("Attempting to remove an item that does not exists in ( %j ) to group %j", partyId, code);
 					return Promise.reject([
 						new ValidationErrorImpl(
 							PartyGroupServiceImpl.PARTY_ITEM,
 							PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST,
-							party['id'])
+							partyId)
 					]);
 				} else {
 					return this.groupService.removeItem(code, founded[0]);

@@ -91,11 +91,11 @@ export interface PartyGroupService {
 	/**
 	 * Removes an item of the group.
 	 * @param {string} code.
-	 * @param party The object to remove.
+	 * @param partyId The id of object to remove.
 	 * Return a Promise if the remove was successful.
 	 * Returns a reject if there is no group given the code.
 	 * Returns a reject if the object to remove is null or undefined.
 	 */
-	removeItem(code: string, party: PartyAbstract): Promise<any>;
+	removeItem(code: string, partyId: string): Promise<any>;
 
 }

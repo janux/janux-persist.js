@@ -274,7 +274,7 @@ describe("Testing party group service item item methods", function () {
 
 	describe("When calling removeItem with the correct values", function () {
 		it("The method should remove the item", function (done) {
-			partyGroupService.removeItem(code, insertedParty1)
+			partyGroupService.removeItem(code, insertedParty1.id)
 				.then(function () {
 					return partyGroupService.findOne(code);
 				})
@@ -288,7 +288,7 @@ describe("Testing party group service item item methods", function () {
 
 	describe("When removing an item that does not exist in the group", function () {
 		it("The method should return an error", function (done) {
-			partyGroupService.removeItem(code, insertedParty3)
+			partyGroupService.removeItem(code, insertedParty3.id)
 				.then(function () {
 					expect.fail("The method should have returned en error");
 				}, function (err) {
@@ -304,7 +304,7 @@ describe("Testing party group service item item methods", function () {
 	describe("When calling removeItem with a group code that does not exist in the database", function () {
 		it("The method should return an error", function (done) {
 			var invalid = 'invalid';
-			partyGroupService.removeItem(invalid, insertedParty1)
+			partyGroupService.removeItem(invalid, insertedParty1.id)
 				.then(function () {
 					expect.fail("The method should have returned en error");
 				}, function (err) {
