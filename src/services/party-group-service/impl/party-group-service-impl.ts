@@ -57,19 +57,19 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 		return result;
 	}
 
-	public static toJSON(group: GroupImpl<PartyGroupItemImpl>): any {
-		if (group == null) return group;
-		const result: any = _.cloneDeep(group);
-		result.values = group.values.map(value => this.toJSONItem(value));
-		return result;
-	}
-
-	public static toJSONItem(item: PartyGroupItemImpl): any {
-		const result: any = {};
-		result.attributes = item.attributes;
-		result.party = PartyServiceImpl.toJSON(item.party);
-		return result;
-	}
+	// public static toJSON(group: GroupImpl<PartyGroupItemImpl>): any {
+	// 	if (group == null) return group;
+	// 	const result: any = _.cloneDeep(group);
+	// 	result.values = group.values.map(value => this.toJSONItem(value));
+	// 	return result;
+	// }
+	//
+	// public static toJSONItem(item: PartyGroupItemImpl): any {
+	// 	const result: any = {};
+	// 	result.attributes = item.attributes;
+	// 	result.party = PartyServiceImpl.toJSON(item.party);
+	// 	return result;
+	// }
 
 	private partyService: PartyServiceImpl;
 	private groupService: GroupServiceImpl<InternalPartyGroupItem>;
