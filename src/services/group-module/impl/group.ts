@@ -28,7 +28,7 @@ export class GroupImpl<t> implements Group<t> {
 	// It is crucial to kep the dictionary key and values as string.
 	attributes: { [key: string]: string } = {};
 
-// Content of the group. It is responsibility of the developer to make sure
+	// Content of the group. It is responsibility of the developer to make sure
 	// the values is simple enough to be saved in a database.
 	// A recommendation is to save the references of the objects.
 	values: t[] = [];

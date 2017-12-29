@@ -38,6 +38,7 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	public static readonly ATTRIBUTE_CHANGE: string = "You can't change the attribute value";
 
 	public static fromJSON(object: any): GroupImpl<PartyGroupItemImpl> {
+		if (object == null) return object;
 		const result: GroupImpl<PartyGroupItemImpl> = new GroupImpl<PartyGroupItemImpl>();
 		result.name = object.name;
 		result.attributes = object.attributes;
@@ -49,9 +50,24 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	}
 
 	public static fromJSONItem(object: any): PartyGroupItemImpl {
+		if (object == null) return object;
 		const result: PartyGroupItemImpl = new PartyGroupItemImpl();
 		result.attributes = object.attributes;
 		result.party = PartyServiceImpl.fromJSON(object.party);
+		return result;
+	}
+
+	public static toJSON(group: GroupImpl<PartyGroupItemImpl>): any {
+		if (group == null) return group;
+		const result: any = _.cloneDeep(group);
+		result.values = group.values.map(value => this.toJSONItem(value));
+		return result;
+	}
+
+	public static toJSONItem(item: PartyGroupItemImpl): any {
+		const result: any = {};
+		result.attributes = item.attributes;
+		result.party = PartyServiceImpl.toJSON(item.party);
 		return result;
 	}
 
@@ -103,17 +119,17 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 				if (result == null) return Promise.resolve(null);
 				referenceGroup = result;
 				const ids = _.uniq(result.values.map((value) => value.partyId));
-				return this.partyService.findByIds(ids);
-			})
-			.then((result: PartyAbstract[]) => {
-				resultGroup = _.clone(referenceGroup);
-				resultGroup.values = referenceGroup.values.map((value) => {
-					const item: PartyGroupItemImpl = new PartyGroupItemImpl();
-					item.party = _.find(result, (o) => o['id'] === value.partyId);
-					item.attributes = value.attributes;
-					return item;
-				});
-				return Promise.resolve(resultGroup);
+				return this.partyService.findByIds(ids)
+					.then((result: PartyAbstract[]) => {
+						resultGroup = _.clone(referenceGroup);
+						resultGroup.values = referenceGroup.values.map((value) => {
+							const item: PartyGroupItemImpl = new PartyGroupItemImpl();
+							item.party = _.find(result, (o) => o['id'] === value.partyId);
+							item.attributes = value.attributes;
+							return item;
+						});
+						return Promise.resolve(resultGroup);
+					});
 			});
 	}
 

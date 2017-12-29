@@ -14,9 +14,4 @@ export class PartyGroupItemImpl implements PartyGroupItem {
 
 	// Extra attributes.
 	attributes: { [p: string]: string };
-
-	public toJSON(): any {
-		const result: any = _.cloneDeep(this);
-		result.party = PartyServiceImpl.fromJSON(result.party);
-	}
 }
