@@ -11,13 +11,13 @@ var assert = chai.assert;
 var lokijs = require('lokijs');
 var mongoose = require('mongoose');
 var _ = require('lodash');
-var ExampleUser = require("../../dist/index").SampleUser;
-var ExampleUserDaoLokiJsImpl = require("../../dist/index").SampleUserDaoLokiJsImpl;
-var ExampleUserDaoMongoDbImpl = require("../../dist/index").SampleUserDaoMongooseImpl;
-var MongoUserSchemaExample = require("../../dist/index").MongooseUserSchemaExample;
-var LokiJsAdapter = require("../../dist/index").LokiJsAdapter;
-var MongooseAdapter = require("../../dist/index").MongooseAdapter;
-var EntityProperties = require("../../dist/index").EntityPropertiesImpl;
+var ExampleUser = require("../../../dist/index").SampleUser;
+var ExampleUserDaoLokiJsImpl = require("../../../dist/index").SampleUserDaoLokiJsImpl;
+var ExampleUserDaoMongoDbImpl = require("../../../dist/index").SampleUserDaoMongooseImpl;
+var MongoUserSchemaExample = require("../../../dist/index").MongooseUserSchemaExample;
+var LokiJsAdapter = require("../../../dist/index").LokiJsAdapter;
+var MongooseAdapter = require("../../../dist/index").MongooseAdapter;
+var EntityProperties = require("../../../dist/index").EntityPropertiesImpl;
 
 
 //Config files
