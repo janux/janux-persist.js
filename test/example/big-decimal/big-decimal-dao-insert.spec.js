@@ -36,11 +36,13 @@ var bigDecimalMongoDb = new BigDecimalDaoMongoose(dbEngineUtilMongodb, EntityPro
 
 const name = "name";
 // We cant make this number too big because there is a precision loss with the lokijs implementation.
-const veryBigNumber = "99.999999";
-const value = new Big(veryBigNumber);
+const bigNumber = "99.999999";
+const veryBigNumber = "99.99009999000000999999";
+const value = new Big(bigNumber);
+const veryBigValue = new Big(veryBigNumber);
 
 describe("Testing big decimal dao insert method", function () {
-	[bigDecimalLokijs, bigDecimalMongoDb].forEach(function (bigDecimalDao) {
+	[bigDecimalLokijs, bigDecimalMongoDb].forEach(function (bigDecimalDao, index) {
 
 		beforeEach(function (done) {
 			bigDecimalDao.removeAll()
@@ -51,14 +53,25 @@ describe("Testing big decimal dao insert method", function () {
 
 		function validate(value) {
 			expect(value.name).eq(name);
-			expect(value.value.toFixed(6)).eq(veryBigNumber);
+			if (index === 0) {
+				expect(value.value.toString()).eq(bigNumber);
+			} else {
+				expect(value.value.toString()).eq(veryBigNumber);
+			}
+
+
 		}
 
 		describe("When calling insert", function () {
 			it("The method should insert the record", function (done) {
 				var bigDecimal = new BigDecimalEntity();
 				bigDecimal.name = name;
-				bigDecimal.value = value;
+
+				if (index === 0) {
+					bigDecimal.value = value;
+				} else {
+					bigDecimal.value = veryBigValue;
+				}
 				bigDecimalDao.insert(bigDecimal)
 					.then(function (result) {
 						validate(result);
