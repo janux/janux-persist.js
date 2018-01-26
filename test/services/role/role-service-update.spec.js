@@ -24,6 +24,7 @@ const newDescription =  'New role description';
 describe("Testing role service update method", function () {
 
 	var insertedRecord1;
+	var insertedRecord2;
 	var roleDao;
 	var roleService;
 
@@ -42,6 +43,7 @@ describe("Testing role service update method", function () {
 				})
 				.then(function (result) {
 					insertedRecord1 = result[0];
+					insertedRecord2 = result[1];
 					done();
 				});
 		}, 50);
@@ -61,6 +63,33 @@ describe("Testing role service update method", function () {
 				.then(function (resultQuery) {
 					expect(resultQuery.id).eq(insertedRecord1.id);
 					expect(resultQuery.description).eq(newDescription);
+					done();
+				});
+		});
+	});
+
+	describe("When updating the order of the roles", function () {
+		it("It should not return any error", function (done) {
+
+			var rolesRefToUpdate = [
+				{
+					id: insertedRecord1.id,
+					sortOrder: 3
+				},
+				{
+					id: insertedRecord2.id,
+					sortOrder: 4
+				}
+			];
+
+			roleService.updateSortOrder(rolesRefToUpdate)
+				.then(function (result) {
+					//Perform a query with the same id.
+					return roleDao.findOne(insertedRecord1.id);
+				})
+				.then(function (resultQuery) {
+					expect(resultQuery.id).eq(insertedRecord1.id);
+					expect(resultQuery.sortOrder).eq(3);
 					done();
 				});
 		});

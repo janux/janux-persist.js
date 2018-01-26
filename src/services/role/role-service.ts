@@ -103,7 +103,7 @@ export class RoleService {
 		this._log.debug("Call to updateMethod with object:%j", object);
 
 		let role: JanuxAuthorize.Role;
-		// Find the role. This also helps to retrieve the contactId.
+		// Find the role.
 		return this.roleDao.findOne(object.id)
 			.then((resultQuery) => {
 				if (resultQuery === null) {
@@ -119,6 +119,31 @@ export class RoleService {
 			})
 			.then((updatedRole: JanuxAuthorize.Role) => {
 				return Promise.resolve(updatedRole);
+			});
+	}
+
+	/**
+	 * Update the order of the roles
+	 * @param array of objects containing id and sort order of each role
+	 */
+	public updateSortOrder(rolesOrder: any): Promise<any> {
+		this._log.debug("Call to updateSortOrder with object:%j", rolesOrder);
+
+		// Find the roles
+		return this.roleDao.findByIds( _.map(rolesOrder, 'id'))
+			.then((resultQuery) => {
+				return Promise.map(resultQuery, (aRole) => {
+					let role: JanuxAuthorize.Role;
+					const roleObject: any = _.find( rolesOrder , { id: aRole.id });
+					role = JanuxAuthorize.Role.fromJSON(aRole);
+					role.id = aRole.id;
+					role.sortOrder = roleObject.sortOrder;
+
+					return this.roleDao.update(role);
+				});
+			})
+			.then((updatedRoles: any) => {
+				return Promise.all(updatedRoles);
 			});
 	}
 
