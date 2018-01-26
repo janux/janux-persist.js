@@ -170,5 +170,37 @@ describe("Testing authContext groups service update methods", function () {
 				});
 		});
 	});
+
+	describe("When calling updateSortOrder", function () {
+		it("The method should update the groups sort order", function (done) {
+			var group = new GroupImpl();
+			var group2 = new GroupImpl();
+
+			group.name = name;
+			group.code = code;
+			group.type = authContextGroupService.AUTHCONTEXT_GROUP_TYPE;
+			group.attributes = attributes;
+			group.values = [insertedAuthContext1];
+			authContextGroupService.insert(group)
+				.then(function () {
+					const groupsSortOrder = [
+						{ code: code, attributes: {sortOrder: '25'} }
+					];
+
+					return authContextGroupService.updateGroupsSortOrder(groupsSortOrder);
+				})
+				.then(function () {
+					return authContextGroupService.findOne(code);
+				})
+				.then(function (updatedGroup) {
+
+					expect(updatedGroup.name).eq(name);
+					expect(updatedGroup.code).eq(code);
+					expect(updatedGroup.attributes.sortOrder).eq('25');
+					done();
+				})
+		});
+
+	});
 });
 

@@ -154,6 +154,31 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	}
 
 	/**
+	 * Updates order of authorization context groups
+	 * @param groupsOrder Array of objects containing group code and sort order
+	 * @return {Promise<<any>}
+	 */
+	updateGroupsSortOrder(groupsOrder: any): Promise<any> {
+
+		return this.findAll()
+			.then((groups) => {
+				return Promise.map(groups, (group) => {
+					const groupToUpdate: GroupImpl<any> = _.clone(group);
+					const ids = group.values.map((value) => value.id);
+					const newAttribues: any = _.find(groupsOrder, { code: groupToUpdate.code });
+
+					groupToUpdate.values = ids;
+					groupToUpdate.attributes = newAttribues.attributes;
+
+					return this.groupService.update(groupToUpdate);
+				});
+			})
+			.then((updateGroups) => {
+				return Promise.all(updateGroups);
+			});
+	}
+
+	/**
 	 * Delete group.
 	 * @param {Group} code
 	 * @return {Promise<any>} Returns a reject if there is no group with the specified code.

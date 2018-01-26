@@ -139,6 +139,36 @@ export class AuthContextService {
 	}
 
 	/**
+	 * Update order of the authorization context
+	 * @param object The authContext name and sort order to be updated.
+	 */
+	public updateSortOrder(object: any): Promise<any> {
+		this._log.debug("Call to updateSortOrder with object:%j", object);
+
+		const promises = Promise.map(object, (authToUpdate: any) => {
+
+			let authContext: JanuxAuthorize.AuthorizationContext;
+			// Find the authContext
+			return this.authContextDao.findOneByName(authToUpdate.name)
+				.then((resultQuery) => {
+					if (resultQuery === null) {
+						return Promise.reject([
+							new ValidationErrorImpl(this.AUTHCONTEXT, this.AUTHCONTEXT_NOT_IN_DATABASE, object.id)
+						]);
+					} else {
+						const authObject: any = _.find( object , { name: authToUpdate.name });
+
+						authContext = resultQuery;
+						authContext.sortOrder = authObject.sortOrder;
+						return this.authContextDao.update(resultQuery);
+					}
+				});
+		});
+
+		return Promise.all(promises);
+	}
+
+	/**
 	 * Delete an authorization context by its id
 	 * @param authContextId The authContext id.
 	 * @return {Promise<any>} A promise indicating the operation is executed successfully.
