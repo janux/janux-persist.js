@@ -314,5 +314,54 @@ describe("Testing party group service item item methods", function () {
 		});
 	});
 
+
+	describe("When calling addItemNewParty with correct values", function () {
+		it("The method should insert the party and associate it to the group", function (done) {
+			var initialCount;
+			partyDao.count()
+				.then(function (result) {
+					initialCount = result;
+					var party = SampleData.createOrganization3();
+					return partyGroupService.addItemNewParty(code, party, {});
+				})
+				.then(function (result) {
+					expect(result.typeName).not.be.undefined;
+					expect(result.id).not.be.undefined;
+					expect(result.name).not.be.undefined;
+					return partyDao.count();
+				})
+				.then(function (result) {
+					expect(result).eq(initialCount + 1);
+					done();
+				});
+		});
+	});
+
+
+	describe("When calling addItemNewParty with invalid group code", function () {
+		it("The method should return an error", function (done) {
+			var initialCount;
+			partyDao.count()
+				.then(function (result) {
+					initialCount = result;
+					var party = SampleData.createOrganization3();
+					return partyGroupService.addItemNewParty('invalid code', party, {});
+				})
+				.then(function () {
+					expect.fail("The method should not have inserted the record");
+					done();
+				}, function (err) {
+					expect(err).eq(GroupServiceValidator.NO_GROUP);
+					// make sure there is no party inserted.
+					return partyDao.count()
+						.then(function (result) {
+							expect(result).eq(initialCount);
+							done();
+						});
+				})
+		});
+	});
+
+
 });
 

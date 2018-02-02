@@ -384,6 +384,37 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	}
 
 	/**
+	 * Inserts a new party (using PartyService) and add the inserted party to the group.
+	 * @param {string} code The group to insert the new party.
+	 * @param {PartyAbstract} party The party to insert.
+	 * @param attributes attributes to insert.
+	 * @returns {Bluebird<PartyAbstract>} Returns the inserted party.
+	 * The methods return a error if there is no group with the same code.
+	 * This method returns the same errors of PartyService.insert or the same errors of
+	 * PartyGroupItemService.addItem
+	 */
+	addItemNewParty(code: string, party: PartyAbstract, attributes: { [p: string]: string }): Promise<PartyAbstract> {
+		this.log.debug("Call to addItemNewParty with code: %j, party: %j, attributes: %j", code, party, attributes);
+		let insertedParty: PartyAbstract;
+
+		return this.groupService.findOne(code)
+			.then((result) => {
+				if (result == null) return Promise.reject(GroupServiceValidator.NO_GROUP);
+				return this.partyService.insert(party);
+			})
+			.then((result: PartyAbstract) => {
+				insertedParty = result;
+				const partyGroupItem: PartyGroupItemImpl = new PartyGroupItemImpl();
+				partyGroupItem.attributes = attributes;
+				partyGroupItem.party = result;
+				return this.addItem(code, partyGroupItem);
+			})
+			.then(() => {
+				return Promise.resolve(insertedParty);
+			});
+	}
+
+	/**
 	 * Removes an item of the group.
 	 * @param {string} code.
 	 * @param partyId The id of object to remove.

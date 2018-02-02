@@ -56,6 +56,17 @@ function createOrganization2() {
 	return organization;
 }
 
+function createOrganization3() {
+	const organizationName = "No tesla corp";
+	const organizationContactEmail = "sales@notesla.com";
+	const contactType = "work";
+	var organization = new Organization();
+	organization.name = organizationName;
+	organization.setContactMethod(contactType, new EmailAddress(organizationContactEmail));
+	return organization;
+}
+
+
 function createEmptyUserAccount1() {
 	const accountUsername = "username";
 	const accountPassword = "password";
@@ -151,6 +162,7 @@ module.exports = {
 	createPerson2: createPerson2,
 	createOrganization1: createOrganization1,
 	createOrganization2: createOrganization2,
+	createOrganization3: createOrganization3,
 	createEmptyUserAccount1: createEmptyUserAccount1,
 	createEmptyUserAccount2: createEmptyUserAccount2,
 	createUser1: createUser1,
