@@ -16,7 +16,7 @@ export class DateUtil {
 	 * Converts a string to a Date.
 	 * @param {string} object The string to  convert.
 	 * @return {Date} Returns undefined if the object is null or undefined or a blank string, otherwise returns a date object.
-	 * Returns the same object if this  one is a date.
+	 * Returns the same object if this one is a date.
 	 * The method throws an error if moment.js can't interpret the string.
 	 */
 	public static stringToDate(object: any): Date {
@@ -24,9 +24,9 @@ export class DateUtil {
 
 		if (_.isNil(object)) return undefined;
 
-		if (isBlankString(object)) return undefined;
-
 		if (_.isDate(object)) return object;
+
+		if (isBlankString(object)) return undefined;
 
 		const date = moment(object);
 		if (date.isValid()) {
