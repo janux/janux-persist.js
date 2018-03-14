@@ -50,6 +50,27 @@ export class GroupContentDao extends AbstractDataAccessObjectWithAdapter<GroupCo
 		return this.findByQuery(query);
 	}
 
+	/**
+	 * Return all records...
+	 * @param {string[]} idGroups Whose idGroup matches the array.
+	 * @param attributeName: Given the "value" attribute can save anything, sometimes we need perform queries related to the "value" attribute.
+	 * Assuming "value" is an embedded document, we can filter data by the content of value.
+	 * @param value
+	 * @return {Bluebird<GroupContentEntity[]>}
+	 */
+	public findByIdGroupsInAndValueByEmbeddedDocument(idGroups: string[], attributeName: string, value: any): Promise<GroupContentEntity[]> {
+		const queryFilterValue: {} = {};
+		const customQueryParameter: string = "value." + attributeName;
+		queryFilterValue[customQueryParameter] = {$eq: value};
+		const query: any = {
+			$and: [
+				{idGroup: {$in: idGroups}},
+				queryFilterValue
+			]
+		};
+		return this.findByQuery(query);
+	}
+
 	public removeAllByIdGroup(idGroup: string): Promise<any> {
 		return this.findByIdGroup(idGroup)
 			.then((resultQuery: GroupContentEntity[]) => {
