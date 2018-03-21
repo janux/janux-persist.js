@@ -3,6 +3,7 @@
  * Created by ernesto on 6/29/17.
  */
 var chai = require('chai');
+var expect = chai.expect;
 var config = require('config');
 var DaoUtil = require("../../daos/dao-util");
 var UserService = require("../../../dist/index").UserService;
@@ -49,7 +50,7 @@ const personMiddleName2 = "Smith";
 const contactEmail2 = "dev_full_stack@glarus.com";
 
 
-describe("Testing auth context service updateMethod method", function () {
+describe("Testing user service update method", function () {
 	describe("Given the inserted roles and accounts", function () {
 
 		var partyDao;
@@ -58,12 +59,14 @@ describe("Testing auth context service updateMethod method", function () {
 		var insertedUser1;
 		var insertedUser2;
 		var partyService;
+		var staffDao;
 
 		beforeEach(function (done) {
 
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
-			partyService = new PartyService(partyDao);
+			staffDao = DaoUtil.createStaffDao(dbEngine, dbPath);
+			partyService = new PartyService(partyDao, staffDao);
 			userService = UserService.createInstance(accountDao, partyService);
 			accountDao.removeAll()
 				.then(function () {
@@ -111,11 +114,11 @@ describe("Testing auth context service updateMethod method", function () {
 				.then(function (insertedUser) {
 					insertedUser2 = insertedUser;
 					done();
-				})
+				});
 		});
 
 		describe("When updating the account", function () {
-			it("The method should updateMethod the account and contact data", function (done) {
+			it("The method should update the account and contact data", function (done) {
 				insertedUser1.username = accountUsername3;
 				insertedUser1.password = accountPassword3;
 				insertedUser1.contact.name.first = personName2;
@@ -125,7 +128,7 @@ describe("Testing auth context service updateMethod method", function () {
 				userService.update(insertedUser1)
 					.then(function (resultUpdate) {
 						done();
-					})
+					});
 			})
 		});
 	});

@@ -46,6 +46,7 @@ describe("Testing party group service update method", function () {
 	var groupContentDao;
 	var groupDao;
 	var groupAttributeValueDao;
+	var staffDao;
 
 	var insertedParty1;
 	var insertedParty2;
@@ -68,7 +69,8 @@ describe("Testing party group service update method", function () {
 		groupDao = DaoUtil.createGroupDao(dbEngine, dbPath);
 		groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, dbPath);
 
-		partyService = new PartyServiceImpl(partyDao);
+		staffDao = DaoUtil.createStaffDao(dbEngine, dbPath);
+		partyService = new PartyServiceImpl(partyDao, staffDao);
 		groupService = new GroupServiceImpl(groupDao, groupContentDao, groupAttributeValueDao);
 		partyGroupService = new PartyGroupServiceImpl(partyService, groupService);
 
@@ -279,7 +281,7 @@ describe("Testing party group service update method", function () {
 
 	describe("When calling update when trying to change the attribute that identifies the group is inserted by the service", function () {
 		it("The method should return an error", function (done) {
-			insertedGroup1.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_SERVICE_SIGNATURE]=undefined;
+			insertedGroup1.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_SERVICE_SIGNATURE] = undefined;
 			partyGroupService.update(insertedGroup1)
 				.then(function () {
 					expect.fail("The method should not have updated the group");

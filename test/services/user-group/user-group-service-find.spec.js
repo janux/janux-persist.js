@@ -15,6 +15,7 @@ const UserGroupService = require("../../../dist/index").UserGroupServiceImpl;
 const GroupService = require("../../../dist/index").GroupServiceImpl;
 const GroupImpl = require("../../../dist/index").GroupImpl;
 const UserService = require("../../../dist/index").UserService;
+const PartyServiceImpl = require("../../../dist/index").PartyServiceImpl;
 
 //Config files
 const serverAppContext = config.get("serverAppContext");
@@ -32,10 +33,12 @@ describe("Testing user group service find methods", function () {
 	var groupContentDao;
 	var accountDao;
 	var partyDao;
+	var staffDao;
 	var groupDao;
 	var groupAttributeValueDao;
 	var groupService;
 	var userService;
+	var partyService;
 	var userGroupService;
 
 	var insertedUser1;
@@ -49,7 +52,9 @@ describe("Testing user group service find methods", function () {
 		groupDao = DaoUtil.createGroupDao(dbEngine, path);
 		groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, path);
 		groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
-		userService = UserService.createInstance(accountDao, partyDao);
+		staffDao = DaoUtil.createStaffDao(dbEngine, path);
+		partyService = new PartyServiceImpl(partyDao, staffDao);
+		userService = UserService.createInstance(accountDao, partyService);
 		userGroupService = new UserGroupService(userService, groupService);
 		setTimeout(function () {
 			// Delete all records.

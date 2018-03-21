@@ -46,6 +46,7 @@ describe("Testing party group service find methods", function () {
 	var groupContentDao;
 	var groupDao;
 	var groupAttributeValueDao;
+	var staffDao;
 
 	var insertedParty1;
 	var insertedParty2;
@@ -67,8 +68,8 @@ describe("Testing party group service find methods", function () {
 		groupContentDao = DaoUtil.createGroupContentDao(dbEngine, dbPath);
 		groupDao = DaoUtil.createGroupDao(dbEngine, dbPath);
 		groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, dbPath);
-
-		partyService = new PartyServiceImpl(partyDao);
+		staffDao = DaoUtil.createStaffDao(dbEngine, dbPath);
+		partyService = new PartyServiceImpl(partyDao,staffDao);
 		groupService = new GroupServiceImpl(groupDao, groupContentDao, groupAttributeValueDao);
 		partyGroupService = new PartyGroupServiceImpl(partyService, groupService);
 

@@ -301,9 +301,9 @@ export class UserService {
 				const contact: any = object.contact;
 				let objectToUpdate: any;
 				if (contact.typeName === PartyValidator.PERSON) {
-					objectToUpdate = JanuxPeople.Person.fromJSON(contact);
+					objectToUpdate = PartyServiceImpl.fromJSON(contact);
 				} else {
-					objectToUpdate = JanuxPeople.Organization.fromJSON(contact);
+					objectToUpdate = PartyServiceImpl.fromJSON(contact);
 				}
 				// TODO: If there are more party profiles, add their correspondent fromJSON().
 				objectToUpdate.id = contact.id;
@@ -372,12 +372,12 @@ export class UserService {
 		if (isBlankString(party.id) === true) {
 			// No id. Check port party type before inserting a new party.
 			if (_.isString(party.typeName) && party.typeName === PartyValidator.PERSON) {
-				person = JanuxPeople.Person.fromJSON(party) as JanuxPeople.Person;
+				person = PartyServiceImpl.fromJSON(party) as JanuxPeople.Person;
 				this._log.debug("Inserting the person %j", person);
 				return this.partyService.insert(person);
 			} else if (_.isString(party.typeName) && party.typeName === PartyValidator.ORGANIZATION) {
 				// Itś an organization
-				organization = JanuxPeople.Organization.fromJSON(party) as JanuxPeople.Organization;
+				organization = PartyServiceImpl.fromJSON(party) as JanuxPeople.Organization;
 				// Insert the organization.
 				this._log.debug("Inserting the organization %j", organization);
 				return this.partyService.insert(organization);

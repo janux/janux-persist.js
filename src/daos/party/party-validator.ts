@@ -17,7 +17,7 @@ export class PartyValidator {
 
 	public static readonly PERSON: string = "PersonImpl";
 	public static readonly ORGANIZATION: string = "OrganizationImpl";
-	public static readonly STAFF: string = "StaffImpl";
+	public static readonly STAFF: string = "StaffImplTest";
 	public static readonly CONTACTS_EMAILS = "contact.emails";
 	public static readonly CONTACT_PHONE_NUMBER = "contacts.phoneNumbers";
 	public static readonly TYPE: string = "type";

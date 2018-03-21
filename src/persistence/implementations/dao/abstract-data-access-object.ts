@@ -148,7 +148,7 @@ export abstract class AbstractDataAccessObject<t, ID>  implements CrudRepository
 	 * @param objectsToInsert The objects to insertMethod
 	 * @returns {any} A promise containing the inserted objects, a rejected promise if something went wrong
 	 */
-	public insertMany(objectsToInsert: t[]): Promise<any> {
+	public insertMany(objectsToInsert: t[]): Promise<t[]> {
 		this._log.debug('Call to insertMany with %j', objectsToInsert.length);
 		const convertedObjectsToInsert: any = [];
 		let entityErrors: ValidationErrorImpl[];

@@ -5,10 +5,13 @@
 import Promise = require("bluebird");
 import {PartyDao} from "daos/party/party-dao";
 import {PartyValidator} from "daos/party/party-validator";
+import {StaffDao} from "daos/staff/staff-dao";
+import {StaffEntity} from "daos/staff/staff-entity";
 import JanuxPeople = require("janux-people");
-import {PartyAbstract} from "janux-people";
+import * as _ from "lodash";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {PartyService} from "services/party/api/party-service";
+import {StaffImpl} from "services/staff/impl/staff-impl";
 import {DateUtil} from "utils/date/date-util";
 
 export class PartyServiceImpl implements PartyService {
@@ -16,7 +19,7 @@ export class PartyServiceImpl implements PartyService {
 	public static readonly PERSON: string = "PersonImpl";
 	public static readonly ORGANIZATION: string = "OrganizationImpl";
 
-	public static toJSON(party: PartyAbstract): any {
+	public static toJSON(party: JanuxPeople.PartyAbstract): any {
 		if (party == null) return party;
 
 		const result: any = party.toJSON();
@@ -36,7 +39,7 @@ export class PartyServiceImpl implements PartyService {
 	 * @param object
 	 * @return {Party}
 	 */
-	public static fromJSON(object: any): PartyAbstract {
+	public static fromJSON(object: any): JanuxPeople.PartyAbstract {
 		if (object == null) return object;
 		const id = object.id;
 		const typeName = object.typeName;
@@ -51,13 +54,16 @@ export class PartyServiceImpl implements PartyService {
 		result.id = id;
 		result.dateCreated = dateCreated;
 		result.lastUpdate = lastUpdate;
+		result.staff = StaffImpl.fomJSON(object.staff);
 		return result;
 	}
 
 	private partyDao: PartyDao;
+	private staffDao: StaffDao;
 
-	constructor(partyDao: PartyDao) {
+	constructor(partyDao: PartyDao, staffDao: StaffDao) {
 		this.partyDao = partyDao;
+		this.staffDao = staffDao;
 	}
 
 	/**
@@ -66,7 +72,10 @@ export class PartyServiceImpl implements PartyService {
 	 * @return {Promise}
 	 */
 	findByName(name: string): Promise<JanuxPeople.PartyAbstract[]> {
-		return this.partyDao.findByName(name);
+		return this.partyDao.findByName(name)
+			.then((result: JanuxPeople.PartyAbstract[]) => {
+				return this.mergeStaffData(result);
+			});
 	}
 
 	/**
@@ -75,7 +84,10 @@ export class PartyServiceImpl implements PartyService {
 	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
 	findByEmail(email: string): Promise<JanuxPeople.PartyAbstract[]> {
-		return this.partyDao.findByEmail(email);
+		return this.partyDao.findByEmail(email)
+			.then((result: JanuxPeople.PartyAbstract[]) => {
+				return this.mergeStaffData(result);
+			});
 	}
 
 	/**
@@ -84,7 +96,10 @@ export class PartyServiceImpl implements PartyService {
 	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
 	findByPhone(phone: string): Promise<JanuxPeople.PartyAbstract[]> {
-		return this.partyDao.findByPhone(phone);
+		return this.partyDao.findByPhone(phone)
+			.then((result: JanuxPeople.PartyAbstract[]) => {
+				return this.mergeStaffData(result);
+			});
 	}
 
 	/**
@@ -92,7 +107,10 @@ export class PartyServiceImpl implements PartyService {
 	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
 	findPeople(): Promise<JanuxPeople.PartyAbstract[]> {
-		return this.partyDao.findPeople();
+		return this.partyDao.findPeople()
+			.then((result: JanuxPeople.PartyAbstract[]) => {
+				return this.mergeStaffData(result);
+			});
 	}
 
 	/**
@@ -100,7 +118,10 @@ export class PartyServiceImpl implements PartyService {
 	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
 	findOrganizations(): Promise<JanuxPeople.PartyAbstract[]> {
-		return this.partyDao.findOrganizations();
+		return this.partyDao.findOrganizations()
+			.then((result: JanuxPeople.PartyAbstract[]) => {
+				return this.mergeStaffData(result);
+			});
 	}
 
 	/**
@@ -120,7 +141,10 @@ export class PartyServiceImpl implements PartyService {
 	 * if there is no record given the id.
 	 */
 	findOne(id: string): Promise<JanuxPeople.PartyAbstract> {
-		return this.partyDao.findOne(id);
+		return this.partyDao.findOne(id)
+			.then((result: JanuxPeople.PartyAbstract) => {
+				return this.mergeStaffDataOneRecord(result);
+			});
 	}
 
 	/**
@@ -130,7 +154,10 @@ export class PartyServiceImpl implements PartyService {
 	 * founded then the method returns an empty array.
 	 */
 	findByIds(ids: string[]): Promise<JanuxPeople.PartyAbstract[]> {
-		return this.partyDao.findByIds(ids);
+		return this.partyDao.findByIds(ids)
+			.then((result: JanuxPeople.PartyAbstract[]) => {
+				return this.mergeStaffData(result);
+			});
 	}
 
 	/**
@@ -140,7 +167,21 @@ export class PartyServiceImpl implements PartyService {
 	 * Returns a reject if there are validation errors.
 	 */
 	insert(party: JanuxPeople.PartyAbstract): Promise<JanuxPeople.PartyAbstract> {
-		return this.partyDao.insert(party);
+		let insertedRecord: JanuxPeople.PartyAbstract;
+		return this.partyDao.insert(party)
+			.then((result: JanuxPeople.PartyAbstract) => {
+				insertedRecord = result;
+				const staffEntity: StaffEntity = StaffImpl.toEntity(party['staff'], party['id']);
+				if (staffEntity) {
+					return this.staffDao.insert(staffEntity)
+						.then((result: StaffEntity) => {
+							insertedRecord['staff'] = StaffImpl.fomJSON(result);
+							return Promise.resolve(insertedRecord);
+						});
+				} else {
+					return Promise.resolve(insertedRecord);
+				}
+			});
 	}
 
 	/**
@@ -148,8 +189,27 @@ export class PartyServiceImpl implements PartyService {
 	 * @param {Party[]} parties
 	 * @return {Bluebird<Party[]>}
 	 */
-	insertMany(parties: PartyAbstract[]): Promise<PartyAbstract[]> {
-		return this.partyDao.insertMany(parties);
+	insertMany(parties: JanuxPeople.PartyAbstract[]): Promise<JanuxPeople.PartyAbstract[]> {
+		let insertedRecords: JanuxPeople.PartyAbstract[];
+		return this.partyDao.insertMany(parties)
+			.then((result: JanuxPeople.PartyAbstract[]) => {
+				insertedRecords = result;
+				// Insert the staff data.
+				const staffEntities: StaffEntity[] = [];
+				let i: number = 0;
+				for (const it of result) {
+					if (!_.isNil(parties[i]['staff'])) {
+						const staffData: StaffImpl = StaffImpl.fomJSON(parties[i]['staff']);
+						const staffEntity: StaffEntity = StaffImpl.toEntity(staffData, it['id']);
+						staffEntities.push(staffEntity);
+					}
+					i++;
+				}
+				return this.staffDao.insertMany(staffEntities);
+			})
+			.then((result: StaffEntity[]) => {
+				return this.mapStaffData(insertedRecords, result);
+			});
 	}
 
 	/**
@@ -159,7 +219,24 @@ export class PartyServiceImpl implements PartyService {
 	 * Returns a reject if there are validation errors.
 	 */
 	update(party: JanuxPeople.PartyAbstract): Promise<JanuxPeople.PartyAbstract> {
-		return this.partyDao.update(party);
+		const idToUpdate: string = party['id'];
+		let updatedParty: JanuxPeople.PartyAbstract;
+		return this.partyDao.update(party)
+			.then((result: JanuxPeople.PartyAbstract) => {
+				updatedParty = result;
+				return this.staffDao.removeByIdContact(idToUpdate);
+			})
+			.then(() => {
+				const staffEntity: StaffEntity = StaffImpl.toEntity(StaffImpl.fomJSON(party['staff']), idToUpdate);
+				if (staffEntity) {
+					return this.staffDao.insert(staffEntity).then(() => {
+						return Promise.resolve(party);
+					});
+				} else {
+					return Promise.resolve(updatedParty);
+				}
+			});
+
 	}
 
 	/**
@@ -170,7 +247,11 @@ export class PartyServiceImpl implements PartyService {
 	 */
 	remove(id: string): Promise<any> {
 		// TODO: Maybe we need to validate main relations.
-		return this.partyDao.removeById(id);
+		return this.staffDao.removeByIdContact(id)
+			.then(() => {
+				return this.partyDao.removeById(id);
+			});
+
 	}
 
 	/**
@@ -178,7 +259,10 @@ export class PartyServiceImpl implements PartyService {
 	 * @return {Bluebird<any>}
 	 */
 	removeAll(): Promise<any> {
-		return this.partyDao.removeAll();
+		return this.staffDao.removeAll()
+			.then(() => {
+				return this.partyDao.removeAll();
+			});
 	}
 
 	/**
@@ -187,6 +271,34 @@ export class PartyServiceImpl implements PartyService {
 	 * @return {Promise<any>}
 	 */
 	removeByIds(ids: string[]): Promise<any> {
-		return this.partyDao.removeById(ids);
+		return this.staffDao.removeByIdContactIn(ids)
+			.then(() => {
+				return this.partyDao.removeById(ids);
+			});
+	}
+
+	private mergeStaffData(parties: JanuxPeople.PartyAbstract[]): Promise<JanuxPeople.PartyAbstract[]> {
+		return this.staffDao.findByIdContactIn(parties.map(value => value['id']))
+			.then((staffData: StaffEntity[]) => {
+				return Promise.resolve(this.mapStaffData(parties, staffData));
+			});
+	}
+
+	private mapStaffData(parties: JanuxPeople.PartyAbstract[], staffEntities: StaffEntity[]): JanuxPeople.PartyAbstract[] {
+		parties = parties.map(party => {
+			const record = _.find(staffEntities, it => it.idContact === party['id']);
+			party['staff'] = StaffImpl.fomJSON(record);
+			return party;
+		});
+		return parties;
+	}
+
+	private mergeStaffDataOneRecord(party: JanuxPeople.PartyAbstract): Promise<JanuxPeople.PartyAbstract> {
+		if (party == null) return Promise.resolve(party);
+		return this.staffDao.findOneByIdContact(party['id'])
+			.then((staffEntity: StaffEntity) => {
+				party['staff'] = StaffImpl.fomJSON(staffEntity);
+				return Promise.resolve(party);
+			});
 	}
 }

@@ -58,13 +58,15 @@ describe("Testing user service find method", function () {
 		var insertedUser1;
 		var insertedUser2;
 		var partyService;
+		var staffDao;
 
 
 		beforeEach(function (done) {
 
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
-			partyService = new PartyService(partyDao);
+			staffDao = DaoUtil.createStaffDao(dbEngine, dbPath);
+			partyService = new PartyService(partyDao, staffDao);
 			userService = UserService.createInstance(accountDao, partyService);
 			accountDao.removeAll()
 				.then(function () {

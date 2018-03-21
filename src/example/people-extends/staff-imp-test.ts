@@ -4,10 +4,10 @@
  */
 import {PartyAbstract, Person} from "janux-people";
 
-export class StaffImpl extends Person {
+export class StaffImplTest extends Person {
 
-	public static fromJSON(obj: any): StaffImpl {
-		let staff: StaffImpl = new StaffImpl(
+	public static fromJSON(obj: any): StaffImplTest {
+		let staff: StaffImplTest = new StaffImplTest(
 			obj.name.honorificPrefix,
 			obj.name.first,
 			obj.name.middle,
@@ -38,10 +38,10 @@ export class StaffImpl extends Person {
 	}
 
 	get typeName(): string {
-		return "StaffImpl";
+		return "StaffImplTest";
 	}
 
-	public toJSON(): StaffImpl {
+	public toJSON(): StaffImplTest {
 		const out: any = this.contactMethods;
 		out.displayName = this.name.shortName;
 		out.contractNumber = this.contractNumber;

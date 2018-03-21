@@ -24,6 +24,9 @@ var RoleDaoMongooseImpl = require("../../dist/index").RoleDaoMongooseImpl;
 var RoleDaoLokiJsImpl = require("../../dist/index").RoleDaoLokiJsImpl;
 var RoleMongooseDbSchema = require("../../dist/index").RoleMongooseDbSchema;
 
+var StaffDao = require("../../dist/index").StaffDao;
+var StaffDataMongooseDbSchema = require("../../dist/index").StaffDataMongooseDbSchema;
+
 var GroupDao = require("../../dist/index").GroupDao;
 var GroupMongooseSchema = require("../../dist/index").GroupMongooseSchema;
 
@@ -36,11 +39,12 @@ var GroupAttributeValueMongooseSchema = require("../../dist/index").GroupAttribu
 
 const PARTY_DEFAULT_COLLECTION_NAME = 'contact';
 const ACCOUNT_DEFAULT_COLLECTION_NAME = 'account';
-const AUTHCONTEXT_DEFAULT_COLLECTION_NAME = 'authcontext';
+const AUTH_CONTEXT_DEFAULT_COLLECTION_NAME = 'authcontext';
 const ROLE_DEFAULT_COLLECTION_NAME = 'role';
 const GROUP_DEFAULT_COLLECTION_NAME = 'group';
 const GROUP_CONTENT_DEFAULT_COLLECTION_NAME = 'groupContent';
 const GROUP_ATTRIBUTES_DEFAULT_COLLECTION_NAME = "groupAttribute";
+const STAFF_COLLECTION_NAME = "staff";
 
 function createPartyDao(dbEngine, dbPath) {
 	var dao;
@@ -67,9 +71,9 @@ function createAccountDao(dbEngine, dbPath) {
 function createAuthContextDao(dbEngine, dbPath) {
 	var dao;
 	if (dbEngine === DataSourceHandler.MONGOOSE) {
-		dao = DaoFactory.subscribeDao(new DaoSettings(dbEngine, dbPath, AUTHCONTEXT_DEFAULT_COLLECTION_NAME, EntityPropertiesImpl.createDefaultProperties(), AuthContextMongooseDbSchema), AuthContextDaoMongooseImpl);
+		dao = DaoFactory.subscribeDao(new DaoSettings(dbEngine, dbPath, AUTH_CONTEXT_DEFAULT_COLLECTION_NAME, EntityPropertiesImpl.createDefaultProperties(), AuthContextMongooseDbSchema), AuthContextDaoMongooseImpl);
 	} else if (dbEngine === DataSourceHandler.LOKIJS) {
-		dao = DaoFactory.subscribeDao(new DaoSettings(dbEngine, dbPath, AUTHCONTEXT_DEFAULT_COLLECTION_NAME, EntityPropertiesImpl.createDefaultProperties()), AuthContextDaoLokiJsImpl);
+		dao = DaoFactory.subscribeDao(new DaoSettings(dbEngine, dbPath, AUTH_CONTEXT_DEFAULT_COLLECTION_NAME, EntityPropertiesImpl.createDefaultProperties()), AuthContextDaoLokiJsImpl);
 	}
 	return dao;
 }
@@ -115,6 +119,16 @@ function createGroupAttributesDao(dbEngine, dbPath) {
 	return dao;
 }
 
+function createStaffDao(dbEngine, dbPath) {
+	var dao;
+	if (dbEngine === DataSourceHandler.MONGOOSE) {
+		dao = DaoFactory.subscribeDao(new DaoSettings(dbEngine, dbPath, STAFF_COLLECTION_NAME, EntityPropertiesImpl.createDefaultProperties(), StaffDataMongooseDbSchema), StaffDao);
+	} else if (dbEngine === DataSourceHandler.LOKIJS) {
+		dao = DaoFactory.subscribeDao(new DaoSettings(dbEngine, dbPath, STAFF_COLLECTION_NAME, EntityPropertiesImpl.createDefaultProperties()), StaffDao);
+	}
+	return dao;
+}
+
 module.exports = {
 	createPartyDao: createPartyDao,
 	createAccountDao: createAccountDao,
@@ -122,5 +136,6 @@ module.exports = {
 	createRoleDao: createRoleDao,
 	createGroupDao: createGroupDao,
 	createGroupContentDao: createGroupContentDao,
-	createGroupAttributesDao: createGroupAttributesDao
+	createGroupAttributesDao: createGroupAttributesDao,
+	createStaffDao: createStaffDao
 };

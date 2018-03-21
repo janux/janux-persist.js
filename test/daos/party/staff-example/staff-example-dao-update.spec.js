@@ -9,7 +9,7 @@ var config = require('config');
 var PartyValidator = require("../../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
 var PhoneNumber = require("janux-people").PhoneNumber;
-var StaffImpl = require("../../../../dist/index").StaffImpl;
+var StaffImpl = require("../../../../dist/index").StaffImplTest;
 var DaoUtil = require("../../dao-util");
 var DataSourceHandler = require("../../../../dist/index").DataSourceHandler;
 
@@ -43,7 +43,7 @@ describe("Testing party dao updateMethod methods", function () {
 			var partyDao;
 			beforeEach(function (done) {
 				var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-				partyDao = DaoUtil.createPartyDao(dbEngine, path)
+				partyDao = DaoUtil.createPartyDao(dbEngine, path);
 				partyDao.removeAll()
 					.then(function () {
 

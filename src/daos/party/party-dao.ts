@@ -4,7 +4,7 @@
  */
 
 import * as Promise from "bluebird";
-import {StaffImpl} from "example/people-extends/staff";
+import {StaffImplTest} from "example/people-extends/staff-imp-test";
 import JanuxPeople = require("janux-people");
 import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
 import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
@@ -154,7 +154,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		} else if (object.typeName === PartyValidator.ORGANIZATION) {
 			result = JanuxPeople.Organization.fromJSON(object);
 		} else if (object.typeName === PartyValidator.STAFF) {
-			result = StaffImpl.fromJSON(object);
+			result = StaffImplTest.fromJSON(object);
 		}
 		result.id = object.id;
 		return result;

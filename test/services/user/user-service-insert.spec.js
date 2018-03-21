@@ -4,7 +4,6 @@
  */
 var chai = require('chai');
 var expect = chai.expect;
-var assert = chai.assert;
 var config = require('config');
 var UserService = require("../../../dist/index").UserService;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
@@ -29,11 +28,13 @@ describe("Testing user service service insertMethod method", function () {
 		var accountDao;
 		var userService;
 		var partyService;
+		var staffDao;
 
 		beforeEach(function (done) {
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
-			partyService = new PartyService(partyDao);
+			staffDao = DaoUtil.createStaffDao(dbEngine, dbPath);
+			partyService = new PartyService(partyDao, staffDao);
 			userService = UserService.createInstance(accountDao, partyService);
 			setTimeout(function () {
 				accountDao.removeAll()
