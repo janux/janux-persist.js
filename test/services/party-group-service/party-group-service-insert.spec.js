@@ -49,7 +49,7 @@ describe("Testing party group service insert methods", function () {
 		groupContentDao = DaoUtil.createGroupContentDao(dbEngine, dbPath);
 		groupDao = DaoUtil.createGroupDao(dbEngine, dbPath);
 		groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, dbPath);
-		staffDao = DaoUtil.createStaffDao(dbEngine, dbPath);
+		staffDao = DaoUtil.createStaffDataDao(dbEngine, dbPath);
 		partyService = new PartyServiceImpl(partyDao,staffDao);
 		groupService = new GroupServiceImpl(groupDao, groupContentDao, groupAttributeValueDao);
 		partyGroupService = new PartyGroupServiceImpl(partyService, groupService);

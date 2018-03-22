@@ -2,7 +2,7 @@
  * Project janux-persist.js
  * Created by ernesto on 3/20/18
  */
-import {StaffEntity} from "daos/staff/staff-entity";
+import {StaffDataEntity} from "daos/staff-data/staff-data-entity";
 import {Staff} from "services/staff/api/staff";
 
 export class StaffImpl implements Staff {
@@ -16,9 +16,9 @@ export class StaffImpl implements Staff {
 		return staff;
 	}
 
-	public static toEntity(staff: StaffImpl, idContact: string): StaffEntity {
+	public static toEntity(staff: StaffImpl, idContact: string): StaffDataEntity {
 		if (staff == null) return undefined;
-		const entity: StaffEntity = new StaffEntity();
+		const entity: StaffDataEntity = new StaffDataEntity();
 		entity.idContact = idContact;
 		entity.jobTitle = staff.jobTitle;
 		entity.jobDepartment = staff.jobDepartment;

@@ -45,7 +45,7 @@ describe("Testing user groups service insert methods", function () {
 		partyDao = DaoUtil.createPartyDao(dbEngine, path);
 		groupContentDao = DaoUtil.createGroupContentDao(dbEngine, path);
 		groupDao = DaoUtil.createGroupDao(dbEngine, path);
-		staffDao = DaoUtil.createStaffDao(dbEngine, path);
+		staffDao = DaoUtil.createStaffDataDao(dbEngine, path);
 		groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, path);
 		groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 		partyService = new PartyServiceImpl(partyDao, staffDao);
@@ -65,6 +65,9 @@ describe("Testing user groups service insert methods", function () {
 				})
 				.then(function () {
 					return groupDao.removeAll();
+				})
+				.then(function () {
+					return staffDao.removeAll();
 				})
 				.then(function () {
 					// Insert users.

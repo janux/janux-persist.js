@@ -33,13 +33,16 @@ describe("Testing user service service insertMethod method", function () {
 		beforeEach(function (done) {
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
-			staffDao = DaoUtil.createStaffDao(dbEngine, dbPath);
+			staffDao = DaoUtil.createStaffDataDao(dbEngine, dbPath);
 			partyService = new PartyService(partyDao, staffDao);
 			userService = UserService.createInstance(accountDao, partyService);
 			setTimeout(function () {
 				accountDao.removeAll()
 					.then(function () {
 						return partyDao.removeAll();
+					})
+					.then(function () {
+						return staffDao.removeAll();
 					})
 					.then(function () {
 						// Inserting one person

@@ -2,7 +2,7 @@
  * Project janux-persist.js
  * Created by ernesto on 3/20/18
  */
-export class StaffEntity {
+export class StaffDataEntity {
 	id: string;
 	idContact: string;
 	isExternal: boolean;

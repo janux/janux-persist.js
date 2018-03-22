@@ -52,7 +52,7 @@ describe("Testing user group service find methods", function () {
 		groupDao = DaoUtil.createGroupDao(dbEngine, path);
 		groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, path);
 		groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
-		staffDao = DaoUtil.createStaffDao(dbEngine, path);
+		staffDao = DaoUtil.createStaffDataDao(dbEngine, path);
 		partyService = new PartyServiceImpl(partyDao, staffDao);
 		userService = UserService.createInstance(accountDao, partyService);
 		userGroupService = new UserGroupService(userService, groupService);
@@ -70,6 +70,9 @@ describe("Testing user group service find methods", function () {
 				})
 				.then(function () {
 					return groupDao.removeAll();
+				})
+				.then(function () {
+					return staffDao.removeAll();
 				})
 				.then(function () {
 					// Insert users.

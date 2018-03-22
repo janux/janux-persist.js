@@ -65,12 +65,15 @@ describe("Testing user service update method", function () {
 
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
-			staffDao = DaoUtil.createStaffDao(dbEngine, dbPath);
+			staffDao = DaoUtil.createStaffDataDao(dbEngine, dbPath);
 			partyService = new PartyService(partyDao, staffDao);
 			userService = UserService.createInstance(accountDao, partyService);
 			accountDao.removeAll()
 				.then(function () {
 					return partyDao.removeAll();
+				})
+				.then(function () {
+					return staffDao.removeAll();
 				})
 				.then(function () {
 					var person = new Person();

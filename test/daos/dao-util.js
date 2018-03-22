@@ -24,7 +24,7 @@ var RoleDaoMongooseImpl = require("../../dist/index").RoleDaoMongooseImpl;
 var RoleDaoLokiJsImpl = require("../../dist/index").RoleDaoLokiJsImpl;
 var RoleMongooseDbSchema = require("../../dist/index").RoleMongooseDbSchema;
 
-var StaffDao = require("../../dist/index").StaffDao;
+var StaffDataDao = require("../../dist/index").StaffDataDao;
 var StaffDataMongooseDbSchema = require("../../dist/index").StaffDataMongooseDbSchema;
 
 var GroupDao = require("../../dist/index").GroupDao;
@@ -119,23 +119,23 @@ function createGroupAttributesDao(dbEngine, dbPath) {
 	return dao;
 }
 
-function createStaffDao(dbEngine, dbPath) {
+function createStaffDataDao(dbEngine, dbPath) {
 	var dao;
 	if (dbEngine === DataSourceHandler.MONGOOSE) {
-		dao = DaoFactory.subscribeDao(new DaoSettings(dbEngine, dbPath, STAFF_COLLECTION_NAME, EntityPropertiesImpl.createDefaultProperties(), StaffDataMongooseDbSchema), StaffDao);
+		dao = DaoFactory.subscribeDao(new DaoSettings(dbEngine, dbPath, STAFF_COLLECTION_NAME, EntityPropertiesImpl.createDefaultProperties(), StaffDataMongooseDbSchema), StaffDataDao);
 	} else if (dbEngine === DataSourceHandler.LOKIJS) {
-		dao = DaoFactory.subscribeDao(new DaoSettings(dbEngine, dbPath, STAFF_COLLECTION_NAME, EntityPropertiesImpl.createDefaultProperties()), StaffDao);
+		dao = DaoFactory.subscribeDao(new DaoSettings(dbEngine, dbPath, STAFF_COLLECTION_NAME, EntityPropertiesImpl.createDefaultProperties()), StaffDataDao);
 	}
 	return dao;
 }
 
 module.exports = {
-	createPartyDao: createPartyDao,
-	createAccountDao: createAccountDao,
-	createAuthContextDao: createAuthContextDao,
-	createRoleDao: createRoleDao,
-	createGroupDao: createGroupDao,
-	createGroupContentDao: createGroupContentDao,
+	createPartyDao          : createPartyDao,
+	createAccountDao        : createAccountDao,
+	createAuthContextDao    : createAuthContextDao,
+	createRoleDao           : createRoleDao,
+	createGroupDao          : createGroupDao,
+	createGroupContentDao   : createGroupContentDao,
 	createGroupAttributesDao: createGroupAttributesDao,
-	createStaffDao: createStaffDao
+	createStaffDataDao      : createStaffDataDao
 };
