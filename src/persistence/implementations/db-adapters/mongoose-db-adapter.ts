@@ -323,16 +323,17 @@ export class MongooseAdapter implements DbAdapter {
 
 	/**
 	 * Clean the object that are going to be returned to the daos.
-	 * @param object The object to ble cleaned.
+	 * @param object The object to be cleaned.
 	 * @return {any} the object cleaned.
 	 */
 	public cleanObjectIds(object: any) {
 		// object.id = object._id.toString();
-		Object.keys(object).forEach((key, index) => {
-			if (object[key] instanceof mongoose.Types.ObjectId) {
-				object[key] = object[key].toString();
-			}
-		});
+		object['_id'] = undefined;
+		// Object.keys(object).forEach((key, index) => {
+		// 	if (object[key] instanceof mongoose.Types.ObjectId) {
+		// 		object[key] = object[key].toString();
+		// 	}
+		// });
 		return object;
 	}
 }
