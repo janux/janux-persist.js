@@ -1,10 +1,10 @@
 /*
+/*
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
 import Promise = require("bluebird");
 import {Model} from "mongoose";
-import * as mongoose from "mongoose";
 import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
 import * as logger from 'utils/logger-api/logger-api';
 import {AttributeFilter} from "../dao/attribute-filter";
@@ -21,7 +21,7 @@ export class MongooseAdapter implements DbAdapter {
 	constructor(model: Model<any>) {
 		this.model = model;
 		this.adapterProperties.model = model;
-		this.adapterProperties.cleanObjectIds = this.cleanObjectIds;
+		// this.adapterProperties.cleanObjectIds = this.cleanObjectIds;
 	}
 
 	/**
@@ -34,11 +34,8 @@ export class MongooseAdapter implements DbAdapter {
 		this._log.debug('Call to findOneMethod with model: %j id: %j ', this.adapterProperties.model.modelName, id);
 		return new Promise((resolve, reject) => {
 			const query = {id};
-			this.adapterProperties.model.findOne(query).lean().exec((err, result: any) => {
+			this.adapterProperties.model.findOne(query, {_id: 0}).lean().exec((err, result: any) => {
 				if (err) throw err;
-				if (result !== null) {
-					result = this.adapterProperties.cleanObjectIds(result);
-				}
 				resolve(result);
 			});
 		});
@@ -134,12 +131,12 @@ export class MongooseAdapter implements DbAdapter {
 		return new Promise((resolve, reject) => {
 			const query = {};
 			query[attributeName] = value;
-			this.adapterProperties.model.find(query).lean().exec((err, result: any[]) => {
+			this.adapterProperties.model.find(query, {_id: 0}).lean().exec((err, result: any[]) => {
 				if (err) throw err;
 				if (result.length === 0) {
 					resolve(null);
 				} else if (result.length === 1) {
-					this.adapterProperties.cleanObjectIds(result[0]);
+					// this.adapterProperties.cleanObjectIds(result[0]);
 					resolve(result[0]);
 				} else {
 					this._log.warn("The query returned more than one result.");
@@ -189,9 +186,9 @@ export class MongooseAdapter implements DbAdapter {
 			const newObject = new this.adapterProperties.model(objectToInsert);
 			newObject.save((err, result: any) => {
 				if (err) throw err;
-				result = this.adapterProperties.cleanObjectIds(result._doc);
-				this._log.debug("Returning result after insertMethod %j", result);
-				resolve(result);
+				// result = this.adapterProperties.cleanObjectIds(result._doc);
+				this._log.debug("Returning result after insertMethod %j", objectToInsert);
+				resolve(objectToInsert);
 			});
 		});
 	}
@@ -212,9 +209,9 @@ export class MongooseAdapter implements DbAdapter {
 			options[newAttribute] = true;
 			this.adapterProperties.model.findOneAndUpdate(query, values, options).lean().exec((err, result: any) => {
 				if (err) throw err;
-				result = this.adapterProperties.cleanObjectIds(result);
-				this._log.debug("Returning result after updateMethod %j", result);
-				resolve(result);
+				// result = this.adapterProperties.cleanObjectIds(result);
+				this._log.debug("Returning result after updateMethod %j", objectToUpdate);
+				resolve(objectToUpdate);
 			});
 		});
 	}
@@ -229,13 +226,7 @@ export class MongooseAdapter implements DbAdapter {
 		this._log.debug("Call to insertManyMethod with model: %j, objectsToInsert %j", this.adapterProperties.model.modelName, objectsToInsert);
 		return new Promise((resolve, reject) => {
 			this.adapterProperties.model.insertMany(objectsToInsert, (err, values) => {
-				const result = [];
-				for (const obj of values) {
-					let element = obj._doc;
-					element = this.adapterProperties.cleanObjectIds(element);
-					result.push(element);
-				}
-				resolve(result);
+				resolve(objectsToInsert);
 			});
 		});
 	}
@@ -294,11 +285,8 @@ export class MongooseAdapter implements DbAdapter {
 	public findByQueryMethod(query: any): Promise<any[]> {
 		this._log.debug("call to findByQueryMethod with model: %j, query: %j", this.adapterProperties.model.modelName, query);
 		return new Promise<any>((resolve, reject) => {
-			this.adapterProperties.model.find(query).lean().exec((err, result: any[]) => {
+			this.adapterProperties.model.find(query, {_id: 0}).lean().exec((err, result: any[]) => {
 				if (err) throw err;
-				for (const element of result) {
-					this.adapterProperties.cleanObjectIds(element);
-				}
 				this._log.debug("Returning %j records", result.length);
 				resolve(result);
 			});
@@ -319,21 +307,5 @@ export class MongooseAdapter implements DbAdapter {
 				resolve(result);
 			});
 		});
-	}
-
-	/**
-	 * Clean the object that are going to be returned to the daos.
-	 * @param object The object to be cleaned.
-	 * @return {any} the object cleaned.
-	 */
-	public cleanObjectIds(object: any) {
-		// object.id = object._id.toString();
-		object['_id'] = undefined;
-		// Object.keys(object).forEach((key, index) => {
-		// 	if (object[key] instanceof mongoose.Types.ObjectId) {
-		// 		object[key] = object[key].toString();
-		// 	}
-		// });
-		return object;
 	}
 }
