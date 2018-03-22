@@ -41,14 +41,6 @@ const accountLocked2 = false;
 const accountExpire2 = undefined;
 const accountExpirePassword2 = undefined;
 
-
-const accountUsername3 = "username3";
-const accountPassword3 = "password3";
-const personName2 = "Jane";
-const personMiddleName2 = "Smith";
-const contactEmail2 = "dev_full_stack@glarus.com";
-
-
 describe("Testing user service find method", function () {
 	describe("Given the inserted roles and accounts", function () {
 

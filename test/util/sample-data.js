@@ -6,6 +6,7 @@
 var Person = require("janux-people").Person;
 var Organization = require("janux-people").Organization;
 var EmailAddress = require("janux-people").EmailAddress;
+var StaffData = require("../../dist/index").StaffDataImpl;
 
 function createPerson1() {
 	const personName = "John";
@@ -17,10 +18,10 @@ function createPerson1() {
 	person.name.first = personName;
 	person.name.middle = personMiddleName;
 	person.name.last = personLastName;
+	person.staff = new StaffData(true, "sales manager", "sales");
 	person.setContactMethod(contactType, new EmailAddress(contactEmail));
 	return person;
 }
-
 
 function createPerson2() {
 	const personName = "Jane";
@@ -32,6 +33,7 @@ function createPerson2() {
 	person.name.first = personName;
 	person.name.middle = personMiddleName;
 	person.name.last = personLastName;
+	person.staff = new StaffData(true, "sales manager 2", "sales 2");
 	person.setContactMethod(contactType, new EmailAddress(contactEmail));
 	return person;
 }
@@ -75,14 +77,14 @@ function createEmptyUserAccount1() {
 	const accountExpire = undefined;
 	const accountExpirePassword = undefined;
 	return {
-		username: accountUsername,
-		password: accountPassword,
-		enabled: accountEnabled,
-		locked: accountLocked,
-		expire: accountExpire,
+		username      : accountUsername,
+		password      : accountPassword,
+		enabled       : accountEnabled,
+		locked        : accountLocked,
+		expire        : accountExpire,
 		expirePassword: accountExpirePassword,
-		contact: undefined,
-		roles: [
+		contact       : undefined,
+		roles         : [
 			"ADMIN",
 			"AUTH CONTEXT"
 		]
@@ -97,13 +99,13 @@ function createEmptyUserAccount2() {
 	const accountExpire = undefined;
 	const accountExpirePassword = undefined;
 	return {
-		username: accountUsername,
-		password: accountPassword,
-		enabled: accountEnabled,
-		locked: accountLocked,
-		expire: accountExpire,
+		username      : accountUsername,
+		password      : accountPassword,
+		enabled       : accountEnabled,
+		locked        : accountLocked,
+		expire        : accountExpire,
 		expirePassword: accountExpirePassword,
-		roles: [
+		roles         : [
 			"USERS"
 		]
 	};
@@ -117,13 +119,13 @@ function createEmptyUserAccount3() {
 	const accountExpire = undefined;
 	const accountExpirePassword = undefined;
 	return {
-		username: accountUsername,
-		password: accountPassword,
-		enabled: accountEnabled,
-		locked: accountLocked,
-		expire: accountExpire,
+		username      : accountUsername,
+		password      : accountPassword,
+		enabled       : accountEnabled,
+		locked        : accountLocked,
+		expire        : accountExpire,
 		expirePassword: accountExpirePassword,
-		roles: [
+		roles         : [
 			"USERS"
 		]
 	};
@@ -158,14 +160,14 @@ function createUser3() {
 }
 
 module.exports = {
-	createPerson1: createPerson1,
-	createPerson2: createPerson2,
-	createOrganization1: createOrganization1,
-	createOrganization2: createOrganization2,
-	createOrganization3: createOrganization3,
+	createPerson1          : createPerson1,
+	createPerson2          : createPerson2,
+	createOrganization1    : createOrganization1,
+	createOrganization2    : createOrganization2,
+	createOrganization3    : createOrganization3,
 	createEmptyUserAccount1: createEmptyUserAccount1,
 	createEmptyUserAccount2: createEmptyUserAccount2,
-	createUser1: createUser1,
-	createUser2: createUser2,
-	createUser3: createUser3
+	createUser1            : createUser1,
+	createUser2            : createUser2,
+	createUser3            : createUser3
 };

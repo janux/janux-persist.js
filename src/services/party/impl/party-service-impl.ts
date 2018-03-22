@@ -11,7 +11,7 @@ import JanuxPeople = require("janux-people");
 import * as _ from "lodash";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {PartyService} from "services/party/api/party-service";
-import {StaffImpl} from "services/staff/impl/staff-impl";
+import {StaffDataImpl} from "services/staff/impl/staff-data-impl";
 import {DateUtil} from "utils/date/date-util";
 
 export class PartyServiceImpl implements PartyService {
@@ -31,6 +31,7 @@ export class PartyServiceImpl implements PartyService {
 		result.typeName = typeName;
 		result.dateCreated = dateCreated;
 		result.lastUpdate = lastUpdate;
+		result.staff = party['staff'];
 		return result;
 	}
 
@@ -54,7 +55,7 @@ export class PartyServiceImpl implements PartyService {
 		result.id = id;
 		result.dateCreated = dateCreated;
 		result.lastUpdate = lastUpdate;
-		result.staff = StaffImpl.fomJSON(object.staff);
+		result.staff = StaffDataImpl.fomJSON(object.staff);
 		return result;
 	}
 
@@ -171,11 +172,11 @@ export class PartyServiceImpl implements PartyService {
 		return this.partyDao.insert(party)
 			.then((result: JanuxPeople.PartyAbstract) => {
 				insertedRecord = result;
-				const staffEntity: StaffDataEntity = StaffImpl.toEntity(party['staff'], party['id']);
+				const staffEntity: StaffDataEntity = StaffDataImpl.toEntity(party['staff'], party['id']);
 				if (staffEntity) {
 					return this.staffDao.insert(staffEntity)
 						.then((result: StaffDataEntity) => {
-							insertedRecord['staff'] = StaffImpl.fomJSON(result);
+							insertedRecord['staff'] = StaffDataImpl.fomJSON(result);
 							return Promise.resolve(insertedRecord);
 						});
 				} else {
@@ -199,8 +200,8 @@ export class PartyServiceImpl implements PartyService {
 				let i: number = 0;
 				for (const it of result) {
 					if (!_.isNil(parties[i]['staff'])) {
-						const staffData: StaffImpl = StaffImpl.fomJSON(parties[i]['staff']);
-						const staffEntity: StaffDataEntity = StaffImpl.toEntity(staffData, it['id']);
+						const staffData: StaffDataImpl = StaffDataImpl.fomJSON(parties[i]['staff']);
+						const staffEntity: StaffDataEntity = StaffDataImpl.toEntity(staffData, it['id']);
 						staffEntities.push(staffEntity);
 					}
 					i++;
@@ -227,7 +228,7 @@ export class PartyServiceImpl implements PartyService {
 				return this.staffDao.removeByIdContact(idToUpdate);
 			})
 			.then(() => {
-				const staffEntity: StaffDataEntity = StaffImpl.toEntity(StaffImpl.fomJSON(party['staff']), idToUpdate);
+				const staffEntity: StaffDataEntity = StaffDataImpl.toEntity(StaffDataImpl.fomJSON(party['staff']), idToUpdate);
 				if (staffEntity) {
 					return this.staffDao.insert(staffEntity).then(() => {
 						return Promise.resolve(party);
@@ -273,7 +274,7 @@ export class PartyServiceImpl implements PartyService {
 	removeByIds(ids: string[]): Promise<any> {
 		return this.staffDao.removeByIdContactIn(ids)
 			.then(() => {
-				return this.partyDao.removeById(ids);
+				return this.partyDao.removeByIds(ids);
 			});
 	}
 
@@ -287,7 +288,7 @@ export class PartyServiceImpl implements PartyService {
 	private mapStaffData(parties: JanuxPeople.PartyAbstract[], staffEntities: StaffDataEntity[]): JanuxPeople.PartyAbstract[] {
 		parties = parties.map(party => {
 			const record = _.find(staffEntities, it => it.idContact === party['id']);
-			party['staff'] = StaffImpl.fomJSON(record);
+			party['staff'] = StaffDataImpl.fomJSON(record);
 			return party;
 		});
 		return parties;
@@ -297,7 +298,7 @@ export class PartyServiceImpl implements PartyService {
 		if (party == null) return Promise.resolve(party);
 		return this.staffDao.findOneByIdContact(party['id'])
 			.then((staffEntity: StaffDataEntity) => {
-				party['staff'] = StaffImpl.fomJSON(staffEntity);
+				party['staff'] = StaffDataImpl.fomJSON(staffEntity);
 				return Promise.resolve(party);
 			});
 	}

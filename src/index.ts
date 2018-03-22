@@ -92,7 +92,7 @@ export * from "./services/group-module/api/group-properties";
 export * from "./services/user-group-service/impl/user-group-service";
 export * from "./services/party-group-service/impl/party-group-service-impl";
 export * from "./services/party/api/party-service";
-export * from "./services/staff/impl/staff-impl";
+export * from "./services/staff/impl/staff-data-impl";
 export * from "./services/party/impl/party-service-impl";
 export * from "./utils/string/blank-string-validator";
 export * from "./utils/date/date-util";
