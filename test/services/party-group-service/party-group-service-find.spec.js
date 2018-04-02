@@ -21,6 +21,7 @@ var dbPath = dbEngine === DataSourceHandler.LOKIJS ? lokiJsDBPath : mongoConnUrl
 
 const type = "aGroupType";
 const type2 = "anotherType";
+const type3 = "aThirdType";
 
 const name = "a group name";
 const description = "a group description";
@@ -69,15 +70,15 @@ describe("Testing party group service find methods", function () {
 		groupDao = DaoUtil.createGroupDao(dbEngine, dbPath);
 		groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, dbPath);
 		staffDao = DaoUtil.createStaffDataDao(dbEngine, dbPath);
-		partyService = new PartyServiceImpl(partyDao,staffDao);
+		partyService = new PartyServiceImpl(partyDao, staffDao);
 		groupService = new GroupServiceImpl(groupDao, groupContentDao, groupAttributeValueDao);
 		partyGroupService = new PartyGroupServiceImpl(partyService, groupService);
 
 		setTimeout(function () {
 			Promise.props({
-				partyDaoResult: partyService.removeAll(),
-				groupContentDaoResult: groupContentDao.removeAll(),
-				groupDaoResult: groupDao.removeAll(),
+				partyDaoResult              : partyService.removeAll(),
+				groupContentDaoResult       : groupContentDao.removeAll(),
+				groupDaoResult              : groupDao.removeAll(),
 				groupAttributeValueDaoResult: groupAttributeValueDao.removeAll()
 			})
 				.then(function (value) {
@@ -119,11 +120,11 @@ describe("Testing party group service find methods", function () {
 
 	function getSampleGroup() {
 		return {
-			type: type,
-			name: name,
-			code: code,
+			type       : type,
+			name       : name,
+			code       : code,
 			description: description,
-			values: [
+			values     : [
 				{
 					party: insertedParty1
 				},
@@ -136,11 +137,11 @@ describe("Testing party group service find methods", function () {
 
 	function getSampleGroup2() {
 		return {
-			type: type2,
-			name: name2,
-			code: code2,
+			type       : type2,
+			name       : name2,
+			code       : code2,
 			description: description2,
-			values: [
+			values     : [
 				{
 					party: insertedParty1
 				},
@@ -153,11 +154,11 @@ describe("Testing party group service find methods", function () {
 
 	function getSampleGroup3() {
 		return {
-			type: type,
-			name: name3,
-			code: code3,
+			type       : type,
+			name       : name3,
+			code       : code3,
 			description: description3,
-			values: [
+			values     : [
 				{
 					party: insertedParty3
 				},
@@ -170,11 +171,11 @@ describe("Testing party group service find methods", function () {
 
 	function getSampleGroup4() {
 		return {
-			type: type2,
-			name: name4,
-			code: code4,
+			type       : type2,
+			name       : name4,
+			code       : code4,
 			description: description4,
-			values: [
+			values     : [
 				{
 					party: insertedParty3
 				},
@@ -247,6 +248,28 @@ describe("Testing party group service find methods", function () {
 					expect(value).not.to.be.undefined;
 					expect(value).not.to.be.null;
 					expect(value.code).eq(code);
+					done();
+				});
+		});
+	});
+
+	describe("When calling findOneOwnedByPartyAndType", function () {
+		it("The method should return a null record", function (done) {
+			partyGroupService.findOneOwnedByPartyAndType(insertedParty3.id, type3)
+				.then(function (value) {
+					expect(value).eq(null);
+					done();
+				});
+		});
+	});
+
+	describe("When calling findOneOwnedByPartyAndType with the flag as true", function () {
+		it("The method should insert and return a record", function (done) {
+			partyGroupService.findOneOwnedByPartyAndType(insertedParty3.id, type3, true)
+				.then(function (value) {
+					expect(value).not.to.be.undefined;
+					expect(value).not.to.be.null;
+					expect(value.code).not.to.be.undefined;
 					done();
 				});
 		});

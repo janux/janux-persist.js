@@ -36,9 +36,10 @@ export interface PartyGroupService {
 	 * Find one group given the type and the owner of the group.
 	 * @param {string} partyId
 	 * @param {string} type
+	 * @param createOne If there is no group and this value is true, then this method inserts the missing group.
 	 * @return {Bluebird<Group<PartyGroupItem>>}
 	 */
-	findOneOwnedByPartyAndType(partyId: string, type: string): Promise<Group<PartyGroupItem>>;
+	findOneOwnedByPartyAndType(partyId: string, type: string, createOne ?: boolean): Promise<Group<PartyGroupItem>>;
 
 	/**
 	 * Return all groups (including content) of all groups of a given types.

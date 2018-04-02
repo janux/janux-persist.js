@@ -4,6 +4,8 @@
  */
 import Promise = require("bluebird");
 import {PartyAbstract} from "janux-people";
+import {OrganizationImpl} from "janux-people/dist/impl/Organization";
+import {PersonImpl} from "janux-people/dist/impl/Person";
 import * as _ from 'lodash';
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {GroupImpl} from "services/group-module/impl/group";
@@ -137,10 +139,11 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 * Find one group given the type and the owner of the group.
 	 * @param {string} partyId partyId The owner of the group.
 	 * @param {string} type type The type too look for.
+	 * @param createOne If there is no group and this value is true, then this method inserts the missing group.
 	 * @return {Promise<GroupImpl<PartyAbstract>>} Returns the group or null if there is no group given
 	 * the conditions.
 	 */
-	findOneOwnedByPartyAndType(partyId: string, type: string): Promise<GroupImpl<PartyGroupItemImpl>> {
+	findOneOwnedByPartyAndType(partyId: string, type: string, createOne ?: boolean): Promise<GroupImpl<PartyGroupItemImpl>> {
 		this.log.debug("Call to findOneOwnedByPartyAndType by partyId %j, type  %j", partyId, type);
 		const filter: {} = {};
 		filter[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID] = partyId;
@@ -151,7 +154,26 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 					// Maybe consider throwing an error.
 					return this.findOne(result[0].code);
 				} else if (result.length === 0) {
-					return Promise.resolve(null);
+					if (createOne === true) {
+						// Create a new group.
+						return this.partyService.findOne(partyId)
+							.then((result: PartyAbstract) => {
+								const groupToInsert: GroupImpl<PartyGroupItemImpl> = new GroupImpl();
+								if (result.typeName === 'PersonImpl') {
+									groupToInsert.name = (result as PersonImpl).name.first + (result as PersonImpl).name.last + " " + type + " group";
+								} else {
+									groupToInsert.name = (result as OrganizationImpl).name + " " + type + " group";
+								}
+								groupToInsert.description = groupToInsert.name + ". Group created by system request";
+								groupToInsert.code = groupToInsert.name + " " + new Date().getTime();
+								groupToInsert.type = type;
+
+								return this.insert(partyId, groupToInsert);
+
+							});
+					} else {
+						return Promise.resolve(null);
+					}
 				} else {
 					return this.findOne(result[0].code);
 				}
