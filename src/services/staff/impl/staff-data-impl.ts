@@ -9,7 +9,7 @@ export class StaffDataImpl implements StaffData {
 
 	public static fomJSON(object: any): StaffDataImpl {
 		if (object == null) return object;
-		return new StaffDataImpl(object.isExternal, object.jobDepartment, object.jobTitle);
+		return new StaffDataImpl(object.isExternal, object.jobTitle, object.jobDepartment);
 	}
 
 	public static toEntity(staff: StaffDataImpl, idContact: string): StaffDataEntity {
