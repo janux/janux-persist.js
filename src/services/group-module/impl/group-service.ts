@@ -128,11 +128,39 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 			});
 	}
 
+	/**
+	 * Find all groups that belongs to the same types.
+	 * @param {string[]} types
+	 * @return {Bluebird<Array<GroupImpl<t>>>}
+	 */
 	findAllByTypes(types: string[]): Promise<Array<GroupImpl<t>>> {
 		this.log.debug("Call to findByTypes with types %j ", types);
 		return this.groupDao.findByTypeIn(types)
 			.then((result: GroupEntity[]) => {
 				return this.mapCompleteGroupData(result);
+			});
+	}
+
+	/**
+	 * Return all groups that belongs to the type and at least one of the items must be an embedded document that has an attribute-value pair
+	 * defined as in the method.
+	 * @param {string} type That belong to the type.
+	 * @param {string} attributeName Assuming the item of the group is an embedded document, the item must have an attribute with this name.
+	 * @param value if there is an attribute with this name, then the value must match with the parameter method.
+	 * @return {Bluebird<Array<Group<t>>>} Return the groups that maths the criteria.
+	 */
+	findByTypesAndItemByEmbeddedDocument(type: string, attributeName: string, value: any): Promise<Array<GroupImpl<t>>> {
+		let groups: GroupEntity[];
+		return this.groupDao.findByType(type)
+			.then((result: GroupEntity[]) => {
+				groups = result;
+				const ids = result.map(it => it.id);
+				return this.groupContentDao.findByIdGroupsInAndValueByEmbeddedDocument(ids, attributeName, value);
+			})
+			.then((result: GroupContentEntity[]) => {
+				const idsFilter: string[] = result.map(it => it.idGroup);
+				const filteredGroups: GroupEntity[] = groups.filter(value1 => idsFilter.indexOf(value1.id) >= 0);
+				return this.mapCompleteGroupData(filteredGroups);
 			});
 	}
 

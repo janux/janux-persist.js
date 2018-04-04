@@ -49,6 +49,14 @@ export interface PartyGroupService {
 	findByTypes(types: string[]): Promise<Array<Group<PartyGroupItem>>>;
 
 	/**
+	 * Find all group where the partyId belongs to.
+	 * @param {string} type
+	 * @param {string} partyIdItem
+	 * @return {Bluebird<Array<Group<PartyGroupItem>>>}
+	 */
+	findByTypeAndPartyItem(type: string, partyIdItem: string): Promise<Array<Group<PartyGroupItem>>>;
+
+	/**
 	 * Inserts a new group.
 	 * @param partyId Owner of the group. This variables in inserted as an group attribute.
 	 * @param {GroupImpl} group to insert.

@@ -55,6 +55,16 @@ export interface GroupService<t> {
 	findAllByTypes(types: string[]): Promise<Array<Group<t>>>;
 
 	/**
+	 * Return all groups that belongs to the type and at least one of the items must be an embedded document that has an attribute-value pair
+	 * defined as in the method.
+	 * @param {string} type That belong to the type.
+	 * @param {string} attributeName Assuming the item of the group is an embedded document, the item must have an attribute with this name.
+	 * @param value if there is an attribute with this name, then the value must match with the parameter method.
+	 * @return {Bluebird<Array<Group<t>>>} Return the groups that maths the criteria.
+	 */
+	findByTypesAndItemByEmbeddedDocument(type: string, attributeName: string, value: any): Promise<Array<Group<t>>>;
+
+	/**
 	 * Find one group given the code.
 	 * @param {string} code
 	 * @return {Promise<Group<t>>} Return the group or null if there is no group given the code.

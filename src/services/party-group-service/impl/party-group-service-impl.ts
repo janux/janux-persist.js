@@ -59,20 +59,6 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 		return result;
 	}
 
-	// public static toJSON(group: GroupImpl<PartyGroupItemImpl>): any {
-	// 	if (group == null) return group;
-	// 	const result: any = _.cloneDeep(group);
-	// 	result.values = group.values.map(value => this.toJSONItem(value));
-	// 	return result;
-	// }
-	//
-	// public static toJSONItem(item: PartyGroupItemImpl): any {
-	// 	const result: any = {};
-	// 	result.attributes = item.attributes;
-	// 	result.party = PartyServiceImpl.toJSON(item.party);
-	// 	return result;
-	// }
-
 	private partyService: PartyServiceImpl;
 	private groupService: GroupServiceImpl<InternalPartyGroupItem>;
 	private log = logger.getLogger("PartyGroupServiceImpl");
@@ -187,30 +173,44 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 	 */
 	findByTypes(types: string[]): Promise<Array<GroupImpl<PartyGroupItemImpl>>> {
 		this.log.debug("Call to findByTypes with types: %j", types);
-		let referenceGroups: Array<GroupImpl<InternalPartyGroupItem>>;
 		return this.groupService.findAllByTypes(types)
 			.then((result: Array<GroupImpl<InternalPartyGroupItem>>) => {
-				referenceGroups = result;
+				return this.mapData(result);
+				/*referenceGroups = result;
 				let ids: string[] = [];
 				for (const group of result) {
 					ids = ids.concat(group.values.map(value => value.partyId));
 				}
 				ids = _.uniq(ids);
-				return this.partyService.findByIds(ids);
-			})
-			.then((resultQuery: PartyAbstract[]) => {
-				let resultGroup: any[];
-				resultGroup = referenceGroups.map(value => {
-					const item: any = value;
-					item.values = value.values.map(value2 => {
-						const item2: PartyGroupItemImpl = new PartyGroupItemImpl();
-						item2.party = _.find(resultQuery, (o) => o['id'] === value2.partyId);
-						item2.attributes = value.attributes;
-						return item2;
-					});
-					return item;
-				});
-				return Promise.resolve(resultGroup);
+				return this.partyService.findByIds(ids)
+					.then((resultQuery: PartyAbstract[]) => {
+						let resultGroup: any[];
+						resultGroup = referenceGroups.map(value => {
+							const item: any = value;
+							item.values = value.values.map(value2 => {
+								const item2: PartyGroupItemImpl = new PartyGroupItemImpl();
+								item2.party = _.find(resultQuery, (o) => o['id'] === value2.partyId);
+								item2.attributes = value.attributes;
+								return item2;
+							});
+							return item;
+						});
+						return Promise.resolve(resultGroup);
+					});*/
+			});
+
+	}
+
+	/**
+	 * Find all group where the partyId belongs to.
+	 * @param {string} type Th
+	 * @param {string} partyIdItem
+	 * @return {Bluebird<Array<Group<PartyGroupItem>>>}
+	 */
+	findByTypeAndPartyItem(type: string, partyIdItem: string): Promise<Array<GroupImpl<PartyGroupItemImpl>>> {
+		return this.groupService.findByTypesAndItemByEmbeddedDocument(type, "partyId", partyIdItem)
+			.then((result: Array<GroupImpl<InternalPartyGroupItem>>) => {
+				return this.mapData(result);
 			});
 	}
 
@@ -477,5 +477,28 @@ export class PartyGroupServiceImpl implements PartyGroupService {
 			}
 		}
 		return errors;
+	}
+
+	private mapData(referenceGroups: Array<GroupImpl<InternalPartyGroupItem>>): Promise<Array<GroupImpl<PartyGroupItemImpl>>> {
+		let ids: string[] = [];
+		for (const group of referenceGroups) {
+			ids = ids.concat(group.values.map(value => value.partyId));
+		}
+		ids = _.uniq(ids);
+		return this.partyService.findByIds(ids)
+			.then((resultQuery: PartyAbstract[]) => {
+				let resultGroup: any[];
+				resultGroup = referenceGroups.map(value => {
+					const item: any = value;
+					item.values = value.values.map(value2 => {
+						const item2: PartyGroupItemImpl = new PartyGroupItemImpl();
+						item2.party = _.find(resultQuery, (o) => o['id'] === value2.partyId);
+						item2.attributes = value.attributes;
+						return item2;
+					});
+					return item;
+				});
+				return Promise.resolve(resultGroup);
+			});
 	}
 }
