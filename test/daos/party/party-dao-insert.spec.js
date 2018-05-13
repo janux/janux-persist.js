@@ -3,11 +3,10 @@
  * Created by ernesto on 6/22/17.
  */
 var chai = require('chai');
+var _ = require('lodash');
 var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
-var lokijs = require('lokijs');
-var mongoose = require('mongoose');
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
@@ -67,6 +66,8 @@ describe("Testing party dao insertMethod methods", function () {
 				person.name.last = lastName;
 				person.name.honorificPrefix = honorificPrefix;
 				person.name.honorificSuffix = honorificSuffix;
+				person.isReseller = true;
+				person.isSupplier = true;
 
 				person.setContactMethod(work, new EmailAddress(email));
 				person.setContactMethod(home, new EmailAddress(email2));
@@ -110,6 +111,8 @@ describe("Testing party dao insertMethod methods", function () {
 
 			function validateRecord(record) {
 				// expect(record.displayName).eq(displayName);
+				expect(record.isReseller).eq(true);
+				expect(record.isSupplier).eq(true);
 				expect(record.name.first).eq(firstName);
 				expect(record.name.middle).eq(middleName);
 				expect(record.name.last).eq(lastName);
@@ -145,9 +148,12 @@ describe("Testing party dao insertMethod methods", function () {
 
 		describe("When inserting a valid organization", function () {
 			it("The method should insertMethod the record", function (done) {
+				var functions = ['AGENT', 'SPECIAL_OPS'];
 				var organization = new OrganizationEntity();
 				// organization.displayName = organizationDisplayName;
 				organization.name = organizationName;
+				organization.functionsProvided = functions;
+
 				var emailObject = new EmailAddress();
 				emailObject.address = email;
 				organization.setContactMethod(home, emailObject);
@@ -157,11 +163,13 @@ describe("Testing party dao insertMethod methods", function () {
 						expect(result.name).eq(organizationName);
 						expect(result.typeName).eq(PartyValidator.ORGANIZATION);
 						expect(result.emailAddresses(false).length).eq(1);
+						expect(_.isEqual(result.functionsProvided, functions)).eq(true);
 						return partyDao.findOne(result.id);
 					})
 					.then(function (resultQuery) {
 						expect(resultQuery.name).eq(organizationName);
 						expect(resultQuery.typeName).eq(PartyValidator.ORGANIZATION);
+						expect(_.isEqual(resultQuery.functionsProvided, functions)).eq(true);
 						expect(resultQuery.emailAddresses(false).length).eq(1);
 						done();
 					})

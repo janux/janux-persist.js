@@ -68,6 +68,32 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 	}
 
 	/**
+	 * Find all parties given the isSupplier flag and typeName.
+	 * @param {boolean} isSupplier
+	 * @param typeName Optional value. If defined the method filter by this criteria.
+	 * @return {Bluebird<PartyAbstract[]>}
+	 */
+	public findByIsSupplierAndTypeName(isSupplier: boolean, typeName?: string): Promise<JanuxPeople.PartyAbstract[]> {
+		let query: {};
+		if (typeName == null) {
+			query = {
+				$and: [
+					{isSupplier: {$eq: isSupplier}}
+				]
+			};
+		} else {
+			query = {
+				$and: [
+					{isSupplier: {$eq: isSupplier}},
+					{typeName: {$eq: typeName}},
+				]
+			};
+		}
+
+		return this.findByQuery(query);
+	}
+
+	/**
 	 * Implementation of the method validateEntity.
 	 * @param {JanuxPeople.PartyAbstract} objectToValidate
 	 * @return {ValidationErrorImpl[]}
@@ -138,6 +164,10 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		// references we do JSON.parse(JSON.stringify(object)). With this we avoid to crash mongoose.
 		result = JSON.parse(JSON.stringify(result));
 		result.typeName = object.typeName;
+		result.isSupplier = object['isSupplier'];
+		result.isReseller = object['isReseller'];
+		result.typeName = object.typeName;
+		result.functionsProvided = object['functionsProvided'];
 		this.partyDaoLogger.debug("Returning %j", result);
 		return result;
 	}
@@ -157,6 +187,9 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 			result = StaffImplTest.fromJSON(object);
 		}
 		result.id = object.id;
+		result.isReseller = object.isReseller;
+		result.isSupplier = object.isSupplier;
+		result.functionsProvided = object.functionsProvided;
 		return result;
 	}
 }

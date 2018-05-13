@@ -6,8 +6,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var assert = chai.assert;
 var config = require('config');
-var lokijs = require('lokijs');
-var mongoose = require('mongoose');
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
 var PersonEntity = require("janux-people").Person;
@@ -54,11 +52,13 @@ describe("Testing party dao find methods", function () {
 
 						var organization = new OrganizationEntity();
 						organization.name = organizationName;
+						organization.isSupplier = true;
 
 						var person = new PersonEntity();
 						person.name.first = firstName;
 						person.name.middle = middleName;
 						person.name.last = lastName;
+						person.isReseller = true;
 
 						var organization2 = new OrganizationEntity();
 						organization2.name = organizationName2;
@@ -66,6 +66,7 @@ describe("Testing party dao find methods", function () {
 						var person2 = new PersonEntity();
 						person2.name.first = name2;
 						person2.name.middle = middleName2;
+						person2.isSupplier = true;
 
 						return partyDao.insertMany([organization, person, organization2, person2])
 					})
@@ -138,6 +139,18 @@ describe("Testing party dao find methods", function () {
 						});
 				});
 			});
+
+
+			describe("When calling find findByIsSupplierAndTypeName", function () {
+				it("The method should return one record", function (done) {
+					partyDao.findByIsSupplierAndTypeName(true, PartyValidator.ORGANIZATION)
+						.then(function (value) {
+							expect(value.length).eq(1);
+							done();
+						});
+				});
+			});
+
 		});
 	});
 });

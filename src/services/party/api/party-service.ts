@@ -57,6 +57,20 @@ export interface PartyService {
 	findByIds(ids: string[]): Promise<JanuxPeople.Party[]>;
 
 	/**
+	 * Find all parties who are suppliers.
+	 * @param {boolean} isSupplier
+	 * @return {Bluebird<Party[]>}
+	 */
+	findByIsSupplier(isSupplier: boolean): Promise<JanuxPeople.Party[]>;
+
+	/**
+	 * Find all organizations who are suppliers.
+	 * @param {boolean} isSupplier
+	 * @return {Bluebird<Party[]>}
+	 */
+	findOrganizationByIsSupplier(isSupplier: boolean): Promise<JanuxPeople.Party[]>;
+
+	/**
 	 * Validate in an object has correct values. For example email regexp validation.
 	 * @param {JanuxPeople.Party} party
 	 * @return {Promise<ValidationError>} Return an array with the founded errors. If there is no

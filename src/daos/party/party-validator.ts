@@ -4,6 +4,7 @@
  */
 
 import JanuxPeople = require("janux-people");
+import * as _ from "lodash";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import * as logger from 'utils/logger-api/logger-api';
 import {isBlankString} from "utils/string/blank-string-validator";
@@ -151,6 +152,23 @@ export class PartyValidator {
 	 */
 	private static validateContactData(party: JanuxPeople.PartyAbstract) {
 		const errors: ValidationErrorImpl[] = [];
+
+		// Validate boolean values.
+		if (party['isSupplier'] != null && _.isBoolean(party['isSupplier']) === false) {
+			errors.push(new ValidationErrorImpl(OrganizationValidator.IS_SUPPLIER, OrganizationValidator.MUST_BE_BOOLEAN, ""));
+		}
+
+		if (party['isReseller'] != null && _.isBoolean(party['isReseller']) === false) {
+			errors.push(new ValidationErrorImpl(OrganizationValidator.IS_RESELLER, OrganizationValidator.MUST_BE_BOOLEAN, ""));
+		}
+
+		// Validate functions.
+		if (party['functionsProvided'] != null && _.isArray(party['functionsProvided']) === false) {
+			errors.push(new ValidationErrorImpl(OrganizationValidator.FUNCTIONS_PROVIDED, OrganizationValidator.NOT_ARRAY, ""));
+		} else if (_.some(party['functionsProvided'], value => isBlankString(value) === true)) {
+			errors.push(new ValidationErrorImpl(OrganizationValidator.FUNCTIONS_PROVIDED, OrganizationValidator.ELEMENT_NOT_STRING, ""));
+		}
+
 		// Check there is at least one primary email
 		/*if (_.isArray(party.emailAddresses) === false || party.emailAddresses.length === 0) {
          errors.push(new ValidationErrorImpl(this.CONTACTS_EMAILS, this.AT_LEAST_ONE_EMAIL, ""));

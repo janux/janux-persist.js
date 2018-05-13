@@ -32,6 +32,9 @@ export class PartyServiceImpl implements PartyService {
 		result.dateCreated = dateCreated;
 		result.lastUpdate = lastUpdate;
 		result.staff = party['staff'];
+		result.isReseller = party['isReseller'];
+		result.isSupplier = party['isSupplier'];
+		result.functionsProvided = party['functionsProvided'];
 		return result;
 	}
 
@@ -53,8 +56,11 @@ export class PartyServiceImpl implements PartyService {
 			result = JanuxPeople.Organization.fromJSON(object);
 		}
 		result.id = id;
+		result.isReseller = object.isReseller;
+		result.isSupplier = object.isSupplier;
 		result.dateCreated = dateCreated;
 		result.lastUpdate = lastUpdate;
+		result.functionsProvided = object.functionsProvided;
 		result.staff = StaffDataImpl.fomJSON(object.staff);
 		return result;
 	}
@@ -120,6 +126,30 @@ export class PartyServiceImpl implements PartyService {
 	 */
 	findOrganizations(): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.partyDao.findOrganizations()
+			.then((result: JanuxPeople.PartyAbstract[]) => {
+				return this.mergeStaffData(result);
+			});
+	}
+
+	/**
+	 * Find all parties who are suppliers.
+	 * @param {boolean} isSupplier
+	 * @return {Bluebird<Party[]>}
+	 */
+	findByIsSupplier(isSupplier: boolean): Promise<JanuxPeople.PartyAbstract[]> {
+		return this.partyDao.findByIsSupplierAndTypeName(isSupplier)
+			.then((result: JanuxPeople.PartyAbstract[]) => {
+				return this.mergeStaffData(result);
+			});
+	}
+
+	/**
+	 * Find all organizations who are suppliers.
+	 * @param {boolean} isSupplier
+	 * @return {Bluebird<Party[]>}
+	 */
+	findOrganizationByIsSupplier(isSupplier: boolean): Promise<JanuxPeople.PartyAbstract[]> {
+		return this.partyDao.findByIsSupplierAndTypeName(isSupplier, PartyValidator.ORGANIZATION)
 			.then((result: JanuxPeople.PartyAbstract[]) => {
 				return this.mergeStaffData(result);
 			});

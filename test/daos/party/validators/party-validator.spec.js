@@ -6,10 +6,9 @@ var chai = require('chai');
 var expect = chai.expect;
 var PersonEntity = require("janux-people").Person;
 var OrganizationEntity = require("janux-people").Organization;
-var PhoneNumber = require("janux-people").PhoneNumber;
 var PartyValidator = require("../../../../dist/index").PartyValidator;
+var OrganizationValidator = require("../../../../dist/index").OrganizationValidator;
 var EmailAddress = require("janux-people").EmailAddress;
-var PostalAddress = require("janux-people").PostalAddress;
 
 const name = "John";
 const middleName = "Doe";
@@ -28,6 +27,18 @@ const postalCode = "05000";
 
 describe("Party validator", function () {
 
+	function generateSampleOrganization() {
+		var organization = new OrganizationEntity();
+		organization.name = name;
+		organization.isSupplier = true;
+		organization.isReseller = false;
+		organization.functionsProvided = ['AGENT', 'GUARD'];
+		var emailObject = new EmailAddress(email);
+		organization.setContactMethod(work, emailObject);
+		return organization;
+	}
+
+
 	describe("When validating a person with correct values", function () {
 		it("The method should not return an error", function () {
 			var person = new PersonEntity();
@@ -42,14 +53,60 @@ describe("Party validator", function () {
 
 	describe("When validating a organization with correct values", function () {
 		it("The method should not return an error", function () {
-			var organization = new OrganizationEntity();
-			organization.name = name;
-			var emailObject = new EmailAddress(email);
-			organization.setContactMethod(work, emailObject);
+			var organization = generateSampleOrganization();
 			var errors = PartyValidator.validateParty(organization);
 			expect(errors.length).eq(0);
 		})
 	});
+
+
+	describe("When validating isSupplier as not boolean", function () {
+		it("The method should return an error", function () {
+			var organization = generateSampleOrganization();
+			organization.isSupplier = 1234;
+			var errors = PartyValidator.validateParty(organization);
+			expect(errors.length).eq(1);
+			expect(errors[0].attribute).eq(OrganizationValidator.IS_SUPPLIER);
+			expect(errors[0].message).eq(OrganizationValidator.MUST_BE_BOOLEAN);
+		});
+	});
+
+
+	describe("When validating isReseller as not boolean", function () {
+		it("The method should return an error", function () {
+			var organization = generateSampleOrganization();
+			organization.isReseller = 1234;
+			var errors = PartyValidator.validateParty(organization);
+			expect(errors.length).eq(1);
+			expect(errors[0].attribute).eq(OrganizationValidator.IS_RESELLER);
+			expect(errors[0].message).eq(OrganizationValidator.MUST_BE_BOOLEAN);
+		});
+	});
+
+
+	describe("When calling validate with an invalid functionsProvided value", function () {
+		it("The method should return an error", function () {
+			var organization = generateSampleOrganization();
+			organization.functionsProvided = 1234;
+			var errors = PartyValidator.validateParty(organization);
+			expect(errors.length).eq(1);
+			expect(errors[0].attribute).eq(OrganizationValidator.FUNCTIONS_PROVIDED);
+			expect(errors[0].message).eq(OrganizationValidator.NOT_ARRAY);
+		});
+	});
+
+
+	describe("When callign validate whith an invalid functionsProvided item value", function () {
+		it("The method should return en error", function () {
+			var organization = generateSampleOrganization();
+			organization.functionsProvided.push(12334);
+			var errors = PartyValidator.validateParty(organization);
+			expect(errors.length).eq(1);
+			expect(errors[0].attribute).eq(OrganizationValidator.FUNCTIONS_PROVIDED);
+			expect(errors[0].message).eq(OrganizationValidator.ELEMENT_NOT_STRING);
+		});
+	});
+
 
 	/*describe("When validating a party with no emails", function () {
      it("The method should return an error", function () {

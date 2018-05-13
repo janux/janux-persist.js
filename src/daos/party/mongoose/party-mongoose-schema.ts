@@ -50,5 +50,14 @@ export const PartyMongooseSchema = new mongoose.Schema({
 	},
 	currentEarnings: {
 		type: Number
+	},
+	isReseller: {
+		type: Boolean
+	},
+	isSupplier: {
+		type: Boolean
+	},
+	functionsProvided: {
+		type: mongoose.Schema.Types.Mixed
 	}
 }, {id: false});
