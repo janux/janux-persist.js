@@ -169,6 +169,12 @@ export class PartyValidator {
 			errors.push(new ValidationErrorImpl(OrganizationValidator.FUNCTIONS_PROVIDED, OrganizationValidator.ELEMENT_NOT_STRING, ""));
 		}
 
+		if (party['functionsReceived'] != null && _.isArray(party['functionsReceived']) === false) {
+			errors.push(new ValidationErrorImpl(OrganizationValidator.FUNCTIONS_RECEIVED, OrganizationValidator.NOT_ARRAY, ""));
+		} else if (_.some(party['functionsReceived'], value => isBlankString(value) === true)) {
+			errors.push(new ValidationErrorImpl(OrganizationValidator.FUNCTIONS_RECEIVED, OrganizationValidator.ELEMENT_NOT_STRING, ""));
+		}
+
 		// Check there is at least one primary email
 		/*if (_.isArray(party.emailAddresses) === false || party.emailAddresses.length === 0) {
          errors.push(new ValidationErrorImpl(this.CONTACTS_EMAILS, this.AT_LEAST_ONE_EMAIL, ""));

@@ -11,7 +11,11 @@ import {AccountValidator} from "daos/user/account-validator";
 import * as JanuxPeople from 'janux-people';
 import * as _ from 'lodash';
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {GroupImpl} from "services/group-module/impl/group";
+import {PartyGroupItemImpl} from "services/party-group-service/impl/party-group-item-impl";
+import {PartyGroupServiceImpl} from "services/party-group-service/impl/party-group-service-impl";
 import {PartyServiceImpl} from "services/party/impl/party-service-impl";
+import {Constants} from "utils/constants";
 import * as logger from 'utils/logger-api/logger-api';
 import {isBlankString} from "utils/string/blank-string-validator";
 import * as uuid from 'uuid';
@@ -20,8 +24,8 @@ import * as uuid from 'uuid';
  * This class has basic user service methods.
  */
 export class UserService {
-	public static createInstance(accountDao: AccountDao, partyService: PartyServiceImpl) {
-		return this._instance || (this._instance = new this(accountDao, partyService));
+	public static createInstance(accountDao: AccountDao, partyService: PartyServiceImpl, partyGroupServiceImpl: PartyGroupServiceImpl) {
+		return this._instance || (this._instance = new this(accountDao, partyService, partyGroupServiceImpl));
 	}
 
 	private static _instance: UserService;
@@ -31,14 +35,16 @@ export class UserService {
 	public ANOTHER_ACCOUNT_USING_CONTACT = "There is another account using this contact";
 	public ACCOUNT_NOT_IN_DATABASE = "The account with this id does not exist in the database";
 	public PARTY_TYPE = "party.type";
+	private partyGroupService: PartyGroupServiceImpl;
 	private _log = logger.getLogger("UserService");
 	private ID_REFERENCE: string = "id";
 	private accountDao: AccountDao;
 	private partyService: PartyServiceImpl;
 
-	private constructor(accountDao: AccountDao, partyService: PartyServiceImpl) {
+	private constructor(accountDao: AccountDao, partyService: PartyServiceImpl, partyGroupServiceImpl: PartyGroupServiceImpl) {
 		this.accountDao = accountDao;
 		this.partyService = partyService;
+		this.partyGroupService = partyGroupServiceImpl;
 	}
 
 	/**
@@ -259,6 +265,36 @@ export class UserService {
 				result.contact.typeName = associatedParty.typeName;
 				this._log.debug("Returning %j", result);
 				return Promise.resolve(result);
+			});
+	}
+
+	/**
+	 * Find the company associated to the user.
+	 * @param {string} userName
+	 * @return {Bluebird<PartyAbstract>}
+	 */
+	public findCompanyInfo(userName: string): Promise<JanuxPeople.PartyAbstract> {
+		let contactId: string;
+		return this.findOneByUserName(userName)
+			.then((result) => {
+				contactId = result.contact.id;
+				return this.partyGroupService.findByTypeAndPartyItem(Constants.GROUP_TYPE_COMPANY_CONTACTS, contactId);
+			})
+			.then((result: Array<GroupImpl<PartyGroupItemImpl>>) => {
+				let companyId: string;
+				if (result.length === 1) {
+					companyId = result[0].attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID];
+				} else if (result.length === 0) {
+					return Promise.resolve(undefined);
+				} else {
+					companyId = result[0].attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID];
+					this._log.warn("There is a party who belongs to more than 2 contacts groups. Username: %j, idContact:%j", userName, companyId);
+				}
+				if (_.isNil(companyId)) {
+					return Promise.resolve(companyId);
+				} else {
+					return this.partyService.findOne(companyId);
+				}
 			});
 	}
 

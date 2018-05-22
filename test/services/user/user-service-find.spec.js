@@ -6,6 +6,8 @@ var chai = require('chai');
 var config = require('config');
 var UserService = require("../../../dist/index").UserService;
 var PartyService = require("../../../dist/index").PartyServiceImpl;
+var PartyGroupService = require("../../../dist/index").PartyGroupServiceImpl;
+var GroupService = require("../../../dist/index").GroupServiceImpl;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var DaoUtil = require("../../daos/dao-util");
 var serverAppContext = config.get("serverAppContext");
@@ -51,6 +53,11 @@ describe("Testing user service find method", function () {
 		var insertedUser2;
 		var partyService;
 		var staffDao;
+		var groupDao;
+		var groupService;
+		var groupContentDao;
+		var groupAttributeValueDao;
+		var partyGroupService;
 
 
 		beforeEach(function (done) {
@@ -58,8 +65,13 @@ describe("Testing user service find method", function () {
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
 			staffDao = DaoUtil.createStaffDataDao(dbEngine, dbPath);
+			groupDao = DaoUtil.createGroupDao(dbEngine, dbPath);
+			groupContentDao = DaoUtil.createGroupContentDao(dbEngine, dbPath);
+			groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, dbPath);
 			partyService = new PartyService(partyDao, staffDao);
-			userService = UserService.createInstance(accountDao, partyService);
+			groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
+			partyGroupService = new PartyGroupService(partyService, groupService);
+			userService = UserService.createInstance(accountDao, partyService, partyGroupService);
 			staffDao.removeAll()
 				.then(function () {
 					return partyDao.removeAll();
@@ -73,14 +85,14 @@ describe("Testing user service find method", function () {
 					var contactReference = person.toJSON();
 					contactReference.typeName = person.typeName;
 					var account = {
-						username: accountUsername,
-						password: accountPassword,
-						enabled: accountEnabled,
-						locked: accountLocked,
-						expire: accountExpire,
+						username      : accountUsername,
+						password      : accountPassword,
+						enabled       : accountEnabled,
+						locked        : accountLocked,
+						expire        : accountExpire,
 						expirePassword: accountExpirePassword,
-						contact: contactReference,
-						roles: ["admin"]
+						contact       : contactReference,
+						roles         : ["admin"]
 					};
 					return userService.insert(account)
 				})
@@ -92,14 +104,14 @@ describe("Testing user service find method", function () {
 					var contactReference = organization.toJSON();
 					contactReference.typeName = organization.typeName;
 					var account2 = {
-						username: accountUsername2,
-						password: accountPassword2,
-						enabled: accountEnabled2,
-						locked: accountLocked2,
-						expire: accountExpire2,
+						username      : accountUsername2,
+						password      : accountPassword2,
+						enabled       : accountEnabled2,
+						locked        : accountLocked2,
+						expire        : accountExpire2,
 						expirePassword: accountExpirePassword2,
-						contact: contactReference,
-						roles: ["user"]
+						contact       : contactReference,
+						roles         : ["user"]
 					};
 					return UserService.insert(account2)
 				})

@@ -20,8 +20,9 @@ export class OrganizationValidator {
 	public static readonly MUST_BE_BOOLEAN: string = "Value must be boolean";
 	public static readonly IS_RESELLER: string = "isReseller";
 	public static readonly FUNCTIONS_PROVIDED: string = "functionsProvided";
-	static NOT_ARRAY: string = "Value is not an array";
-	static ELEMENT_NOT_STRING: string = "At leas one elements is not a string";
+	public static readonly FUNCTIONS_RECEIVED: string = "Functions received";
+	public static readonly NOT_ARRAY: string = "Value is not an array";
+	public static readonly ELEMENT_NOT_STRING: string = "At leas one elements is not a string";
 
 	/**
 	 * Validate if the organization values is valid.

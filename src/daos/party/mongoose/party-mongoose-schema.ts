@@ -57,7 +57,12 @@ export const PartyMongooseSchema = new mongoose.Schema({
 	isSupplier: {
 		type: Boolean
 	},
+	// Exclusive for suppliers.
 	functionsProvided: {
+		type: mongoose.Schema.Types.Mixed
+	},
+	// Exclusive for clients.
+	functionsReceived: {
 		type: mongoose.Schema.Types.Mixed
 	}
 }, {id: false});

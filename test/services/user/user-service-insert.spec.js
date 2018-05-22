@@ -9,6 +9,8 @@ var UserService = require("../../../dist/index").UserService;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var AccountValidator = require("../../../dist/index").AccountValidator;
 var PartyService = require("../../../dist/index").PartyServiceImpl;
+var GroupService = require("../../../dist/index").GroupServiceImpl;
+var PartyGroupService = require("../../../dist/index").PartyGroupServiceImpl;
 var SampleData = require("../../util/sample-data");
 var DaoUtil = require("../../daos/dao-util");
 var serverAppContext = config.get("serverAppContext");
@@ -29,13 +31,23 @@ describe("Testing user service service insertMethod method", function () {
 		var userService;
 		var partyService;
 		var staffDao;
+		var groupDao;
+		var groupContentDao;
+		var groupAttributeValueDao;
+		var groupService;
+		var partyGroupService;
 
 		beforeEach(function (done) {
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
 			staffDao = DaoUtil.createStaffDataDao(dbEngine, dbPath);
+			groupDao = DaoUtil.createGroupDao(dbEngine, dbPath);
+			groupContentDao = DaoUtil.createGroupContentDao(dbEngine, dbPath);
+			groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, dbPath);
 			partyService = new PartyService(partyDao, staffDao);
-			userService = UserService.createInstance(accountDao, partyService);
+			groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
+			partyGroupService = new PartyGroupService(partyService, groupService);
+			userService = UserService.createInstance(accountDao, partyService, partyGroupService);
 			setTimeout(function () {
 				accountDao.removeAll()
 					.then(function () {

@@ -168,6 +168,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		result.isReseller = object['isReseller'];
 		result.typeName = object.typeName;
 		result.functionsProvided = object['functionsProvided'];
+		result.functionsReceived = object['functionsReceived'];
 		this.partyDaoLogger.debug("Returning %j", result);
 		return result;
 	}
@@ -190,6 +191,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		result.isReseller = object.isReseller;
 		result.isSupplier = object.isSupplier;
 		result.functionsProvided = object.functionsProvided;
+		result.functionsReceived = object.functionsReceived;
 		return result;
 	}
 }

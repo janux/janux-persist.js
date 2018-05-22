@@ -8,6 +8,8 @@ var config = require('config');
 var DaoUtil = require("../../daos/dao-util");
 var UserService = require("../../../dist/index").UserService;
 var PartyService = require("../../../dist/index").PartyServiceImpl;
+var GroupService = require("../../../dist/index").GroupServiceImpl;
+var PartyGroupService = require("../../../dist/index").PartyGroupServiceImpl;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var serverAppContext = config.get("serverAppContext");
 var EmailAddress = require("janux-people").EmailAddress;
@@ -60,14 +62,24 @@ describe("Testing user service update method", function () {
 		var insertedUser2;
 		var partyService;
 		var staffDao;
+		var groupDao;
+		var groupContentDao;
+		var groupAttributeValueDao;
+		var groupService;
+		var partyGroupService;
 
 		beforeEach(function (done) {
 
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
 			staffDao = DaoUtil.createStaffDataDao(dbEngine, dbPath);
+			groupDao = DaoUtil.createGroupDao(dbEngine, dbPath);
+			groupContentDao = DaoUtil.createGroupContentDao(dbEngine, dbPath);
+			groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, dbPath);
 			partyService = new PartyService(partyDao, staffDao);
-			userService = UserService.createInstance(accountDao, partyService);
+			groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
+			partyGroupService = new PartyGroupService(partyService, groupService);
+			userService = UserService.createInstance(accountDao, partyService, partyGroupService);
 			accountDao.removeAll()
 				.then(function () {
 					return partyDao.removeAll();
