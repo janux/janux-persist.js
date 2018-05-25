@@ -353,6 +353,18 @@ export class UserService {
 			});
 	}
 
+	/**
+	 * Remove sensitive fields, like password.
+	 * @param object
+	 * @return {any}
+	 */
+	public removeSensitiveData(object: any) {
+		if (object != null) {
+			delete  object.password;
+		}
+		return object;
+	}
+
 	private populateUserData(contacts: JanuxPeople.PartyAbstract[]): Promise<any> {
 		this._log.debug("Call to populate populateUserData with contacts: %j", contacts);
 		const ids = _.map(contacts, (o: any) => o.id);
