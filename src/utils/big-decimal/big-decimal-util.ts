@@ -7,6 +7,9 @@ import * as  BigDecimal from 'big.js';
 import * as _ from "lodash";
 import * as mongodb from 'mongodb';
 
+/**
+ * Util to convert big.js numbers to mongodb big decimal.
+ */
 export class BigDecimalUtil {
 
 	/**

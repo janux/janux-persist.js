@@ -99,3 +99,4 @@ export * from "./services/reseller/impl/reseller-service-impl";
 export * from "./utils/string/blank-string-validator";
 export * from "./utils/date/date-util";
 export * from "./utils/constants";
+export * from "./utils/big-decimal/big-decimal-util";
