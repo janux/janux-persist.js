@@ -33,6 +33,10 @@ export abstract class RoleDao extends AbstractDataAccessObjectWithAdapter<JanuxA
 		return this.findOneByAttribute("name", name);
 	}
 
+	public findByNameIn(names: string[]): Promise<JanuxAuthorize.Role[]> {
+		return this.findByAttributeNameIn("name", names);
+	}
+
 	/**
 	 * Implementation of the method validateEntity.
 	 * @param objectToValidate The object to validate.

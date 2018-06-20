@@ -63,9 +63,9 @@ describe("Testing role service find methods", function () {
 						// expect(result).to.be.null;
 						// done();
 					}).catch(function (err) {
-						expect(err).not.to.be.null;
-						done();
-					});
+					expect(err).not.to.be.null;
+					done();
+				});
 			});
 		});
 
@@ -86,11 +86,22 @@ describe("Testing role service find methods", function () {
 						// expect(result).to.be.null;
 						// done();
 					}).catch(function (err) {
-						expect(err).not.to.be.null;
+					expect(err).not.to.be.null;
+					done();
+				});
+			});
+		});
+
+		describe("When calling findOneByNameIn", function () {
+			it("The method should return the correct records", function (done) {
+				roleService.findByNameIn([ROLE_NAME, ROLE_NAME2])
+					.then(function (value) {
+						expect(value.length).eq(2);
 						done();
 					});
 			});
 		});
+
 
 	});
 

@@ -60,6 +60,16 @@ export class RoleService {
 	}
 
 	/**
+	 * Return roles containing the following names.
+	 * @param {string[]} names
+	 * @return {Bluebird<any>}
+	 */
+	public findByNameIn(names: string[]): Promise<any> {
+		this._log.debug("Call to findByNameIn with names : %j", names);
+		return this.roleDao.findByNameIn(names);
+	}
+
+	/**
 	 * Find one role by its id.
 	 * @param id The id
 	 * @return {Promise<any>}
@@ -130,11 +140,11 @@ export class RoleService {
 		this._log.debug("Call to updateSortOrder with object:%j", rolesOrder);
 
 		// Find the roles
-		return this.roleDao.findByIds( _.map(rolesOrder, 'id'))
+		return this.roleDao.findByIds(_.map(rolesOrder, 'id'))
 			.then((resultQuery) => {
 				return Promise.map(resultQuery, (aRole) => {
 					let role: JanuxAuthorize.Role;
-					const roleObject: any = _.find( rolesOrder , { id: aRole.id });
+					const roleObject: any = _.find(rolesOrder, {id: aRole.id});
 					role = JanuxAuthorize.Role.fromJSON(aRole);
 					role.id = aRole.id;
 					role.sortOrder = roleObject.sortOrder;
