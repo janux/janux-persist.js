@@ -20,6 +20,7 @@ var serverAppContext = config.get("serverAppContext");
 const firstName = "John";
 const middleName = "Doe";
 const lastName = "Iglesias";
+const maternal = "Smith";
 const honorificPrefix = "honorificPrefix";
 const honorificSuffix = "honorificSuffix";
 const work = "work";
@@ -58,6 +59,7 @@ describe("Testing party dao find methods", function () {
 						person.name.first = firstName;
 						person.name.middle = middleName;
 						person.name.last = lastName;
+						person.name.maternal = maternal;
 						person.isReseller = true;
 
 						var organization2 = new OrganizationEntity();

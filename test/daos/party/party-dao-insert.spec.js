@@ -25,6 +25,7 @@ const organizationName = "Glarus";
 const firstName = "John";
 const middleName = "Doe";
 const lastName = "Iglesias";
+const maternal = "Shmith";
 // const displayName = "display name";
 const honorificPrefix = "honorificPrefix";
 const honorificSuffix = "honorificSuffix";
@@ -64,7 +65,9 @@ describe("Testing party dao insertMethod methods", function () {
 				person.name.first = firstName;
 				person.name.middle = middleName;
 				person.name.last = lastName;
+				person.name.maternal = maternal;
 				person.name.honorificPrefix = honorificPrefix;
+				person.name.honorificSuffix = honorificSuffix;
 				person.name.honorificSuffix = honorificSuffix;
 				person.isReseller = true;
 				person.isSupplier = true;
@@ -116,6 +119,7 @@ describe("Testing party dao insertMethod methods", function () {
 				expect(record.name.first).eq(firstName);
 				expect(record.name.middle).eq(middleName);
 				expect(record.name.last).eq(lastName);
+				expect(record.name.maternal).eq(maternal);
 				expect(record.name.honorificPrefix).eq(honorificPrefix);
 				expect(record.name.honorificSuffix).eq(honorificSuffix);
 				expect(record.typeName).eq(PartyValidator.PERSON);
