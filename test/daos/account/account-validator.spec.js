@@ -30,10 +30,10 @@ describe("Testing validate account", function () {
 	describe("Given the account", function () {
 		var account = new AccountEntity();
 		account.username = "";
-		account.password = "";
+		// account.password = "";
 		it("The method should return two errors", function () {
 			var errors = AccountValidator.validateAccount(account);
-			expect(errors.length).eq(3);
+			expect(errors.length).eq(2);
 		});
 	});
 });

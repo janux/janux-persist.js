@@ -195,6 +195,8 @@ export class MongooseAdapter implements DbAdapter {
 
 	/**
 	 * Update the document info inside the collection.
+	 * This type of updated is done via $set. This means if there are attributes not defined in the object to update, then the method
+	 * does not remove the missing attributes.
 	 * @param objectToUpdate The data to updateMethod. This object must have an attribute called "id" as string in order
 	 * to know which document is going to be updated.
 	 * @return {Promise<any>} A promise containing the updated object.

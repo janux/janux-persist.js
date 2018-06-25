@@ -7,6 +7,7 @@ import Promise = require("bluebird");
 import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {LokiJsAdapter} from "persistence/implementations/db-adapters/lokijs-db-adapter";
+import {isBlankString} from "utils/string/blank-string-validator";
 import {AccountDao} from "../account-dao";
 import {AccountEntity} from "../account-entity";
 import {AccountValidator} from "../account-validator";
@@ -40,6 +41,9 @@ export class AccountDaoLokiJsImpl extends AccountDao {
 	 * @return {Promise<ValidationErrorImpl[]>} A list of validation errors.
 	 */
 	protected validateBeforeInsert(objectToInsert: AccountEntity): Promise<ValidationErrorImpl[]> {
+		if (isBlankString(objectToInsert.password)) {
+			return Promise.resolve([new ValidationErrorImpl(AccountValidator.PASSWORD, AccountValidator.PASSWORD_EMPTY, '')]);
+		}
 		const query = {
 			$or: [
 				{username: {$eq: objectToInsert.username}},

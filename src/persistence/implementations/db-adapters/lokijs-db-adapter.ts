@@ -223,7 +223,11 @@ export class LokiJsAdapter implements DbAdapter {
 				(u) => {
 					const meta = u.meta;
 					const $loki = u.$loki;
-					u = objectToUpdate;
+					const keys = Object.keys(objectToUpdate);
+					for (const key of keys) {
+						u[key] = objectToUpdate[key];
+					}
+					// u = objectToUpdate;
 					u.meta = meta;
 					u.$loki = $loki;
 					return u;

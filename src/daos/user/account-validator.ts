@@ -15,6 +15,8 @@ export class AccountValidator {
 
 	public static ANOTHER_USER: string = "There is another account with the same username";
 	public static ANOTHER_CONTACT: string = "There is another account with the same contactId";
+	public static PASSWORD: string = 'Password';
+	public static PASSWORD_EMPTY: string = 'Password is empty';
 
 	/**
 	 * Validate the accountEntity
@@ -43,9 +45,9 @@ export class AccountValidator {
 		if (isBlankString(accountEntity.username)) {
 			errors.push(new ValidationErrorImpl("username", "Username is empty", accountEntity.username));
 		}
-		if (isBlankString(accountEntity.password)) {
-			errors.push(new ValidationErrorImpl("password", "Password is empty", accountEntity.password));
-		}
+		// if (isBlankString(accountEntity.password)) {
+		// 	errors.push(new ValidationErrorImpl("password", "Password is empty", accountEntity.password));
+		// }
 
 		this._log.debug("Errors: %j", errors);
 		return errors;

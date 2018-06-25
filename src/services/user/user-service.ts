@@ -12,6 +12,7 @@ import * as JanuxPeople from 'janux-people';
 import * as _ from 'lodash';
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {PartyServiceImpl} from "services/party/impl/party-service-impl";
+import {DateUtil} from "utils/date/date-util";
 import * as logger from 'utils/logger-api/logger-api';
 import {isBlankString} from "utils/string/blank-string-validator";
 import * as uuid from 'uuid';
@@ -250,8 +251,8 @@ export class UserService {
 		user.cdate = new Date();
 		user.username = object.username;
 		user.password = object.password;
-		user.expirePassword = object.expirePassword;
-		user.expire = object.expire;
+		user.expirePassword = DateUtil.stringToDate(object.expirePassword);
+		user.expire = DateUtil.stringToDate(object.expire);
 		user.locked = object.locked;
 		user.roles = object.roles;
 
@@ -297,13 +298,15 @@ export class UserService {
 				} else {
 					user.enabled = object.enabled;
 					user.username = object.username;
-					user.password = object.password;
-					user.expirePassword = object.expirePassword;
-					user.expire = object.expire;
+					if (object.password) {
+						user.password = object.password;
+					}
+					user.expirePassword = DateUtil.stringToDate(object.expirePassword);
+					user.expire = DateUtil.stringToDate(object.expire);
 					user.locked = object.locked;
 					user.userId = object.userId;
-					user.mdate = object.mdate;
-					user.cdate = object.cdate;
+					user.mdate = DateUtil.stringToDate(object.mdate);
+					user.cdate = DateUtil.stringToDate(object.cdate);
 					user.roles = object.roles;
 					user.id = object.id;
 					user.contactId = resultQuery.contactId;
@@ -315,12 +318,7 @@ export class UserService {
 				// Now updateMethod the contact data.
 				const contact: any = object.contact;
 				let objectToUpdate: any;
-				if (contact.typeName === PartyValidator.PERSON) {
-					objectToUpdate = PartyServiceImpl.fromJSON(contact);
-				} else {
-					objectToUpdate = PartyServiceImpl.fromJSON(contact);
-				}
-				// TODO: If there are more party profiles, add their correspondent fromJSON().
+				objectToUpdate = PartyServiceImpl.fromJSON(contact);
 				objectToUpdate.id = contact.id;
 				return this.partyService.update(objectToUpdate);
 			})

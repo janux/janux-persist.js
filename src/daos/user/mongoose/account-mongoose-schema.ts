@@ -29,7 +29,7 @@ export const AccountMongooseDbSchema = new mongoose.Schema({
 	expire: {
 		type: Date
 	},
-	expirePassWord: {
+	expirePassword: {
 		type: Date
 	},
 	contactId: {
