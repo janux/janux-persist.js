@@ -385,6 +385,14 @@ export abstract class AbstractDataAccessObject<t, ID>  implements CrudRepository
 	}
 
 	/**
+	 * Return the amount of records given the query.
+	 * @param query
+	 */
+	countByQuery(query: any): Promise<number> {
+		return undefined;
+	}
+
+	/**
 	 * Delete all records.
 	 * WARNING: This method IS NOT protected by any relational integrity rule because
 	 * noSql databases doesn't have this feature. Be VERY, VERY careful when calling this method,

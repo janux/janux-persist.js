@@ -169,6 +169,22 @@ describe("Testing user dao example find methods", function () {
 						done();
 					});
 			});
+
+			it("The query should return the value of two", function (done) {
+				userDao.countByName(name)
+					.then(function (result) {
+						expect(result).eq(2);
+						done();
+					});
+			});
+
+			it("The query should return the value of one", function (done) {
+				userDao.countByEmail(email2)
+					.then(function (result) {
+						expect(result).eq(1);
+						done();
+					});
+			});
 		})
 	});
 

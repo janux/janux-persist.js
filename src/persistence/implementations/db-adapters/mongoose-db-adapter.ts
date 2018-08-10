@@ -88,6 +88,21 @@ export class MongooseAdapter implements DbAdapter {
 	}
 
 	/**
+	 * Count all documents given then query.
+	 * @param query
+	 */
+	countByQuery(query: any): Promise<number> {
+		this._log.debug("Call to countByQuery with query: %j", query);
+		return new Promise<number>((resolve, reject) => {
+			this.adapterProperties.model.count(query, (err, count) => {
+				if (err) throw err;
+				this._log.debug("Result: %j", count);
+				resolve(count);
+			});
+		});
+	}
+
+	/**
 	 * Delete all documents inside the model.
 	 * @return {Promise<any>} Returns a promise indicating the delete was successful.
 	 */

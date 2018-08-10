@@ -43,6 +43,12 @@ export interface CrudRepository<t, ID> extends ReadOnlyRepository<t, ID> {
 	count(): Promise<number>;
 
 	/**
+	 * Count all documents given the query.
+	 * @param query
+	 */
+	countByQuery(query: any): Promise<number>;
+
+	/**
 	 * Delete all documents inside the collection.
 	 */
 	removeAll(): Promise<any>;

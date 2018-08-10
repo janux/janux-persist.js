@@ -40,6 +40,20 @@ export abstract class SampleUserDao extends AbstractDataAccessObjectWithAdapter<
 	 */
 	public abstract findByNameMatch(name: string): Promise<SampleUser[]>;
 
+	public countByName(name: string): Promise<number> {
+		const query = {
+			name: {$eq: name}
+		};
+		return this.countByQuery(query);
+	}
+
+	public countByEmail(email: string): Promise<number> {
+		const query = {
+			email: {$eq: email}
+		};
+		return this.countByQuery(query);
+	}
+
 	protected validateEntity<t>(objectToValidate: SampleUser): ValidationErrorImpl[] {
 		return validateExampleUser(objectToValidate);
 	}

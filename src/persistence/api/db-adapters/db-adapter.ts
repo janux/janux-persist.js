@@ -44,6 +44,12 @@ export interface DbAdapter {
 	count(): Promise<number>;
 
 	/**
+	 * Count all documents given then query.
+	 * @param query
+	 */
+	countByQuery(query: any): Promise<number>;
+
+	/**
 	 * Delete all documents inside the collection.
 	 */
 	removeAll(): Promise<any>;

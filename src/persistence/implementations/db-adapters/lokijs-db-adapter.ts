@@ -85,6 +85,17 @@ export class LokiJsAdapter implements DbAdapter {
 	}
 
 	/**
+	 * Count all documents given then query.
+	 * @param query
+	 */
+	countByQuery(query: any): Promise<number> {
+		this._log.debug('Call to countByQuery with collection: %j and query %j', this.adapterProperties.findCollection().name, query);
+		const result = this.adapterProperties.findCollection().count(query);
+		this._log.debug('Result %j', result);
+		return Promise.resolve(result);
+	}
+
+	/**
 	 * Delete all documents inside the collection.
 	 * @return {Promise<any>} Returns a promise indicating the delete was successful.
 	 */
