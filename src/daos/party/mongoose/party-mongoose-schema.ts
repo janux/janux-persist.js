@@ -27,6 +27,9 @@ export const PartyMongooseSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.Mixed,
 		required: true
 	},
+	code: {
+		type: mongoose.Schema.Types.String
+	},
 	emails: {
 		type: mongoose.Schema.Types.Mixed,
 		required: false

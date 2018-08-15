@@ -20,12 +20,14 @@ var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 //Config files
 var serverAppContext = config.get("serverAppContext");
 
-const organizationName = "Glarus";
+const organizationName = "Glarus company";
+const organizationCode = "Glarus";
 // const organizationDisplayName = "organization display name";
 const firstName = "John";
 const middleName = "Doe";
 const lastName = "Iglesias";
 const maternal = "Shmith";
+const personCode = 'personCode';
 // const displayName = "display name";
 const honorificPrefix = "honorificPrefix";
 const honorificSuffix = "honorificSuffix";
@@ -62,6 +64,7 @@ describe("Testing party dao insertMethod methods", function () {
 		describe("When inserting a valid person", function () {
 			it("The entity should exits in the database", function (done) {
 				var person = new PersonEntity();
+				person.code = personCode;
 				person.name.first = firstName;
 				person.name.middle = middleName;
 				person.name.last = lastName;
@@ -114,6 +117,7 @@ describe("Testing party dao insertMethod methods", function () {
 
 			function validateRecord(record) {
 				// expect(record.displayName).eq(displayName);
+				expect(record.code).eq(personCode);
 				expect(record.isReseller).eq(true);
 				expect(record.isSupplier).eq(true);
 				expect(record.name.first).eq(firstName);
@@ -156,6 +160,7 @@ describe("Testing party dao insertMethod methods", function () {
 				var organization = new OrganizationEntity();
 				// organization.displayName = organizationDisplayName;
 				organization.name = organizationName;
+				organization.code = organizationCode;
 				organization.functionsProvided = functions;
 
 				var emailObject = new EmailAddress();
@@ -165,6 +170,7 @@ describe("Testing party dao insertMethod methods", function () {
 				partyDao.insert(organization)
 					.then(function (result) {
 						expect(result.name).eq(organizationName);
+						expect(result.code).eq(organizationCode);
 						expect(result.typeName).eq(PartyValidator.ORGANIZATION);
 						expect(result.emailAddresses(false).length).eq(1);
 						expect(_.isEqual(result.functionsProvided, functions)).eq(true);
@@ -172,6 +178,7 @@ describe("Testing party dao insertMethod methods", function () {
 					})
 					.then(function (resultQuery) {
 						expect(resultQuery.name).eq(organizationName);
+						expect(resultQuery.code).eq(organizationCode);
 						expect(resultQuery.typeName).eq(PartyValidator.ORGANIZATION);
 						expect(_.isEqual(resultQuery.functionsProvided, functions)).eq(true);
 						expect(resultQuery.emailAddresses(false).length).eq(1);

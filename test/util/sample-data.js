@@ -14,7 +14,9 @@ function createPerson1() {
 	const personLastName = "Doe";
 	const contactEmail = "dev@glarus.com";
 	const contactType = "work";
+	const personCode = 'personCode';
 	var person = new Person();
+	person.code = personCode;
 	person.name.first = personName;
 	person.name.middle = personMiddleName;
 	person.name.last = personLastName;

@@ -32,6 +32,7 @@ export class PartyServiceImpl implements PartyService {
 		result.dateCreated = dateCreated;
 		result.lastUpdate = lastUpdate;
 		result.staff = party['staff'];
+		result.code = party.code;
 		result.isReseller = party['isReseller'];
 		result.isSupplier = party['isSupplier'];
 		result.functionsProvided = party['functionsProvided'];
@@ -60,6 +61,7 @@ export class PartyServiceImpl implements PartyService {
 		result.isReseller = object.isReseller;
 		result.isSupplier = object.isSupplier;
 		result.dateCreated = dateCreated;
+		result.code = object.code;
 		result.lastUpdate = lastUpdate;
 		result.functionsProvided = object.functionsProvided;
 		result.functionsReceived = object.functionsReceived;

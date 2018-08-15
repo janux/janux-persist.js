@@ -38,6 +38,7 @@ const organizationName2 = "Glarus 2";
 
 const name2 = "Jane";
 const middleName2 = "Smith";
+const newCodePerson = 'new code person';
 
 describe("Testing party dao updateMethod methods", function () {
 	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
@@ -169,9 +170,11 @@ describe("Testing party dao updateMethod methods", function () {
 			describe("When updating a party with the correct info", function () {
 				it("The method should not return an error", function (done) {
 					insertedRecordPerson2.setContactMethod(work, new PhoneNumber(phone));
+					insertedRecordPerson2.code = newCodePerson;
 					partyDao.update(insertedRecordPerson2)
 						.then(function (result) {
 							expect(result.id).not.to.be.undefined;
+							expect(result.code).eq(newCodePerson);
 							expect(result.phoneNumbers(false).length).eq(1);
 							done();
 						})
