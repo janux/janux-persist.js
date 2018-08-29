@@ -7,19 +7,19 @@
 var path = require('path');
 //Gulp compiler options
 var cfg = {
-	dir: {
-		src: 'src',
-		dist: 'dist',
-		test: 'test',
-		doc: 'doc',
+	dir      : {
+		src   : 'src',
+		dist  : 'dist',
+		test  : 'test',
+		doc   : 'doc',
 		config: 'config'
 	},
-	file: {
+	file     : {
 		app: 'app.js'
 	},
-	log4js: require('./log4js'),
+	log4js   : require('./log4js'),
 	debugPort: 30000,
-	fileset: {}
+	fileset  : {}
 };
 
 cfg.fileset.ts = path.join(cfg.dir.src, '**', '*.ts');
@@ -38,26 +38,29 @@ cfg.fileset.test = [
 ];
 
 cfg.jshint = {
-	rcfile: '.jshintrc',
+	rcfile  : '.jshintrc',
 	reporter: 'default'
 };
 
 cfg.tsConfig = {
-	module: "commonjs",
+	module        : "commonjs",
 	removeComments: true,
-	target: 'ES5',
-	skipLibCheck: true,
-	declaration: true
+	target        : 'ES5',
+	skipLibCheck  : true,
+	declaration   : true
 };
 
 //
 // Configure tests
 //
 cfg.serverAppContext = {
-	db: {
-		dbEngine: "mongoose",
+	db    : {
+		dbEngine    : "mongoose",
 		mongoConnUrl: "mongodb://localhost/janux-persistence-test",
 		lokiJsDBPath: "./janux-persistence-test.db"
+	},
+	system: {
+		environment: "development"
 	}
 };
 

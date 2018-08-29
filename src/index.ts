@@ -102,6 +102,8 @@ export * from "./services/party/api/party-service";
 export * from "./services/staff/impl/staff-data-impl";
 export * from "./services/party/impl/party-service-impl";
 export * from "./services/reseller/impl/reseller-service-impl";
+export * from "./services/enviroment/environment-service";
+export * from "./services/enviroment/environment-info";
 export * from "./utils/string/blank-string-validator";
 export * from "./utils/date/date-util";
 export * from "./utils/constants";
