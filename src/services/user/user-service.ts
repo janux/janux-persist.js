@@ -108,6 +108,16 @@ export class UserService {
 	}
 
 	/**
+	 *
+	 * @param {string} contactId
+	 * @returns {Bluebird<any>}
+	 */
+	public findOneByContactId(contactId: string): Promise<any> {
+		this._log.debug("Call to findByContactId with contactId %j", contactId);
+		return this.accountDao.findOneByContactId(contactId);
+	}
+
+	/**
 	 * Find one user by its id.
 	 * @param {string} id
 	 * @return {Promise<any>}
@@ -246,7 +256,7 @@ export class UserService {
 		let result: any;
 		const user: AccountEntity = new AccountEntity();
 		user.enabled = object.enabled;
-		user.userId = uuid.v4();
+		user.userId = object.userId || uuid.v4();
 		user.mdate = new Date();
 		user.cdate = new Date();
 		user.username = object.username;

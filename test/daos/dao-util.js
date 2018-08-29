@@ -16,6 +16,10 @@ var AccountDaoLokiJsImpl = require("../../dist/index").AccountDaoLokiJsImpl;
 var AccountDaoMongooseImpl = require("../../dist/index").AccountDaoMongooseImpl;
 var AccountMongooseDbSchema = require("../../dist/index").AccountMongooseDbSchema;
 
+var AccountInvitationDaoLokiJsImpl = require("../../dist/index").AccountInvitationDaoLokiJsImpl;
+var AccountInvitationDaoMongooseImpl = require("../../dist/index").AccountInvitationDaoMongooseImpl;
+var AccountInvitationMongooseDbSchema = require("../../dist/index").AccountInvitationMongooseDbSchema;
+
 var AuthContextDaoLokiJsImpl = require("../../dist/index").AuthContextDaoLokiJsImpl;
 var AuthContextDaoMongooseImpl = require("../../dist/index").AuthContextDaoMongooseImpl;
 var AuthContextMongooseDbSchema = require("../../dist/index").AuthContextMongooseDbSchema;
@@ -39,6 +43,7 @@ var GroupAttributeValueMongooseSchema = require("../../dist/index").GroupAttribu
 
 const PARTY_DEFAULT_COLLECTION_NAME = 'contact';
 const ACCOUNT_DEFAULT_COLLECTION_NAME = 'account';
+const ACCOUNT_INVITATION_DEFAULT_COLLECTION_NAME = 'accountInvitation';
 const AUTH_CONTEXT_DEFAULT_COLLECTION_NAME = 'authcontext';
 const ROLE_DEFAULT_COLLECTION_NAME = 'role';
 const GROUP_DEFAULT_COLLECTION_NAME = 'group';
@@ -67,6 +72,15 @@ function createAccountDao(dbEngine, dbPath) {
 	return dao;
 }
 
+function createAccountInvDao(dbEngine, dbPath) {
+	var dao;
+	if (dbEngine === DataSourceHandler.MONGOOSE) {
+		dao = DaoFactory.subscribeDao(new DaoSettings(dbEngine, dbPath, ACCOUNT_INVITATION_DEFAULT_COLLECTION_NAME, EntityPropertiesImpl.createDefaultProperties(), AccountInvitationMongooseDbSchema), AccountInvitationDaoMongooseImpl);
+	} else if (dbEngine === DataSourceHandler.LOKIJS) {
+		dao = DaoFactory.subscribeDao(new DaoSettings(dbEngine, dbPath, ACCOUNT_INVITATION_DEFAULT_COLLECTION_NAME, EntityPropertiesImpl.createDefaultProperties()), AccountInvitationDaoLokiJsImpl);
+	}
+	return dao;
+}
 
 function createAuthContextDao(dbEngine, dbPath) {
 	var dao;
@@ -132,6 +146,7 @@ function createStaffDataDao(dbEngine, dbPath) {
 module.exports = {
 	createPartyDao          : createPartyDao,
 	createAccountDao        : createAccountDao,
+	createAccountInvDao		: createAccountInvDao,
 	createAuthContextDao    : createAuthContextDao,
 	createRoleDao           : createRoleDao,
 	createGroupDao          : createGroupDao,

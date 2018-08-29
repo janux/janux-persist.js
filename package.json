@@ -20,6 +20,7 @@
 		"@types/mongoose": "4.7.17",
 		"@types/uuid": "3.0.0",
 		"@types/big.js": "4.0.2",
+		"@types/nodemailer": "4.6.2",
 		"bluebird": "3.5.0",
 		"config": "1.26.1",
 		"email-validator": "1.0.7",
@@ -30,7 +31,9 @@
 		"mongoose": "4.10.5",
 		"uuid": "3.0.1",
 		"moment": "2.19.3",
-		"big.js": "5.0.3"
+		"big.js": "5.0.3",
+		"nodemailer": "4.6.8",
+		"mail-time": "1.0.1"
 	},
 	"devDependencies": {
 		"chai": "4.0.2",
