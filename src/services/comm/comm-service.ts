@@ -18,49 +18,59 @@ export class CommService {
 
 	private static _instance: CommService;
 	public events = {
-		EMAIL_SUCCESS_SENT_EVENT: 'emailSuccessSent'
+		EMAIL_SUCCESS_SENT_EVENT: 'emailSuccessSent',
+		EMAIL_SENT_ERROR_EVENT: 'emailSentError'
 	};
 	private _log = logger.getLogger("CommService");
 	private listeners: object = {};
-	private dbEngine: string;
-	private dbPath: string;
 	private dataSource: DataSource;
 	private transports: any[] = [];
+	private transport: any;
 	private mailQueue: any;
+	private smtp: any;
 
 	private constructor(commDataSource, smtp) {
 		// Initialize listeners array
 		Object.keys(this.events).map((key) => {
 			this.listeners[key] = [];
 		});
-		// this.dbEngine = dbEngine;
-		// this.dbPath = dbPath;
+		this.smtp = smtp;
 		this.dataSource = this.getDataSource(commDataSource.dbEngine, commDataSource.dbPath);
 
-		// Google Apps SMTP
-		this.transports.push(nodemailer.createTransport({
+		// SMTP
+		// this.transports.push(nodemailer.createTransport({
+		// 	host: smtp.host,
+		// 	from: smtp.from,
+		// 	port: smtp.port,
+		// 	auth: {
+		// 		user: smtp.auth.user,
+		// 		pass: smtp.auth.pass
+		// 	}
+		// }));
+
+		this.transport = nodemailer.createTransport({
 			host: smtp.host,
-			from: smtp.user,
+			from: smtp.from,
+			port: smtp.port,
 			auth: {
 				user: smtp.auth.user,
 				pass: smtp.auth.pass
-			},
-		}));
-
-		this.mailQueue = new MailTime({
-			db: this.dataSource.dbConnection, // MongoDB
-			type: 'server',
-			strategy: 'balancer', // Transports will be used in round robin chain
-			transports: this.transports,
-			from(transport) {
-				// To pass spam-filters `from` field should be correctly set
-				// for each transport, check `transport` object for more options
-				return '"Awesome App" <' + transport._options.from + '>';
-			},
-			concatEmails: true, // Concatenate emails to the same addressee
-			concatDelimiter: '<h1>{{{subject}}}</h1>', // Start each concatenated email with it's own subject
-			template: MailTime.Template // Use default template
+			}
 		});
+
+		// this.mailQueue = new MailTime({
+		// 	db: this.dataSource.dbConnection, // MongoDB
+		// 	type: 'server',
+		// 	strategy: 'balancer', // Transports will be used in round robin chain
+		// 	transports: this.transports,
+		// 	from(transport) {
+		// 		// To pass spam-filters `from` field should be correctly set
+		// 		// for each transport, check `transport` object for more options
+		// 		return '"Glarus App" <' + transport._options.from + '>';
+		// 	},
+		// 	concatEmails: true, // Concatenate emails to the same addressee
+		// 	concatDelimiter: '<h1>{{{subject}}}</h1>' // Start each concatenated email with it's own subject
+		// });
 	}
 
 	/**
@@ -110,15 +120,40 @@ export class CommService {
 	public sendEmail(params: any) {
 		this._log.debug("Call to sendEmail with params: %j", params);
 
+		const that = this;
+
 		// Send email
-		this.mailQueue.sendMail({
+		// this.mailQueue.sendMail({
+		// 	from: this.smtp.from,
+		// 	to: params.to,
+		// 	subject: params.subject,
+		// 	text: params.text,
+		// 	html: params.html
+		// }, function(error, info) {
+		// 	if (error) {
+		// 		that.fire(this.events.EMAIL_SENT_ERROR_EVENT, error);
+		// 		that._log.info(error);
+		// 	} else {
+		// 		that.fire(this.events.EMAIL_SUCCESS_SENT_EVENT, params);
+		// 		that._log.info('Message sent: ' + info.response);
+		// 	}
+		// });
+
+		this.transport.sendMail({
+			from: this.smtp.from,
 			to: params.to,
 			subject: params.subject,
 			text: params.text,
 			html: params.html
+		}, function(error, info) {
+			if (error) {
+				that.fire(this.events.EMAIL_SENT_ERROR_EVENT, error);
+				that._log.info(error);
+			} else {
+				that.fire(this.events.EMAIL_SUCCESS_SENT_EVENT, params);
+				that._log.info('Message sent: ' + info.response);
+			}
 		});
-
-		this.fire(this.events.EMAIL_SUCCESS_SENT_EVENT, params);
 	}
 
 	/**
