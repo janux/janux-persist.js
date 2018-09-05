@@ -94,7 +94,7 @@ export class PartyDaoMongooseImpl extends PartyDao {
 			organizationReference = objectToUpdate as JanuxPeople.Organization;
 			query = {
 				$and: [
-					{_id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
+					{id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
 					{
 						$or: [
 							{"emails.address": {$in: emailAddressesToLookFor}},

@@ -73,7 +73,7 @@ export class PartyDaoLokiJsImpl extends PartyDao {
 			personReference = objectToUpdate as JanuxPeople.Person;
 			query = {
 				$and: [
-					{$loki: {$ne: _.toNumber(objectToUpdate[this.ID_REFERENCE])}},
+					{id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
 					{
 						$or: [
 							{"emails.address": {$in: emailAddressesToLookFor}}
@@ -95,7 +95,7 @@ export class PartyDaoLokiJsImpl extends PartyDao {
 			organizationReference = objectToUpdate as JanuxPeople.Organization;
 			query = {
 				$and: [
-					{$loki: {$ne: _.toNumber(objectToUpdate[this.ID_REFERENCE])}},
+					{id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
 					{
 						$or: [
 							{"emails.address": {$in: emailAddressesToLookFor}},

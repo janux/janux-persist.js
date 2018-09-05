@@ -178,7 +178,7 @@ describe("Testing user service service insertMethod method", function () {
 				var newPerson;
 				var contactReference;
 				var account;
-				newPerson = SampleData.createPerson1();
+				newPerson = SampleData.createPerson2();
 				contactReference = newPerson.toJSON();
 				contactReference.typeName = newPerson.typeName;
 				account = SampleData.createEmptyUserAccount2();
