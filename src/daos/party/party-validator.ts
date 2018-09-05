@@ -84,60 +84,63 @@ export class PartyValidator {
 			resultQuery,
 			emailAddressesToLookFor,
 			resultQuery);
+
 		const errors: ValidationErrorImpl[] = [];
-		/*let person: PersonEntity;
-         let organization: OrganizationEntity;
-         let personReference: PersonEntity;
-         let organizationReference: OrganizationEntity;
-         if (reference.type === this.PERSON) {
-         personReference = reference as PersonEntity;
-         } else {
-         organizationReference = reference as OrganizationEntity;
-         }
-         // Validating duplicated emails
-         const potentialDuplicatedEmailRecords: string[] = _.flatMap(resultQuery, (record) => {
-         return record.emails.map((value, index, array) => value.address);
-         });
-         const duplicatedEmails: string [] = _.intersection(emailAddressesToLookFor, potentialDuplicatedEmailRecords);
-         for (const obj of duplicatedEmails) {
-         errors.push(new ValidationErrorImpl(
-         this.CONTACTS_EMAILS,
-         this.THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL,
-         obj));
-         }
+		// let person: JanuxPeople.Person;
+		// let organization: JanuxPeople.Organization;
+		// let personReference: JanuxPeople.Person;
+		// let organizationReference: JanuxPeople.Organization;
+		// // if (reference.typeName === this.PERSON  || reference.typeName === this.STAFF) {
+		// personReference = reference as JanuxPeople.Person;
+		// } else {
+		// organizationReference = reference as JanuxPeople.Organization;
+		// }
 
-         // Validate duplicated name
-         for (const element of resultQuery) {
+		// Validating duplicated emails
+		const potentialDuplicatedEmailRecords: string[] = _.flatMap(resultQuery, (record) => {
+			return record.emailAddresses(false).map((value, index, array) => value.address);
+		});
+		const duplicatedEmails: string [] = _.intersection(emailAddressesToLookFor, potentialDuplicatedEmailRecords);
 
-         // Validate duplicated idAccount
-         if (element.idAccount === reference.idAccount && isBlankString(element.idAccount) === false) {
-         errors.push(new ValidationErrorImpl(
-         this.ID_ACCOUNT,
-         this.ID_ACCOUNT_DUPLICATE,
-         reference.idAccount
-         ));
-         }
+		for (const obj of duplicatedEmails) {
+			errors.push(new ValidationErrorImpl(
+			this.CONTACTS_EMAILS,
+			this.THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL,
+			obj));
+		}
 
-         if (element.type === PartyValidator.PERSON && reference.type === element.type) {
-         // Validate duplicated person name
-         person = element as PersonEntity;
-         if (PersonName.validateSameName(person.name, personReference.name) === true) {
-         errors.push(new ValidationErrorImpl(
-         PersonValidator.ATTRIBUTES,
-         PersonValidator.PERSON_NAME_DUPLICATED,
-         JSON.stringify(person.name)));
-         }
-         } else if (element.type === PartyValidator.ORGANIZATION && reference.type === element.type) {
-         // Validate duplicated organization name
-         organization = element as OrganizationEntity;
-         if (organization.name === organizationReference.name) {
-         errors.push(new ValidationErrorImpl(
-         OrganizationValidator.ATTRIBUTES,
-         OrganizationValidator.CODE_DUPLICATED,
-         organization.name));
-         }
-         }
-         }*/
+		// Validate duplicated name
+		// for (const element of resultQuery) {
+		//
+		// 	Validate duplicated idAccount
+		// 	if (element.idAccount === reference.idAccount && isBlankString(element.idAccount) === false) {
+		// 		errors.push(new ValidationErrorImpl(
+		// 			this.ID_ACCOUNT,
+		// 			this.ID_ACCOUNT_DUPLICATE,
+		// 			reference.idAccount
+		// 		));
+		// 	}
+		//
+		// 	if ((element.typeName === PartyValidator.PERSON || element.typeName === this.STAFF) && reference.typeName === element.typeName) {
+		// 		// Validate duplicated person name
+		// 		person = element as JanuxPeople.Person;
+		// 		if (PersonName.validateSameName(person.name, personReference.name) === true) {
+		// 			errors.push(new ValidationErrorImpl(
+		// 			PersonValidator.ATTRIBUTES,
+		// 			PersonValidator.PERSON_NAME_DUPLICATED,
+		// 			JSON.stringify(person.name)));
+		// 		}
+		// 	} else if (element.typeName === PartyValidator.ORGANIZATION && reference.typeName === element.typeName) {
+		// 		// Validate duplicated organization name
+		// 		organization = element as JanuxPeople.Organization;
+		// 		if (organization.name === organizationReference.name) {
+		// 			errors.push(new ValidationErrorImpl(
+		// 			OrganizationValidator.ATTRIBUTES,
+		// 			OrganizationValidator.CODE_DUPLICATED,
+		// 			organization.name));
+		// 		}
+		// 	}
+		// }
 
 		this._log.debug("Retuning errors: %j", errors);
 		return errors;

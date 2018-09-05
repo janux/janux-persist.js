@@ -5,9 +5,11 @@
 
 import * as Promise from "bluebird";
 import JanuxPeople = require("janux-people");
+import * as _ from "lodash";
 import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {LokiJsAdapter} from "persistence/implementations/db-adapters/lokijs-db-adapter";
+import {isBlankString} from "utils/string/blank-string-validator";
 import {PartyDao} from "../party-dao";
 import {PartyValidator} from "../party-validator";
 
@@ -56,58 +58,61 @@ export class PartyDaoLokiJsImpl extends PartyDao {
 	 * @param objectToUpdate
 	 * @return {Promise<ValidationErrorImpl[]>}
 	 */
-	protected validateBeforeUpdate<t>(objectToUpdate: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
+	protected validateBeforeUpdate(objectToUpdate: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
 		return this.validateDuplicated(objectToUpdate);
 	}
 
-	private validateDuplicated<t>(objectToUpdate: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
-		/*let emailAddressesToLookFor: string[];
-         emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value, index, array) => value.address);
-         let personReference: JanuxPeople.PersonImpl;
-         let organizationReference: JanuxPeople.OrganizationImpl;
-         let query: any;
-         if (objectToUpdate.typeName === PartyValidator.PERSON) {
-         personReference = objectToUpdate as JanuxPeople.PersonImpl;
-         query = {
-         $and: [
-         {$loki: {$ne: _.toNumber(objectToUpdate[this.ID_REFERENCE])}},
-         {
-         $or: [
-         {"emails.address": {$in: emailAddressesToLookFor}},
-         {
-         $and: [
-         {"name.first": {$eq: personReference.name.first}},
-         {"name.middle": {$eq: personReference.name.middle}},
-         ]
-         }
-         ]
-         }
-         ]
-         };
-         if (isBlankString(personReference.name.last) === false) {
-         query.$and[1].$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
-         }
-         } else {
-         organizationReference = objectToUpdate as JanuxPeople.OrganizationImpl;
-         query = {
-         $and: [
-         {$loki: {$ne: _.toNumber(objectToUpdate.id)}},
-         {
-         $or: [
-         {"emails.address": {$in: emailAddressesToLookFor}},
-         {name: {$eq: organizationReference.name}}
-         ]
-         }
-         ]
-         };
-         }
-         return LokiJsUtil.findByQueryMethod(this.collection, query)
-         .then((resultQuery: IPartyEntity[]) => {
-         const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
-         return Promise.resolve(errors);
-         });*/
+	private validateDuplicated(objectToUpdate: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
+		let emailAddressesToLookFor: string[];
+		emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value, index, array) => value.address);
+		let personReference: JanuxPeople.Person;
+		let organizationReference: JanuxPeople.Organization;
+		let query: any;
 
-		return Promise.resolve([]);
+		if (objectToUpdate.typeName === PartyValidator.PERSON) {
+			personReference = objectToUpdate as JanuxPeople.Person;
+			query = {
+				$and: [
+					{$loki: {$ne: _.toNumber(objectToUpdate[this.ID_REFERENCE])}},
+					{
+						$or: [
+							{"emails.address": {$in: emailAddressesToLookFor}}
+							// {
+							// 	$and: [
+							// 		{"name.first": {$eq: personReference.name.first}},
+							// 		{"name.middle": {$eq: personReference.name.middle}},
+							// 	]
+							// }
+						]
+					}
+				]
+			};
+
+			// if (isBlankString(personReference.name.last) === false) {
+			// query.$and[1].$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
+			// }
+		} else {
+			organizationReference = objectToUpdate as JanuxPeople.Organization;
+			query = {
+				$and: [
+					{$loki: {$ne: _.toNumber(objectToUpdate[this.ID_REFERENCE])}},
+					{
+						$or: [
+							{"emails.address": {$in: emailAddressesToLookFor}},
+							{name: {$eq: organizationReference.name}}
+						]
+					}
+				]
+			};
+		}
+
+		return this.findByQuery(query)
+		.then((resultQuery: JanuxPeople.PartyAbstract[]) => {
+			const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
+			return Promise.resolve(errors);
+		});
+
+		// return Promise.resolve([]);
 	}
 
 }

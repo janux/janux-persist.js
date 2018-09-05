@@ -5,10 +5,12 @@
 
 import * as Promise from "bluebird";
 import JanuxPeople = require("janux-people");
+import * as _ from "lodash";
 import {Model} from "mongoose";
 import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {MongooseAdapter} from "persistence/implementations/db-adapters/mongoose-db-adapter";
+import {isBlankString} from "utils/string/blank-string-validator";
 import {PartyDao} from "../party-dao";
 import {PartyValidator} from "../party-validator";
 
@@ -61,54 +63,58 @@ export class PartyDaoMongooseImpl extends PartyDao {
 	}
 
 	protected validateDuplicated(objectToUpdate: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
-		/*let emailAddressesToLookFor: string[];
-         emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value) => value.address);
-         let personReference: JanuxPeople.PersonImpl;
-         let organizationReference: JanuxPeople.OrganizationImpl;
-         let query: any;
-         if (objectToUpdate.typeName === PartyValidator.PERSON) {
-         personReference = objectToUpdate as JanuxPeople.PersonImpl;
-         query = {
-         $and: [
-         {_id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
-         {
-         $or: [
-         {"emails.address": {$in: emailAddressesToLookFor}},
-         {
-         $and: [
-         {"name.first": {$eq: personReference.name.first}},
-         {"name.middle": {$eq: personReference.name.middle}},
-         ]
-         }
-         ]
-         }
-         ]
-         };
-         if (isBlankString(personReference.name.last) === false) {
-         query.$and[1].$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
-         }
-         } else {
-         organizationReference = objectToUpdate as JanuxPeople.OrganizationImpl;
-         query = {
-         $and: [
-         {_id: {$ne: objectToUpdate.id}},
-         {
-         $or: [
-         {"emails.address": {$in: emailAddressesToLookFor}},
-         {name: {$eq: organizationReference.name}}
-         ]
-         }
-         ]
-         };
-         }
-         if (_.isUndefined(objectToUpdate.idAccount) === false) {
-         query.$and[1].$or.push({idAccount: {$eq: objectToUpdate.idAccount}});
-         }
-         return MongooseDbUtil.findByQueryMethod(this.model, query)
-         .then((resultQuery: IPartyEntity[]) => {
-         const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
-         return Promise.resolve(errors);
-         });*/
-		return Promise.resolve([]);
+		let emailAddressesToLookFor: string[];
+		emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value) => value.address);
+		let personReference: JanuxPeople.Person;
+		let organizationReference: JanuxPeople.Organization;
+		let query: any;
+
+		if (objectToUpdate.typeName === PartyValidator.PERSON) {
+			personReference = objectToUpdate as JanuxPeople.Person;
+			query = {
+				$and: [
+					{id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
+					{
+						$or: [
+							{"emails.address": { $in: emailAddressesToLookFor }}
+							// {
+							// 	$and: [
+							// 		{"name.first": {$eq: personReference.name.first}},
+							// 		{"name.middle": {$eq: personReference.name.middle}},
+							// 	]
+							// }
+						]
+					}
+				]
+			};
+			// if (isBlankString(personReference.name.last) === false) {
+			// 	query.$and[1].$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
+			// }
+		} else {
+			organizationReference = objectToUpdate as JanuxPeople.Organization;
+			query = {
+				$and: [
+					{_id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
+					{
+						$or: [
+							{"emails.address": {$in: emailAddressesToLookFor}},
+							{name: {$eq: organizationReference.name}}
+						]
+					}
+				]
+			};
+		}
+
+		// if (_.isUndefined(objectToUpdate.idAccount) === false) {
+		// 	query.$and[1].$or.push({idAccount: {$eq: objectToUpdate.idAccount}});
+		// }
+
+		return this.findByQuery(query)
+		.then((resultQuery: JanuxPeople.PartyAbstract[]) => {
+			const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
+			return Promise.resolve(errors);
+		});
+
+		// return Promise.resolve([]);
 	}
 }

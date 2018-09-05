@@ -11,6 +11,7 @@ import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/d
 import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import * as logger from 'utils/logger-api/logger-api';
+import {isBlankString} from "utils/string/blank-string-validator";
 import {PartyValidator} from "./party-validator";
 
 /**
@@ -108,45 +109,45 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 	 * @return {Promise<ValidationErrorImpl[]>}
 	 */
 	protected validateBeforeInsert(objectToInsert: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
-		// let emailAddressesToLookFor: string[];
-		// let personReference: JanuxPeople.PersonImpl;
-		// let organizationReference: JanuxPeople.OrganizationImpl;
-		// let query: any;
-		// emailAddressesToLookFor = objectToInsert.emailAddresses(false).map((value) => value.address);
-		// if (objectToInsert.typeName === PartyValidator.PERSON) {
-		//    personReference = objectToInsert as JanuxPeople.PersonImpl;
-		//    query = {
-		//        $or: [
-		//            {"emails.address": {$in: emailAddressesToLookFor}},
-		//            {
-		//                $and: [
-		//                    {"name.first": {$eq: personReference.name.first}},
-		//                    {"name.middle": {$eq: personReference.name.middle}},
-		//                ]
-		//            }
-		//        ]
-		//
-		//    };
-		//
-		//    if (isBlankString(personReference.name.last) === false) {
-		//        query.$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
-		//    }
-		// } else {
-		//    organizationReference = objectToInsert as JanuxPeople.OrganizationImpl;
-		//    query = {
-		//        $or: [
-		//            {"emails.address": {$in: emailAddressesToLookFor}},
-		//            {name: {$eq: organizationReference.name}}
-		//        ]
-		//    };
-		// }
-		//
-		// return this.dbAdapter.findByQueryMethod(query)
-		//    .then((resultQuery: IPartyEntity[]) => {
-		//        const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToInsert);
-		//        return Promise.resolve(errors);
-		//    });
-		return Promise.resolve([]);
+		let emailAddressesToLookFor: string[];
+		// let personReference: JanuxPeople.Person;
+		let organizationReference: JanuxPeople.Organization;
+		let query: any;
+		emailAddressesToLookFor = objectToInsert.emailAddresses(false).map((value) => value.address);
+		if (objectToInsert.typeName === PartyValidator.PERSON) {
+		   // personReference = objectToInsert as JanuxPeople.Person;
+		   query = {
+		       $or: [
+		           {"emails.address": {$in: emailAddressesToLookFor}}
+		           // {
+		           //     $and: [
+		           //         {"name.first": {$eq: personReference.name.first}},
+		           //         {"name.middle": {$eq: personReference.name.middle}},
+		           //     ]
+		           // }
+		       ]
+
+		   };
+		   //
+		   // if (isBlankString(personReference.name.last) === false) {
+		   //     query.$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
+		   // }
+		} else {
+		   organizationReference = objectToInsert as JanuxPeople.Organization;
+		   query = {
+		       $or: [
+		           {"emails.address": {$in: emailAddressesToLookFor}},
+		           {name: {$eq: organizationReference.name}}
+		       ]
+		   };
+		}
+
+		return this.findByQuery(query)
+		   .then((resultQuery: JanuxPeople.PartyAbstract[]) => {
+		       const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToInsert);
+		       return Promise.resolve(errors);
+		   });
+		// return Promise.resolve([]);
 	}
 
 	/**
