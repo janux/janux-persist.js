@@ -38,17 +38,7 @@ export class CommService {
 		this.dataSource = this.getDataSource(commDataSource.dbEngine, commDataSource.dbPath);
 
 		// SMTP
-		// this.transports.push(nodemailer.createTransport({
-		// 	host: smtp.host,
-		// 	from: smtp.from,
-		// 	port: smtp.port,
-		// 	auth: {
-		// 		user: smtp.auth.user,
-		// 		pass: smtp.auth.pass
-		// 	}
-		// }));
-
-		this.transport = nodemailer.createTransport({
+		this.transports.push(nodemailer.createTransport({
 			host: smtp.host,
 			from: smtp.from,
 			port: smtp.port,
@@ -56,21 +46,31 @@ export class CommService {
 				user: smtp.auth.user,
 				pass: smtp.auth.pass
 			}
-		});
+		}));
 
-		// this.mailQueue = new MailTime({
-		// 	db: this.dataSource.dbConnection, // MongoDB
-		// 	type: 'server',
-		// 	strategy: 'balancer', // Transports will be used in round robin chain
-		// 	transports: this.transports,
-		// 	from(transport) {
-		// 		// To pass spam-filters `from` field should be correctly set
-		// 		// for each transport, check `transport` object for more options
-		// 		return '"Glarus App" <' + transport._options.from + '>';
-		// 	},
-		// 	concatEmails: true, // Concatenate emails to the same addressee
-		// 	concatDelimiter: '<h1>{{{subject}}}</h1>' // Start each concatenated email with it's own subject
+		// this.transport = nodemailer.createTransport({
+		// 	host: smtp.host,
+		// 	from: smtp.from,
+		// 	port: smtp.port,
+		// 	auth: {
+		// 		user: smtp.auth.user,
+		// 		pass: smtp.auth.pass
+		// 	}
 		// });
+
+		this.mailQueue = new MailTime({
+			db: this.dataSource.dbConnection, // MongoDB
+			type: 'server',
+			strategy: 'balancer', // Transports will be used in round robin chain
+			transports: this.transports,
+			from(transport) {
+				// To pass spam-filters `from` field should be correctly set
+				// for each transport, check `transport` object for more options
+				return '"Glarus App" <' + transport._options.from + '>';
+			},
+			concatEmails: true, // Concatenate emails to the same addressee
+			concatDelimiter: '<h1>{{{subject}}}</h1>' // Start each concatenated email with it's own subject
+		});
 	}
 
 	/**
@@ -120,10 +120,26 @@ export class CommService {
 	public sendEmail(params: any) {
 		this._log.debug("Call to sendEmail with params: %j", params);
 
-		const that = this;
+		// const that = this;
 
 		// Send email
-		// this.mailQueue.sendMail({
+		this.mailQueue.sendMail({
+			from: this.smtp.from,
+			to: params.to,
+			subject: params.subject,
+			text: params.text,
+			html: params.html
+		}, (error, info) => {
+			if (error) {
+				this.fire(this.events.EMAIL_SENT_ERROR_EVENT, error);
+				this._log.info(error);
+			} else {
+				this.fire(this.events.EMAIL_SUCCESS_SENT_EVENT, params);
+				this._log.info('Message sent: ' + info.response);
+			}
+		});
+
+		// this.transport.sendMail({
 		// 	from: this.smtp.from,
 		// 	to: params.to,
 		// 	subject: params.subject,
@@ -138,22 +154,6 @@ export class CommService {
 		// 		that._log.info('Message sent: ' + info.response);
 		// 	}
 		// });
-
-		this.transport.sendMail({
-			from: this.smtp.from,
-			to: params.to,
-			subject: params.subject,
-			text: params.text,
-			html: params.html
-		}, function(error, info) {
-			if (error) {
-				that.fire(this.events.EMAIL_SENT_ERROR_EVENT, error);
-				that._log.info(error);
-			} else {
-				that.fire(this.events.EMAIL_SUCCESS_SENT_EVENT, params);
-				that._log.info('Message sent: ' + info.response);
-			}
-		});
 	}
 
 	/**
