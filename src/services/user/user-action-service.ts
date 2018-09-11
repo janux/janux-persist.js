@@ -17,41 +17,36 @@ import {isBlankString} from "utils/string/blank-string-validator";
 // import * as uuid from 'uuid';
 
 /**
- * This class has basic user invitation service methods.
+ * This class has user action service methods.
  */
-export class UserInvitationService {
-	public static createInstance(accountInvitationDao: AccountInvitationDao, userService: UserService) {
-		return this._instance || (this._instance = new this(accountInvitationDao, userService));
-	}
+export abstract class UserActionService {
+	public ACCOUNT_INV = "accountAction";
+	public ACCOUNT_INV_NOT_IN_DATABASE = "The account action with this id does not exist in the database";
+	protected _log = logger.getLogger("UserActionService");
+	protected accountActionDao: AccountInvitationDao;
+	protected userService: UserService;
 
-	private static _instance: UserInvitationService;
-	public ACCOUNT_INV = "accountInvitation";
-	public ACCOUNT_INV_NOT_IN_DATABASE = "The account invitation with this id does not exist in the database";
-	private _log = logger.getLogger("UserInvitationService");
-	private accountInvitationDao: AccountInvitationDao;
-	private userService: UserService;
-
-	private constructor(accountInvitationDao: AccountInvitationDao, userService: UserService) {
-		this.accountInvitationDao = accountInvitationDao;
+	constructor(accountActionDao: AccountInvitationDao, userService: UserService) {
+		this.accountActionDao = accountActionDao;
 		this.userService = userService;
 	}
 
 	/**
-	 * Find one account invitation by its id.
+	 * Find one account action by its id.
 	 * @param {string} id
 	 * @return {Promise<any>}
 	 */
 	public findOneById(id: string): Promise<any> {
 		this._log.debug("Call to findOneById with id: %j", id);
 		let result: any;
-		return this.accountInvitationDao.findOne(id)
-			.then((invitation: AccountInvitationEntity) => {
-				if (_.isNil(invitation)) {
-					this._log.error("No account invitation with the id " + id);
-					return Promise.reject("No account invitation with the id " + id);
+		return this.accountActionDao.findOne(id)
+			.then((action: AccountInvitationEntity) => {
+				if (_.isNil(action)) {
+					this._log.error("No account action with the id " + id);
+					return Promise.reject("No account action with the id " + id);
 				}
-				result = invitation;
-				return this.userService.findOneByUserId(invitation.accountId);
+				result = action;
+				return this.userService.findOneByUserId(action.accountId);
 			})
 			.then((account: AccountEntity) => {
 				result.account = account;
@@ -61,19 +56,19 @@ export class UserInvitationService {
 	}
 
 	/**
-	 * Find one account invitation by its accountId.
+	 * Find one account action by its accountId.
 	 * @param id The id
 	 * @return {Promise<any>}
 	 */
 	public findOneByAccountId(id: any): Promise<any> {
 		this._log.debug("Call to findOneByAccountId with id: %j", id);
 		// let result: any;
-		return this.accountInvitationDao.findOneByAccountId(id)
-			.then((invitation: AccountInvitationEntity) => {
-				// if (_.isNil(invitation)) return Promise.reject("No invitation with the account id " + id);
-				// result = invitation;
-				// return this.userService.findOneByUserId(invitation.accountId);
-				return invitation;
+		return this.accountActionDao.findOneByAccountId(id)
+			.then((action: AccountInvitationEntity) => {
+				// if (_.isNil(action)) return Promise.reject("No action with the account id " + id);
+				// result = action;
+				// return this.userService.findOneByUserId(action.accountId);
+				return action;
 			});
 			// .then((account: AccountEntity) => {
 			// 	result.account = account;
@@ -83,28 +78,40 @@ export class UserInvitationService {
 	}
 
 	/**
-	 * Return all invitations given the ids.
+	 * Return all actions given the ids.
 	 * @param {string[]} accountIds
 	 * @returns {Bluebird<any[]>}
 	 */
 	public findByAccountIdsIn(accountIds: string[]): Promise<any[]> {
 		this._log.debug("Call to findByContactIdsIn with accountIds: %j", accountIds);
-		return this.accountInvitationDao.findByAccountIdsIn(accountIds);
+		return this.accountActionDao.findByAccountIdsIn(accountIds);
 	}
 
 	/**
-	 * Find one invitation by its code.
+	 *
+	 * @param {string} accountId
+	 * @param {string} type
+	 * @return {Bluebird<any>}
+	 */
+	public findByAccountIdAndType(accountId: string, type: string): Promise<any> {
+		return this.findByAccountIdsIn([accountId]).then((result) => {
+			return _.filter(result, {type})[0];
+		});
+	}
+
+	/**
+	 * Find one action by its code.
 	 * @param code
 	 * @return {Promise<any>}
 	 */
 	public findOneByCode(code: string): Promise<any> {
 		this._log.debug("Call to findOneByCode with code: %j", code);
 		let result: any;
-		return this.accountInvitationDao.findOneByCode(code)
-			.then((invitation: AccountInvitationEntity) => {
-				if (_.isNil(invitation)) return Promise.reject("No account invitation with the code " + code);
-				result = invitation;
-				return this.userService.findOneByUserId(invitation.accountId);
+		return this.accountActionDao.findOneByCode(code)
+			.then((action: AccountInvitationEntity) => {
+				if (_.isNil(action)) return Promise.reject("No account action with the code " + code);
+				result = action;
+				return this.userService.findOneByUserId(action.accountId);
 			})
 			.then((account: AccountEntity) => {
 				result.account = account;
@@ -114,8 +121,8 @@ export class UserInvitationService {
 	}
 
 	/**
-	 * Insert a account invitation.
-	 * @param object The invitation to insert.
+	 * Insert a account action.
+	 * @param object The action to insert.
 	 */
 	public insert(object: any): Promise<any> {
 		this._log.debug("Call to insertMethod with object %j", object);
@@ -125,31 +132,31 @@ export class UserInvitationService {
 		inv.accountId = object.accountId;
 		inv.code = object.code;
 
-		// Validate account invitation
+		// Validate account action
 		const errors = AccountInvitationValidator.validateAccountInvitation(inv);
 		if (errors.length > 0) {
 			return Promise.reject(errors);
 		}
 
-		return this.accountInvitationDao.insert(object)
-			.then((invitation: AccountInvitationEntity) => {
+		return this.accountActionDao.insert(object)
+			.then((action: AccountInvitationEntity) => {
 
-				this._log.debug("Returning %j", invitation);
-				return Promise.resolve(invitation);
+				this._log.debug("Returning %j", action);
+				return Promise.resolve(action);
 
 			});
 	}
 
 	/**
-	 * Update the account invitation data.
-	 * @param object The account invitation to be updated.
+	 * Update the account action data.
+	 * @param object The account action to be updated.
 	 */
 	public update(object: any, skipAccountUpdate: boolean): Promise<any> {
 		this._log.debug("Call to updateMethod with object:%j", object);
 		let result: any;
 		const inv: AccountInvitationEntity = new AccountInvitationEntity();
-		// Find the invitation
-		return this.accountInvitationDao.findOne(object.id)
+		// Find the action
+		return this.accountActionDao.findOne(object.id)
 			.then((resultQuery) => {
 				if (resultQuery === null) {
 					return Promise.reject([
@@ -162,15 +169,15 @@ export class UserInvitationService {
 					inv.code = object.code;
 					inv.status = object.status;
 
-					return this.accountInvitationDao.update(inv);
+					return this.accountActionDao.update(inv);
 				}
 			})
-			.then((updatedAccountInvitation: AccountInvitationEntity) => {
-				result = updatedAccountInvitation;
+			.then((updatedAccountAction: AccountInvitationEntity) => {
+				result = updatedAccountAction;
 				if (!skipAccountUpdate) {
 					return this.userService.update(object.account);
 				} else {
-					return updatedAccountInvitation;
+					return updatedAccountAction;
 				}
 			})
 			.then((updatedAccount: any) => {
@@ -196,15 +203,33 @@ export class UserInvitationService {
 	}
 
 	/**
-	 * Delete an account invitation
-	 * @param invitationId The invitation id.
+	 * Delete an account action
+	 * @param actionId The action id.
 	 * @return {Promise<any>} A promise indicating the operation is executed successfully.
 	 */
-	public deleteInvitationById(invitationId: string): Promise<any> {
-		this._log.debug("Call to deleteInvitationById with id: %j", invitationId);
-		return this.accountInvitationDao.findOne(invitationId)
+	public deleteActionById(actionId: string): Promise<any> {
+		this._log.debug("Call to deleteActionById with id: %j", actionId);
+		return this.accountActionDao.findOne(actionId)
 			.then((resultQuery: AccountInvitationEntity) => {
-				return this.accountInvitationDao.remove(resultQuery);
+				return this.accountActionDao.remove(resultQuery);
 			});
 	}
+
+	/**
+	 *
+	 * @param {string} contactId
+	 * @param {string} selectedEmail
+	 * @param rolesToAssign
+	 * @return {Bluebird<any>}
+	 */
+	protected abstract inviteToCreateAccount(contactId: string, selectedEmail: string, rolesToAssign: any, templateUrl: string): Promise<any>;
+
+	/**
+	 *
+	 * @param {string} accountId
+	 * @param {string} contactId
+	 * @param {string} selectedEmail
+	 * @return {Bluebird<any>}
+	 */
+	protected abstract recoverPassword(accountId: string, contactId: string, selectedEmail: string, templateUrl: string): Promise<any>;
 }

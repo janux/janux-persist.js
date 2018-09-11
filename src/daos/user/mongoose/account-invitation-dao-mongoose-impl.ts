@@ -30,10 +30,13 @@ export class AccountInvitationDaoMongooseImpl extends AccountInvitationDao {
 	protected validateBeforeInsert(objectToInsert: AccountInvitationEntity): Promise<ValidationErrorImpl[]> {
 		if (isBlankString(objectToInsert.code)) {
 			return Promise.resolve([new ValidationErrorImpl(AccountInvitationValidator.CODE, AccountInvitationValidator.CODE_EMPTY, '')]);
+		} else if (isBlankString(objectToInsert.type)) {
+			return Promise.resolve([new ValidationErrorImpl(AccountInvitationValidator.TYPE, AccountInvitationValidator.TYPE_EMPTY, '')]);
 		}
+
 		const query = {
 			$or: [
-				{accountId: {$eq: objectToInsert.accountId}},
+				// {accountId: {$eq: objectToInsert.accountId}},
 				{code: {$eq: objectToInsert.code}}
 			]
 		};
@@ -55,7 +58,7 @@ export class AccountInvitationDaoMongooseImpl extends AccountInvitationDao {
 				{id: {$ne: objectToUpdate.id}},
 				{
 					$or: [
-						{accountId: {$eq: objectToUpdate.accountId}},
+						// {accountId: {$eq: objectToUpdate.accountId}},
 						{code: {$eq: objectToUpdate.code}}
 					]
 				}

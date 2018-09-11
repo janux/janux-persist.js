@@ -15,6 +15,8 @@ export class AccountInvitationValidator {
 
 	public static CODE: string = 'Code';
 	public static CODE_EMPTY: string = 'Code is empty';
+	public static TYPE: string = 'Type';
+	public static TYPE_EMPTY: string = 'Type is empty';
 	public static ANOTHER_INVITATION: string = "There is another account invitation for the same accountInvitation";
 	public static ANOTHER_CODE: string = "There is another invitation with the same code";
 
@@ -45,13 +47,7 @@ export class AccountInvitationValidator {
 			accountInvitations, reference);
 		const errors: ValidationErrorImpl[] = [];
 		if (accountInvitations.length > 0) {
-			if (accountInvitations[0].accountId === reference.accountId) {
-				errors.push(
-					new ValidationErrorImpl(
-						"accountId",
-						this.ANOTHER_INVITATION,
-						reference.accountId));
-			} else {
+			if (accountInvitations[0].code === reference.code) {
 				errors.push(
 					new ValidationErrorImpl(
 						"code",

@@ -28,6 +28,11 @@ export const AccountInvitationMongooseDbSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
+	type: {
+		type: String,
+		required: true,
+		default: 'createAccount'
+	},
 	lastUpdate: {
 		type: Date
 	},

@@ -21,6 +21,9 @@
 		"@types/uuid": "3.0.0",
 		"@types/big.js": "4.0.2",
 		"@types/nodemailer": "4.6.2",
+		"@types/pug": "2.0.4",
+		"@types/randomstring": "1.1.6",
+		"@types/md5": "2.1.32",
 		"bluebird": "3.5.0",
 		"config": "1.26.1",
 		"email-validator": "1.0.7",
@@ -33,7 +36,10 @@
 		"moment": "2.19.3",
 		"big.js": "5.0.3",
 		"nodemailer": "4.6.8",
-		"mail-time": "0.1.7"
+		"mail-time": "0.1.7",
+		"pug": "2.0.3",
+		"randomstring": "1.1.5",
+		"md5": "2.2.1"
 	},
 	"devDependencies": {
 		"chai": "4.0.2",
