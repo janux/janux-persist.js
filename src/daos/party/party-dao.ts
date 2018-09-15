@@ -6,12 +6,12 @@
 import * as Promise from "bluebird";
 import {StaffImplTest} from "example/people-extends/staff-imp-test";
 import JanuxPeople = require("janux-people");
+import * as _ from "lodash";
 import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
 import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
 import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
 import {PartyValidator} from "./party-validator";
 
 /**
@@ -114,39 +114,44 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		let organizationReference: JanuxPeople.Organization;
 		let query: any;
 		emailAddressesToLookFor = objectToInsert.emailAddresses(false).map((value) => value.address);
+		// TODO fx thos hack.
+		emailAddressesToLookFor = _.filter(emailAddressesToLookFor, value => value != null);
+		if (emailAddressesToLookFor.length === 0) {
+			return Promise.resolve([]);
+		}
 		if (objectToInsert.typeName === PartyValidator.PERSON) {
-		   // personReference = objectToInsert as JanuxPeople.Person;
-		   query = {
-		       $or: [
-		           {"emails.address": {$in: emailAddressesToLookFor}}
-		           // {
-		           //     $and: [
-		           //         {"name.first": {$eq: personReference.name.first}},
-		           //         {"name.middle": {$eq: personReference.name.middle}},
-		           //     ]
-		           // }
-		       ]
+			// personReference = objectToInsert as JanuxPeople.Person;
+			query = {
+				$or: [
+					{"emails.address": {$in: emailAddressesToLookFor}}
+					// {
+					//     $and: [
+					//         {"name.first": {$eq: personReference.name.first}},
+					//         {"name.middle": {$eq: personReference.name.middle}},
+					//     ]
+					// }
+				]
 
-		   };
-		   //
-		   // if (isBlankString(personReference.name.last) === false) {
-		   //     query.$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
-		   // }
+			};
+			//
+			// if (isBlankString(personReference.name.last) === false) {
+			//     query.$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
+			// }
 		} else {
-		   organizationReference = objectToInsert as JanuxPeople.Organization;
-		   query = {
-		       $or: [
-		           {"emails.address": {$in: emailAddressesToLookFor}},
-		           {name: {$eq: organizationReference.name}}
-		       ]
-		   };
+			organizationReference = objectToInsert as JanuxPeople.Organization;
+			query = {
+				$or: [
+					{"emails.address": {$in: emailAddressesToLookFor}},
+					{name: {$eq: organizationReference.name}}
+				]
+			};
 		}
 
 		return this.findByQuery(query)
-		   .then((resultQuery: JanuxPeople.PartyAbstract[]) => {
-		       const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToInsert);
-		       return Promise.resolve(errors);
-		   });
+			.then((resultQuery: JanuxPeople.PartyAbstract[]) => {
+				const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToInsert);
+				return Promise.resolve(errors);
+			});
 		// return Promise.resolve([]);
 	}
 

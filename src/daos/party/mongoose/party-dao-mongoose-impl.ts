@@ -10,7 +10,6 @@ import {Model} from "mongoose";
 import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {MongooseAdapter} from "persistence/implementations/db-adapters/mongoose-db-adapter";
-import {isBlankString} from "utils/string/blank-string-validator";
 import {PartyDao} from "../party-dao";
 import {PartyValidator} from "../party-validator";
 
@@ -63,8 +62,16 @@ export class PartyDaoMongooseImpl extends PartyDao {
 	}
 
 	protected validateDuplicated(objectToUpdate: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
+		const records = objectToUpdate.emailAddresses(false);
 		let emailAddressesToLookFor: string[];
-		emailAddressesToLookFor = objectToUpdate.emailAddresses(false).map((value) => value.address);
+		if (records == null) {
+			return Promise.resolve([]);
+		}
+		emailAddressesToLookFor = records.map((value) => value.address);
+		emailAddressesToLookFor = _.filter(emailAddressesToLookFor, value => value != null);
+		if (emailAddressesToLookFor.length === 0) {
+			return Promise.resolve([]);
+		}
 		let personReference: JanuxPeople.Person;
 		let organizationReference: JanuxPeople.Organization;
 		let query: any;
@@ -76,7 +83,7 @@ export class PartyDaoMongooseImpl extends PartyDao {
 					{id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
 					{
 						$or: [
-							{"emails.address": { $in: emailAddressesToLookFor }}
+							{"emails.address": {$in: emailAddressesToLookFor}}
 							// {
 							// 	$and: [
 							// 		{"name.first": {$eq: personReference.name.first}},
@@ -110,10 +117,10 @@ export class PartyDaoMongooseImpl extends PartyDao {
 		// }
 
 		return this.findByQuery(query)
-		.then((resultQuery: JanuxPeople.PartyAbstract[]) => {
-			const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
-			return Promise.resolve(errors);
-		});
+			.then((resultQuery: JanuxPeople.PartyAbstract[]) => {
+				const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
+				return Promise.resolve(errors);
+			});
 
 		// return Promise.resolve([]);
 	}
