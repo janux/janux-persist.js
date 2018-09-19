@@ -17,6 +17,8 @@ var serverAppContext = config.get("serverAppContext");
 const id = "313030303030303030303030";
 const code = "361827238123181";
 const expire = moment().add(5, 'days').toDate();
+const type = 'accountInvitation';
+const status = 'pending';
 
 describe("Testing accountInvitation dao insertMethod methods", function () {
 	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
@@ -36,7 +38,8 @@ describe("Testing accountInvitation dao insertMethod methods", function () {
 				accountInvitation.accountId = id
 				accountInvitation.code = code;
 				accountInvitation.expire = expire;
-				accountInvitation.status = 'pending';
+				accountInvitation.status = status;
+				accountInvitation.type = type;
 
 				accountInvitationDao.insert(accountInvitation)
 					.then(function (insertedRecord) {
@@ -71,7 +74,8 @@ describe("Testing accountInvitation dao insertMethod methods", function () {
 				accountInvitation.accountId = id
 				accountInvitation.code = code;
 				accountInvitation.expire = expire;
-				accountInvitation.status = 'pending';
+				accountInvitation.status = status;
+				accountInvitation.type = type;
 
 				accountInvitationDao.insert(accountInvitation)
 					.then(function (result) {
