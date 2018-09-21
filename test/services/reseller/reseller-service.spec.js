@@ -97,7 +97,7 @@ describe("Testing reseller service", function () {
 		partyService = new PartyServiceImpl(partyDao, staffDao);
 		groupService = new GroupServiceImpl(groupDao, groupContentDao, groupAttributesDao);
 		partyGroupService = new PartyGroupServiceImpl(partyService, groupService);
-		resellerService = new ResellerServiceImpl(partyGroupService);
+		resellerService = new ResellerServiceImpl(partyService, partyGroupService);
 		groupAttributesDao.removeAll()
 			.then(function () {
 				return groupContentDao.removeAll();
@@ -140,14 +140,27 @@ describe("Testing reseller service", function () {
 			});
 	});
 
-	describe("When calling findResellerContactsByClient", function(){
-	    it("The method should return the reseller contacts group",function(done){
-		    resellerService.findResellerContactsByClient(client.id)
-			    .then(function (result) {
-				    expect(result.code).eq(CODE_RESELLER_CONTACT);
-				    expect(result.values[0].party.id).eq(contactReseller.id);
-				    done();
-			    });
-	    });
+
+	describe("When calling findReseller", function () {
+		it("The method should return the client", function (done) {
+			resellerService.findReseller(client.id)
+				.then(function (result) {
+					expect(result.name).eq(reseller.name);
+					expect(result.id).eq(reseller.id);
+					done();
+				})
+		});
+	});
+
+
+	describe("When calling findResellerContactsByClient", function () {
+		it("The method should return the reseller contacts group", function (done) {
+			resellerService.findResellerContactsByClient(client.id)
+				.then(function (result) {
+					expect(result.code).eq(CODE_RESELLER_CONTACT);
+					expect(result.values[0].party.id).eq(contactReseller.id);
+					done();
+				});
+		});
 	});
 });
