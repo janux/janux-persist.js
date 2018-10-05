@@ -82,7 +82,7 @@ export class MongooseAdapter implements DbAdapter {
 			this.adapterProperties.model.count({}, (err, count) => {
 				if (err) throw err;
 				this._log.debug("Result: %j", count);
-				resolve(count); 
+				resolve(count);
 			});
 		});
 	}
