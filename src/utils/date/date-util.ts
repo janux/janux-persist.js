@@ -10,7 +10,7 @@ import {isBlankString} from "utils/string/blank-string-validator";
 
 export class DateUtil {
 
-	static logger = logger.getLogger("TimeEntryServiceImpl");
+	static logger = logger.getLogger("DateUtil");
 
 	/**
 	 * Converts a string to a Date.
