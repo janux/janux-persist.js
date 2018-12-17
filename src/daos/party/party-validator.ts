@@ -59,13 +59,6 @@ export class PartyValidator {
 				errors = errors.concat(OrganizationValidator.validateOrganization(party as JanuxPeople.Organization));
 			}
 		}
-		// TODO: Look for how to validate that.
-		// if (isBlankString(party.displayName)) {
-		//     errors.push(new ValidationErrorImpl(
-		//         this.DISPLAY_NAME,
-		//         this.DISPLAY_NAME_EMPTY,
-		//         ""));
-		// }
 
 		this._log.debug("Returning: %j", errors);
 		return errors;
@@ -73,17 +66,17 @@ export class PartyValidator {
 
 	/**
 	 * Validate for duplicated records.
-	 * @param resultQuery
+	 * @param duplicatedContacts
 	 * @param emailAddressesToLookFor
 	 * @param reference
 	 * @return {ValidationErrorImpl[]}
 	 */
-	public static validateDuplicatedRecords(resultQuery: JanuxPeople.PartyAbstract[], emailAddressesToLookFor: string[], reference: JanuxPeople.PartyAbstract): ValidationErrorImpl[] {
+	public static validateDuplicatedRecords(duplicatedContacts: JanuxPeople.PartyAbstract[], emailAddressesToLookFor: string[], reference: JanuxPeople.PartyAbstract): ValidationErrorImpl[] {
 		this._log.debug(
-			"Call to validateDuplicatedRecords with resultQuery: %j  emailAddressesToLookFor: %j reference : %j",
-			resultQuery,
+			"Call to validateDuplicatedRecords with duplicatedContacts: %j  emailAddressesToLookFor: %j reference : %j",
+			duplicatedContacts,
 			emailAddressesToLookFor,
-			resultQuery);
+			reference);
 
 		const errors: ValidationErrorImpl[] = [];
 		// let person: JanuxPeople.Person;
@@ -97,20 +90,35 @@ export class PartyValidator {
 		// }
 
 		// Validating duplicated emails
-		const potentialDuplicatedEmailRecords: string[] = _.flatMap(resultQuery, (record) => {
-			return record.emailAddresses(false).map((value, index, array) => value.address);
-		});
-		const duplicatedEmails: string [] = _.intersection(emailAddressesToLookFor, potentialDuplicatedEmailRecords);
-
-		for (const obj of duplicatedEmails) {
-			errors.push(new ValidationErrorImpl(
-			this.CONTACTS_EMAILS,
-			this.THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL,
-			obj));
+		for (const contact of duplicatedContacts) {
+			for (const emailAddress of contact.emailAddresses(false)) {
+				if (emailAddressesToLookFor.filter((value: string) => value === emailAddress.address).length > 0) {
+					errors.push(new ValidationErrorImpl(
+						this.CONTACTS_EMAILS,
+						this.THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL,
+						contact));
+				}
+			}
 		}
 
+		//
+		// const potentialDuplicatedEmailRecords: string[] = _.flatMap(duplicatedContacts, (record) => {
+		// 	return record.emailAddresses(false).map((value, index, array) => value.address);
+		// });
+		// const duplicatedEmails: string [] = _.intersection(emailAddressesToLookFor, potentialDuplicatedEmailRecords);
+		// if (duplicatedEmails.length > 0) {
+		//
+		// }
+		//
+		// for (const obj of duplicatedEmails) {
+		// 	errors.push(new ValidationErrorImpl(
+		// 		this.CONTACTS_EMAILS,
+		// 		this.THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL,
+		// 		obj));
+		// }
+
 		// Validate duplicated name
-		// for (const element of resultQuery) {
+		// for (const element of duplicatedContacts) {
 		//
 		// 	Validate duplicated idAccount
 		// 	if (element.idAccount === reference.idAccount && isBlankString(element.idAccount) === false) {

@@ -11,9 +11,9 @@ import {ValidationError} from "persistence/api/dao/validation-error";
 export class ValidationErrorImpl implements ValidationError {
 	public attribute: string;
 	public message: string;
-	public value: string;
+	public value: any;
 
-	constructor(attribute: string, message: string, value: string) {
+	constructor(attribute: string, message: string, value: any) {
 		this.attribute = attribute;
 		this.message = message;
 		this.value = value;

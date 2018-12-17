@@ -9,5 +9,5 @@
 export interface ValidationError {
 	attribute: string;
 	message: string;
-	value: string;
+	value: any;
 }
