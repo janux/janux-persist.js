@@ -3,11 +3,11 @@
  * Created by ernesto on 6/9/17.
  */
 
-import * as _ from 'lodash';
-import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
-import * as logger from 'utils/logger-api/logger-api';
-import {AbstractDataAccessObject} from "./abstract-data-access-object";
-import {EntityPropertiesImpl} from "./entity-properties";
+import * as _ from "lodash";
+import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
+import * as logger from "utils/logger-api/logger-api";
+import { AbstractDataAccessObject } from "./abstract-data-access-object";
+import { EntityPropertiesImpl } from "./entity-properties";
 
 /**
  * This class, inside their attributes, contains an object implementing the interface DbAdapter where you can do
@@ -16,7 +16,6 @@ import {EntityPropertiesImpl} from "./entity-properties";
  * in different dao implementations.
  */
 export abstract class AbstractDataAccessObjectWithAdapter<t, ID> extends AbstractDataAccessObject<t, ID> {
-
 	// This class holds all common db engine methods
 	protected dbAdapter: DbAdapter;
 	protected adapterProperties: any;

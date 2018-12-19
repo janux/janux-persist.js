@@ -5,11 +5,10 @@
 
 import Promise = require("bluebird");
 import JanuxPeople = require("janux-people");
-import {Group} from "services/group-module/api/group";
-import {GroupProperties} from "services/group-module/api/group-properties";
+import { Group } from "services/group-module/api/group";
+import { GroupProperties } from "services/group-module/api/group-properties";
 
 export interface UserGroupService {
-
 	// This is the type of the users groups.
 	USERS_GROUP_TYPE: string;
 

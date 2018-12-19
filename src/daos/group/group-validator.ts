@@ -2,13 +2,12 @@
  * Project
  * Created by ernesto on 8/17/17.
  */
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
-import {GroupEntity} from "./group-entity";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
+import { GroupEntity } from "./group-entity";
 
 export class GroupValidator {
-
 	public static readonly NAME = "name";
 	public static readonly TYPE = "type";
 	public static readonly CODE = "code";

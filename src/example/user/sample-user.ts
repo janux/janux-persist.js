@@ -7,7 +7,6 @@
  * This is the entity
  */
 export class SampleUser {
-
 	public name: string;
 	public lastName: string;
 	public email: string;

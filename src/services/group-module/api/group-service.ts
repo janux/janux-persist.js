@@ -3,11 +3,10 @@
  * Created by ernesto on 8/17/17.
  */
 import Promise = require("bluebird");
-import {Group} from "./group";
-import {GroupProperties} from "./group-properties";
+import { Group } from "./group";
+import { GroupProperties } from "./group-properties";
 
 export interface GroupService<t> {
-
 	/**
 	 * Return all group properties that shares the same type.
 	 * @param {string} type
@@ -134,5 +133,4 @@ export interface GroupService<t> {
 	 * Returns a reject if the object to remove is null or undefined.
 	 */
 	removeItemByType(type: string, objectToRemove: t): Promise<any>;
-
 }

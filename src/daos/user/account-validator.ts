@@ -3,20 +3,19 @@
  * Created by ernesto on 6/13/17.
  */
 
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
-import {AccountEntity} from "./account-entity";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
+import { AccountEntity } from "./account-entity";
 
 /**
  * Class that contains the validation methods for the userEntity.
  */
 export class AccountValidator {
-
 	public static ANOTHER_USER: string = "There is another account with the same username";
 	public static ANOTHER_CONTACT: string = "There is another account with the same contactId";
-	public static PASSWORD: string = 'Password';
-	public static PASSWORD_EMPTY: string = 'Password is empty';
+	public static PASSWORD: string = "Password";
+	public static PASSWORD_EMPTY: string = "Password is empty";
 
 	/**
 	 * Validate the accountEntity
@@ -60,23 +59,21 @@ export class AccountValidator {
 	 * @param reference
 	 * @return {ValidationErrorImpl[]}
 	 */
-	public static validateResultQueryBeforeBdOperation(accounts: AccountEntity[], reference: AccountEntity): ValidationErrorImpl[] {
-		this._log.debug("Call to validateResultQueryBeforeBdOperation with accounts: %j reference: %j",
-			accounts, reference);
+	public static validateResultQueryBeforeBdOperation(
+		accounts: AccountEntity[],
+		reference: AccountEntity
+	): ValidationErrorImpl[] {
+		this._log.debug(
+			"Call to validateResultQueryBeforeBdOperation with accounts: %j reference: %j",
+			accounts,
+			reference
+		);
 		const errors: ValidationErrorImpl[] = [];
 		if (accounts.length > 0) {
 			if (accounts[0].username === reference.username) {
-				errors.push(
-					new ValidationErrorImpl(
-						"username",
-						this.ANOTHER_USER,
-						reference.username));
+				errors.push(new ValidationErrorImpl("username", this.ANOTHER_USER, reference.username));
 			} else {
-				errors.push(
-					new ValidationErrorImpl(
-						"contactId",
-						this.ANOTHER_CONTACT,
-						reference.username));
+				errors.push(new ValidationErrorImpl("contactId", this.ANOTHER_CONTACT, reference.username));
 			}
 		}
 		this._log.debug("Returning %j", errors);

@@ -3,9 +3,8 @@
  * Created by ernesto on 12/04/17.
  */
 
-
-var chai = require('chai');
-var _ = require('lodash');
+var chai = require("chai");
+var _ = require("lodash");
 var SampleData = require("../../util/sample-data");
 var DaoUtil = require("../../daos/dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
@@ -14,8 +13,8 @@ var GroupServiceImpl = require("../../../dist/index").GroupServiceImpl;
 var PartyGroupServiceImpl = require("../../../dist/index").PartyGroupServiceImpl;
 var GroupServiceValidator = require("../../../dist/index").GroupServiceValidator;
 var expect = chai.expect;
-var config = require('config');
-var Promise = require('bluebird');
+var config = require("config");
+var Promise = require("bluebird");
 var serverAppContext = config.get("serverAppContext");
 var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
 var mongoConnUrl = serverAppContext.db.mongoConnUrl;
@@ -28,8 +27,7 @@ const type2 = "anotherType";
 const name = "a group name";
 const description = "a group description";
 const code = "simple_party_code";
-const customValue = 'customValue';
-
+const customValue = "customValue";
 
 const name2 = "a second group";
 const code2 = "a second code";
@@ -43,8 +41,7 @@ const name4 = "a fourth group";
 const code4 = "a fourth code";
 const description4 = "a fourth description";
 
-describe("Testing party group service item item methods", function () {
-
+describe("Testing party group service item item methods", function() {
 	var partyDao;
 	var groupContentDao;
 	var groupDao;
@@ -65,8 +62,7 @@ describe("Testing party group service item item methods", function () {
 	var insertedGroup3;
 	var insertedGroup4;
 
-
-	beforeEach(function (done) {
+	beforeEach(function(done) {
 		partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 		groupContentDao = DaoUtil.createGroupContentDao(dbEngine, dbPath);
 		groupDao = DaoUtil.createGroupDao(dbEngine, dbPath);
@@ -76,22 +72,22 @@ describe("Testing party group service item item methods", function () {
 		groupService = new GroupServiceImpl(groupDao, groupContentDao, groupAttributeValueDao);
 		partyGroupService = new PartyGroupServiceImpl(partyService, groupService);
 
-		setTimeout(function () {
+		setTimeout(function() {
 			Promise.props({
 				partyDaoResult: partyService.removeAll(),
 				groupContentDaoResult: groupContentDao.removeAll(),
 				groupDaoResult: groupDao.removeAll(),
 				groupAttributeValueDaoResult: groupAttributeValueDao.removeAll()
 			})
-				.then(function (value) {
+				.then(function(value) {
 					//Inserting sample data.
 					var party1 = SampleData.createPerson1();
 					var party2 = SampleData.createPerson2();
 					var party3 = SampleData.createOrganization1();
 					var party4 = SampleData.createOrganization2();
-					return partyService.insertMany([party1, party2, party3, party4])
+					return partyService.insertMany([party1, party2, party3, party4]);
 				})
-				.then(function (result) {
+				.then(function(result) {
 					insertedParty1 = result[0];
 					insertedParty2 = result[1];
 					insertedParty3 = result[2];
@@ -109,7 +105,7 @@ describe("Testing party group service item item methods", function () {
 						group4: partyGroupService.insert(insertedParty1.id, group4)
 					});
 				})
-				.then(function (result) {
+				.then(function(result) {
 					insertedGroup1 = result.group1;
 					insertedGroup2 = result.group2;
 					insertedGroup3 = result.group3;
@@ -118,7 +114,6 @@ describe("Testing party group service item item methods", function () {
 				});
 		}, 5);
 	});
-
 
 	function getSampleGroup() {
 		return {
@@ -188,20 +183,21 @@ describe("Testing party group service item item methods", function () {
 		};
 	}
 
-	describe("When calling addItem with the correct parameters", function () {
-		it("The method should insert the item", function (done) {
-			var attributes = {a: "a", b: "b"};
+	describe("When calling addItem with the correct parameters", function() {
+		it("The method should insert the item", function(done) {
+			var attributes = { a: "a", b: "b" };
 			var item = {
 				party: insertedParty4,
 				attributes: attributes
 			};
-			partyGroupService.addItem(code, item)
-				.then(function () {
+			partyGroupService
+				.addItem(code, item)
+				.then(function() {
 					return partyGroupService.findOne(code);
 				})
-				.then(function (result) {
+				.then(function(result) {
 					expect(result.values.length).eq(3);
-					var item = _.find(result.values, function (o) {
+					var item = _.find(result.values, function(o) {
 						return o.party.id === insertedParty4.id;
 					});
 					expect(item.party.id).eq(insertedParty4.id);
@@ -211,75 +207,81 @@ describe("Testing party group service item item methods", function () {
 		});
 	});
 
-	describe("When calling addItem whit an item that does not exist in the database", function () {
-		it("The method should return an error", function (done) {
-			var invalid = 'invalid';
+	describe("When calling addItem whit an item that does not exist in the database", function() {
+		it("The method should return an error", function(done) {
+			var invalid = "invalid";
 			var item = {
-				party: {id: invalid},
-				attributes: {a: "a", b: "b"}
+				party: { id: invalid },
+				attributes: { a: "a", b: "b" }
 			};
-			partyGroupService.addItem(code, item)
-				.then(function () {
+			partyGroupService.addItem(code, item).then(
+				function() {
 					expect.fail("The method should not have inserted the record");
-				}, function (err) {
+				},
+				function(err) {
 					expect(err.length).eq(1);
 					expect(err[0].attribute).eq(PartyGroupServiceImpl.PARTY_ITEM);
 					expect(err[0].message).eq(PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST);
 					expect(err[0].value).eq(invalid);
 					done();
-				});
+				}
+			);
 		});
 	});
 
-	describe("When calling addItem with a group code that does not exist in the database", function () {
-		it("The method should return an error", function (done) {
-			var attributes = {a: "a", b: "b"};
+	describe("When calling addItem with a group code that does not exist in the database", function() {
+		it("The method should return an error", function(done) {
+			var attributes = { a: "a", b: "b" };
 			var item = {
 				party: insertedParty4,
 				attributes: attributes
 			};
-			var invalid = 'invalid';
-			partyGroupService.addItem(invalid, item)
-				.then(function () {
+			var invalid = "invalid";
+			partyGroupService.addItem(invalid, item).then(
+				function() {
 					expect.fail("The method should not have inserted the record");
 					done();
-				}, function (err) {
+				},
+				function(err) {
 					expect(err).eq(GroupServiceValidator.NO_GROUP);
 					done();
-				});
+				}
+			);
 		});
 	});
 
-	describe("When calling addItem whit an item that exists in the group", function () {
-		it("The method should return an error", function (done) {
-			var attributes = {a: "a", b: "b"};
+	describe("When calling addItem whit an item that exists in the group", function() {
+		it("The method should return an error", function(done) {
+			var attributes = { a: "a", b: "b" };
 			var item = {
 				party: insertedParty1,
 				attributes: attributes
 			};
 
-			partyGroupService.addItem(code, item)
-				.then(function () {
+			partyGroupService.addItem(code, item).then(
+				function() {
 					expect.fail("The method should not have inserted the record");
 					done();
-				}, function (err) {
+				},
+				function(err) {
 					expect(err.length).eq(1);
 					expect(err[0].attribute).eq(PartyGroupServiceImpl.PARTY_ITEM);
 					expect(err[0].message).eq(PartyGroupServiceImpl.PARTY_ITEM_DUPLICATED);
 					expect(err[0].value).eq(insertedParty1.id);
 					done();
-				});
+				}
+			);
 		});
 	});
 
-
-	describe("When calling removeItem with the correct values", function () {
-		it("The method should remove the item", function (done) {
-			partyGroupService.removeItem(code, insertedParty1.id)
-				.then(function () {
+	describe("When calling removeItem with the correct values", function() {
+		it("The method should remove the item", function(done) {
+			partyGroupService
+				.removeItem(code, insertedParty1.id)
+				.then(function() {
 					return partyGroupService.findOne(code);
 				})
-				.then(function (result) {
+				.then(function(result) {
 					expect(result.values.length).eq(1);
 					expect(result.values[0].party.id).not.eq(insertedParty1.id);
 					done();
@@ -287,82 +289,85 @@ describe("Testing party group service item item methods", function () {
 		});
 	});
 
-	describe("When removing an item that does not exist in the group", function () {
-		it("The method should return an error", function (done) {
-			partyGroupService.removeItem(code, insertedParty3.id)
-				.then(function () {
+	describe("When removing an item that does not exist in the group", function() {
+		it("The method should return an error", function(done) {
+			partyGroupService.removeItem(code, insertedParty3.id).then(
+				function() {
 					expect.fail("The method should have returned en error");
-				}, function (err) {
+				},
+				function(err) {
 					expect(err.length).eq(1);
 					expect(err[0].attribute).eq(PartyGroupServiceImpl.PARTY_ITEM);
 					expect(err[0].message).eq(PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST);
 					expect(err[0].value).eq(insertedParty3.id);
 					done();
-				});
+				}
+			);
 		});
 	});
 
-	describe("When calling removeItem with a group code that does not exist in the database", function () {
-		it("The method should return an error", function (done) {
-			var invalid = 'invalid';
-			partyGroupService.removeItem(invalid, insertedParty1.id)
-				.then(function () {
+	describe("When calling removeItem with a group code that does not exist in the database", function() {
+		it("The method should return an error", function(done) {
+			var invalid = "invalid";
+			partyGroupService.removeItem(invalid, insertedParty1.id).then(
+				function() {
 					expect.fail("The method should have returned en error");
-				}, function (err) {
+				},
+				function(err) {
 					expect(err).eq(GroupServiceValidator.NO_GROUP);
 					done();
-				});
+				}
+			);
 		});
 	});
 
-
-	describe("When calling addItemNewParty with correct values", function () {
-		it("The method should insert the party and associate it to the group", function (done) {
+	describe("When calling addItemNewParty with correct values", function() {
+		it("The method should insert the party and associate it to the group", function(done) {
 			var initialCount;
-			partyDao.count()
-				.then(function (result) {
+			partyDao
+				.count()
+				.then(function(result) {
 					initialCount = result;
 					var party = SampleData.createOrganization3();
 					return partyGroupService.addItemNewParty(code, party, {});
 				})
-				.then(function (result) {
+				.then(function(result) {
 					expect(result.typeName).not.be.undefined;
 					expect(result.id).not.be.undefined;
 					expect(result.name).not.be.undefined;
 					return partyDao.count();
 				})
-				.then(function (result) {
+				.then(function(result) {
 					expect(result).eq(initialCount + 1);
 					done();
 				});
 		});
 	});
 
-
-	describe("When calling addItemNewParty with invalid group code", function () {
-		it("The method should return an error", function (done) {
+	describe("When calling addItemNewParty with invalid group code", function() {
+		it("The method should return an error", function(done) {
 			var initialCount;
-			partyDao.count()
-				.then(function (result) {
+			partyDao
+				.count()
+				.then(function(result) {
 					initialCount = result;
 					var party = SampleData.createOrganization3();
-					return partyGroupService.addItemNewParty('invalid code', party, {});
+					return partyGroupService.addItemNewParty("invalid code", party, {});
 				})
-				.then(function () {
-					expect.fail("The method should not have inserted the record");
-					done();
-				}, function (err) {
-					expect(err).eq(GroupServiceValidator.NO_GROUP);
-					// make sure there is no party inserted.
-					return partyDao.count()
-						.then(function (result) {
+				.then(
+					function() {
+						expect.fail("The method should not have inserted the record");
+						done();
+					},
+					function(err) {
+						expect(err).eq(GroupServiceValidator.NO_GROUP);
+						// make sure there is no party inserted.
+						return partyDao.count().then(function(result) {
 							expect(result).eq(initialCount);
 							done();
 						});
-				})
+					}
+				);
 		});
 	});
-
-
 });
-

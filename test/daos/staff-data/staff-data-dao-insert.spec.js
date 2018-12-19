@@ -1,6 +1,6 @@
-var chai = require('chai');
+var chai = require("chai");
 var expect = chai.expect;
-var config = require('config');
+var config = require("config");
 var StaffDataEntity = require("../../../dist/index").StaffDataEntity;
 var StaffDataEntityValidator = require("../../../dist/index").StaffDataEntityValidator;
 var DaoUtil = require("../dao-util");
@@ -12,12 +12,11 @@ var serverAppContext = config.get("serverAppContext");
 const idContact1 = "1111111";
 const isExternal1 = true;
 const jobDepartment1 = "department 1";
-const jobTitle1 = 'jobTitle 1';
+const jobTitle1 = "jobTitle 1";
 
-describe("Testing staff data dao insert methods", function () {
-	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
-
-		describe("Given the inserted records", function () {
+describe("Testing staff data dao insert methods", function() {
+	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
+		describe("Given the inserted records", function() {
 			var staffDataDao;
 
 			function generateSampleData1() {
@@ -37,44 +36,48 @@ describe("Testing staff data dao insert methods", function () {
 				expect(result.jobDepartment).eq(jobDepartment1);
 			}
 
-			before(function (done) {
-				var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
+			before(function(done) {
+				var path =
+					dbEngine === DataSourceHandler.LOKIJS
+						? serverAppContext.db.lokiJsDBPath
+						: serverAppContext.db.mongoConnUrl;
 				staffDataDao = DaoUtil.createStaffDataDao(dbEngine, path);
-				staffDataDao.removeAll()
-					.then(function () {
-						done();
-					});
-			});
-
-			describe("When calling insert with the correct methods", function () {
-				it("The method should insert the records", function (done) {
-					var entity = generateSampleData1();
-					staffDataDao.insert(entity)
-						.then(function (result) {
-							validateData(result);
-							done();
-						});
+				staffDataDao.removeAll().then(function() {
+					done();
 				});
 			});
 
-
-			describe("When calling insert with an existing record associated to the same party", function () {
-				it("The method should return an error", function (done) {
+			describe("When calling insert with the correct methods", function() {
+				it("The method should insert the records", function(done) {
 					var entity = generateSampleData1();
-					staffDataDao.insert(entity)
-						.then(function (result) {
+					staffDataDao.insert(entity).then(function(result) {
+						validateData(result);
+						done();
+					});
+				});
+			});
+
+			describe("When calling insert with an existing record associated to the same party", function() {
+				it("The method should return an error", function(done) {
+					var entity = generateSampleData1();
+					staffDataDao
+						.insert(entity)
+						.then(function(result) {
 							var entity2 = generateSampleData1();
 							return staffDataDao.insert(entity2);
 						})
-						.then(function () {
-							expect.fail("The method should not have inserted the record")
-						}, function (err) {
-							expect(err.length).eq(1);
-							expect(err[0].attribute).eq(StaffDataEntityValidator.ID_CONTACT);
-							expect(err[0].message).eq(StaffDataEntityValidator.ID_CONTACT_DUPLICATED);
-							expect(err[0].value).eq(entity.idContact);
-							done();
-						});
+						.then(
+							function() {
+								expect.fail("The method should not have inserted the record");
+							},
+							function(err) {
+								expect(err.length).eq(1);
+								expect(err[0].attribute).eq(StaffDataEntityValidator.ID_CONTACT);
+								expect(err[0].message).eq(StaffDataEntityValidator.ID_CONTACT_DUPLICATED);
+								expect(err[0].value).eq(entity.idContact);
+								done();
+							}
+						);
 				});
 			});
 		});

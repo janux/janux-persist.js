@@ -14,7 +14,7 @@ function createPerson1() {
 	const personLastName = "Doe";
 	const contactEmail = "dev@glarus.com";
 	const contactType = "work";
-	const personCode = 'personCode';
+	const personCode = "personCode";
 	var person = new Person();
 	person.code = personCode;
 	person.name.first = personName;
@@ -70,7 +70,6 @@ function createOrganization3() {
 	return organization;
 }
 
-
 function createEmptyUserAccount1() {
 	const accountUsername = "username";
 	const accountPassword = "password";
@@ -79,17 +78,14 @@ function createEmptyUserAccount1() {
 	const accountExpire = undefined;
 	const accountExpirePassword = undefined;
 	return {
-		username      : accountUsername,
-		password      : accountPassword,
-		enabled       : accountEnabled,
-		locked        : accountLocked,
-		expire        : accountExpire,
+		username: accountUsername,
+		password: accountPassword,
+		enabled: accountEnabled,
+		locked: accountLocked,
+		expire: accountExpire,
 		expirePassword: accountExpirePassword,
-		contact       : undefined,
-		roles         : [
-			"ADMIN",
-			"AUTH CONTEXT"
-		]
+		contact: undefined,
+		roles: ["ADMIN", "AUTH CONTEXT"]
 	};
 }
 
@@ -101,15 +97,13 @@ function createEmptyUserAccount2() {
 	const accountExpire = undefined;
 	const accountExpirePassword = undefined;
 	return {
-		username      : accountUsername,
-		password      : accountPassword,
-		enabled       : accountEnabled,
-		locked        : accountLocked,
-		expire        : accountExpire,
+		username: accountUsername,
+		password: accountPassword,
+		enabled: accountEnabled,
+		locked: accountLocked,
+		expire: accountExpire,
 		expirePassword: accountExpirePassword,
-		roles         : [
-			"USERS"
-		]
+		roles: ["USERS"]
 	};
 }
 
@@ -121,18 +115,15 @@ function createEmptyUserAccount3() {
 	const accountExpire = undefined;
 	const accountExpirePassword = undefined;
 	return {
-		username      : accountUsername,
-		password      : accountPassword,
-		enabled       : accountEnabled,
-		locked        : accountLocked,
-		expire        : accountExpire,
+		username: accountUsername,
+		password: accountPassword,
+		enabled: accountEnabled,
+		locked: accountLocked,
+		expire: accountExpire,
 		expirePassword: accountExpirePassword,
-		roles         : [
-			"USERS"
-		]
+		roles: ["USERS"]
 	};
 }
-
 
 function createUser1() {
 	var person = createPerson1();
@@ -162,14 +153,14 @@ function createUser3() {
 }
 
 module.exports = {
-	createPerson1          : createPerson1,
-	createPerson2          : createPerson2,
-	createOrganization1    : createOrganization1,
-	createOrganization2    : createOrganization2,
-	createOrganization3    : createOrganization3,
+	createPerson1: createPerson1,
+	createPerson2: createPerson2,
+	createOrganization1: createOrganization1,
+	createOrganization2: createOrganization2,
+	createOrganization3: createOrganization3,
 	createEmptyUserAccount1: createEmptyUserAccount1,
 	createEmptyUserAccount2: createEmptyUserAccount2,
-	createUser1            : createUser1,
-	createUser2            : createUser2,
-	createUser3            : createUser3
+	createUser1: createUser1,
+	createUser2: createUser2,
+	createUser3: createUser3
 };

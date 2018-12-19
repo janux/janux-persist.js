@@ -3,12 +3,11 @@
  * Created by ernesto on 11/16/17.
  */
 import Promise = require("bluebird");
-import {PartyAbstract} from "janux-people";
-import {Group} from "services/group-module/api/group";
-import {GroupProperties} from "services/group-module/api/group-properties";
+import { PartyAbstract } from "janux-people";
+import { Group } from "services/group-module/api/group";
+import { GroupProperties } from "services/group-module/api/group-properties";
 
 export interface StaffGroupService {
-
 	/**
 	 * Insert a staff group for this organization.
 	 * @param {PartyAbstract} organization Returns the group

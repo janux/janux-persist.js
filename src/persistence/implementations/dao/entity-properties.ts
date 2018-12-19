@@ -3,7 +3,7 @@
  * Created by ernesto on 6/12/17.
  */
 
-import {EntityProperties} from "persistence/api/dao/entity-properties";
+import { EntityProperties } from "persistence/api/dao/entity-properties";
 
 /**
  * This class helps to define extra attributes to the entity.
@@ -11,7 +11,6 @@ import {EntityProperties} from "persistence/api/dao/entity-properties";
  * are the same for each every entity.
  */
 export class EntityPropertiesImpl implements EntityProperties {
-
 	public static createDefaultProperties(): EntityPropertiesImpl {
 		return new EntityPropertiesImpl(true, true);
 	}

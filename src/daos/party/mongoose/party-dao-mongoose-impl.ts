@@ -6,18 +6,17 @@
 import * as Promise from "bluebird";
 import JanuxPeople = require("janux-people");
 import * as _ from "lodash";
-import {Model} from "mongoose";
-import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import {MongooseAdapter} from "persistence/implementations/db-adapters/mongoose-db-adapter";
-import {PartyDao} from "../party-dao";
-import {PartyValidator} from "../party-validator";
+import { Model } from "mongoose";
+import { EntityPropertiesImpl } from "persistence/implementations/dao/entity-properties";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import { MongooseAdapter } from "persistence/implementations/db-adapters/mongoose-db-adapter";
+import { PartyDao } from "../party-dao";
+import { PartyValidator } from "../party-validator";
 
 /**
  * Implementation of the PartyDao for the mongoose library.
  */
 export class PartyDaoMongooseImpl extends PartyDao {
-
 	private model: Model<any>;
 
 	constructor(dbEngineUtil: MongooseAdapter, entityProperties: EntityPropertiesImpl) {
@@ -38,19 +37,16 @@ export class PartyDaoMongooseImpl extends PartyDao {
 					$and: [
 						{
 							$or: [
-								{'name.first': regexpName},
-								{'name.middle': regexpName},
-								{'name.last': regexpName}
+								{ "name.first": regexpName },
+								{ "name.middle": regexpName },
+								{ "name.last": regexpName }
 							]
 						},
-						{typeName: {$eq: PartyValidator.PERSON}}
+						{ typeName: { $eq: PartyValidator.PERSON } }
 					]
 				},
 				{
-					$and: [
-						{name: regexpName},
-						{typeName: {$eq: PartyValidator.ORGANIZATION}}
-					]
+					$and: [{ name: regexpName }, { typeName: { $eq: PartyValidator.ORGANIZATION } }]
 				}
 			]
 		};
@@ -67,7 +63,7 @@ export class PartyDaoMongooseImpl extends PartyDao {
 		if (records == null) {
 			return Promise.resolve([]);
 		}
-		emailAddressesToLookFor = records.map((value) => value.address);
+		emailAddressesToLookFor = records.map(value => value.address);
 		emailAddressesToLookFor = _.filter(emailAddressesToLookFor, value => value != null);
 		if (emailAddressesToLookFor.length === 0) {
 			return Promise.resolve([]);
@@ -80,10 +76,10 @@ export class PartyDaoMongooseImpl extends PartyDao {
 			personReference = objectToUpdate as JanuxPeople.Person;
 			query = {
 				$and: [
-					{id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
+					{ id: { $ne: objectToUpdate[this.ID_REFERENCE] } },
 					{
 						$or: [
-							{"emails.address": {$in: emailAddressesToLookFor}}
+							{ "emails.address": { $in: emailAddressesToLookFor } }
 							// {
 							// 	$and: [
 							// 		{"name.first": {$eq: personReference.name.first}},
@@ -101,11 +97,11 @@ export class PartyDaoMongooseImpl extends PartyDao {
 			organizationReference = objectToUpdate as JanuxPeople.Organization;
 			query = {
 				$and: [
-					{id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
+					{ id: { $ne: objectToUpdate[this.ID_REFERENCE] } },
 					{
 						$or: [
-							{"emails.address": {$in: emailAddressesToLookFor}},
-							{name: {$eq: organizationReference.name}}
+							{ "emails.address": { $in: emailAddressesToLookFor } },
+							{ name: { $eq: organizationReference.name } }
 						]
 					}
 				]
@@ -116,11 +112,14 @@ export class PartyDaoMongooseImpl extends PartyDao {
 		// 	query.$and[1].$or.push({idAccount: {$eq: objectToUpdate.idAccount}});
 		// }
 
-		return this.findByQuery(query)
-			.then((resultQuery: JanuxPeople.PartyAbstract[]) => {
-				const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
-				return Promise.resolve(errors);
-			});
+		return this.findByQuery(query).then((resultQuery: JanuxPeople.PartyAbstract[]) => {
+			const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(
+				resultQuery,
+				emailAddressesToLookFor,
+				objectToUpdate
+			);
+			return Promise.resolve(errors);
+		});
 
 		// return Promise.resolve([]);
 	}

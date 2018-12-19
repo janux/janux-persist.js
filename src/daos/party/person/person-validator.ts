@@ -4,15 +4,14 @@
  */
 
 import JanuxPeople = require("janux-people");
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
 
 /**
  * Validates the values of the person.
  */
 export class PersonValidator {
-
 	public static readonly NAME_FIRST = "name.first";
 	public static readonly NAME_MIDDLE = "name.middle";
 	public static readonly NAME = "name";

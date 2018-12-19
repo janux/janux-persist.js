@@ -4,19 +4,18 @@
  */
 
 import Promise = require("bluebird");
-import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import {MongooseAdapter} from "persistence/implementations/db-adapters/mongoose-db-adapter";
-import {isBlankString} from "utils/string/blank-string-validator";
-import {AccountDao} from "../account-dao";
-import {AccountEntity} from "../account-entity";
-import {AccountValidator} from "../account-validator";
+import { EntityPropertiesImpl } from "persistence/implementations/dao/entity-properties";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import { MongooseAdapter } from "persistence/implementations/db-adapters/mongoose-db-adapter";
+import { isBlankString } from "utils/string/blank-string-validator";
+import { AccountDao } from "../account-dao";
+import { AccountEntity } from "../account-entity";
+import { AccountValidator } from "../account-validator";
 
 /**
  * AccountDao implementation for the mongoose library.
  */
 export class AccountDaoMongooseImpl extends AccountDao {
-
 	constructor(dbEngineUtil: MongooseAdapter, entityProperties: EntityPropertiesImpl) {
 		super(dbEngineUtil, entityProperties);
 	}
@@ -43,18 +42,16 @@ export class AccountDaoMongooseImpl extends AccountDao {
 	 */
 	protected validateBeforeInsert(objectToInsert: AccountEntity): Promise<ValidationErrorImpl[]> {
 		if (isBlankString(objectToInsert.password)) {
-			return Promise.resolve([new ValidationErrorImpl(AccountValidator.PASSWORD, AccountValidator.PASSWORD_EMPTY, '')]);
+			return Promise.resolve([
+				new ValidationErrorImpl(AccountValidator.PASSWORD, AccountValidator.PASSWORD_EMPTY, "")
+			]);
 		}
 		const query = {
-			$or: [
-				{username: {$eq: objectToInsert.username}},
-				{contactId: {$eq: objectToInsert.contactId}}
-			]
+			$or: [{ username: { $eq: objectToInsert.username } }, { contactId: { $eq: objectToInsert.contactId } }]
 		};
-		return this.findByQuery(query)
-			.then((result) => {
-				return Promise.resolve(AccountValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
-			});
+		return this.findByQuery(query).then(result => {
+			return Promise.resolve(AccountValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
+		});
 	}
 
 	/**
@@ -66,18 +63,17 @@ export class AccountDaoMongooseImpl extends AccountDao {
 	protected validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<ValidationErrorImpl[]> {
 		const query = {
 			$and: [
-				{id: {$ne: objectToUpdate.id}},
+				{ id: { $ne: objectToUpdate.id } },
 				{
 					$or: [
-						{username: {$eq: objectToUpdate.username}},
-						{contactId: {$eq: objectToUpdate.contactId}}
+						{ username: { $eq: objectToUpdate.username } },
+						{ contactId: { $eq: objectToUpdate.contactId } }
 					]
 				}
 			]
 		};
-		return this.findByQuery(query)
-			.then((result: AccountEntity[]) => {
-				return Promise.resolve(AccountValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
-			});
+		return this.findByQuery(query).then((result: AccountEntity[]) => {
+			return Promise.resolve(AccountValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
+		});
 	}
 }

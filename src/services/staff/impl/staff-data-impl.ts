@@ -2,11 +2,10 @@
  * Project janux-persist.js
  * Created by ernesto on 3/20/18
  */
-import {StaffDataEntity} from "daos/staff-data/staff-data-entity";
-import {StaffData} from "services/staff/api/staff-data";
+import { StaffDataEntity } from "daos/staff-data/staff-data-entity";
+import { StaffData } from "services/staff/api/staff-data";
 
 export class StaffDataImpl implements StaffData {
-
 	public static fomJSON(object: any): StaffDataImpl {
 		if (object == null) return object;
 		return new StaffDataImpl(object.isExternal, object.jobTitle, object.jobDepartment);

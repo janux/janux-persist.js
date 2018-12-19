@@ -4,12 +4,12 @@
  */
 
 import * as Promise from "bluebird";
-import * as _ from 'lodash';
-import MailTime    = require('mail-time');
+import * as _ from "lodash";
+import MailTime = require("mail-time");
 import * as nodemailer from "nodemailer";
-import {DataSource} from "services/datasource-handler/datasource";
-import {DataSourceHandler} from "services/datasource-handler/datasource-handler";
-import * as logger from 'utils/logger-api/logger-api';
+import { DataSource } from "services/datasource-handler/datasource";
+import { DataSourceHandler } from "services/datasource-handler/datasource-handler";
+import * as logger from "utils/logger-api/logger-api";
 
 export class CommService {
 	public static createInstance(commDataSource: any, smtp: any) {
@@ -18,8 +18,8 @@ export class CommService {
 
 	private static _instance: CommService;
 	public events = {
-		EMAIL_SUCCESS_SENT_EVENT: 'emailSuccessSent',
-		EMAIL_SENT_ERROR_EVENT: 'emailSentError'
+		EMAIL_SUCCESS_SENT_EVENT: "emailSuccessSent",
+		EMAIL_SENT_ERROR_EVENT: "emailSentError"
 	};
 	private _log = logger.getLogger("CommService");
 	private listeners: object = {};
@@ -31,22 +31,24 @@ export class CommService {
 
 	private constructor(commDataSource, smtp) {
 		// Initialize listeners array
-		Object.keys(this.events).map((key) => {
+		Object.keys(this.events).map(key => {
 			this.listeners[key] = [];
 		});
 		this.smtp = smtp;
 		this.dataSource = this.getDataSource(commDataSource.dbEngine, commDataSource.dbPath);
 
 		// SMTP
-		this.transports.push(nodemailer.createTransport({
-			host: smtp.host,
-			from: smtp.from,
-			port: smtp.port,
-			auth: {
-				user: smtp.auth.user,
-				pass: smtp.auth.pass
-			}
-		}));
+		this.transports.push(
+			nodemailer.createTransport({
+				host: smtp.host,
+				from: smtp.from,
+				port: smtp.port,
+				auth: {
+					user: smtp.auth.user,
+					pass: smtp.auth.pass
+				}
+			})
+		);
 
 		// this.transport = nodemailer.createTransport({
 		// 	host: smtp.host,
@@ -60,16 +62,16 @@ export class CommService {
 
 		this.mailQueue = new MailTime({
 			db: this.dataSource.dbConnection, // MongoDB
-			type: 'server',
-			strategy: 'balancer', // Transports will be used in round robin chain
+			type: "server",
+			strategy: "balancer", // Transports will be used in round robin chain
 			transports: this.transports,
 			from(transport) {
 				// To pass spam-filters `from` field should be correctly set
 				// for each transport, check `transport` object for more options
-				return '"Glarus App" <' + transport._options.from + '>';
+				return '"Glarus App" <' + transport._options.from + ">";
 			},
 			concatEmails: true, // Concatenate emails to the same addressee
-			concatDelimiter: '<h1>{{{subject}}}</h1>' // Start each concatenated email with it's own subject
+			concatDelimiter: "<h1>{{{subject}}}</h1>" // Start each concatenated email with it's own subject
 		});
 	}
 
@@ -95,7 +97,7 @@ export class CommService {
 	 */
 	public off(eventName: string, callbackToRemove: any) {
 		if (this.listeners[eventName]) {
-			this.listeners[eventName] = this.listeners[eventName].filter((callback) => {
+			this.listeners[eventName] = this.listeners[eventName].filter(callback => {
 				return callback !== callbackToRemove;
 			});
 		}
@@ -108,7 +110,7 @@ export class CommService {
 	 */
 	public fire(eventName: string, value: any) {
 		if (this.listeners[eventName]) {
-			this.listeners[eventName].forEach((callback) => {
+			this.listeners[eventName].forEach(callback => {
 				callback(value);
 			});
 		}
@@ -123,21 +125,24 @@ export class CommService {
 		// const that = this;
 
 		// Send email
-		this.mailQueue.sendMail({
-			from: this.smtp.from,
-			to: params.to,
-			subject: params.subject,
-			text: params.text,
-			html: params.html
-		}, (error, info) => {
-			if (error) {
-				this.fire(this.events.EMAIL_SENT_ERROR_EVENT, error);
-				this._log.info(error);
-			} else {
-				this.fire(this.events.EMAIL_SUCCESS_SENT_EVENT, params);
-				this._log.info('Message sent: ' + info.response);
+		this.mailQueue.sendMail(
+			{
+				from: this.smtp.from,
+				to: params.to,
+				subject: params.subject,
+				text: params.text,
+				html: params.html
+			},
+			(error, info) => {
+				if (error) {
+					this.fire(this.events.EMAIL_SENT_ERROR_EVENT, error);
+					this._log.info(error);
+				} else {
+					this.fire(this.events.EMAIL_SUCCESS_SENT_EVENT, params);
+					this._log.info("Message sent: " + info.response);
+				}
 			}
-		});
+		);
 
 		// this.transport.sendMail({
 		// 	from: this.smtp.from,

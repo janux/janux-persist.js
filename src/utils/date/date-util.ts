@@ -3,13 +3,12 @@
  * Created by ernesto on 12/6/17.
  */
 
-import * as _ from 'lodash';
-import * as moment from 'moment';
+import * as _ from "lodash";
+import * as moment from "moment";
 import * as logger from "utils/logger-api/logger-api";
-import {isBlankString} from "utils/string/blank-string-validator";
+import { isBlankString } from "utils/string/blank-string-validator";
 
 export class DateUtil {
-
 	static logger = logger.getLogger("DateUtil");
 
 	/**
@@ -37,6 +36,5 @@ export class DateUtil {
 			// TODO: Find a better way to handle errors.
 			throw new Error("Invalid date parsing with");
 		}
-
 	}
 }

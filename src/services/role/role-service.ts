@@ -4,13 +4,13 @@
  */
 
 import * as Promise from "bluebird";
-import {RoleDao} from "daos/role/role-dao";
-import {RoleValidator} from "daos/role/role-validator";
+import { RoleDao } from "daos/role/role-dao";
+import { RoleValidator } from "daos/role/role-validator";
 import JanuxAuthorize = require("janux-authorize");
-import * as _ from 'lodash';
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import * as _ from "lodash";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
 import * as logger from "utils/logger-api/logger-api";
-import {isBlankString} from "utils/string/blank-string-validator";
+import { isBlankString } from "utils/string/blank-string-validator";
 
 /**
  * This class has basic role service methods.
@@ -36,10 +36,9 @@ export class RoleService {
 	 */
 	public findAll(): Promise<any[]> {
 		this._log.debug("Call to findAll Method");
-		return this.roleDao.findAll()
-			.then((roles: JanuxAuthorize.Role[]) => {
-				return roles;
-			});
+		return this.roleDao.findAll().then((roles: JanuxAuthorize.Role[]) => {
+			return roles;
+		});
 	}
 
 	/**
@@ -50,13 +49,12 @@ export class RoleService {
 	public findOneByName(roleName: string): Promise<any> {
 		this._log.debug("Call to findOneByName with roleName: %j", roleName);
 		let result: any;
-		return this.roleDao.findOneByName(roleName)
-			.then((role: JanuxAuthorize.Role) => {
-				if (_.isNil(role)) return Promise.reject("No role with the rolename " + roleName);
-				result = role;
-				this._log.debug("Returning %j", result);
-				return Promise.resolve(result);
-			});
+		return this.roleDao.findOneByName(roleName).then((role: JanuxAuthorize.Role) => {
+			if (_.isNil(role)) return Promise.reject("No role with the rolename " + roleName);
+			result = role;
+			this._log.debug("Returning %j", result);
+			return Promise.resolve(result);
+		});
 	}
 
 	/**
@@ -77,13 +75,12 @@ export class RoleService {
 	public findOneById(id: any): Promise<any> {
 		this._log.debug("Call to findOneByUserId with id: %j", id);
 		let result: any;
-		return this.roleDao.findOne(id)
-			.then((role: JanuxAuthorize.Role) => {
-				if (_.isNil(role)) return Promise.reject("No role with the id " + id);
-				result = role;
-				this._log.debug("Returning %j", result);
-				return Promise.resolve(result);
-			});
+		return this.roleDao.findOne(id).then((role: JanuxAuthorize.Role) => {
+			if (_.isNil(role)) return Promise.reject("No role with the id " + id);
+			result = role;
+			this._log.debug("Returning %j", result);
+			return Promise.resolve(result);
+		});
 	}
 
 	/**
@@ -114,12 +111,11 @@ export class RoleService {
 
 		let role: JanuxAuthorize.Role;
 		// Find the role.
-		return this.roleDao.findOne(object.id)
-			.then((resultQuery) => {
+		return this.roleDao
+			.findOne(object.id)
+			.then(resultQuery => {
 				if (resultQuery === null) {
-					return Promise.reject([
-						new ValidationErrorImpl(this.ROLE, this.ROLE_NOT_IN_DATABASE, object.id)
-					]);
+					return Promise.reject([new ValidationErrorImpl(this.ROLE, this.ROLE_NOT_IN_DATABASE, object.id)]);
 				} else {
 					role = JanuxAuthorize.Role.fromJSON(object);
 					role.id = object.id;
@@ -140,11 +136,12 @@ export class RoleService {
 		this._log.debug("Call to updateSortOrder with object:%j", rolesOrder);
 
 		// Find the roles
-		return this.roleDao.findByIds(_.map(rolesOrder, 'id'))
-			.then((resultQuery) => {
-				return Promise.map(resultQuery, (aRole) => {
+		return this.roleDao
+			.findByIds(_.map(rolesOrder, "id"))
+			.then(resultQuery => {
+				return Promise.map(resultQuery, aRole => {
 					let role: JanuxAuthorize.Role;
-					const roleObject: any = _.find(rolesOrder, {id: aRole.id});
+					const roleObject: any = _.find(rolesOrder, { id: aRole.id });
 					role = JanuxAuthorize.Role.fromJSON(aRole);
 					role.id = aRole.id;
 					role.sortOrder = roleObject.sortOrder;
@@ -165,10 +162,9 @@ export class RoleService {
 	public deleteById(roleId: string): Promise<any> {
 		this._log.debug("Call to deleteById with roleId: %j", roleId);
 
-		return this.roleDao.findOne(roleId)
-			.then((resultQuery: JanuxAuthorize.Role) => {
-				return this.roleDao.remove(resultQuery);
-			});
+		return this.roleDao.findOne(roleId).then((resultQuery: JanuxAuthorize.Role) => {
+			return this.roleDao.remove(resultQuery);
+		});
 	}
 
 	/**
@@ -179,10 +175,9 @@ export class RoleService {
 	public deleteByName(roleName: string): Promise<any> {
 		this._log.debug("Call to deleteById with roleName: %j", roleName);
 
-		return this.roleDao.findOneByName(roleName)
-			.then((resultQuery: JanuxAuthorize.Role) => {
-				return this.roleDao.remove(resultQuery);
-			});
+		return this.roleDao.findOneByName(roleName).then((resultQuery: JanuxAuthorize.Role) => {
+			return this.roleDao.remove(resultQuery);
+		});
 	}
 
 	/**

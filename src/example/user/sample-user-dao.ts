@@ -5,19 +5,18 @@
 
 import Promise = require("bluebird");
 import * as _ from "lodash";
-import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
-import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
-import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
-import {SampleUser} from "./sample-user";
-import {validateExampleUser} from "./sample-user-validator";
+import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
+import { AbstractDataAccessObjectWithAdapter } from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
+import { EntityPropertiesImpl } from "persistence/implementations/dao/entity-properties";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
+import { SampleUser } from "./sample-user";
+import { validateExampleUser } from "./sample-user-validator";
 
 /**
  * This is the base dao class of the entity SampleUser.
  */
 export abstract class SampleUserDao extends AbstractDataAccessObjectWithAdapter<SampleUser, string> {
-
 	private _logExampleUserDao = logger.getLogger("SampleUserDao");
 
 	constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
@@ -42,14 +41,14 @@ export abstract class SampleUserDao extends AbstractDataAccessObjectWithAdapter<
 
 	public countByName(name: string): Promise<number> {
 		const query = {
-			name: {$eq: name}
+			name: { $eq: name }
 		};
 		return this.countByQuery(query);
 	}
 
 	public countByEmail(email: string): Promise<number> {
 		const query = {
-			email: {$eq: email}
+			email: { $eq: email }
 		};
 		return this.countByQuery(query);
 	}
@@ -65,18 +64,15 @@ export abstract class SampleUserDao extends AbstractDataAccessObjectWithAdapter<
 	 * @return {Promise<ValidationErrorImpl[]>}
 	 */
 	protected validateBeforeInsert<t>(objectToInsert: SampleUser): Promise<ValidationErrorImpl[]> {
-		return this.findOneByAttribute("email", objectToInsert.email)
-			.then((result: SampleUser) => {
-				const errors: ValidationErrorImpl[] = [];
-				if (!_.isNull(result)) {
-					errors.push(
-						new ValidationErrorImpl(
-							"email",
-							"There is an user with the same email address",
-							result.email));
-				}
-				return Promise.resolve(errors);
-			});
+		return this.findOneByAttribute("email", objectToInsert.email).then((result: SampleUser) => {
+			const errors: ValidationErrorImpl[] = [];
+			if (!_.isNull(result)) {
+				errors.push(
+					new ValidationErrorImpl("email", "There is an user with the same email address", result.email)
+				);
+			}
+			return Promise.resolve(errors);
+		});
 	}
 
 	/**

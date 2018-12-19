@@ -4,11 +4,10 @@
  */
 
 import JanuxPeople = require("janux-people");
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
 
 export class PostalAddressValidator {
-
 	public static readonly LINE_1 = "contacts.addresses.line1";
 	public static readonly LINE_1_EMPTY = "Line 1 is empty";
 	public static readonly POSTAL_CODE = "contacts.addresses.postalCode";
@@ -27,7 +26,6 @@ export class PostalAddressValidator {
 	public static readonly ID_CITY_NOT_NULL = "idCity must be null";
 
 	public static validatePostalAddress(address: JanuxPeople.PostalAddress): ValidationErrorImpl[] {
-
 		this._log.debug("Call to validatePostalAddress with address: %j", address);
 		const errors: ValidationErrorImpl[] = [];
 

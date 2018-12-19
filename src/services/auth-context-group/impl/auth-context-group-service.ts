@@ -4,21 +4,20 @@
  */
 
 import Promise = require("bluebird");
-import * as _ from 'lodash';
-import {AuthContextGroupService} from "services/auth-context-group/api/auth-context-group-service";
-import {AuthContextService} from "services/auth-context/auth-context-service";
-import {GroupImpl} from "services/group-module/impl/group";
-import {GroupPropertiesImpl} from "services/group-module/impl/group-properties";
-import {GroupServiceImpl} from "services/group-module/impl/group-service";
-import * as logger from 'utils/logger-api/logger-api';
+import * as _ from "lodash";
+import { AuthContextGroupService } from "services/auth-context-group/api/auth-context-group-service";
+import { AuthContextService } from "services/auth-context/auth-context-service";
+import { GroupImpl } from "services/group-module/impl/group";
+import { GroupPropertiesImpl } from "services/group-module/impl/group-properties";
+import { GroupServiceImpl } from "services/group-module/impl/group-service";
+import * as logger from "utils/logger-api/logger-api";
 
 export class AuthContextGroupServiceImpl implements AuthContextGroupService {
-
 	public readonly AUTHCONTEXT_GROUP_TYPE: string = "auth context display group";
 	public readonly NO_AUTHCONTEXTS = "There are some authContext in the group that does not exits in the database";
 	private log = logger.getLogger("AuthContextGroupServiceImpl");
 	private authContextService: AuthContextService;
-	private readonly REFERENCE_ID = 'id';
+	private readonly REFERENCE_ID = "id";
 	private groupService: GroupServiceImpl<string>;
 
 	constructor(authContextService: AuthContextService, groupService: GroupServiceImpl<any>) {
@@ -46,7 +45,10 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * @return {Promise<GroupPropertiesImpl[]>}
 	 */
 	findPropertiesByTypeAndItem(authContext: any): Promise<GroupPropertiesImpl[]> {
-		return this.groupService.findPropertiesByTypeAndItem(this.AUTHCONTEXT_GROUP_TYPE, authContext[this.REFERENCE_ID]);
+		return this.groupService.findPropertiesByTypeAndItem(
+			this.AUTHCONTEXT_GROUP_TYPE,
+			authContext[this.REFERENCE_ID]
+		);
 	}
 
 	/**
@@ -56,20 +58,20 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 */
 	findOne(code: string): Promise<GroupImpl<any>> {
 		let result: GroupImpl<any>;
-		return this.groupService.findOne(code)
-			.then((resultQuery: GroupImpl<any>) => {
-				if (resultQuery == null) return Promise.resolve(null);
-				// Map the ids to authContext.
-				result = _.clone(resultQuery);
-				return this.authContextService.findByIdsIn(result.values)
-					.then((authContext: any[]) => {
-						if (result.values.length !== authContext.length) {
-							this.log.warn("The amount of authContext associated does not match with the authContext in the database");
-						}
-						result.values = authContext;
-						return Promise.resolve(result);
-					});
+		return this.groupService.findOne(code).then((resultQuery: GroupImpl<any>) => {
+			if (resultQuery == null) return Promise.resolve(null);
+			// Map the ids to authContext.
+			result = _.clone(resultQuery);
+			return this.authContextService.findByIdsIn(result.values).then((authContext: any[]) => {
+				if (result.values.length !== authContext.length) {
+					this.log.warn(
+						"The amount of authContext associated does not match with the authContext in the database"
+					);
+				}
+				result.values = authContext;
+				return Promise.resolve(result);
 			});
+		});
 	}
 
 	/**
@@ -77,10 +79,9 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * @return {Promise<GroupImpl<any>>}
 	 */
 	findAll(): Promise<Array<GroupImpl<any>>> {
-		return this.groupService.findAll(this.AUTHCONTEXT_GROUP_TYPE)
-			.then((groups: Array<GroupImpl<any>>) => {
-				return this.mapData(groups);
-			});
+		return this.groupService.findAll(this.AUTHCONTEXT_GROUP_TYPE).then((groups: Array<GroupImpl<any>>) => {
+			return this.mapData(groups);
+		});
 	}
 
 	/**
@@ -92,10 +93,15 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * @param newGroupCode
 	 */
 	switchToNewGroup(authContext: any, newGroupCode: string): Promise<any> {
-		this.log.debug("Call to switchToNewGroup with item %j, newGroupCode: %j ", authContext[this.REFERENCE_ID], newGroupCode);
+		this.log.debug(
+			"Call to switchToNewGroup with item %j, newGroupCode: %j ",
+			authContext[this.REFERENCE_ID],
+			newGroupCode
+		);
 		// Remove the associations with existing groups.
-		return this.groupService.removeItemByType(this.AUTHCONTEXT_GROUP_TYPE, authContext[this.REFERENCE_ID])
-			.then((resultQuery) => {
+		return this.groupService
+			.removeItemByType(this.AUTHCONTEXT_GROUP_TYPE, authContext[this.REFERENCE_ID])
+			.then(resultQuery => {
 				// Adds the new association.
 				return this.groupService.addItem(newGroupCode, authContext[this.REFERENCE_ID]);
 			});
@@ -114,16 +120,17 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 		this.log.debug("Call to insert with group %j", group);
 		// Map the authContext data in order to insert only the ids
 		const newGroup: GroupImpl<any> = _.clone(group);
-		const ids = group.values.map((value) => value.id);
+		const ids = group.values.map(value => value.id);
 		newGroup.values = ids;
-		return this.authContextService.findByIdsIn(ids)
+		return this.authContextService
+			.findByIdsIn(ids)
 			.then((resultQuery: any[]) => {
 				if (resultQuery.length !== ids.length) {
 					return Promise.reject(this.NO_AUTHCONTEXTS);
 				}
 				return this.groupService.insert(newGroup);
 			})
-			.then((result) => {
+			.then(result => {
 				return Promise.resolve(group);
 			});
 	}
@@ -138,17 +145,18 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	update(group: GroupImpl<any>): Promise<GroupImpl<any>> {
 		// Map the ids
 		const groupToUpdate: GroupImpl<any> = _.clone(group);
-		const ids = group.values.map((value) => value.id);
+		const ids = group.values.map(value => value.id);
 		groupToUpdate.values = ids;
 
-		return this.authContextService.findByIdsIn(ids)
+		return this.authContextService
+			.findByIdsIn(ids)
 			.then((resultQuery: any[]) => {
 				if (resultQuery.length !== ids.length) {
 					return Promise.reject(this.NO_AUTHCONTEXTS);
 				}
 				return this.groupService.update(groupToUpdate);
 			})
-			.then((result) => {
+			.then(result => {
 				return Promise.resolve(group);
 			});
 	}
@@ -159,12 +167,11 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * @return {Promise<<any>}
 	 */
 	updateGroupsSortOrder(groupsOrder: any): Promise<any> {
-
 		return this.findAll()
-			.then((groups) => {
-				return Promise.map(groups, (group) => {
+			.then(groups => {
+				return Promise.map(groups, group => {
 					const groupToUpdate: GroupImpl<any> = _.clone(group);
-					const ids = group.values.map((value) => value.id);
+					const ids = group.values.map(value => value.id);
 					const newAttribues: any = _.find(groupsOrder, { code: groupToUpdate.code });
 
 					groupToUpdate.values = ids;
@@ -173,7 +180,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 					return this.groupService.update(groupToUpdate);
 				});
 			})
-			.then((updateGroups) => {
+			.then(updateGroups => {
 				return Promise.all(updateGroups);
 			});
 	}
@@ -197,10 +204,9 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * Return a reject if the objectToInsert is null or does not exits in the database.
 	 */
 	addItem(code: string, authContext: any): Promise<any> {
-		return this.authContextService.findOneById(authContext.id)
-			.then((resultQuery) => {
-				return this.groupService.addItem(code, authContext[this.REFERENCE_ID]);
-			});
+		return this.authContextService.findOneById(authContext.id).then(resultQuery => {
+			return this.groupService.addItem(code, authContext[this.REFERENCE_ID]);
+		});
 	}
 
 	/**
@@ -223,7 +229,8 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * with the type and filter.
 	 */
 	findByFilter(filter: { [p: string]: string }): Promise<Array<GroupImpl<any>>> {
-		return this.groupService.findByTypeAndFilter(this.AUTHCONTEXT_GROUP_TYPE, filter)
+		return this.groupService
+			.findByTypeAndFilter(this.AUTHCONTEXT_GROUP_TYPE, filter)
 			.then((groups: Array<GroupImpl<string>>) => {
 				return this.mapData(groups);
 			});
@@ -236,21 +243,20 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 			authContextIds = authContextIds.concat(group.values);
 		}
 		authContextIds = _.uniq(authContextIds);
-		return this.authContextService.findByIdsIn(authContextIds)
-			.then((authContext: any[]) => {
-				const result: Array<GroupImpl<any>> = _.clone(groups);
-				for (const it of result) {
-					it.values = it.values.map((value) => {
-						const filteredAuthContext = authContext.filter((value2) => value2.id === value);
-						if (filteredAuthContext.length === 0) {
-							this.log.warn("There is no associated auth-context with the id %j", value);
-							return undefined;
-						} else {
-							return filteredAuthContext[0];
-						}
-					});
-				}
-				return Promise.resolve(result);
-			});
+		return this.authContextService.findByIdsIn(authContextIds).then((authContext: any[]) => {
+			const result: Array<GroupImpl<any>> = _.clone(groups);
+			for (const it of result) {
+				it.values = it.values.map(value => {
+					const filteredAuthContext = authContext.filter(value2 => value2.id === value);
+					if (filteredAuthContext.length === 0) {
+						this.log.warn("There is no associated auth-context with the id %j", value);
+						return undefined;
+					} else {
+						return filteredAuthContext[0];
+					}
+				});
+			}
+			return Promise.resolve(result);
+		});
 	}
 }

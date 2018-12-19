@@ -4,22 +4,21 @@
  */
 
 import * as Promise from "bluebird";
-import {StaffImplTest} from "example/people-extends/staff-imp-test";
+import { StaffImplTest } from "example/people-extends/staff-imp-test";
 import JanuxPeople = require("janux-people");
 import * as _ from "lodash";
-import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
-import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
-import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
-import {PartyValidator} from "./party-validator";
+import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
+import { AbstractDataAccessObjectWithAdapter } from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
+import { EntityPropertiesImpl } from "persistence/implementations/dao/entity-properties";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
+import { PartyValidator } from "./party-validator";
 
 /**
  * This is the base class of the partyDao. In this class we define the object we are going to use
  *  is JanuxPeople.Person or JanuxPeople.Organization.
  */
 export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<JanuxPeople.PartyAbstract, string> {
-
 	private partyDaoLogger = logger.getLogger("PartyDao");
 
 	constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
@@ -78,16 +77,11 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		let query: {};
 		if (typeName == null) {
 			query = {
-				$and: [
-					{isSupplier: {$eq: isSupplier}}
-				]
+				$and: [{ isSupplier: { $eq: isSupplier } }]
 			};
 		} else {
 			query = {
-				$and: [
-					{isSupplier: {$eq: isSupplier}},
-					{typeName: {$eq: typeName}},
-				]
+				$and: [{ isSupplier: { $eq: isSupplier } }, { typeName: { $eq: typeName } }]
 			};
 		}
 
@@ -113,7 +107,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		// let personReference: JanuxPeople.Person;
 		let organizationReference: JanuxPeople.Organization;
 		let query: any;
-		emailAddressesToLookFor = objectToInsert.emailAddresses(false).map((value) => value.address);
+		emailAddressesToLookFor = objectToInsert.emailAddresses(false).map(value => value.address);
 		// TODO fx thos hack.
 		emailAddressesToLookFor = _.filter(emailAddressesToLookFor, value => value != null);
 		if (emailAddressesToLookFor.length === 0) {
@@ -122,36 +116,26 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		if (objectToInsert.typeName === PartyValidator.PERSON) {
 			// personReference = objectToInsert as JanuxPeople.Person;
 			query = {
-				$or: [
-					{"emails.address": {$in: emailAddressesToLookFor}}
-					// {
-					//     $and: [
-					//         {"name.first": {$eq: personReference.name.first}},
-					//         {"name.middle": {$eq: personReference.name.middle}},
-					//     ]
-					// }
-				]
-
+				$or: [{ "emails.address": { $in: emailAddressesToLookFor } }]
 			};
-			//
-			// if (isBlankString(personReference.name.last) === false) {
-			//     query.$or[1].$and.push({"name.last": {$eq: personReference.name.last}});
-			// }
 		} else {
 			organizationReference = objectToInsert as JanuxPeople.Organization;
 			query = {
 				$or: [
-					{"emails.address": {$in: emailAddressesToLookFor}},
-					{name: {$eq: organizationReference.name}}
+					{ "emails.address": { $in: emailAddressesToLookFor } },
+					{ name: { $eq: organizationReference.name } }
 				]
 			};
 		}
 
-		return this.findByQuery(query)
-			.then((resultQuery: JanuxPeople.PartyAbstract[]) => {
-				const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToInsert);
-				return Promise.resolve(errors);
-			});
+		return this.findByQuery(query).then((resultQuery: JanuxPeople.PartyAbstract[]) => {
+			const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(
+				resultQuery,
+				emailAddressesToLookFor,
+				objectToInsert
+			);
+			return Promise.resolve(errors);
+		});
 		// return Promise.resolve([]);
 	}
 
@@ -170,11 +154,11 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		// references we do JSON.parse(JSON.stringify(object)). With this we avoid to crash mongoose.
 		result = JSON.parse(JSON.stringify(result));
 		result.typeName = object.typeName;
-		result.isSupplier = object['isSupplier'];
-		result.isReseller = object['isReseller'];
+		result.isSupplier = object["isSupplier"];
+		result.isReseller = object["isReseller"];
 		result.typeName = object.typeName;
-		result.functionsProvided = object['functionsProvided'];
-		result.functionsReceived = object['functionsReceived'];
+		result.functionsProvided = object["functionsProvided"];
+		result.functionsReceived = object["functionsReceived"];
 		this.partyDaoLogger.debug("Returning %j", result);
 		return result;
 	}

@@ -4,18 +4,18 @@
  */
 
 import * as Promise from "bluebird";
-import {PartyValidator} from "daos/party/party-validator";
-import {AccountDao} from "daos/user/account-dao";
-import {AccountEntity} from "daos/user/account-entity";
-import {AccountValidator} from "daos/user/account-validator";
-import * as JanuxPeople from 'janux-people';
-import * as _ from 'lodash';
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import {PartyServiceImpl} from "services/party/impl/party-service-impl";
-import {DateUtil} from "utils/date/date-util";
-import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
-import * as uuid from 'uuid';
+import { PartyValidator } from "daos/party/party-validator";
+import { AccountDao } from "daos/user/account-dao";
+import { AccountEntity } from "daos/user/account-entity";
+import { AccountValidator } from "daos/user/account-validator";
+import * as JanuxPeople from "janux-people";
+import * as _ from "lodash";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import { PartyServiceImpl } from "services/party/impl/party-service-impl";
+import { DateUtil } from "utils/date/date-util";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
+import * as uuid from "uuid";
 
 /**
  * This class has basic user service methods.
@@ -49,10 +49,9 @@ export class UserService {
 	 */
 	public deleteUserByUserId(userId: string): Promise<any> {
 		this._log.debug("Call to deleteUserByUserId with userId: %j", userId);
-		return this.accountDao.findOneByUserId(userId)
-			.then((resultQuery: AccountEntity) => {
-				return this.accountDao.remove(resultQuery);
-			});
+		return this.accountDao.findOneByUserId(userId).then((resultQuery: AccountEntity) => {
+			return this.accountDao.remove(resultQuery);
+		});
 	}
 
 	/**
@@ -62,10 +61,9 @@ export class UserService {
 	 */
 	public deleteByUserIds(userIds: string[]): Promise<any> {
 		this._log.debug("Call to deleteByUserIds with %j", userIds);
-		return this.accountDao.findByContactIdsIn(userIds)
-			.then((resultQuery: AccountEntity[]) => {
-				return this.accountDao.removeByIds(resultQuery.map(value => value.id));
-			});
+		return this.accountDao.findByContactIdsIn(userIds).then((resultQuery: AccountEntity[]) => {
+			return this.accountDao.removeByIds(resultQuery.map(value => value.id));
+		});
 	}
 
 	/**
@@ -88,10 +86,9 @@ export class UserService {
 	 */
 	public findAll(): Promise<any[]> {
 		this._log.debug("Call to findAllMethod");
-		return this.accountDao.findAll()
-			.then((users: AccountEntity[]) => {
-				return this.populateContactData(users);
-			});
+		return this.accountDao.findAll().then((users: AccountEntity[]) => {
+			return this.populateContactData(users);
+		});
 	}
 
 	/**
@@ -101,10 +98,9 @@ export class UserService {
 	 */
 	public findByIdsIn(ids: string[]): Promise<any[]> {
 		this._log.debug("Call to findByIdsIn with ids %j", ids);
-		return this.accountDao.findByIds(ids)
-			.then((users: AccountEntity[]) => {
-				return this.populateContactData(users);
-			});
+		return this.accountDao.findByIds(ids).then((users: AccountEntity[]) => {
+			return this.populateContactData(users);
+		});
 	}
 
 	/**
@@ -125,7 +121,8 @@ export class UserService {
 	public findOneById(id: string): Promise<any> {
 		this._log.debug("Call to findOneById with id: %j", id);
 		let result: any;
-		return this.accountDao.findOne(id)
+		return this.accountDao
+			.findOne(id)
 			.then((user: AccountEntity) => {
 				if (_.isNil(user)) {
 					this._log.error("No user with the id " + id);
@@ -136,7 +133,7 @@ export class UserService {
 			})
 			.then((contact: JanuxPeople.PartyAbstract) => {
 				result.contact = contact.toJSON();
-				result.contact.id = contact['id'];
+				result.contact.id = contact["id"];
 				result.contact.typeName = contact.typeName;
 				this._log.debug("Returning %j", result);
 				return Promise.resolve(result);
@@ -151,7 +148,8 @@ export class UserService {
 	public findOneByUserId(id: any): Promise<any> {
 		this._log.debug("Call to findOneByUserId with id: %j", id);
 		let result: any;
-		return this.accountDao.findOneByUserId(id)
+		return this.accountDao
+			.findOneByUserId(id)
 			.then((user: AccountEntity) => {
 				if (_.isNil(user)) return Promise.reject("No user with the id " + id);
 				result = user;
@@ -159,7 +157,7 @@ export class UserService {
 			})
 			.then((contact: JanuxPeople.PartyAbstract) => {
 				result.contact = contact.toJSON();
-				result.contact.id = contact['id'];
+				result.contact.id = contact["id"];
 				result.contact.typeName = contact.typeName;
 				this._log.debug("Returning %j", result);
 				return Promise.resolve(result);
@@ -174,7 +172,8 @@ export class UserService {
 	public findOneByUserName(username: string): Promise<any> {
 		this._log.debug("Call to findOneByUserName with username: %j", username);
 		let result: any;
-		return this.accountDao.findOneByUserName(username)
+		return this.accountDao
+			.findOneByUserName(username)
 			.then((user: AccountEntity) => {
 				if (_.isNil(user)) return Promise.reject("No user with the username " + username);
 				result = user;
@@ -182,7 +181,7 @@ export class UserService {
 			})
 			.then((contact: JanuxPeople.PartyAbstract) => {
 				result.contact = contact.toJSON();
-				result.contact.id = contact['id'];
+				result.contact.id = contact["id"];
 				result.contact.typeName = contact.typeName;
 				this._log.debug("Returning %j", result);
 				return Promise.resolve(result);
@@ -196,10 +195,9 @@ export class UserService {
 	 */
 	public findAllByUserNameMatch(username: string): Promise<any[]> {
 		this._log.debug("Call to findByUserNameMatch with username: %j", username);
-		return this.accountDao.findByUserNameMatch(username)
-			.then((users: AccountEntity[]) => {
-				return this.populateContactData(users);
-			});
+		return this.accountDao.findByUserNameMatch(username).then((users: AccountEntity[]) => {
+			return this.populateContactData(users);
+		});
 	}
 
 	/**
@@ -209,10 +207,9 @@ export class UserService {
 	 */
 	public findAllByContactNameMatch(name: string): Promise<any[]> {
 		this._log.debug("Call to findByContactNameContaining with name %j", name);
-		return this.partyService.findByName(name)
-			.then((resultQuery: JanuxPeople.PartyAbstract[]) => {
-				return this.populateUserData(resultQuery);
-			});
+		return this.partyService.findByName(name).then((resultQuery: JanuxPeople.PartyAbstract[]) => {
+			return this.populateUserData(resultQuery);
+		});
 	}
 
 	/**
@@ -222,10 +219,9 @@ export class UserService {
 	 */
 	public findAllByEmail(email: string): Promise<any[]> {
 		this._log.debug("Call to findByEmail with email %j", email);
-		return this.partyService.findByEmail(email)
-			.then((resultQuery: JanuxPeople.PartyAbstract[]) => {
-				return this.populateUserData(resultQuery);
-			});
+		return this.partyService.findByEmail(email).then((resultQuery: JanuxPeople.PartyAbstract[]) => {
+			return this.populateUserData(resultQuery);
+		});
 	}
 
 	/**
@@ -235,10 +231,9 @@ export class UserService {
 	 */
 	public findAllByPhone(phone: string): Promise<any[]> {
 		this._log.debug("Call to findByPhone with email %j", phone);
-		return this.partyService.findByPhone(phone)
-			.then((resultQuery: JanuxPeople.PartyAbstract[]) => {
-				return this.populateUserData(resultQuery);
-			});
+		return this.partyService.findByPhone(phone).then((resultQuery: JanuxPeople.PartyAbstract[]) => {
+			return this.populateUserData(resultQuery);
+		});
 	}
 
 	/**
@@ -281,7 +276,7 @@ export class UserService {
 			.then((insertedAccount: AccountEntity) => {
 				result = insertedAccount;
 				result.contact = associatedParty.toJSON();
-				result.contact.id = associatedParty['id'];
+				result.contact.id = associatedParty["id"];
 				result.contact.typeName = associatedParty.typeName;
 				this._log.debug("Returning %j", result);
 				return Promise.resolve(result);
@@ -299,8 +294,9 @@ export class UserService {
 		let result: any;
 		const user: AccountEntity = new AccountEntity();
 		// Find the user. This also helps to retrieve the contactId.
-		return this.accountDao.findOne(object.id)
-			.then((resultQuery) => {
+		return this.accountDao
+			.findOne(object.id)
+			.then(resultQuery => {
 				if (resultQuery === null) {
 					return Promise.reject([
 						new ValidationErrorImpl(this.ACCOUNT, this.ACCOUNT_NOT_IN_DATABASE, object.id)
@@ -347,7 +343,7 @@ export class UserService {
 	 */
 	public removeSensitiveData(object: any): any {
 		if (object != null) {
-			delete  object.password;
+			delete object.password;
 		}
 		return object;
 	}
@@ -356,38 +352,36 @@ export class UserService {
 		this._log.debug("Call to populate populateUserData with contacts: %j", contacts);
 		const ids = _.map(contacts, (o: any) => o.id);
 		let result: any;
-		return this.accountDao.findByContactIdsIn(ids)
-			.then((users: AccountEntity[]) => {
-				result = this.mixData(users, contacts);
-				this._log.debug("populateUserData : returning %j", result);
-				return Promise.resolve(result);
-			});
+		return this.accountDao.findByContactIdsIn(ids).then((users: AccountEntity[]) => {
+			result = this.mixData(users, contacts);
+			this._log.debug("populateUserData : returning %j", result);
+			return Promise.resolve(result);
+		});
 	}
 
 	private populateContactData(users: AccountEntity[]) {
 		this._log.debug("Call to populateContactData with users: %j", users);
 		let result: any = users;
-		const contactIds = users.map((value) => value.contactId);
-		return this.partyService.findByIds(contactIds)
-			.then((contacts: JanuxPeople.PartyAbstract[]) => {
-				result = this.mixData(result, contacts);
-				this._log.debug("populateContactData : returning %j", result);
-				return Promise.resolve(result);
-			});
+		const contactIds = users.map(value => value.contactId);
+		return this.partyService.findByIds(contactIds).then((contacts: JanuxPeople.PartyAbstract[]) => {
+			result = this.mixData(result, contacts);
+			this._log.debug("populateContactData : returning %j", result);
+			return Promise.resolve(result);
+		});
 	}
 
 	private mixData(users: any[], contacts: JanuxPeople.PartyAbstract[]): any[] {
 		this._log.debug("Call to mix data with users: %j contacts %j", users, contacts);
 		for (const user of users) {
-			const contact = _.find(contacts, (o) => {
-				return o['id'] === user.contactId;
+			const contact = _.find(contacts, o => {
+				return o["id"] === user.contactId;
 			});
 			this._log.debug("Founded contact %j", contact);
 			if (_.isNil(contact)) {
 				this._log.error("NOT CONTACT FOUNDED");
 			}
 			user.contact = contact.toJSON();
-			user.contact.id = contact['id'];
+			user.contact.id = contact["id"];
 			user.contact.typeName = contact.typeName;
 		}
 		this._log.debug("Returning from mapData: %j", users);
@@ -423,12 +417,12 @@ export class UserService {
 					new ValidationErrorImpl(this.PARTY_TYPE, PartyValidator.TYPE_NOT_PERSON_OR_ORGANIZATION, "")
 				]);
 			}
-
 		} else {
 			this._log.debug("The account to insertMethod has a contact id");
 			let referenceObject: JanuxPeople.PartyAbstract;
 			// Look for if there is a party with the same id
-			return this.partyService.findOne(party.id)
+			return this.partyService
+				.findOne(party.id)
 				.then((resultQueryParty: JanuxPeople.PartyAbstract) => {
 					if (_.isNull(resultQueryParty)) {
 						this._log.warn("The id %j does not exist in the database", party.id);

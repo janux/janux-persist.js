@@ -2,11 +2,11 @@
  * Project janux-persistence
  * Created by ernesto on 6/22/17.
  */
-var chai = require('chai');
-var _ = require('lodash');
+var chai = require("chai");
+var _ = require("lodash");
 var expect = chai.expect;
 var assert = chai.assert;
-var config = require('config');
+var config = require("config");
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
@@ -27,7 +27,7 @@ const firstName = "John";
 const middleName = "Doe";
 const lastName = "Iglesias";
 const maternal = "Shmith";
-const personCode = 'personCode';
+const personCode = "personCode";
 // const displayName = "display name";
 const honorificPrefix = "honorificPrefix";
 const honorificSuffix = "honorificSuffix";
@@ -46,23 +46,27 @@ const line2Address = "Line 2 address";
 const line3Address = "Line 3 address";
 const postalCode = "05000";
 
-describe("Testing party dao insertMethod methods", function () {
-	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
+describe("Testing party dao insertMethod methods", function() {
+	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
 		var partyDao;
-		beforeEach(function (done) {
-			var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-			partyDao = DaoUtil.createPartyDao(dbEngine, path)
-			partyDao.removeAll()
-				.then(function () {
-					done()
+		beforeEach(function(done) {
+			var path =
+				dbEngine === DataSourceHandler.LOKIJS
+					? serverAppContext.db.lokiJsDBPath
+					: serverAppContext.db.mongoConnUrl;
+			partyDao = DaoUtil.createPartyDao(dbEngine, path);
+			partyDao
+				.removeAll()
+				.then(function() {
+					done();
 				})
-				.catch(function (err) {
+				.catch(function(err) {
 					assert.fail("Error", err);
-				})
+				});
 		});
 
-		describe("When inserting a valid person", function () {
-			it("The entity should exits in the database", function (done) {
+		describe("When inserting a valid person", function() {
+			it("The entity should exits in the database", function(done) {
 				var person = new PersonEntity();
 				person.code = personCode;
 				person.name.first = firstName;
@@ -78,11 +82,9 @@ describe("Testing party dao insertMethod methods", function () {
 				person.setContactMethod(work, new EmailAddress(email));
 				person.setContactMethod(home, new EmailAddress(email2));
 
-
 				// var email2 = new EmailAddress();
 				// email2.address = email2;
 				// person.setContactMethod(home,email2);
-
 
 				var postalAddressObject = new PostalAddress();
 				postalAddressObject.line1 = line1Address;
@@ -94,26 +96,25 @@ describe("Testing party dao insertMethod methods", function () {
 
 				person.setContactMethod(home, postalAddressObject);
 
-
 				var phoneNumberObject = new PhoneNumber();
 				phoneNumberObject.number = phone;
 				phoneNumberObject.extension = extension;
 				phoneNumberObject.areaCode = areaCode;
 				phoneNumberObject.countryCode = countryCode;
 				person.setContactMethod(work, phoneNumberObject);
-				partyDao.insert(person)
-					.then(function (result) {
+				partyDao
+					.insert(person)
+					.then(function(result) {
 						expect(result.id).not.to.be.undefined;
 						validateRecord(result);
 						return partyDao.findOne(result.id);
 					})
-					.then(function (resultQuery) {
+					.then(function(resultQuery) {
 						expect(resultQuery.id).not.to.be.undefined;
 						validateRecord(resultQuery);
 						done();
-					})
+					});
 			});
-
 
 			function validateRecord(record) {
 				// expect(record.displayName).eq(displayName);
@@ -153,10 +154,9 @@ describe("Testing party dao insertMethod methods", function () {
 			}
 		});
 
-
-		describe("When inserting a valid organization", function () {
-			it("The method should insertMethod the record", function (done) {
-				var functions = ['AGENT', 'SPECIAL_OPS'];
+		describe("When inserting a valid organization", function() {
+			it("The method should insertMethod the record", function(done) {
+				var functions = ["AGENT", "SPECIAL_OPS"];
 				var organization = new OrganizationEntity();
 				// organization.displayName = organizationDisplayName;
 				organization.name = organizationName;
@@ -167,8 +167,9 @@ describe("Testing party dao insertMethod methods", function () {
 				emailObject.address = email;
 				organization.setContactMethod(home, emailObject);
 
-				partyDao.insert(organization)
-					.then(function (result) {
+				partyDao
+					.insert(organization)
+					.then(function(result) {
 						expect(result.name).eq(organizationName);
 						expect(result.code).eq(organizationCode);
 						expect(result.typeName).eq(PartyValidator.ORGANIZATION);
@@ -176,15 +177,15 @@ describe("Testing party dao insertMethod methods", function () {
 						expect(_.isEqual(result.functionsProvided, functions)).eq(true);
 						return partyDao.findOne(result.id);
 					})
-					.then(function (resultQuery) {
+					.then(function(resultQuery) {
 						expect(resultQuery.name).eq(organizationName);
 						expect(resultQuery.code).eq(organizationCode);
 						expect(resultQuery.typeName).eq(PartyValidator.ORGANIZATION);
 						expect(_.isEqual(resultQuery.functionsProvided, functions)).eq(true);
 						expect(resultQuery.emailAddresses(false).length).eq(1);
 						done();
-					})
-			})
+					});
+			});
 		});
 
 		/*describe("When inserting with invalid data, in this case an invalid email", function () {
@@ -302,13 +303,12 @@ describe("Testing party dao insertMethod methods", function () {
 		//     })
 		// });
 
-		describe("When inserting many records", function () {
-			it("The method should have inserted the records", function (done) {
+		describe("When inserting many records", function() {
+			it("The method should have inserted the records", function(done) {
 				var organization = new OrganizationEntity();
 				organization.name = organizationName;
 				var emailObject1 = new EmailAddress(email);
 				organization.setContactMethod(home, emailObject1);
-
 
 				var person = new PersonEntity();
 				person.name.first = firstName;
@@ -317,9 +317,9 @@ describe("Testing party dao insertMethod methods", function () {
 				var emailObject2 = new EmailAddress(email2);
 				person.setContactMethod(work, emailObject2);
 
-
-				partyDao.insertMany([organization, person])
-					.then(function (resultInsert) {
+				partyDao
+					.insertMany([organization, person])
+					.then(function(resultInsert) {
 						expect(resultInsert.length).eq(2);
 						expect(resultInsert[0].name).eq(organizationName);
 						// expect(resultInsert[0].displayName).eq(organizationDisplayName);
@@ -334,7 +334,7 @@ describe("Testing party dao insertMethod methods", function () {
 						done();
 						return partyDao.count();
 					})
-					.then(function (count) {
+					.then(function(count) {
 						expect(count).eq(2);
 					});
 			});

@@ -7,7 +7,6 @@
  * Properties of a group.
  */
 export interface GroupProperties {
-
 	// A user readable name.
 	name: string;
 
@@ -25,5 +24,4 @@ export interface GroupProperties {
 	// This is the type of the group. Examples:  "users group", "auth-context group", "services groups".
 	// All groups of the same type are expected to share the same t.
 	type: string;
-
 }

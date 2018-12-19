@@ -4,10 +4,10 @@
  * Created by ernesto on 6/12/17.
  */
 import Promise = require("bluebird");
-import {Model} from "mongoose";
-import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
-import * as logger from 'utils/logger-api/logger-api';
-import {AttributeFilter} from "../dao/attribute-filter";
+import { Model } from "mongoose";
+import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
+import * as logger from "utils/logger-api/logger-api";
+import { AttributeFilter } from "../dao/attribute-filter";
 
 /**
  * this class in an implementation of DbAdapter in order to use mongoose as the db engine.
@@ -31,13 +31,16 @@ export class MongooseAdapter implements DbAdapter {
 	 * returns null.
 	 */
 	findOneMethod(id): Promise<any> {
-		this._log.debug('Call to findOneMethod with model: %j id: %j ', this.adapterProperties.model.modelName, id);
+		this._log.debug("Call to findOneMethod with model: %j id: %j ", this.adapterProperties.model.modelName, id);
 		return new Promise((resolve, reject) => {
-			const query = {id};
-			this.adapterProperties.model.findOne(query, {_id: 0}).lean().exec((err, result: any) => {
-				if (err) throw err;
-				resolve(result);
-			});
+			const query = { id };
+			this.adapterProperties.model
+				.findOne(query, { _id: 0 })
+				.lean()
+				.exec((err, result: any) => {
+					if (err) throw err;
+					resolve(result);
+				});
 		});
 	}
 
@@ -48,9 +51,13 @@ export class MongooseAdapter implements DbAdapter {
 	 * an empty array.
 	 */
 	findByIdsMethod(arrayOfIds: any[]): Promise<any> {
-		this._log.debug('Call to findByIdsMethod with model: %j, arrayOfIds: %j ', this.adapterProperties.model.modelName, arrayOfIds);
+		this._log.debug(
+			"Call to findByIdsMethod with model: %j, arrayOfIds: %j ",
+			this.adapterProperties.model.modelName,
+			arrayOfIds
+		);
 		const query = {
-			id: {$in: arrayOfIds}
+			id: { $in: arrayOfIds }
 		};
 		return this.findByQueryMethod(query);
 	}
@@ -62,13 +69,20 @@ export class MongooseAdapter implements DbAdapter {
 	 * @return {Promise<any>} a promise indicating the operation was successful.
 	 */
 	remove(objectToDelete: any): Promise<any> {
-		this._log.debug("Call to remove with model: %j, objectToDelete: %j", this.adapterProperties.model.modelName, objectToDelete);
+		this._log.debug(
+			"Call to remove with model: %j, objectToDelete: %j",
+			this.adapterProperties.model.modelName,
+			objectToDelete
+		);
 		return new Promise((resolve, reject) => {
-			const query = {id: objectToDelete.id};
-			this.adapterProperties.model.remove(query).lean().exec((err, result) => {
-				if (err) throw err;
-				resolve(result);
-			});
+			const query = { id: objectToDelete.id };
+			this.adapterProperties.model
+				.remove(query)
+				.lean()
+				.exec((err, result) => {
+					if (err) throw err;
+					resolve(result);
+				});
 		});
 	}
 
@@ -109,7 +123,7 @@ export class MongooseAdapter implements DbAdapter {
 	removeAll(): Promise<any> {
 		this._log.debug("Call to removeAll all with model: %j", this.adapterProperties.model.modelName);
 		return new Promise((resolve, reject) => {
-			this.adapterProperties.model.remove({}, (err) => {
+			this.adapterProperties.model.remove({}, err => {
 				if (err) throw err;
 				resolve();
 			});
@@ -125,12 +139,15 @@ export class MongooseAdapter implements DbAdapter {
 		this._log.debug("Call to removeByIds with model: %j, ids: %j", this.adapterProperties.model.modelName, ids);
 		return new Promise((resolve, reject) => {
 			const query = {
-				id: {$in: ids}
+				id: { $in: ids }
 			};
-			this.adapterProperties.model.remove(query).lean().exec((err, result) => {
-				if (err) throw err;
-				resolve(result);
-			});
+			this.adapterProperties.model
+				.remove(query)
+				.lean()
+				.exec((err, result) => {
+					if (err) throw err;
+					resolve(result);
+				});
 		});
 	}
 
@@ -142,22 +159,30 @@ export class MongooseAdapter implements DbAdapter {
 	 * one document that matches the criteria.
 	 */
 	findOneByAttributeMethod(attributeName: string, value): Promise<any> {
-		this._log.debug("Call to findOneByAttributeMethod with model: %j, attributeName: %j , value: %j", this.adapterProperties.model.modelName, attributeName, value);
+		this._log.debug(
+			"Call to findOneByAttributeMethod with model: %j, attributeName: %j , value: %j",
+			this.adapterProperties.model.modelName,
+			attributeName,
+			value
+		);
 		return new Promise((resolve, reject) => {
 			const query = {};
 			query[attributeName] = value;
-			this.adapterProperties.model.find(query, {_id: 0}).lean().exec((err, result: any[]) => {
-				if (err) throw err;
-				if (result.length === 0) {
-					resolve(null);
-				} else if (result.length === 1) {
-					// this.adapterProperties.cleanObjectIds(result[0]);
-					resolve(result[0]);
-				} else {
-					this._log.warn("The query returned more than one result.");
-					reject('The system returned more than one record.');
-				}
-			});
+			this.adapterProperties.model
+				.find(query, { _id: 0 })
+				.lean()
+				.exec((err, result: any[]) => {
+					if (err) throw err;
+					if (result.length === 0) {
+						resolve(null);
+					} else if (result.length === 1) {
+						// this.adapterProperties.cleanObjectIds(result[0]);
+						resolve(result[0]);
+					} else {
+						this._log.warn("The query returned more than one result.");
+						reject("The system returned more than one record.");
+					}
+				});
 		});
 	}
 
@@ -169,7 +194,12 @@ export class MongooseAdapter implements DbAdapter {
 	 * returns an empty array.
 	 */
 	findByAttributeMethod(attributeName: string, value): Promise<any[]> {
-		this._log.debug("Call to findByAttributeMethod with model: %j, attributeName: %j , value: %j", this.adapterProperties.model.modelName, attributeName, value);
+		this._log.debug(
+			"Call to findByAttributeMethod with model: %j, attributeName: %j , value: %j",
+			this.adapterProperties.model.modelName,
+			attributeName,
+			value
+		);
 		const query = {};
 		query[attributeName] = value;
 		return this.findByQueryMethod(query);
@@ -182,9 +212,14 @@ export class MongooseAdapter implements DbAdapter {
 	 * @return {Promise<any>} The records that matches with the query
 	 */
 	findByAttributeNameInMethod(attributeName: string, values: any[]): Promise<any> {
-		this._log.debug("Call to findByAttributeNameInMethod model: %j, attributeName: %j values: ", this.adapterProperties.model.modelName, attributeName, values);
+		this._log.debug(
+			"Call to findByAttributeNameInMethod model: %j, attributeName: %j values: ",
+			this.adapterProperties.model.modelName,
+			attributeName,
+			values
+		);
 		const query = {};
-		query[attributeName] = {$in: values};
+		query[attributeName] = { $in: values };
 		return this.findByQueryMethod(query);
 	}
 
@@ -196,7 +231,11 @@ export class MongooseAdapter implements DbAdapter {
 	 */
 	insertMethod(objectToInsert: any): Promise<any> {
 		this._log.debug("Call to insertMethod with objectToInsert: %j", objectToInsert);
-		this._log.debug("Call to insertMethod with model: %j, objectToInsert: %j", this.adapterProperties.model.modelName, objectToInsert);
+		this._log.debug(
+			"Call to insertMethod with model: %j, objectToInsert: %j",
+			this.adapterProperties.model.modelName,
+			objectToInsert
+		);
 		return new Promise((resolve, reject) => {
 			const newObject = new this.adapterProperties.model(objectToInsert);
 			newObject.save((err, result: any) => {
@@ -217,19 +256,26 @@ export class MongooseAdapter implements DbAdapter {
 	 * @return {Promise<any>} A promise containing the updated object.
 	 */
 	updateMethod(objectToUpdate: any): Promise<any> {
-		this._log.debug("Call to updateMethod with model %j objectToUpdate: %j", this.adapterProperties.model.modelName, objectToUpdate);
+		this._log.debug(
+			"Call to updateMethod with model %j objectToUpdate: %j",
+			this.adapterProperties.model.modelName,
+			objectToUpdate
+		);
 		return new Promise((resolve, reject) => {
-			const query = {id: objectToUpdate.id};
-			const values = {$set: objectToUpdate};
+			const query = { id: objectToUpdate.id };
+			const values = { $set: objectToUpdate };
 			const options = {};
 			const newAttribute = "new";
 			options[newAttribute] = true;
-			this.adapterProperties.model.findOneAndUpdate(query, values, options).lean().exec((err, result: any) => {
-				if (err) throw err;
-				// result = this.adapterProperties.cleanObjectIds(result);
-				this._log.debug("Returning result after updateMethod %j", objectToUpdate);
-				resolve(objectToUpdate);
-			});
+			this.adapterProperties.model
+				.findOneAndUpdate(query, values, options)
+				.lean()
+				.exec((err, result: any) => {
+					if (err) throw err;
+					// result = this.adapterProperties.cleanObjectIds(result);
+					this._log.debug("Returning result after updateMethod %j", objectToUpdate);
+					resolve(objectToUpdate);
+				});
 		});
 	}
 
@@ -240,7 +286,11 @@ export class MongooseAdapter implements DbAdapter {
 	 * contains the generated id of mongodb inside a attribute called "id" as string.
 	 */
 	insertManyMethod(objectsToInsert: any[]): Promise<any> {
-		this._log.debug("Call to insertManyMethod with model: %j, objectsToInsert %j", this.adapterProperties.model.modelName, objectsToInsert);
+		this._log.debug(
+			"Call to insertManyMethod with model: %j, objectsToInsert %j",
+			this.adapterProperties.model.modelName,
+			objectsToInsert
+		);
 		return new Promise((resolve, reject) => {
 			this.adapterProperties.model.insertMany(objectsToInsert, (err, values) => {
 				resolve(objectsToInsert);
@@ -269,7 +319,7 @@ export class MongooseAdapter implements DbAdapter {
 		};
 		for (const attribute of attributes) {
 			const condition = {};
-			condition[attribute.attributeName] = {$eq: attribute.value};
+			condition[attribute.attributeName] = { $eq: attribute.value };
 			query.$and.push(condition);
 		}
 		return this.findByQueryMethod(query);
@@ -287,7 +337,7 @@ export class MongooseAdapter implements DbAdapter {
 		};
 		for (const attribute of attributes) {
 			const condition = {};
-			condition[attribute.attributeName] = {$eq: attribute.value};
+			condition[attribute.attributeName] = { $eq: attribute.value };
 			query.$or.push(condition);
 		}
 		return this.findByQueryMethod(query);
@@ -300,13 +350,20 @@ export class MongooseAdapter implements DbAdapter {
 	 * returns an empty array.
 	 */
 	public findByQueryMethod(query: any): Promise<any[]> {
-		this._log.debug("call to findByQueryMethod with model: %j, query: %j", this.adapterProperties.model.modelName, query);
+		this._log.debug(
+			"call to findByQueryMethod with model: %j, query: %j",
+			this.adapterProperties.model.modelName,
+			query
+		);
 		return new Promise<any>((resolve, reject) => {
-			this.adapterProperties.model.find(query, {_id: 0}).lean().exec((err, result: any[]) => {
-				if (err) throw err;
-				this._log.debug("Returning %j records", result.length);
-				resolve(result);
-			});
+			this.adapterProperties.model
+				.find(query, { _id: 0 })
+				.lean()
+				.exec((err, result: any[]) => {
+					if (err) throw err;
+					this._log.debug("Returning %j records", result.length);
+					resolve(result);
+				});
 		});
 	}
 
@@ -318,11 +375,14 @@ export class MongooseAdapter implements DbAdapter {
 	public removeById(id: any): Promise<any> {
 		this._log.debug("Call to removeById by id: %j and model: %j", id, this.adapterProperties.model.modelName);
 		return new Promise((resolve, reject) => {
-			const query = {id};
-			this.adapterProperties.model.remove(query).lean().exec((err, result) => {
-				if (err) throw err;
-				resolve(result);
-			});
+			const query = { id };
+			this.adapterProperties.model
+				.remove(query)
+				.lean()
+				.exec((err, result) => {
+					if (err) throw err;
+					resolve(result);
+				});
 		});
 	}
 }

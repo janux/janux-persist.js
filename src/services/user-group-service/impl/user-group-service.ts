@@ -3,21 +3,20 @@
  * Created by ernesto on 9/4/17.
  */
 import Promise = require("bluebird");
-import * as _ from 'lodash';
-import {GroupImpl} from "services/group-module/impl/group";
-import {GroupPropertiesImpl} from "services/group-module/impl/group-properties";
-import {GroupServiceImpl} from "services/group-module/impl/group-service";
-import {UserGroupService} from "services/user-group-service/api/user-group-service";
-import {UserService} from "services/user/user-service";
-import * as logger from 'utils/logger-api/logger-api';
+import * as _ from "lodash";
+import { GroupImpl } from "services/group-module/impl/group";
+import { GroupPropertiesImpl } from "services/group-module/impl/group-properties";
+import { GroupServiceImpl } from "services/group-module/impl/group-service";
+import { UserGroupService } from "services/user-group-service/api/user-group-service";
+import { UserService } from "services/user/user-service";
+import * as logger from "utils/logger-api/logger-api";
 
 export class UserGroupServiceImpl implements UserGroupService {
-
 	public readonly USERS_GROUP_TYPE: string = "users groups";
 	public readonly NO_USERS = "There are some users in the group that does not exits in the database";
 	private log = logger.getLogger("UserGroupServiceImpl");
 	private userService: UserService;
-	private readonly REFERENCE_ID = 'id';
+	private readonly REFERENCE_ID = "id";
 	private groupService: GroupServiceImpl<string>;
 
 	constructor(userService: UserService, groupService: GroupServiceImpl<any>) {
@@ -44,20 +43,18 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 */
 	findOne(code: string): Promise<GroupImpl<any>> {
 		let result: GroupImpl<any>;
-		return this.groupService.findOne(code)
-			.then((resultQuery: GroupImpl<any>) => {
-				if (resultQuery == null) return Promise.resolve(null);
-				// Map the ids to users.
-				result = _.clone(resultQuery);
-				return this.userService.findByIdsIn(result.values)
-					.then((users: any[]) => {
-						if (result.values.length !== users.length) {
-							this.log.warn("The amount of users associated does not match with the users in the database");
-						}
-						result.values = users;
-						return Promise.resolve(result);
-					});
+		return this.groupService.findOne(code).then((resultQuery: GroupImpl<any>) => {
+			if (resultQuery == null) return Promise.resolve(null);
+			// Map the ids to users.
+			result = _.clone(resultQuery);
+			return this.userService.findByIdsIn(result.values).then((users: any[]) => {
+				if (result.values.length !== users.length) {
+					this.log.warn("The amount of users associated does not match with the users in the database");
+				}
+				result.values = users;
+				return Promise.resolve(result);
 			});
+		});
 	}
 
 	/**
@@ -65,10 +62,9 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 * @return {Promise<GroupImpl<any>>}
 	 */
 	findAll(): Promise<Array<GroupImpl<any>>> {
-		return this.groupService.findAll(this.USERS_GROUP_TYPE)
-			.then((groups: Array<GroupImpl<any>>) => {
-				return this.mapData(groups);
-			});
+		return this.groupService.findAll(this.USERS_GROUP_TYPE).then((groups: Array<GroupImpl<any>>) => {
+			return this.mapData(groups);
+		});
 	}
 
 	/**
@@ -82,16 +78,17 @@ export class UserGroupServiceImpl implements UserGroupService {
 		this.log.debug("Call to insert with group %j", group);
 		// Map the users data in order to insert only the ids
 		const newGroup: GroupImpl<any> = _.clone(group);
-		const ids = group.values.map((value) => value.id);
+		const ids = group.values.map(value => value.id);
 		newGroup.values = ids;
-		return this.userService.findByIdsIn(ids)
+		return this.userService
+			.findByIdsIn(ids)
 			.then((resultQuery: any[]) => {
 				if (resultQuery.length !== ids.length) {
 					return Promise.reject(this.NO_USERS);
 				}
 				return this.groupService.insert(newGroup);
 			})
-			.then((result) => {
+			.then(result => {
 				return Promise.resolve(group);
 			});
 	}
@@ -106,17 +103,18 @@ export class UserGroupServiceImpl implements UserGroupService {
 	update(group: GroupImpl<any>): Promise<GroupImpl<any>> {
 		// Map the ids
 		const groupToUpdate: GroupImpl<any> = _.clone(group);
-		const ids = group.values.map((value) => value.id);
+		const ids = group.values.map(value => value.id);
 		groupToUpdate.values = ids;
 
-		return this.userService.findByIdsIn(ids)
+		return this.userService
+			.findByIdsIn(ids)
 			.then((resultQuery: any[]) => {
 				if (resultQuery.length !== ids.length) {
 					return Promise.reject(this.NO_USERS);
 				}
 				return this.groupService.update(groupToUpdate);
 			})
-			.then((result) => {
+			.then(result => {
 				return Promise.resolve(group);
 			});
 	}
@@ -140,10 +138,9 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 * Return a reject if the objectToInsert is null or does not exits in the database.
 	 */
 	addItem(code: string, user: any): Promise<any> {
-		return this.userService.findOneById(user.id)
-			.then((resultQuery) => {
-				return this.groupService.addItem(code, user[this.REFERENCE_ID]);
-			});
+		return this.userService.findOneById(user.id).then(resultQuery => {
+			return this.groupService.addItem(code, user[this.REFERENCE_ID]);
+		});
 	}
 
 	/**
@@ -166,7 +163,8 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 * with the type and filter.
 	 */
 	findByFilter(filter: { [p: string]: string }): Promise<Array<GroupImpl<any>>> {
-		return this.groupService.findByTypeAndFilter(this.USERS_GROUP_TYPE, filter)
+		return this.groupService
+			.findByTypeAndFilter(this.USERS_GROUP_TYPE, filter)
 			.then((groups: Array<GroupImpl<string>>) => {
 				return this.mapData(groups);
 			});
@@ -179,21 +177,20 @@ export class UserGroupServiceImpl implements UserGroupService {
 			usersIds = usersIds.concat(group.values);
 		}
 		usersIds = _.uniq(usersIds);
-		return this.userService.findByIdsIn(usersIds)
-			.then((users: any[]) => {
-				const result: Array<GroupImpl<any>> = _.clone(groups);
-				for (const it of result) {
-					it.values = it.values.map((value) => {
-						const filteredUser = users.filter((value2) => value2.id === value);
-						if (filteredUser.length === 0) {
-							this.log.warn("There is no associated user with the id %j", value);
-							return undefined;
-						} else {
-							return filteredUser[0];
-						}
-					});
-				}
-				return Promise.resolve(result);
-			});
+		return this.userService.findByIdsIn(usersIds).then((users: any[]) => {
+			const result: Array<GroupImpl<any>> = _.clone(groups);
+			for (const it of result) {
+				it.values = it.values.map(value => {
+					const filteredUser = users.filter(value2 => value2.id === value);
+					if (filteredUser.length === 0) {
+						this.log.warn("There is no associated user with the id %j", value);
+						return undefined;
+					} else {
+						return filteredUser[0];
+					}
+				});
+			}
+			return Promise.resolve(result);
+		});
 	}
 }

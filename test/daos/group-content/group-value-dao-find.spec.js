@@ -3,11 +3,10 @@
  * Created by ernesto on 8/18/17.
  */
 
-
-var chai = require('chai');
+var chai = require("chai");
 var expect = chai.expect;
 var assert = chai.assert;
-var config = require('config');
+var config = require("config");
 
 var DaoUtil = require("../dao-util");
 var GroupValueEntity = require("../../../dist/index").GroupContentEntity;
@@ -36,19 +35,22 @@ const objectGroup4 = {
 	idPerson: idPerson4
 };
 
-
-describe("Testing group value dao find methods", function () {
-	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
+describe("Testing group value dao find methods", function() {
+	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
 		var groupValueDao;
 		var insertedRecord1;
 		var insertedRecord2;
 		var insertedRecord3;
 		var insertedRecord4;
-		beforeEach(function (done) {
-			var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
+		beforeEach(function(done) {
+			var path =
+				dbEngine === DataSourceHandler.LOKIJS
+					? serverAppContext.db.lokiJsDBPath
+					: serverAppContext.db.mongoConnUrl;
 			groupValueDao = DaoUtil.createGroupContentDao(dbEngine, path);
-			groupValueDao.removeAll()
-				.then(function () {
+			groupValueDao
+				.removeAll()
+				.then(function() {
 					var groupValue = new GroupValueEntity();
 					groupValue.idGroup = idGroup;
 					groupValue.value = objectGroup;
@@ -62,9 +64,9 @@ describe("Testing group value dao find methods", function () {
 					groupValue4.idGroup = idGroup4;
 					groupValue4.value = objectGroup4;
 
-
-					groupValueDao.insertMany([groupValue, groupValue2, groupValue3, groupValue4])
-						.then(function (result) {
+					groupValueDao
+						.insertMany([groupValue, groupValue2, groupValue3, groupValue4])
+						.then(function(result) {
 							insertedRecord1 = result[0];
 							insertedRecord2 = result[1];
 							insertedRecord3 = result[2];
@@ -72,28 +74,27 @@ describe("Testing group value dao find methods", function () {
 							done();
 						});
 				})
-				.catch(function (err) {
+				.catch(function(err) {
 					assert.fail("Error", err);
-				})
+				});
 		});
 
-		describe("When calling findByIdGroup", function () {
-			it("The method should return one record", function (done) {
-				groupValueDao.findByIdGroup(idGroup2)
-					.then(function (result) {
-						expect(result.length).eq(1);
-						expect(result[0].idGroup).eq(idGroup2);
-						expect(result[0].value).eq(objectGroup2);
-						done();
-					});
+		describe("When calling findByIdGroup", function() {
+			it("The method should return one record", function(done) {
+				groupValueDao.findByIdGroup(idGroup2).then(function(result) {
+					expect(result.length).eq(1);
+					expect(result[0].idGroup).eq(idGroup2);
+					expect(result[0].value).eq(objectGroup2);
+					done();
+				});
 			});
 		});
 
-
-		describe("When calling findByIdGroupsInAndContentByAttributeAndValue", function () {
-			it("The method should return correct values", function (done) {
-				groupValueDao.findByIdGroupsInAndValueByEmbeddedDocument([idGroup3, idGroup4], "idPerson", idPerson4)
-					.then(function (result) {
+		describe("When calling findByIdGroupsInAndContentByAttributeAndValue", function() {
+			it("The method should return correct values", function(done) {
+				groupValueDao
+					.findByIdGroupsInAndValueByEmbeddedDocument([idGroup3, idGroup4], "idPerson", idPerson4)
+					.then(function(result) {
 						expect(result.length).eq(1);
 						expect(result[0].idGroup).eq(idGroup4);
 						done();

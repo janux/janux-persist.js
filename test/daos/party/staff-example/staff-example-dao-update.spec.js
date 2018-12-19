@@ -2,9 +2,9 @@
  * Project janux-persistence
  * Created by ernesto on 6/23/17.
  */
-var chai = require('chai');
+var chai = require("chai");
 var expect = chai.expect;
-var config = require('config');
+var config = require("config");
 
 var PartyValidator = require("../../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
@@ -34,21 +34,23 @@ const earning2 = 200000;
 const name2 = "Jane";
 const middleName2 = "Smith";
 
-describe("Testing party dao updateMethod methods", function () {
-	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
-		describe("Given the inserted records", function () {
-
+describe("Testing party dao updateMethod methods", function() {
+	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
+		describe("Given the inserted records", function() {
 			var insertedRecordStaff;
 			var insertedRecordStaff2;
 			var partyDao;
-			beforeEach(function (done) {
-				var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
+			beforeEach(function(done) {
+				var path =
+					dbEngine === DataSourceHandler.LOKIJS
+						? serverAppContext.db.lokiJsDBPath
+						: serverAppContext.db.mongoConnUrl;
 				partyDao = DaoUtil.createPartyDao(dbEngine, path);
 
-				setTimeout(function (args) {
-					partyDao.removeAll()
-						.then(function () {
-
+				setTimeout(function(args) {
+					partyDao
+						.removeAll()
+						.then(function() {
 							var staff1 = new StaffImpl();
 							staff1.displayName = displayName;
 							staff1.name.first = firstName;
@@ -68,26 +70,25 @@ describe("Testing party dao updateMethod methods", function () {
 							staff2.currentEarnings = earning2;
 							staff2.setContactMethod(work, new EmailAddress(email2));
 
-							return partyDao.insertMany([staff1, staff2])
+							return partyDao.insertMany([staff1, staff2]);
 						})
-						.then(function (result) {
+						.then(function(result) {
 							insertedRecordStaff = result[0];
 							insertedRecordStaff2 = result[1];
 							done();
-						})
-				},50);
+						});
+				}, 50);
 			});
 
-			describe("When updating a party with the correct info", function () {
-				it("The method should not return an error", function (done) {
+			describe("When updating a party with the correct info", function() {
+				it("The method should not return an error", function(done) {
 					insertedRecordStaff.setContactMethod(work, new PhoneNumber(phone));
-					partyDao.update(insertedRecordStaff)
-						.then(function (result) {
-							expect(result.id).not.to.be.undefined;
-							expect(result.phoneNumbers(false).length).eq(1);
-							expect(result.contractNumber).eq(contractNumber1);
-							done();
-						})
+					partyDao.update(insertedRecordStaff).then(function(result) {
+						expect(result.id).not.to.be.undefined;
+						expect(result.phoneNumbers(false).length).eq(1);
+						expect(result.contractNumber).eq(contractNumber1);
+						done();
+					});
 				});
 			});
 		});

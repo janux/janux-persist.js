@@ -2,10 +2,10 @@
  * Project janux-persistence
  * Created by ernesto on 7/19/17.
  */
-import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
-import {DataSource} from "./datasource";
-import {DataSourceStatus} from "./datasource-status";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
+import { DataSource } from "./datasource";
+import { DataSourceStatus } from "./datasource-status";
 
 /**
  * Handles a list of database dataSources.
@@ -15,7 +15,6 @@ import {DataSourceStatus} from "./datasource-status";
  * All dataSources are saved in a list. Where each connection is identified by the db engine and the path.
  */
 export class DataSourceHandler {
-
 	public static readonly MONGOOSE: string = "mongoose";
 	public static readonly LOKIJS: string = "lokijs";
 	public static readonly DB_PATH_EMPTY = "path is empty";
@@ -32,15 +31,15 @@ export class DataSourceHandler {
 	public static getDataSource(dbEngine: string, path: string, extraParams: any): DataSource {
 		this._log.debug("Call to getDataSource with dbEngine %j, path %j, extraParams %j", dbEngine, path, extraParams);
 		if (isBlankString(dbEngine)) {
-			throw  new Error(this.DB_ENGINE_EMPTY);
+			throw new Error(this.DB_ENGINE_EMPTY);
 		} else if (dbEngine !== this.MONGOOSE && dbEngine !== this.LOKIJS) {
-			throw  new Error(this.DB_ENGINE_INVALID);
+			throw new Error(this.DB_ENGINE_INVALID);
 		}
 		if (isBlankString(path)) {
-			throw  new Error(this.DB_PATH_EMPTY);
+			throw new Error(this.DB_PATH_EMPTY);
 		}
 
-		const existing: DataSource[] = this.dataSources.filter((value) => value.dbEngine === dbEngine && path === path);
+		const existing: DataSource[] = this.dataSources.filter(value => value.dbEngine === dbEngine && path === path);
 		if (existing.length === 0) {
 			this._log.debug("No datasource founded with the parameters %j and %j, creating a new one", dbEngine, path);
 			const dataSource: DataSource = this.generateDataSource(dbEngine, path, extraParams);

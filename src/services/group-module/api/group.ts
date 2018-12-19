@@ -7,7 +7,6 @@
  * This is the content of a group.
  */
 export interface Group<t> {
-
 	// This is the type of the group. Examples:  "users group", "auth-context group", "services groups".
 	// All groups of the same type are expected to share the same t.
 	type: string;

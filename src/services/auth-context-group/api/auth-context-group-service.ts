@@ -5,11 +5,10 @@
 
 import Promise = require("bluebird");
 import JanuxAuthorize = require("janux-authorize");
-import {GroupImpl} from "services/group-module/impl/group";
-import {GroupPropertiesImpl} from "services/group-module/impl/group-properties";
+import { GroupImpl } from "services/group-module/impl/group";
+import { GroupPropertiesImpl } from "services/group-module/impl/group-properties";
 
 export interface AuthContextGroupService {
-
 	// This is the type of the authContexts groups.
 	AUTHCONTEXT_GROUP_TYPE: string;
 

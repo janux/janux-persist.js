@@ -2,17 +2,16 @@
  * Project
  * Created by ernesto on 8/28/17.
  */
-import * as Promise from 'bluebird';
-import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
-import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
-import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
-import {GroupAttributeValueValidator} from "./group-atribute-value-validator";
-import {GroupAttributeValueEntity} from "./group-attribute-value";
+import * as Promise from "bluebird";
+import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
+import { AbstractDataAccessObjectWithAdapter } from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
+import { EntityPropertiesImpl } from "persistence/implementations/dao/entity-properties";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
+import { GroupAttributeValueValidator } from "./group-atribute-value-validator";
+import { GroupAttributeValueEntity } from "./group-attribute-value";
 
 export class GroupAttributeValueDao extends AbstractDataAccessObjectWithAdapter<GroupAttributeValueEntity, string> {
-
 	private log = logger.getLogger("GroupAttributeValueDao");
 
 	constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
@@ -46,10 +45,7 @@ export class GroupAttributeValueDao extends AbstractDataAccessObjectWithAdapter<
 	public findByIdGroupAndKey(idGroup: string, key: string): Promise<GroupAttributeValueEntity[]> {
 		this.log.debug("Call to findByIdGroupAndKey with idGroup %j , key: %j", idGroup, key);
 		const query = {
-			$and: [
-				{idGroup: {$eq: idGroup}},
-				{key: {$eq: key}}
-			]
+			$and: [{ idGroup: { $eq: idGroup } }, { key: { $eq: key } }]
 		};
 		return this.findByQuery(query);
 	}
@@ -67,31 +63,24 @@ export class GroupAttributeValueDao extends AbstractDataAccessObjectWithAdapter<
 		for (const key in keyValues) {
 			const value = keyValues[key];
 			subQueries.push({
-				$and: [
-					{key: {$eq: key}},
-					{value: {$eq: value}}
-				]
+				$and: [{ key: { $eq: key } }, { value: { $eq: value } }]
 			});
 		}
 		if (subQueries.length === 0) {
-			query = {idGroup: {$in: idGroups}};
+			query = { idGroup: { $in: idGroups } };
 		} else {
 			query = {
-				$and: [
-					{idGroup: {$in: idGroups}},
-					{$or: subQueries}
-				]
+				$and: [{ idGroup: { $in: idGroups } }, { $or: subQueries }]
 			};
 		}
 		return this.findByQuery(query);
 	}
 
 	public removeAllByIdGroup(idGroup: string): Promise<any> {
-		return this.findByIdGroup(idGroup)
-			.then((resultQuery: GroupAttributeValueEntity[]) => {
-				const ids: string[] = resultQuery.map((value) => value[this.ID_REFERENCE]);
-				return this.removeByIds(ids);
-			});
+		return this.findByIdGroup(idGroup).then((resultQuery: GroupAttributeValueEntity[]) => {
+			const ids: string[] = resultQuery.map(value => value[this.ID_REFERENCE]);
+			return this.removeByIds(ids);
+		});
 	}
 
 	protected validateEntity(objectToValidate: GroupAttributeValueEntity): ValidationErrorImpl[] {
@@ -99,35 +88,37 @@ export class GroupAttributeValueDao extends AbstractDataAccessObjectWithAdapter<
 	}
 
 	protected validateBeforeInsert(objectToInsert: GroupAttributeValueEntity): Promise<ValidationErrorImpl[]> {
-		return this.findByIdGroupAndKey(objectToInsert.idGroup, objectToInsert.key)
-			.then((resultQuery: GroupAttributeValueEntity[]) => {
+		return this.findByIdGroupAndKey(objectToInsert.idGroup, objectToInsert.key).then(
+			(resultQuery: GroupAttributeValueEntity[]) => {
 				return this.validateDuplicated(resultQuery);
-			});
-
+			}
+		);
 	}
 
 	protected validateBeforeUpdate(objectToUpdate: GroupAttributeValueEntity): Promise<ValidationErrorImpl[]> {
 		const query = {
 			$and: [
-				{id: {$ne: objectToUpdate.id}},
-				{idGroup: {$eq: objectToUpdate.idGroup}},
-				{key: {$eq: objectToUpdate.key}}
+				{ id: { $ne: objectToUpdate.id } },
+				{ idGroup: { $eq: objectToUpdate.idGroup } },
+				{ key: { $eq: objectToUpdate.key } }
 			]
 		};
-		return this.findByQuery(query)
-			.then((resultQuery: GroupAttributeValueEntity[]) => {
-				return this.validateDuplicated(resultQuery);
-			});
+		return this.findByQuery(query).then((resultQuery: GroupAttributeValueEntity[]) => {
+			return this.validateDuplicated(resultQuery);
+		});
 	}
 
 	private validateDuplicated(resultQuery: GroupAttributeValueEntity[]): Promise<ValidationErrorImpl[]> {
 		this.log.debug("Call to validateDuplicated with %j", resultQuery);
 		const errors: ValidationErrorImpl[] = [];
 		if (resultQuery.length > 0) {
-			errors.push(new ValidationErrorImpl(
-				GroupAttributeValueValidator.KEY,
-				GroupAttributeValueValidator.DUPLICATED_KEY,
-				[resultQuery[0].idGroup, resultQuery[0].key].toString()));
+			errors.push(
+				new ValidationErrorImpl(
+					GroupAttributeValueValidator.KEY,
+					GroupAttributeValueValidator.DUPLICATED_KEY,
+					[resultQuery[0].idGroup, resultQuery[0].key].toString()
+				)
+			);
 		}
 		return Promise.resolve(errors);
 	}

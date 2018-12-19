@@ -3,10 +3,10 @@
  * Created by ernesto on 6/12/17.
  */
 import * as EmailValidator from "email-validator";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
-import {SampleUser} from "./sample-user";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
+import { SampleUser } from "./sample-user";
 
 /**
  * Validate the entity

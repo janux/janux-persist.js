@@ -3,10 +3,9 @@
  * Created by ernesto on 8/18/17.
  */
 
-
-var chai = require('chai');
+var chai = require("chai");
 var expect = chai.expect;
-var config = require('config');
+var config = require("config");
 
 var serverAppContext = config.get("serverAppContext");
 var DaoUtil = require("../dao-util");
@@ -22,19 +21,21 @@ const value1b = "value 2";
 const key2 = "parent";
 const value2a = "root";
 
-
-describe("Testing group attribute-value dao find methods", function () {
-	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
+describe("Testing group attribute-value dao find methods", function() {
+	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
 		var dao;
 		var insertedRecord1;
 		var insertedRecord2;
 		var insertedRecord3;
 		var insertedRecord4;
-		beforeEach(function (done) {
-			var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
+		beforeEach(function(done) {
+			var path =
+				dbEngine === DataSourceHandler.LOKIJS
+					? serverAppContext.db.lokiJsDBPath
+					: serverAppContext.db.mongoConnUrl;
 			dao = DaoUtil.createGroupAttributesDao(dbEngine, path);
 			dao.removeAll()
-				.then(function () {
+				.then(function() {
 					var keyValue1 = new GroupAttributeValueEntity();
 					keyValue1.idGroup = idGroup1;
 					keyValue1.key = key1;
@@ -55,69 +56,62 @@ describe("Testing group attribute-value dao find methods", function () {
 					keyValue4.key = key2;
 					keyValue4.value = value2a;
 
-					return dao.insertMany([keyValue1, keyValue2, keyValue3, keyValue4])
-
+					return dao.insertMany([keyValue1, keyValue2, keyValue3, keyValue4]);
 				})
-				.then(function (insertedRecords) {
+				.then(function(insertedRecords) {
 					insertedRecord1 = insertedRecords[0];
 					insertedRecord2 = insertedRecords[1];
 					insertedRecord3 = insertedRecords[2];
 					insertedRecord4 = insertedRecords[3];
 					done();
-				})
+				});
 		});
 
-
-		describe("When calling findByIdGroupAndKey ", function () {
-			it("The method should return one record", function (done) {
-				dao.findByIdGroupAndKey(idGroup1, key1)
-					.then(function (resultQuery) {
-						expect(resultQuery.length).eq(1);
-						done();
-					});
+		describe("When calling findByIdGroupAndKey ", function() {
+			it("The method should return one record", function(done) {
+				dao.findByIdGroupAndKey(idGroup1, key1).then(function(resultQuery) {
+					expect(resultQuery.length).eq(1);
+					done();
+				});
 			});
 		});
 
-		describe("When calling findByIdGroupsAndKeyValuesMatch with a empty keyVales", function () {
-			it("The method should return all records", function (done) {
-				dao.findByIdGroupsAndKeyValuesMatch([idGroup1, idGroup2], {})
-					.then(function (value) {
-						expect(value.length).eq(4);
-						done();
-					});
+		describe("When calling findByIdGroupsAndKeyValuesMatch with a empty keyVales", function() {
+			it("The method should return all records", function(done) {
+				dao.findByIdGroupsAndKeyValuesMatch([idGroup1, idGroup2], {}).then(function(value) {
+					expect(value.length).eq(4);
+					done();
+				});
 			});
 		});
 
-		describe("When calling findByIdGroupsAndKeyValuesMatch with a null keyVales", function () {
-			it("The method should return all records", function (done) {
-				dao.findByIdGroupsAndKeyValuesMatch([idGroup1, idGroup2], null)
-					.then(function (value) {
-						expect(value.length).eq(4);
-						done();
-					});
+		describe("When calling findByIdGroupsAndKeyValuesMatch with a null keyVales", function() {
+			it("The method should return all records", function(done) {
+				dao.findByIdGroupsAndKeyValuesMatch([idGroup1, idGroup2], null).then(function(value) {
+					expect(value.length).eq(4);
+					done();
+				});
 			});
 		});
 
-
-		describe("When calling findByIdGroupsAndKeyValuesMatch with a shared key-value", function () {
-			it("The method should return 2 records", function (done) {
-				dao.findByIdGroupsAndKeyValuesMatch([idGroup1, idGroup2], {parent: value2a})
-					.then(function (value) {
-						expect(value.length).eq(2);
-						done();
-					});
+		describe("When calling findByIdGroupsAndKeyValuesMatch with a shared key-value", function() {
+			it("The method should return 2 records", function(done) {
+				dao.findByIdGroupsAndKeyValuesMatch([idGroup1, idGroup2], { parent: value2a }).then(function(value) {
+					expect(value.length).eq(2);
+					done();
+				});
 			});
 		});
 
-		describe("When calling findByIdGroupsAndKeyValuesMatch with a shared key-value and a not shared key-value", function () {
-			it("The method should return 3 records", function (done) {
-				dao.findByIdGroupsAndKeyValuesMatch([idGroup1, idGroup2], {parent: value2a, code: value1a})
-					.then(function (value) {
+		describe("When calling findByIdGroupsAndKeyValuesMatch with a shared key-value and a not shared key-value", function() {
+			it("The method should return 3 records", function(done) {
+				dao.findByIdGroupsAndKeyValuesMatch([idGroup1, idGroup2], { parent: value2a, code: value1a }).then(
+					function(value) {
 						expect(value.length).eq(3);
 						done();
-					});
+					}
+				);
 			});
 		});
-
 	});
 });

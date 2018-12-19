@@ -7,7 +7,6 @@
  * The entity for the values of the group
  */
 export class GroupContentEntity {
-
 	// The id to the database
 	id: string;
 
@@ -18,5 +17,4 @@ export class GroupContentEntity {
 	// to save enough information in order to identify the object
 	// Also, the values to the object must be database friendly and database query-able.
 	value: any;
-
 }

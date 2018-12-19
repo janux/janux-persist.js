@@ -3,7 +3,7 @@
  * Created by ernesto on 1/3/18.
  */
 
-import * as  BigDecimal from 'big.js';
+import * as BigDecimal from "big.js";
 
 export class BigDecimalEntity {
 	id: string;

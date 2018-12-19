@@ -3,13 +3,12 @@
  * Created by ernesto on 8/16/17.
  */
 
-import {Group} from "../api/group";
+import { Group } from "../api/group";
 
 /**
  * This class saves the group information
  */
 export class GroupImpl<t> implements Group<t> {
-
 	// This is the type of the group. Examples:  "users group", "auth-context group", "services groups".
 	// All groups of the same type are expected to share the same t.
 	type: string;

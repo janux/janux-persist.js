@@ -2,11 +2,10 @@
  * Project janux-persistence
  * Created by ernesto on 8/18/17.
  */
-var chai = require('chai');
+var chai = require("chai");
 var expect = chai.expect;
 var assert = chai.assert;
-var config = require('config');
-
+var config = require("config");
 
 var DaoUtil = require("../dao-util");
 var GroupEntity = require("../../../dist/index").GroupEntity;
@@ -27,16 +26,20 @@ const groupNameNewValue = "Group new value";
 const groupDescriptionNewValue = "Description new value";
 const type = "a type";
 
-describe("Testing group dao update methods", function () {
-	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
+describe("Testing group dao update methods", function() {
+	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
 		var groupDao;
 		var insertedRecord1;
 		var insertedRecord2;
-		beforeEach(function (done) {
-			var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
+		beforeEach(function(done) {
+			var path =
+				dbEngine === DataSourceHandler.LOKIJS
+					? serverAppContext.db.lokiJsDBPath
+					: serverAppContext.db.mongoConnUrl;
 			groupDao = DaoUtil.createGroupDao(dbEngine, path);
-			groupDao.removeAll()
-				.then(function () {
+			groupDao
+				.removeAll()
+				.then(function() {
 					var group1 = new GroupEntity();
 					group1.name = groupName1;
 					group1.description = groupDescription1;
@@ -49,70 +52,73 @@ describe("Testing group dao update methods", function () {
 					group2.code = code2;
 					group2.type = type;
 
-					return groupDao.insertMany([group1, group2])
+					return groupDao.insertMany([group1, group2]);
 				})
-				.then(function (result) {
+				.then(function(result) {
 					insertedRecord1 = result[0];
 					insertedRecord2 = result[1];
 					done();
 				})
-				.catch(function (err) {
+				.catch(function(err) {
 					assert.fail("Error", err);
-				})
+				});
 		});
 
-
-		describe("When updating the record", function () {
-			it("The method should not return any error", function (done) {
+		describe("When updating the record", function() {
+			it("The method should not return any error", function(done) {
 				var id = insertedRecord1.id;
 				insertedRecord1.name = groupNameNewValue;
 				insertedRecord1.description = groupDescriptionNewValue;
-				groupDao.update(insertedRecord1)
-					.then(function (result) {
+				groupDao
+					.update(insertedRecord1)
+					.then(function(result) {
 						expect(result.id).eq(id);
 						expect(result.name).eq(groupNameNewValue);
 						expect(result.description).eq(groupDescriptionNewValue);
 						return groupDao.findOne(id);
 					})
-					.then(function (result) {
+					.then(function(result) {
 						expect(result.id).eq(id);
 						expect(result.name).eq(groupNameNewValue);
 						expect(result.description).eq(groupDescriptionNewValue);
 						done();
 					});
-			})
+			});
 		});
 
-		describe("When updating a group with a duplicated code", function () {
-			it("The method should return an error", function (done) {
+		describe("When updating a group with a duplicated code", function() {
+			it("The method should return an error", function(done) {
 				insertedRecord1.code = code2;
-				groupDao.update(insertedRecord1)
-					.then(function () {
+				groupDao.update(insertedRecord1).then(
+					function() {
 						expect.fail("The method should not have updated the record");
-					}, function (err) {
+					},
+					function(err) {
 						expect(err.length).eq(1);
 						expect(err[0].attribute).eq(GroupValidator.CODE);
 						expect(err[0].message).eq(GroupValidator.CODE_DUPLICATE);
 						done();
-					})
+					}
+				);
 			});
 		});
 
-		describe("When updating the record with incorrect values", function () {
-			it("The method should return an error", function (done) {
+		describe("When updating the record with incorrect values", function() {
+			it("The method should return an error", function(done) {
 				insertedRecord1.name = groupNameNewValue;
 				insertedRecord1.description = groupDescriptionNewValue;
 				insertedRecord1.type = "  ";
-				groupDao.update(insertedRecord1)
-					.then(function () {
+				groupDao
+					.update(insertedRecord1)
+					.then(function() {
 						expect.fail("The method should not have updated the record");
 					})
-					.catch(function (err) {
+					.catch(function(err) {
 						expect(err.length).eq(1);
 						expect(err[0].attribute).eq(GroupValidator.TYPE);
 						expect(err[0].message).eq(GroupValidator.TYPE_EMPTY);
 						done();
-					})
+					});
 			});
 		});
 	});

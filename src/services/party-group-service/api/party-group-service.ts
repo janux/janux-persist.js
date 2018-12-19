@@ -3,13 +3,12 @@
  * Created by ernesto on 10/27/17.
  */
 import Promise = require("bluebird");
-import {PartyAbstract} from "janux-people";
-import {Group} from "services/group-module/api/group";
-import {GroupProperties} from "services/group-module/api/group-properties";
-import {PartyGroupItem} from "services/party-group-service/api/party-group-item";
+import { PartyAbstract } from "janux-people";
+import { Group } from "services/group-module/api/group";
+import { GroupProperties } from "services/group-module/api/group-properties";
+import { PartyGroupItem } from "services/party-group-service/api/party-group-item";
 
 export interface PartyGroupService {
-
 	/**
 	 * Find all group (no content ) where the party is the owner fo the groups.
 	 * @param {string} partyId The owner of the group.
@@ -39,7 +38,7 @@ export interface PartyGroupService {
 	 * @param createOne If there is no group and this value is true, then this method inserts the missing group.
 	 * @return {Bluebird<Group<PartyGroupItem>>}
 	 */
-	findOneOwnedByPartyAndType(partyId: string, type: string, createOne ?: boolean): Promise<Group<PartyGroupItem>>;
+	findOneOwnedByPartyAndType(partyId: string, type: string, createOne?: boolean): Promise<Group<PartyGroupItem>>;
 
 	/**
 	 * Return all groups (including content) of all groups of a given types.
@@ -106,5 +105,4 @@ export interface PartyGroupService {
 	 * Returns a reject if the object to remove is null or undefined.
 	 */
 	removeItem(code: string, partyId: string): Promise<any>;
-
 }

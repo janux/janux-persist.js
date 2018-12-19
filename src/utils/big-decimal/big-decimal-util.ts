@@ -3,15 +3,14 @@
  * Created by ernesto on 1/3/18.
  */
 
-import * as  BigDecimal from 'big.js';
+import * as BigDecimal from "big.js";
 import * as _ from "lodash";
-import * as mongodb from 'mongodb';
+import * as mongodb from "mongodb";
 
 /**
  * Util to convert big.js numbers to mongodb big decimal.
  */
 export class BigDecimalUtil {
-
 	/**
 	 * Convert a mongodb Decimal128 to a big.js number representation.
 	 * @param {Decimal128} value
@@ -35,7 +34,6 @@ export class BigDecimalUtil {
 		} else {
 			return mongodb.Decimal128.fromString(value.toString());
 		}
-
 	}
 
 	/**
@@ -62,6 +60,5 @@ export class BigDecimalUtil {
 		} else {
 			return Number(value.toString());
 		}
-
 	}
 }

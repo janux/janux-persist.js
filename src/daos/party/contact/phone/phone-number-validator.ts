@@ -4,12 +4,11 @@
  */
 
 import JanuxPeople = require("janux-people");
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
 
 export class PhoneNumberValidator {
-
 	public static readonly CONTACT_PHONE = "contacts.phone.number";
 	public static readonly NUMBER_EMPTY = "The number is empty";
 

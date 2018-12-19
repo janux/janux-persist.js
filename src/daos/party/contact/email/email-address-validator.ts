@@ -3,14 +3,13 @@
  * Created by ernesto on 6/22/17.
  */
 
-import * as emailValidator from 'email-validator';
+import * as emailValidator from "email-validator";
 import JanuxPeople = require("janux-people");
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
 
 export class EmailValidator {
-
 	public static readonly EMAIL_ADDRESS = "contacts.emails.address";
 	public static readonly EMAIL_EMPTY = "Email address is empty";
 	public static readonly EMAIL_INVALID = "This address is not a valid email address";
@@ -21,10 +20,7 @@ export class EmailValidator {
 		if (isBlankString(email.address)) {
 			errors.push(new ValidationErrorImpl(this.EMAIL_ADDRESS, this.EMAIL_EMPTY, ""));
 		} else if (emailValidator.validate(email.address) === false) {
-			errors.push(new ValidationErrorImpl(
-				this.EMAIL_ADDRESS,
-				this.EMAIL_INVALID,
-				email.address));
+			errors.push(new ValidationErrorImpl(this.EMAIL_ADDRESS, this.EMAIL_INVALID, email.address));
 		}
 		this._log.debug("Returning %j", errors);
 		return errors;

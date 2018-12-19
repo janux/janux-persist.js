@@ -3,7 +3,7 @@
  * Created by ernesto on 11/30/17.
  */
 
-import {Party} from "janux-people/dist/api/Party";
+import { Party } from "janux-people/dist/api/Party";
 
 /**
  * This interface defined the item of a party group.

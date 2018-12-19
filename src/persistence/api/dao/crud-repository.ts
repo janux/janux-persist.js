@@ -3,15 +3,14 @@
  * Created by ernesto on 6/9/17.
  */
 import Promise = require("bluebird");
-import {AttributeFilter} from "persistence/implementations/dao/attribute-filter";
-import {ReadOnlyRepository} from "./read-only-repository";
+import { AttributeFilter } from "persistence/implementations/dao/attribute-filter";
+import { ReadOnlyRepository } from "./read-only-repository";
 
 /**
  * Interface that defines the basic crud methods
  * per dao.
  */
 export interface CrudRepository<t, ID> extends ReadOnlyRepository<t, ID> {
-
 	/**
 	 * Find one document by id.
 	 * @param id The id to look for.

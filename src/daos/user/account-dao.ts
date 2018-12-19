@@ -4,18 +4,17 @@
  */
 
 import Promise = require("bluebird");
-import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
-import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
-import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import {AccountEntity} from "./account-entity";
-import {AccountValidator} from "./account-validator";
+import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
+import { AbstractDataAccessObjectWithAdapter } from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
+import { EntityPropertiesImpl } from "persistence/implementations/dao/entity-properties";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import { AccountEntity } from "./account-entity";
+import { AccountValidator } from "./account-validator";
 
 /**
  * User dao.
  */
 export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<AccountEntity, string> {
-
 	constructor(dbEngineUtil: DbAdapter, entityProperties: EntityPropertiesImpl) {
 		super(dbEngineUtil, entityProperties);
 	}
@@ -98,5 +97,4 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<Acc
 	 * @param objectToUpdate
 	 */
 	protected abstract validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<ValidationErrorImpl[]>;
-
 }

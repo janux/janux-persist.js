@@ -4,16 +4,16 @@
  */
 
 import * as Promise from "bluebird";
-import {AccountEntity} from "daos/user/account-entity";
-import {AccountInvitationDao} from "daos/user/account-invitation-dao";
-import {AccountInvitationEntity} from "daos/user/account-invitation-entity";
-import {AccountInvitationValidator} from "daos/user/account-invitation-validator";
-import * as _ from 'lodash';
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import {UserService} from "services/user/user-service";
-import {DateUtil} from "utils/date/date-util";
-import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
+import { AccountEntity } from "daos/user/account-entity";
+import { AccountInvitationDao } from "daos/user/account-invitation-dao";
+import { AccountInvitationEntity } from "daos/user/account-invitation-entity";
+import { AccountInvitationValidator } from "daos/user/account-invitation-validator";
+import * as _ from "lodash";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import { UserService } from "services/user/user-service";
+import { DateUtil } from "utils/date/date-util";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
 // import * as uuid from 'uuid';
 
 /**
@@ -39,7 +39,8 @@ export abstract class UserActionService {
 	public findOneById(id: string): Promise<any> {
 		this._log.debug("Call to findOneById with id: %j", id);
 		let result: any;
-		return this.accountActionDao.findOne(id)
+		return this.accountActionDao
+			.findOne(id)
 			.then((action: AccountInvitationEntity) => {
 				if (_.isNil(action)) {
 					this._log.error("No account action with the id " + id);
@@ -63,18 +64,17 @@ export abstract class UserActionService {
 	public findOneByAccountId(id: any): Promise<any> {
 		this._log.debug("Call to findOneByAccountId with id: %j", id);
 		// let result: any;
-		return this.accountActionDao.findOneByAccountId(id)
-			.then((action: AccountInvitationEntity) => {
-				// if (_.isNil(action)) return Promise.reject("No action with the account id " + id);
-				// result = action;
-				// return this.userService.findOneByUserId(action.accountId);
-				return action;
-			});
-			// .then((account: AccountEntity) => {
-			// 	result.account = account;
-			// 	this._log.debug("Returning %j", result);
-			// 	return Promise.resolve(result);
-			// });
+		return this.accountActionDao.findOneByAccountId(id).then((action: AccountInvitationEntity) => {
+			// if (_.isNil(action)) return Promise.reject("No action with the account id " + id);
+			// result = action;
+			// return this.userService.findOneByUserId(action.accountId);
+			return action;
+		});
+		// .then((account: AccountEntity) => {
+		// 	result.account = account;
+		// 	this._log.debug("Returning %j", result);
+		// 	return Promise.resolve(result);
+		// });
 	}
 
 	/**
@@ -94,8 +94,8 @@ export abstract class UserActionService {
 	 * @return {Bluebird<any>}
 	 */
 	public findByAccountIdAndType(accountId: string, type: string): Promise<any> {
-		return this.findByAccountIdsIn([accountId]).then((result) => {
-			return _.filter(result, {type})[0];
+		return this.findByAccountIdsIn([accountId]).then(result => {
+			return _.filter(result, { type })[0];
 		});
 	}
 
@@ -107,7 +107,8 @@ export abstract class UserActionService {
 	public findOneByCode(code: string): Promise<any> {
 		this._log.debug("Call to findOneByCode with code: %j", code);
 		let result: any;
-		return this.accountActionDao.findOneByCode(code)
+		return this.accountActionDao
+			.findOneByCode(code)
 			.then((action: AccountInvitationEntity) => {
 				if (_.isNil(action)) return Promise.reject("No account action with the code " + code);
 				result = action;
@@ -138,13 +139,10 @@ export abstract class UserActionService {
 			return Promise.reject(errors);
 		}
 
-		return this.accountActionDao.insert(object)
-			.then((action: AccountInvitationEntity) => {
-
-				this._log.debug("Returning %j", action);
-				return Promise.resolve(action);
-
-			});
+		return this.accountActionDao.insert(object).then((action: AccountInvitationEntity) => {
+			this._log.debug("Returning %j", action);
+			return Promise.resolve(action);
+		});
 	}
 
 	/**
@@ -156,8 +154,9 @@ export abstract class UserActionService {
 		let result: any;
 		const inv: AccountInvitationEntity = new AccountInvitationEntity();
 		// Find the action
-		return this.accountActionDao.findOne(object.id)
-			.then((resultQuery) => {
+		return this.accountActionDao
+			.findOne(object.id)
+			.then(resultQuery => {
 				if (resultQuery === null) {
 					return Promise.reject([
 						new ValidationErrorImpl(this.ACCOUNT_INV, this.ACCOUNT_INV_NOT_IN_DATABASE, object.id)
@@ -209,10 +208,9 @@ export abstract class UserActionService {
 	 */
 	public deleteActionById(actionId: string): Promise<any> {
 		this._log.debug("Call to deleteActionById with id: %j", actionId);
-		return this.accountActionDao.findOne(actionId)
-			.then((resultQuery: AccountInvitationEntity) => {
-				return this.accountActionDao.remove(resultQuery);
-			});
+		return this.accountActionDao.findOne(actionId).then((resultQuery: AccountInvitationEntity) => {
+			return this.accountActionDao.remove(resultQuery);
+		});
 	}
 
 	/**
@@ -222,7 +220,12 @@ export abstract class UserActionService {
 	 * @param rolesToAssign
 	 * @return {Bluebird<any>}
 	 */
-	protected abstract inviteToCreateAccount(contactId: string, selectedEmail: string, rolesToAssign: any, templateUrl: string): Promise<any>;
+	protected abstract inviteToCreateAccount(
+		contactId: string,
+		selectedEmail: string,
+		rolesToAssign: any,
+		templateUrl: string
+	): Promise<any>;
 
 	/**
 	 *
@@ -231,5 +234,10 @@ export abstract class UserActionService {
 	 * @param {string} selectedEmail
 	 * @return {Bluebird<any>}
 	 */
-	protected abstract recoverPassword(accountId: string, contactId: string, selectedEmail: string, templateUrl: string): Promise<any>;
+	protected abstract recoverPassword(
+		accountId: string,
+		contactId: string,
+		selectedEmail: string,
+		templateUrl: string
+	): Promise<any>;
 }

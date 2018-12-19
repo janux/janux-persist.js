@@ -2,7 +2,7 @@
  * Project janux-persistence
  * Created by ernesto on 6/22/17.
  */
-var chai = require('chai');
+var chai = require("chai");
 var expect = chai.expect;
 //Config files
 var OrganizationEntity = require("janux-people").Organization;
@@ -10,9 +10,9 @@ var OrganizationValidator = require("../../../../dist/index").OrganizationValida
 
 const name = "Glarus";
 
-describe("Testing organization validator", function () {
-	describe("When validating with empty name", function () {
-		it("The method should return an error", function () {
+describe("Testing organization validator", function() {
+	describe("When validating with empty name", function() {
+		it("The method should return an error", function() {
 			var organization = new OrganizationEntity();
 			organization.name = "  ";
 			var errors = OrganizationValidator.validateOrganization(organization);
@@ -22,9 +22,8 @@ describe("Testing organization validator", function () {
 		});
 	});
 
-
-	describe("When validating with a valid name", function () {
-		it("The method should not return an error", function () {
+	describe("When validating with a valid name", function() {
+		it("The method should not return an error", function() {
 			var organization = new OrganizationEntity();
 			organization.name = name;
 			var errors = OrganizationValidator.validateOrganization(organization);

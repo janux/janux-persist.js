@@ -3,7 +3,7 @@
  * Created by ernesto on 7/28/17.
  */
 import Promise = require("bluebird");
-import {AttributeFilter} from "persistence/implementations/dao/attribute-filter";
+import { AttributeFilter } from "persistence/implementations/dao/attribute-filter";
 
 /**
  * Define the methods for read only daos.

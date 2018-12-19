@@ -4,18 +4,20 @@
  */
 
 import Promise = require("bluebird");
-import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
-import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
-import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import {AccountInvitationEntity} from "./account-invitation-entity";
-import {AccountInvitationValidator} from "./account-invitation-validator";
+import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
+import { AbstractDataAccessObjectWithAdapter } from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
+import { EntityPropertiesImpl } from "persistence/implementations/dao/entity-properties";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import { AccountInvitationEntity } from "./account-invitation-entity";
+import { AccountInvitationValidator } from "./account-invitation-validator";
 
 /**
  * Account invitation dao.
  */
-export abstract class AccountInvitationDao extends AbstractDataAccessObjectWithAdapter<AccountInvitationEntity, string> {
-
+export abstract class AccountInvitationDao extends AbstractDataAccessObjectWithAdapter<
+	AccountInvitationEntity,
+	string
+> {
 	constructor(dbEngineUtil: DbAdapter, entityProperties: EntityPropertiesImpl) {
 		super(dbEngineUtil, entityProperties);
 	}
@@ -72,5 +74,4 @@ export abstract class AccountInvitationDao extends AbstractDataAccessObjectWithA
 	 * @param objectToUpdate
 	 */
 	protected abstract validateBeforeUpdate(objectToUpdate: AccountInvitationEntity): Promise<ValidationErrorImpl[]>;
-
 }

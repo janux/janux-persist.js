@@ -2,10 +2,10 @@
  * Project janux-persistence
  * Created by ernesto on 6/23/17.
  */
-var chai = require('chai');
+var chai = require("chai");
 var expect = chai.expect;
 var assert = chai.assert;
-var config = require('config');
+var config = require("config");
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
@@ -38,22 +38,25 @@ const organizationName2 = "Glarus 2";
 
 const name2 = "Jane";
 const middleName2 = "Smith";
-const newCodePerson = 'new code person';
+const newCodePerson = "new code person";
 
-describe("Testing party dao updateMethod methods", function () {
-	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
-		describe("Given the inserted records", function () {
-
+describe("Testing party dao updateMethod methods", function() {
+	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
+		describe("Given the inserted records", function() {
 			var insertedRecordOrganization;
 			var insertedRecordPerson;
 			var insertedRecordOrganization2;
 			var insertedRecordPerson2;
 			var partyDao;
-			beforeEach(function (done) {
-				var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
-				partyDao = DaoUtil.createPartyDao(dbEngine, path)
-				partyDao.removeAll()
-					.then(function () {
+			beforeEach(function(done) {
+				var path =
+					dbEngine === DataSourceHandler.LOKIJS
+						? serverAppContext.db.lokiJsDBPath
+						: serverAppContext.db.mongoConnUrl;
+				partyDao = DaoUtil.createPartyDao(dbEngine, path);
+				partyDao
+					.removeAll()
+					.then(function() {
 						var organization = new OrganizationEntity();
 						organization.idAccount = idAccount;
 						organization.displayName = displayName;
@@ -82,21 +85,20 @@ describe("Testing party dao updateMethod methods", function () {
 						person2.type = PartyValidator.PERSON;
 						person2.setContactMethod(work, new EmailAddress(email5));
 
-						return partyDao.insertMany([organization, person, organization2, person2])
+						return partyDao.insertMany([organization, person, organization2, person2]);
 					})
-					.then(function (result) {
+					.then(function(result) {
 						insertedRecordOrganization = result[0];
 						insertedRecordPerson = result[1];
 						insertedRecordOrganization2 = result[2];
 						insertedRecordPerson2 = result[3];
 						done();
 					})
-					.catch(function (err) {
+					.catch(function(err) {
 						assert.fail("Error", err);
 						done();
-					})
+					});
 			});
-
 
 			// describe("When updating a party with a duplicated email", function () {
 			//     it("The method should return an error", function (done) {
@@ -112,7 +114,6 @@ describe("Testing party dao updateMethod methods", function () {
 			//             })
 			//     })
 			// });
-
 
 			// describe("When updating a party with invalid info", function () {
 			//     it("The method should return an error", function (done) {
@@ -147,7 +148,6 @@ describe("Testing party dao updateMethod methods", function () {
 			//     });
 			// });
 
-
 			// describe("When updating a person with a duplicated name", function () {
 			//     it("The method should return an error", function (done) {
 			//         insertedRecordPerson2.name.first = firstName;
@@ -167,21 +167,22 @@ describe("Testing party dao updateMethod methods", function () {
 			//     });
 			// });
 
-			describe("When updating a party with the correct info", function () {
-				it("The method should not return an error", function (done) {
+			describe("When updating a party with the correct info", function() {
+				it("The method should not return an error", function(done) {
 					insertedRecordPerson2.setContactMethod(work, new PhoneNumber(phone));
 					insertedRecordPerson2.code = newCodePerson;
-					partyDao.update(insertedRecordPerson2)
-						.then(function (result) {
+					partyDao
+						.update(insertedRecordPerson2)
+						.then(function(result) {
 							expect(result.id).not.to.be.undefined;
 							expect(result.code).eq(newCodePerson);
 							expect(result.phoneNumbers(false).length).eq(1);
 							done();
 						})
-						.catch(function (err) {
+						.catch(function(err) {
 							expect.fail("Error");
 							done();
-						})
+						});
 				});
 			});
 		});

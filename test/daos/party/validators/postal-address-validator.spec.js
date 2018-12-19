@@ -3,7 +3,7 @@
  * Created by ernesto on 6/22/17.
  */
 
-var chai = require('chai');
+var chai = require("chai");
 var expect = chai.expect;
 var PostalAddress = require("janux-people").PostalAddress;
 var PostalAddressValidator = require("../../../../dist/index").PostalAddressValidator;
@@ -15,9 +15,9 @@ const cityText = "Mexico city";
 const postalCode = "05000";
 const stateText = "CDMX";
 
-describe("Testing postal address validator", function () {
-	describe("When calling the method with valid data", function () {
-		it("The method should not return an error", function () {
+describe("Testing postal address validator", function() {
+	describe("When calling the method with valid data", function() {
+		it("The method should not return an error", function() {
 			var postalAddress = new PostalAddress();
 			postalAddress.line1 = line1;
 			postalAddress.cityText = cityText;

@@ -2,10 +2,9 @@
  * Project janux-persist.js
  * Created by ernesto on 11/14/17.
  */
-import {PartyAbstract, Person} from "janux-people";
+import { PartyAbstract, Person } from "janux-people";
 
 export class StaffImplTest extends Person {
-
 	public static fromJSON(obj: any): StaffImplTest {
 		let staff: StaffImplTest = new StaffImplTest(
 			obj.name.honorificPrefix,
@@ -25,13 +24,15 @@ export class StaffImplTest extends Person {
 	public contractNumber: string;
 	public currentEarnings: number;
 
-	constructor(honorificPrefix: string,
-				first: string,
-				middle: string,
-				last: string,
-				honorificSuffix: string,
-				contactNumber: string,
-				currentEarnings: number) {
+	constructor(
+		honorificPrefix: string,
+		first: string,
+		middle: string,
+		last: string,
+		honorificSuffix: string,
+		contactNumber: string,
+		currentEarnings: number
+	) {
 		super(honorificPrefix, first, middle, last, honorificSuffix);
 		this.contractNumber = contactNumber;
 		this.currentEarnings = currentEarnings;

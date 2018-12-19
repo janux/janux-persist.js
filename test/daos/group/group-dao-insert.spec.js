@@ -2,11 +2,10 @@
  * Project janux-persistence
  * Created by ernesto on 8/18/17.
  */
-var chai = require('chai');
+var chai = require("chai");
 var expect = chai.expect;
 var assert = chai.assert;
-var config = require('config');
-
+var config = require("config");
 
 var DaoUtil = require("../dao-util");
 var GroupEntity = require("../../../dist/index").GroupEntity;
@@ -24,40 +23,44 @@ const code2 = "code 2";
 const groupDescription1 = "Description 1";
 const groupDescription2 = "Description 2";
 
-
-describe("Testing group dao insert methods", function () {
-	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function (dbEngine) {
+describe("Testing group dao insert methods", function() {
+	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
 		var groupDao;
 
-		beforeEach(function (done) {
-			var path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
+		beforeEach(function(done) {
+			var path =
+				dbEngine === DataSourceHandler.LOKIJS
+					? serverAppContext.db.lokiJsDBPath
+					: serverAppContext.db.mongoConnUrl;
 			groupDao = DaoUtil.createGroupDao(dbEngine, path);
-			groupDao.removeAll()
-				.then(function () {
+			groupDao
+				.removeAll()
+				.then(function() {
 					done();
 				})
-				.catch(function (err) {
+				.catch(function(err) {
 					assert.fail("Error", err);
-				})
+				});
 		});
 
-		describe("When inserting a valid group", function () {
-			it("The entity should exits in the database", function (done) {
+		describe("When inserting a valid group", function() {
+			it("The entity should exits in the database", function(done) {
 				var group = new GroupEntity();
 				group.name = groupName1;
 				group.code = code;
 				group.type = type;
 				group.description = groupDescription1;
 
-				groupDao.insert(group)
-					.then(function (result) {
+				groupDao
+					.insert(group)
+					.then(function(result) {
 						validateRecord(result);
 						return groupDao.findOne(result.id);
 					})
-					.then(function (resultQuery) {
+					.then(function(resultQuery) {
 						validateRecord(resultQuery);
 						done();
-					})
+					});
 			});
 
 			function validateRecord(record) {
@@ -69,39 +72,40 @@ describe("Testing group dao insert methods", function () {
 			}
 		});
 
-
-		describe("When inserting a record whit invalid info", function () {
-			it("The method must return an error", function (done) {
+		describe("When inserting a record whit invalid info", function() {
+			it("The method must return an error", function(done) {
 				var group = new GroupEntity();
 				group.name = "";
 				group.type = type;
 				group.code = code;
 				group.description = groupDescription1;
 
-				groupDao.insert(group)
-					.then(function () {
+				groupDao
+					.insert(group)
+					.then(function() {
 						expect.fail("The method should not have inserted the record");
 						done();
 					})
-					.catch(function (err) {
+					.catch(function(err) {
 						expect(err.length).eq(1);
 						expect(err[0].attribute).eq(GroupValidator.NAME);
 						expect(err[0].message).eq(GroupValidator.NAME_EMPTY);
 						done();
-					})
+					});
 			});
 		});
 
-		describe("When inserting a group with the same code", function () {
-			it("The method should return a reject", function (done) {
+		describe("When inserting a group with the same code", function() {
+			it("The method should return a reject", function(done) {
 				var group = new GroupEntity();
 				group.name = groupName1;
 				group.code = code;
 				group.type = type;
 				group.description = groupDescription1;
 
-				groupDao.insert(group)
-					.then(function (result) {
+				groupDao
+					.insert(group)
+					.then(function(result) {
 						var duplicatedGroup = new GroupEntity();
 						duplicatedGroup.name = groupName2;
 						duplicatedGroup.code = code;
@@ -109,20 +113,22 @@ describe("Testing group dao insert methods", function () {
 						duplicatedGroup.description = groupDescription2;
 						return groupDao.insert(duplicatedGroup);
 					})
-					.then(function (result) {
-						expect.fail("The method should not have inserted the record");
-					}, function (err) {
-						expect(err.length).eq(1);
-						expect(err[0].attribute).eq(GroupValidator.CODE);
-						expect(err[0].message).eq(GroupValidator.CODE_DUPLICATE);
-						done();
-					})
-			})
+					.then(
+						function(result) {
+							expect.fail("The method should not have inserted the record");
+						},
+						function(err) {
+							expect(err.length).eq(1);
+							expect(err[0].attribute).eq(GroupValidator.CODE);
+							expect(err[0].message).eq(GroupValidator.CODE_DUPLICATE);
+							done();
+						}
+					);
+			});
 		});
 
-		describe("When inserting many records", function () {
-			it("The method should have inserted the records", function (done) {
-
+		describe("When inserting many records", function() {
+			it("The method should have inserted the records", function(done) {
 				var group1 = new GroupEntity();
 				group1.name = groupName1;
 				group1.description = groupDescription1;
@@ -135,14 +141,14 @@ describe("Testing group dao insert methods", function () {
 				group2.code = code2;
 				group2.type = type;
 
-				groupDao.insertMany([group1, group2])
-					.then(function (resultInsert) {
+				groupDao
+					.insertMany([group1, group2])
+					.then(function(resultInsert) {
 						expect(resultInsert.length).eq(2);
 						expect(resultInsert[0].id).not.to.be.undefined;
 						expect(resultInsert[0].name).eq(groupName1);
 						expect(resultInsert[0].description).eq(groupDescription1);
 						expect(resultInsert[0].type).eq(type);
-
 
 						expect(resultInsert[1].id).not.to.be.undefined;
 						expect(resultInsert[1].name).eq(groupName2);
@@ -152,7 +158,7 @@ describe("Testing group dao insert methods", function () {
 						done();
 						return groupDao.count();
 					})
-					.then(function (count) {
+					.then(function(count) {
 						expect(count).eq(2);
 					});
 			});

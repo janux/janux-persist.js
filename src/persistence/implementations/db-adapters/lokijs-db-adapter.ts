@@ -3,10 +3,10 @@
  * Created by ernesto on 6/12/17.
  */
 import Promise = require("bluebird");
-import * as _ from 'lodash';
-import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
-import {AttributeFilter} from "persistence/implementations/dao/attribute-filter";
-import * as logger from 'utils/logger-api/logger-api';
+import * as _ from "lodash";
+import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
+import { AttributeFilter } from "persistence/implementations/dao/attribute-filter";
+import * as logger from "utils/logger-api/logger-api";
 
 /**
  * Generic implementation of lokijs db functions
@@ -14,7 +14,6 @@ import * as logger from 'utils/logger-api/logger-api';
  * correct db property and the correct collection property
  */
 export class LokiJsAdapter implements DbAdapter {
-
 	public adapterProperties: any = {};
 	public db: any;
 	public collectionName;
@@ -37,12 +36,16 @@ export class LokiJsAdapter implements DbAdapter {
 	 * returns null.
 	 */
 	public findOneMethod(id: any): Promise<any> {
-		this._log.debug("Call to findOneMethod with id: %j and collection %j", id, this.adapterProperties.findCollection().name);
-		const result = this.adapterProperties.findCollection().findOne({id});
+		this._log.debug(
+			"Call to findOneMethod with id: %j and collection %j",
+			id,
+			this.adapterProperties.findCollection().name
+		);
+		const result = this.adapterProperties.findCollection().findOne({ id });
 		// if (_.isNil(result) === false) {
 		// result.id = result.$loki.toString();
 		// }
-		this._log.debug('Result id %j', result);
+		this._log.debug("Result id %j", result);
 		return Promise.resolve(result);
 	}
 
@@ -53,8 +56,12 @@ export class LokiJsAdapter implements DbAdapter {
 	 * an empty array.
 	 */
 	public findByIdsMethod(arrayOfIds: any[]): Promise<any> {
-		this._log.debug('Call to findByIdsMethod with collection: %j , arrayOfIds: %j', this.adapterProperties.findCollection().name, arrayOfIds);
-		return this.findByAttributeNameInMethod('id', arrayOfIds);
+		this._log.debug(
+			"Call to findByIdsMethod with collection: %j , arrayOfIds: %j",
+			this.adapterProperties.findCollection().name,
+			arrayOfIds
+		);
+		return this.findByAttributeNameInMethod("id", arrayOfIds);
 	}
 
 	/**
@@ -64,9 +71,13 @@ export class LokiJsAdapter implements DbAdapter {
 	 * @return {Promise<any>} a promise indicating the operation was successful.
 	 */
 	public remove(objectToDelete: any): Promise<any> {
-		this._log.debug('Call to remove with collection: %j, objectToDelete: %j', this.adapterProperties.findCollection().name, objectToDelete);
-		return new Promise((resolve) => {
-			this.adapterProperties.findCollection().findAndRemove({id: objectToDelete.id});
+		this._log.debug(
+			"Call to remove with collection: %j, objectToDelete: %j",
+			this.adapterProperties.findCollection().name,
+			objectToDelete
+		);
+		return new Promise(resolve => {
+			this.adapterProperties.findCollection().findAndRemove({ id: objectToDelete.id });
 			this.adapterProperties.db.saveDatabase(() => {
 				resolve(objectToDelete);
 			});
@@ -78,9 +89,9 @@ export class LokiJsAdapter implements DbAdapter {
 	 * @return {Promise<any>} The amount of documents inside the collection.
 	 */
 	public count(): Promise<number> {
-		this._log.debug('Call to count with collection: %j', this.adapterProperties.findCollection().name);
+		this._log.debug("Call to count with collection: %j", this.adapterProperties.findCollection().name);
 		const result = this.adapterProperties.findCollection().count();
-		this._log.debug('Result %j', result);
+		this._log.debug("Result %j", result);
 		return Promise.resolve(result);
 	}
 
@@ -89,9 +100,13 @@ export class LokiJsAdapter implements DbAdapter {
 	 * @param query
 	 */
 	countByQuery(query: any): Promise<number> {
-		this._log.debug('Call to countByQuery with collection: %j and query %j', this.adapterProperties.findCollection().name, query);
+		this._log.debug(
+			"Call to countByQuery with collection: %j and query %j",
+			this.adapterProperties.findCollection().name,
+			query
+		);
 		const result = this.adapterProperties.findCollection().count(query);
-		this._log.debug('Result %j', result);
+		this._log.debug("Result %j", result);
 		return Promise.resolve(result);
 	}
 
@@ -100,8 +115,8 @@ export class LokiJsAdapter implements DbAdapter {
 	 * @return {Promise<any>} Returns a promise indicating the delete was successful.
 	 */
 	public removeAll(): Promise<any> {
-		this._log.debug('Call to removeAll with collection: %j', this.adapterProperties.findCollection().name);
-		return new Promise((resolve) => {
+		this._log.debug("Call to removeAll with collection: %j", this.adapterProperties.findCollection().name);
+		return new Promise(resolve => {
 			this.adapterProperties.findCollection().clear();
 			this.adapterProperties.db.saveDatabase(() => {
 				resolve();
@@ -115,10 +130,14 @@ export class LokiJsAdapter implements DbAdapter {
 	 * @return {Promise<any>} Returns a promise indicating the delete was successful.
 	 */
 	removeByIds(ids: any[]): Promise<any> {
-		this._log.debug("Call to removeByIds with collection %j, ids: %j", this.adapterProperties.findCollection().name, ids);
-		return new Promise((resolve) => {
+		this._log.debug(
+			"Call to removeByIds with collection %j, ids: %j",
+			this.adapterProperties.findCollection().name,
+			ids
+		);
+		return new Promise(resolve => {
 			const query = {
-				id: {$in: ids}
+				id: { $in: ids }
 			};
 			this.adapterProperties.findCollection().findAndRemove(query);
 			this.adapterProperties.db.saveDatabase(() => {
@@ -135,15 +154,17 @@ export class LokiJsAdapter implements DbAdapter {
 	 * one document that matches the criteria.
 	 */
 	public findOneByAttributeMethod(attributeName: string, value): Promise<any> {
-		this._log.debug('Call to findOneByAttributeMethod with collection: %j, attributeName: %j, value: %j',
+		this._log.debug(
+			"Call to findOneByAttributeMethod with collection: %j, attributeName: %j, value: %j",
 			this.adapterProperties.findCollection().name,
 			attributeName,
-			value);
+			value
+		);
 		const query = {};
 		let result: any;
-		query[attributeName] = {$eq: value};
+		query[attributeName] = { $eq: value };
 		const resultQuery = this.adapterProperties.findCollection().find(query);
-		this._log.debug('Result %j', resultQuery);
+		this._log.debug("Result %j", resultQuery);
 		if (resultQuery.length === 0) {
 			this._log.debug("Returning null");
 			return Promise.resolve(null);
@@ -152,8 +173,8 @@ export class LokiJsAdapter implements DbAdapter {
 			this._log.debug("Returning %j", result);
 			return Promise.resolve(result);
 		} else {
-			this._log.warn('The query returned more than one result');
-			return Promise.reject('The system returned more than one record');
+			this._log.warn("The query returned more than one result");
+			return Promise.reject("The system returned more than one record");
 		}
 	}
 
@@ -166,12 +187,17 @@ export class LokiJsAdapter implements DbAdapter {
 	 * returns an empty array.
 	 */
 	public findByAttributeMethod(attributeName: string, value): Promise<any[]> {
-		this._log.debug("Call to findByAttributeMethod with attributeName: %j, value: %j, collection %j", attributeName, value, this.adapterProperties.findCollection().name);
+		this._log.debug(
+			"Call to findByAttributeMethod with attributeName: %j, value: %j, collection %j",
+			attributeName,
+			value,
+			this.adapterProperties.findCollection().name
+		);
 		const query = {};
 		query[attributeName] = value;
 		let result = this.adapterProperties.findCollection().find(query);
 		result = _.clone(result);
-		this._log.debug('Result %j', result);
+		this._log.debug("Result %j", result);
 		return Promise.resolve(result);
 	}
 
@@ -183,16 +209,18 @@ export class LokiJsAdapter implements DbAdapter {
 	 * @return {Promise<any>}
 	 */
 	public findByAttributeNameInMethod(attributeName: string, values: any[]): Promise<any> {
-		this._log.debug('Call to findByAttributeNameInMethod with collection: %j, attributeName: %j, values: %j',
+		this._log.debug(
+			"Call to findByAttributeNameInMethod with collection: %j, attributeName: %j, values: %j",
 			this.adapterProperties.findCollection().name,
 			attributeName,
-			values);
+			values
+		);
 		const query = {};
-		query[attributeName] = {$in: values};
+		query[attributeName] = { $in: values };
 		let result = this.adapterProperties.findCollection().find(query);
 		result = _.clone(result);
 		this.adapterProperties.cleanArray(result);
-		this._log.debug('Result %j', result);
+		this._log.debug("Result %j", result);
 		return Promise.resolve(result);
 	}
 
@@ -203,10 +231,14 @@ export class LokiJsAdapter implements DbAdapter {
 	 * attribute called "id" as string.
 	 */
 	public insertMethod(objectToInsert: any): Promise<any> {
-		this._log.debug('Call to insertMethod with collection: %j, objectToInsert: %j', this.adapterProperties.findCollection().name, objectToInsert);
-		return new Promise((resolve) => {
+		this._log.debug(
+			"Call to insertMethod with collection: %j, objectToInsert: %j",
+			this.adapterProperties.findCollection().name,
+			objectToInsert
+		);
+		return new Promise(resolve => {
 			const result = this.adapterProperties.findCollection().insert(objectToInsert);
-			this._log.debug('Result before insertMethod %j', result);
+			this._log.debug("Result before insertMethod %j", result);
 			this.adapterProperties.db.saveDatabase(() => {
 				// Get the id generated by lokijs and store it as string.
 				objectToInsert.meta = undefined;
@@ -225,13 +257,17 @@ export class LokiJsAdapter implements DbAdapter {
 	 * @return {Promise<any>} A promise containing the updated object.
 	 */
 	public updateMethod(objectToUpdate: any): Promise<any> {
-		this._log.debug('Call to updateMethod with collection: %j, objectToUpdate: %j', this.adapterProperties.findCollection().name, objectToUpdate);
-		return new Promise((resolve) => {
+		this._log.debug(
+			"Call to updateMethod with collection: %j, objectToUpdate: %j",
+			this.adapterProperties.findCollection().name,
+			objectToUpdate
+		);
+		return new Promise(resolve => {
 			this.adapterProperties.findCollection().updateWhere(
-				(o) => {
+				o => {
 					return o.id === objectToUpdate.id;
 				},
-				(u) => {
+				u => {
 					const meta = u.meta;
 					const $loki = u.$loki;
 					const keys = Object.keys(objectToUpdate);
@@ -242,7 +278,8 @@ export class LokiJsAdapter implements DbAdapter {
 					u.meta = meta;
 					u.$loki = $loki;
 					return u;
-				});
+				}
+			);
 			this.adapterProperties.db.saveDatabase(() => {
 				resolve(objectToUpdate);
 			});
@@ -256,8 +293,12 @@ export class LokiJsAdapter implements DbAdapter {
 	 * contains the generated id of lokijs inside a attribute called "id" and the type is string.
 	 */
 	public insertManyMethod(objectsToInsert: any[]): Promise<any> {
-		this._log.debug('Call to insertManyMethod with collection %j, objectsToInsert: %j', this.adapterProperties.findCollection().name, objectsToInsert);
-		return new Promise((resolve) => {
+		this._log.debug(
+			"Call to insertManyMethod with collection %j, objectsToInsert: %j",
+			this.adapterProperties.findCollection().name,
+			objectsToInsert
+		);
+		return new Promise(resolve => {
 			let results = this.adapterProperties.findCollection().insert(objectsToInsert);
 			if (_.isArray(results) === false) {
 				results = [results];
@@ -292,7 +333,7 @@ export class LokiJsAdapter implements DbAdapter {
 		};
 		for (const attribute of attributes) {
 			const condition = {};
-			condition[attribute.attributeName] = {$eq: attribute.value};
+			condition[attribute.attributeName] = { $eq: attribute.value };
 			query.$and.push(condition);
 		}
 		return this.findByQueryMethod(query);
@@ -310,7 +351,7 @@ export class LokiJsAdapter implements DbAdapter {
 		};
 		for (const attribute of attributes) {
 			const condition = {};
-			condition[attribute.attributeName] = {$eq: attribute.value};
+			condition[attribute.attributeName] = { $eq: attribute.value };
 			query.$or.push(condition);
 		}
 		return this.findByQueryMethod(query);
@@ -323,10 +364,14 @@ export class LokiJsAdapter implements DbAdapter {
 	 * returns an empty array.
 	 */
 	public findByQueryMethod(query: any): Promise<any[]> {
-		this._log.debug("Call to findByQueryMethod with collection: %j, query: %j", this.adapterProperties.findCollection().name, query);
+		this._log.debug(
+			"Call to findByQueryMethod with collection: %j, query: %j",
+			this.adapterProperties.findCollection().name,
+			query
+		);
 		let result = this.adapterProperties.findCollection().find(query);
 		result = _.clone(result);
-		this._log.debug('Result %j', result);
+		this._log.debug("Result %j", result);
 		return Promise.resolve(result);
 	}
 
@@ -336,10 +381,14 @@ export class LokiJsAdapter implements DbAdapter {
 	 * @return {Promise} Returns a promise indicating the delete was successful.
 	 */
 	public removeById(id: any): Promise<any> {
-		this._log.debug('Call to removeById with collection: %j, id: %j', this.adapterProperties.findCollection().name, id);
-		return new Promise((resolve) => {
+		this._log.debug(
+			"Call to removeById with collection: %j, id: %j",
+			this.adapterProperties.findCollection().name,
+			id
+		);
+		return new Promise(resolve => {
 			const query = {
-				id: {$eq: id}
+				id: { $eq: id }
 			};
 			this.adapterProperties.findCollection().findAndRemove(query);
 			this.adapterProperties.db.saveDatabase(() => {

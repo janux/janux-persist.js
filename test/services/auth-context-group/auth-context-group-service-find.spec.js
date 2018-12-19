@@ -3,11 +3,10 @@
  * Created by alejandro janux on 2017-09-26
  */
 
-
-var chai = require('chai');
-var _ = require('lodash');
+var chai = require("chai");
+var _ = require("lodash");
 var expect = chai.expect;
-var config = require('config');
+var config = require("config");
 
 var DaoUtil = require("../../daos/dao-util");
 const DataSourceHandler = require("../../../dist/index").DataSourceHandler;
@@ -19,19 +18,19 @@ const AuthContextService = require("../../../dist/index").AuthContextService;
 //Config files
 const serverAppContext = config.get("serverAppContext");
 const dbEngine = serverAppContext.db.dbEngine;
-const path = dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
+const path =
+	dbEngine === DataSourceHandler.LOKIJS ? serverAppContext.db.lokiJsDBPath : serverAppContext.db.mongoConnUrl;
 
 // Test values
 const SampleAuthContexts = require("../auth-context/auth-context.json");
-const name = 'auth context display group';
-const name2 = 'auth context display group 2';
-const code = 'code';
-const code2 = 'code2';
-const attributes = {parent: "root", system: "true"};
-const attributes2 = {parent: "janux", system: "true"};
+const name = "auth context display group";
+const name2 = "auth context display group 2";
+const code = "code";
+const code2 = "code2";
+const attributes = { parent: "root", system: "true" };
+const attributes2 = { parent: "janux", system: "true" };
 
-
-describe("Testing user group service find methods", function () {
+describe("Testing user group service find methods", function() {
 	var groupContentDao;
 	var authContextDao;
 	var groupDao;
@@ -43,7 +42,7 @@ describe("Testing user group service find methods", function () {
 	var insertedAuthContext1;
 	var insertedAuthContext2;
 
-	beforeEach(function (done) {
+	beforeEach(function(done) {
 		authContextDao = DaoUtil.createAuthContextDao(dbEngine, path);
 		groupContentDao = DaoUtil.createGroupContentDao(dbEngine, path);
 		groupDao = DaoUtil.createGroupDao(dbEngine, path);
@@ -52,27 +51,28 @@ describe("Testing user group service find methods", function () {
 		authContextService = AuthContextService.createInstance(authContextDao);
 		authContextGroupService = new AuthContextGroupService(authContextService, groupService);
 
-		setTimeout(function () {
+		setTimeout(function() {
 			// Delete all records.
-			authContextDao.removeAll()
-				.then(function () {
+			authContextDao
+				.removeAll()
+				.then(function() {
 					return groupAttributeValueDao.removeAll();
 				})
-				.then(function () {
+				.then(function() {
 					return groupContentDao.removeAll();
 				})
-				.then(function () {
+				.then(function() {
 					return groupDao.removeAll();
 				})
-				.then(function () {
+				.then(function() {
 					// Insert authContexts
 					return authContextService.insert(SampleAuthContexts[0]);
 				})
-				.then(function (insertedAuthContext) {
+				.then(function(insertedAuthContext) {
 					insertedAuthContext1 = insertedAuthContext;
 					return authContextService.insert(SampleAuthContexts[1]);
 				})
-				.then(function (insertedAuthContext) {
+				.then(function(insertedAuthContext) {
 					insertedAuthContext2 = insertedAuthContext;
 
 					var group = new GroupImpl();
@@ -81,9 +81,9 @@ describe("Testing user group service find methods", function () {
 					group.type = authContextGroupService.AUTHCONTEXT_GROUP_TYPE;
 					group.attributes = attributes;
 					group.values = [insertedAuthContext1];
-					return authContextGroupService.insert(group)
+					return authContextGroupService.insert(group);
 				})
-				.then(function () {
+				.then(function() {
 					var group2 = new GroupImpl();
 					group2.name = name2;
 					group2.code = code2;
@@ -92,17 +92,17 @@ describe("Testing user group service find methods", function () {
 					group2.values = [insertedAuthContext2];
 					return authContextGroupService.insert(group2);
 				})
-				.then(function () {
+				.then(function() {
 					done();
-				})
+				});
 		}, 50);
-
 	});
 
-	describe("When calling find one", function () {
-		it("The method must return the authContexts group", function (done) {
-			authContextGroupService.findOne(code2)
-				.then(function (result) {
+	describe("When calling find one", function() {
+		it("The method must return the authContexts group", function(done) {
+			authContextGroupService
+				.findOne(code2)
+				.then(function(result) {
 					expect(result.name).eq(name2);
 					expect(result.code).eq(code2);
 					expect(result.attributes).to.deep.equal(attributes2);
@@ -110,12 +110,12 @@ describe("Testing user group service find methods", function () {
 					expect(result.values[0].id).eq(insertedAuthContext2.id);
 					return authContextGroupService.findOne(code);
 				})
-				.then(function (result) {
+				.then(function(result) {
 					expect(result.name).eq(name);
 					expect(result.code).eq(code);
 					expect(result.attributes).to.deep.equal(attributes);
 					expect(result.values.length).eq(1);
-					var value1 = _.find(result.values, function (o) {
+					var value1 = _.find(result.values, function(o) {
 						return o.id === insertedAuthContext1.id;
 					});
 					expect(value1.id).eq(insertedAuthContext1.id);
@@ -125,71 +125,68 @@ describe("Testing user group service find methods", function () {
 		});
 	});
 
-	describe("When calling findAll", function () {
-		it("The method should return all groups", function (done) {
-			authContextGroupService.findAll()
-				.then(function (result) {
-					expect(result.length).eq(2);
+	describe("When calling findAll", function() {
+		it("The method should return all groups", function(done) {
+			authContextGroupService.findAll().then(function(result) {
+				expect(result.length).eq(2);
 
-					var element0 = _.find(result, function (o) {
-						return o.code === code;
-					});
+				var element0 = _.find(result, function(o) {
+					return o.code === code;
+				});
 
-					var element1 = _.find(result, function (o) {
-						return o.code === code2;
-					});
+				var element1 = _.find(result, function(o) {
+					return o.code === code2;
+				});
 
-					expect(element0.code).eq(code);
-					expect(element0.values.length).eq(1);
-					expect(element0.values[0].id).eq(insertedAuthContext1.id);
-					expect(element0.values[0].name).eq(insertedAuthContext1.name);
-					expect(element0.values[0].typeName).eq(insertedAuthContext1.typeName);
-					expect(element1.code).eq(code2);
-					expect(element1.values.length).eq(1);
-					expect(element1.values[0].id).eq(insertedAuthContext2.id);
-					expect(element1.values[0].name).eq(insertedAuthContext2.name);
-					expect(element1.values[0].typeName).eq(insertedAuthContext2.typeName);
-					done();
-				})
+				expect(element0.code).eq(code);
+				expect(element0.values.length).eq(1);
+				expect(element0.values[0].id).eq(insertedAuthContext1.id);
+				expect(element0.values[0].name).eq(insertedAuthContext1.name);
+				expect(element0.values[0].typeName).eq(insertedAuthContext1.typeName);
+				expect(element1.code).eq(code2);
+				expect(element1.values.length).eq(1);
+				expect(element1.values[0].id).eq(insertedAuthContext2.id);
+				expect(element1.values[0].name).eq(insertedAuthContext2.name);
+				expect(element1.values[0].typeName).eq(insertedAuthContext2.typeName);
+				done();
+			});
 		});
 	});
 
-	describe("When calling findByFilter with filter with an attribute unique to one group", function () {
-		it("The method should return one group", function (done) {
-			authContextGroupService.findByFilter({parent: "root"})
-				.then(function (result) {
-					expect(result.length).eq(1);
-					expect(result[0].code).eq(code);
-					expect(result[0].name).eq(name);
-					expect(result[0].values.length).eq(1);
-					done();
-				})
+	describe("When calling findByFilter with filter with an attribute unique to one group", function() {
+		it("The method should return one group", function(done) {
+			authContextGroupService.findByFilter({ parent: "root" }).then(function(result) {
+				expect(result.length).eq(1);
+				expect(result[0].code).eq(code);
+				expect(result[0].name).eq(name);
+				expect(result[0].values.length).eq(1);
+				done();
+			});
 		});
 	});
 
-	describe("When calling findByFilter with filter with an attribute shared to the two groups", function () {
-		it("The method should return two groups", function (done) {
-			authContextGroupService.findByFilter({system: "true"})
-				.then(function (result) {
-					expect(result.length).eq(2);
+	describe("When calling findByFilter with filter with an attribute shared to the two groups", function() {
+		it("The method should return two groups", function(done) {
+			authContextGroupService.findByFilter({ system: "true" }).then(function(result) {
+				expect(result.length).eq(2);
 
-					var element0 = _.find(result, function (o) {
-						return o.code === code;
-					});
+				var element0 = _.find(result, function(o) {
+					return o.code === code;
+				});
 
-					var element1 = _.find(result, function (o) {
-						return o.code === code2;
-					});
+				var element1 = _.find(result, function(o) {
+					return o.code === code2;
+				});
 
-					expect(element0.code).eq(code);
-					expect(element0.name).eq(name);
-					expect(element0.values.length).eq(1);
+				expect(element0.code).eq(code);
+				expect(element0.name).eq(name);
+				expect(element0.values.length).eq(1);
 
-					expect(element1.code).eq(code2);
-					expect(element1.name).eq(name2);
-					expect(element1.values.length).eq(1);
-					done();
-				})
+				expect(element1.code).eq(code2);
+				expect(element1.name).eq(name2);
+				expect(element1.values.length).eq(1);
+				done();
+			});
 		});
 	});
 });

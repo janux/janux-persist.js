@@ -3,23 +3,21 @@
  * Created by ernesto on 7/19/17.
  */
 
-import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
-import {LokiJsAdapter} from "persistence/implementations/db-adapters/lokijs-db-adapter";
-import {MongooseAdapter} from "persistence/implementations/db-adapters/mongoose-db-adapter";
-import {DaoSettings} from "services/dao-factory/dao-settings";
-import {DataSource} from "services/datasource-handler/datasource";
-import {DataSourceHandler} from "services/datasource-handler/datasource-handler";
-import * as logger from 'utils/logger-api/logger-api';
-import {Dao} from "./dao";
+import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
+import { LokiJsAdapter } from "persistence/implementations/db-adapters/lokijs-db-adapter";
+import { MongooseAdapter } from "persistence/implementations/db-adapters/mongoose-db-adapter";
+import { DaoSettings } from "services/dao-factory/dao-settings";
+import { DataSource } from "services/datasource-handler/datasource";
+import { DataSourceHandler } from "services/datasource-handler/datasource-handler";
+import * as logger from "utils/logger-api/logger-api";
+import { Dao } from "./dao";
 
 /**
  * This class helps to generate the daos with only the database params.
  * Given the database params, this class hides which implementation classes are used.
  */
 export class DaoFactory {
-
-	public static subscribeDao<T>(daoSettings: DaoSettings,
-								  classReference: any): T {
+	public static subscribeDao<T>(daoSettings: DaoSettings, classReference: any): T {
 		this._log.debug("Call to subscribeDao with daoSettings %j", daoSettings);
 		let dbAdapter: DbAdapter;
 		let dao: T;
@@ -41,7 +39,9 @@ export class DaoFactory {
 	private static createDbAdapter(dataSource: DataSource, daoSettings: DaoSettings) {
 		let dbAdapter: DbAdapter;
 		if (dataSource.dbEngine === DataSourceHandler.MONGOOSE) {
-			dbAdapter = new MongooseAdapter(dataSource.dbConnection.model(daoSettings.collectionName, daoSettings.schema));
+			dbAdapter = new MongooseAdapter(
+				dataSource.dbConnection.model(daoSettings.collectionName, daoSettings.schema)
+			);
 		} else {
 			dbAdapter = new LokiJsAdapter(daoSettings.collectionName, dataSource.dbConnection);
 		}
@@ -63,7 +63,9 @@ export class DaoFactory {
 
 	private static getDao(dbEngine: any, dbPath: string, daoName: string): Dao {
 		this._log.debug("Call to getDao with dbEngine %j, dbPath: %j, daoName %j", dbEngine, dbPath, daoName);
-		const existingDaos: Dao[] = this.daos.filter((value) => value.dbEngine === dbEngine && value.daoName === daoName && value.dbPath === dbPath);
+		const existingDaos: Dao[] = this.daos.filter(
+			value => value.dbEngine === dbEngine && value.daoName === daoName && value.dbPath === dbPath
+		);
 		let result: Dao;
 		if (existingDaos.length === 1) {
 			this._log.debug("Returning existing dao");
@@ -72,7 +74,7 @@ export class DaoFactory {
 			this._log.debug("There is no dao");
 			result = undefined;
 		} else {
-			throw  new Error("There is more than one dao with the same features");
+			throw new Error("There is more than one dao with the same features");
 		}
 		return result;
 	}

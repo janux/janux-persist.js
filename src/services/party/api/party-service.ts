@@ -4,7 +4,7 @@
  */
 import Promise = require("bluebird");
 import JanuxPeople = require("janux-people");
-import {ValidationError} from "persistence/api/dao/validation-error";
+import { ValidationError } from "persistence/api/dao/validation-error";
 
 export interface PartyService {
 	/**

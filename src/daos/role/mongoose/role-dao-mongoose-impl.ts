@@ -5,17 +5,16 @@
 
 import Promise = require("bluebird");
 import JanuxAuthorize = require("janux-authorize");
-import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import {MongooseAdapter} from "persistence/implementations/db-adapters/mongoose-db-adapter";
-import {RoleDao} from "../role-dao";
-import {RoleValidator} from "../role-validator";
+import { EntityPropertiesImpl } from "persistence/implementations/dao/entity-properties";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import { MongooseAdapter } from "persistence/implementations/db-adapters/mongoose-db-adapter";
+import { RoleDao } from "../role-dao";
+import { RoleValidator } from "../role-validator";
 
 /**
  * RoleDao implementation for the mongoose library.
  */
 export class RoleDaoMongooseImpl extends RoleDao {
-
 	constructor(dbEngineUtil: MongooseAdapter, entityProperties: EntityPropertiesImpl) {
 		super(dbEngineUtil, entityProperties);
 	}
@@ -28,14 +27,11 @@ export class RoleDaoMongooseImpl extends RoleDao {
 	 */
 	protected validateBeforeInsert(objectToInsert: JanuxAuthorize.Role): Promise<ValidationErrorImpl[]> {
 		const query = {
-			$or: [
-				{name: {$eq: objectToInsert.name}}
-			]
+			$or: [{ name: { $eq: objectToInsert.name } }]
 		};
-		return this.findByQuery(query)
-			.then((result) => {
-				return Promise.resolve(RoleValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
-			});
+		return this.findByQuery(query).then(result => {
+			return Promise.resolve(RoleValidator.validateResultQueryBeforeBdOperation(result, objectToInsert));
+		});
 	}
 
 	/**
@@ -47,17 +43,14 @@ export class RoleDaoMongooseImpl extends RoleDao {
 	protected validateBeforeUpdate(objectToUpdate: JanuxAuthorize.Role): Promise<ValidationErrorImpl[]> {
 		const query = {
 			$and: [
-				{id: {$ne: objectToUpdate.id}},
+				{ id: { $ne: objectToUpdate.id } },
 				{
-					$or: [
-						{name: {$eq: objectToUpdate.name}}
-					]
+					$or: [{ name: { $eq: objectToUpdate.name } }]
 				}
 			]
 		};
-		return this.findByQuery(query)
-			.then((result: JanuxAuthorize.Role[]) => {
-				return Promise.resolve(RoleValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
-			});
+		return this.findByQuery(query).then((result: JanuxAuthorize.Role[]) => {
+			return Promise.resolve(RoleValidator.validateResultQueryBeforeBdOperation(result, objectToUpdate));
+		});
 	}
 }

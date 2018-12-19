@@ -3,14 +3,13 @@
  * Created by ernesto on 7/28/17.
  */
 import * as Promise from "bluebird";
-import {AttributeFilter} from "persistence/implementations/dao/attribute-filter";
+import { AttributeFilter } from "persistence/implementations/dao/attribute-filter";
 
 /**
  * This interface dine the method you need to implement per each database
  * in order to wire the database to a AbstractDataAccessObjectWithAdapter instance.
  */
 export interface DbAdapter {
-
 	adapterProperties: any;
 
 	/**

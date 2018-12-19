@@ -2,19 +2,19 @@
  * Project
  * Created by ernesto on 8/28/17.
  */
-import {GroupEntity} from "daos/group/group-entity";
-import {GroupValidator} from "daos/group/group-validator";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
-import {GroupImpl} from "./group";
+import { GroupEntity } from "daos/group/group-entity";
+import { GroupValidator } from "daos/group/group-validator";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
+import { GroupImpl } from "./group";
 
 export class GroupServiceValidator {
-
 	public static readonly ATTRIBUTE: string = "Attribute";
 	public static readonly ITEM: string = "Item";
 	public static readonly ITEM_EMPTY: string = "The item is null or undefined";
-	public static readonly ATTRIBUTE_VALUE_EMPTY: string = "The attribute with the key does not have a valid string value";
+	public static readonly ATTRIBUTE_VALUE_EMPTY: string =
+		"The attribute with the key does not have a valid string value";
 	public static readonly DUPLICATED_GROUP: string = "There is a group with the same code";
 	public static readonly NO_GROUP: string = "There is no group given the code";
 	public static log = logger.getLogger("GroupServiceValidator");
@@ -41,11 +41,7 @@ export class GroupServiceValidator {
 			const keys: string[] = Object.keys(group.attributes);
 			for (const key of keys) {
 				if (isBlankString(group.attributes[key])) {
-					errors.push(new ValidationErrorImpl(
-						this.ATTRIBUTE,
-						this.ATTRIBUTE_VALUE_EMPTY,
-						key
-					));
+					errors.push(new ValidationErrorImpl(this.ATTRIBUTE, this.ATTRIBUTE_VALUE_EMPTY, key));
 				}
 			}
 		}

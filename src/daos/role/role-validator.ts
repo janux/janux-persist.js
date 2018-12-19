@@ -4,15 +4,14 @@
  */
 
 import JanuxAuthorize = require("janux-authorize");
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
 import * as logger from "utils/logger-api/logger-api";
-import {isBlankString} from "utils/string/blank-string-validator";
+import { isBlankString } from "utils/string/blank-string-validator";
 
 /**
  * Validates if the role has the correct values.
  */
 export class RoleValidator {
-
 	public static readonly ROLE_TYPE: string = "janux.security.Role";
 	public static readonly TYPE: string = "type";
 	public static readonly TYPE_EMPTY = "Type is empty";
@@ -30,10 +29,7 @@ export class RoleValidator {
 		if (isBlankString(role.typeName)) {
 			errors.push(new ValidationErrorImpl(this.TYPE, this.TYPE_EMPTY, ""));
 		} else if (role.typeName !== this.ROLE_TYPE) {
-			errors.push(new ValidationErrorImpl(
-				this.TYPE,
-				this.TYPE_NOT_ROLE,
-				""));
+			errors.push(new ValidationErrorImpl(this.TYPE, this.TYPE_NOT_ROLE, ""));
 		}
 
 		this._log.debug("Returning: %j", errors);
@@ -46,17 +42,15 @@ export class RoleValidator {
 	 * @param reference
 	 * @return {ValidationErrorImpl[]}
 	 */
-	public static validateResultQueryBeforeBdOperation(roles: JanuxAuthorize.Role[], reference: JanuxAuthorize.Role): ValidationErrorImpl[] {
-		this._log.debug("Call to validateResultQueryBeforeBdOperation with roles: %j reference: %j",
-			roles, reference);
+	public static validateResultQueryBeforeBdOperation(
+		roles: JanuxAuthorize.Role[],
+		reference: JanuxAuthorize.Role
+	): ValidationErrorImpl[] {
+		this._log.debug("Call to validateResultQueryBeforeBdOperation with roles: %j reference: %j", roles, reference);
 		const errors: ValidationErrorImpl[] = [];
 		if (roles.length > 0) {
 			if (roles[0].name === reference.name) {
-				errors.push(
-					new ValidationErrorImpl(
-						"name",
-						this.ANOTHER_NAME,
-						reference.name));
+				errors.push(new ValidationErrorImpl("name", this.ANOTHER_NAME, reference.name));
 			}
 		}
 		this._log.debug("Returning %j", errors);

@@ -5,19 +5,18 @@
 
 import * as Promise from "bluebird";
 import JanuxAuthorize = require("janux-authorize");
-import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
-import {AbstractDataAccessObjectWithAdapter} from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
-import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
+import { AbstractDataAccessObjectWithAdapter } from "persistence/implementations/dao/abstract-data-access-object-with-adapter";
+import { EntityPropertiesImpl } from "persistence/implementations/dao/entity-properties";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
 import * as logger from "utils/logger-api/logger-api";
-import {RoleValidator} from "./role-validator";
+import { RoleValidator } from "./role-validator";
 
 /**
  * This is the base class of the partyDao. In this class we define the object we are going to use
  *  is JanuxPeople.Person or JanuxPeople.Organization.
  */
 export abstract class RoleDao extends AbstractDataAccessObjectWithAdapter<JanuxAuthorize.Role, string> {
-
 	private authContextDaoLogger = logger.getLogger("authContextDao");
 
 	constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {

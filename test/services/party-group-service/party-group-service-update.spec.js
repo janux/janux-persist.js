@@ -2,8 +2,8 @@
  * Project janux-persist.js
  * Created by ernesto on 12/4/17.
  */
-var chai = require('chai');
-var _ = require('lodash');
+var chai = require("chai");
+var _ = require("lodash");
 var SampleData = require("../../util/sample-data");
 var DaoUtil = require("../../daos/dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
@@ -11,8 +11,8 @@ var PartyServiceImpl = require("../../../dist/index").PartyServiceImpl;
 var GroupServiceImpl = require("../../../dist/index").GroupServiceImpl;
 var PartyGroupServiceImpl = require("../../../dist/index").PartyGroupServiceImpl;
 var expect = chai.expect;
-var config = require('config');
-var Promise = require('bluebird');
+var config = require("config");
+var Promise = require("bluebird");
 var serverAppContext = config.get("serverAppContext");
 var lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
 var mongoConnUrl = serverAppContext.db.mongoConnUrl;
@@ -25,8 +25,7 @@ const type2 = "anotherType";
 const name = "a group name";
 const description = "a group description";
 const code = "simple_party_code";
-const customValue = 'customValue';
-
+const customValue = "customValue";
 
 const name2 = "a second group";
 const code2 = "a second code";
@@ -40,8 +39,7 @@ const name4 = "a fourth group";
 const code4 = "a fourth code";
 const description4 = "a fourth description";
 
-describe("Testing party group service update method", function () {
-
+describe("Testing party group service update method", function() {
 	var partyDao;
 	var groupContentDao;
 	var groupDao;
@@ -62,8 +60,7 @@ describe("Testing party group service update method", function () {
 	var insertedGroup3;
 	var insertedGroup4;
 
-
-	beforeEach(function (done) {
+	beforeEach(function(done) {
 		partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 		groupContentDao = DaoUtil.createGroupContentDao(dbEngine, dbPath);
 		groupDao = DaoUtil.createGroupDao(dbEngine, dbPath);
@@ -74,22 +71,22 @@ describe("Testing party group service update method", function () {
 		groupService = new GroupServiceImpl(groupDao, groupContentDao, groupAttributeValueDao);
 		partyGroupService = new PartyGroupServiceImpl(partyService, groupService);
 
-		setTimeout(function () {
+		setTimeout(function() {
 			Promise.props({
 				partyDaoResult: partyService.removeAll(),
 				groupContentDaoResult: groupContentDao.removeAll(),
 				groupDaoResult: groupDao.removeAll(),
 				groupAttributeValueDaoResult: groupAttributeValueDao.removeAll()
 			})
-				.then(function (value) {
+				.then(function(value) {
 					//Inserting sample data.
 					var party1 = SampleData.createPerson1();
 					var party2 = SampleData.createPerson2();
 					var party3 = SampleData.createOrganization1();
 					var party4 = SampleData.createOrganization2();
-					return partyService.insertMany([party1, party2, party3, party4])
+					return partyService.insertMany([party1, party2, party3, party4]);
 				})
-				.then(function (result) {
+				.then(function(result) {
 					insertedParty1 = result[0];
 					insertedParty2 = result[1];
 					insertedParty3 = result[2];
@@ -107,7 +104,7 @@ describe("Testing party group service update method", function () {
 						group4: partyGroupService.insert(insertedParty1.id, group4)
 					});
 				})
-				.then(function (result) {
+				.then(function(result) {
 					insertedGroup1 = result.group1;
 					insertedGroup2 = result.group2;
 					insertedGroup3 = result.group3;
@@ -116,7 +113,6 @@ describe("Testing party group service update method", function () {
 				});
 		}, 5);
 	});
-
 
 	function getSampleGroup() {
 		return {
@@ -186,10 +182,10 @@ describe("Testing party group service update method", function () {
 		};
 	}
 
-	describe("When calling update with the correct parameters", function () {
-		it("The method should update the group", function (done) {
-			var aValue = 'a';
-			var attributes = {a: "a", b: "b"};
+	describe("When calling update with the correct parameters", function() {
+		it("The method should update the group", function(done) {
+			var aValue = "a";
+			var attributes = { a: "a", b: "b" };
 			var updatedName = "updated name";
 			var updatedDescription = "updated description";
 			insertedGroup1.values.splice(0, 1);
@@ -201,8 +197,9 @@ describe("Testing party group service update method", function () {
 			insertedGroup1.name = updatedName;
 			insertedGroup1.description = updatedDescription;
 			insertedGroup1.attributes.a = aValue;
-			partyGroupService.update(insertedGroup1)
-				.then(function (result) {
+			partyGroupService
+				.update(insertedGroup1)
+				.then(function(result) {
 					expect(result.name).eq(updatedName);
 					expect(result.type).eq(insertedGroup1.type);
 					expect(result.description).eq(updatedDescription);
@@ -210,13 +207,13 @@ describe("Testing party group service update method", function () {
 					expect(result.attributes.a).eq(aValue);
 					expect(result.values.length).eq(2);
 
-					var notDeletedParty = _.find(result.values, function (o) {
+					var notDeletedParty = _.find(result.values, function(o) {
 						return o.party.id === notDeleted.id;
 					});
 
 					expect(notDeletedParty).not.to.be.undefined;
 
-					var addedParty = _.find(result.values, function (o) {
+					var addedParty = _.find(result.values, function(o) {
 						return o.party.id === insertedParty4.id;
 					});
 
@@ -224,20 +221,20 @@ describe("Testing party group service update method", function () {
 					expect(addedParty.attributes).equal(attributes);
 					return groupService.findOne(result.code);
 				})
-				.then(function (result) {
+				.then(function(result) {
 					expect(result.name).eq(updatedName);
 					expect(result.description).eq(updatedDescription);
 					expect(result.attributes.a).eq(aValue);
 					expect(result.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID]).eq(insertedParty3.id);
 					expect(result.values.length).eq(2);
 
-					var notDeletedParty = _.find(result.values, function (o) {
+					var notDeletedParty = _.find(result.values, function(o) {
 						return o.partyId === notDeleted.id;
 					});
 
 					expect(notDeletedParty).not.to.be.undefined;
 
-					var addedParty = _.find(result.values, function (o) {
+					var addedParty = _.find(result.values, function(o) {
 						return o.partyId === insertedParty4.id;
 					});
 
@@ -248,87 +245,92 @@ describe("Testing party group service update method", function () {
 		});
 	});
 
-
-	describe("When calling update when trying to change the party owner", function () {
-		it("The method should return an error", function (done) {
+	describe("When calling update when trying to change the party owner", function() {
+		it("The method should return an error", function(done) {
 			insertedGroup1.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_ID] = insertedParty4.id;
-			partyGroupService.update(insertedGroup1)
-				.then(function () {
+			partyGroupService.update(insertedGroup1).then(
+				function() {
 					expect.fail("The method should not have updated the group");
-				}, function (err) {
+				},
+				function(err) {
 					expect(err.length).eq(1);
 					expect(err[0].attribute).eq(PartyGroupServiceImpl.PARTY_OWNER);
 					expect(err[0].message).eq(PartyGroupServiceImpl.ATTRIBUTE_CHANGE);
 					done();
-				});
+				}
+			);
 		});
 	});
 
-	describe("When calling update when trying to change the type", function () {
-		it("The method should return an error", function (done) {
+	describe("When calling update when trying to change the type", function() {
+		it("The method should return an error", function(done) {
 			insertedGroup1.type = "new type";
-			partyGroupService.update(insertedGroup1)
-				.then(function () {
+			partyGroupService.update(insertedGroup1).then(
+				function() {
 					expect.fail("The method should not have updated the group");
-				}, function (err) {
+				},
+				function(err) {
 					expect(err.length).eq(1);
 					expect(err[0].attribute).eq(PartyGroupServiceImpl.TYPE);
 					expect(err[0].message).eq(PartyGroupServiceImpl.ATTRIBUTE_CHANGE);
 					done();
-				});
+				}
+			);
 		});
 	});
 
-	describe("When calling update when trying to change the attribute that identifies the group is inserted by the service", function () {
-		it("The method should return an error", function (done) {
+	describe("When calling update when trying to change the attribute that identifies the group is inserted by the service", function() {
+		it("The method should return an error", function(done) {
 			insertedGroup1.attributes[PartyGroupServiceImpl.ATTRIBUTE_PARTY_SERVICE_SIGNATURE] = undefined;
-			partyGroupService.update(insertedGroup1)
-				.then(function () {
+			partyGroupService.update(insertedGroup1).then(
+				function() {
 					expect.fail("The method should not have updated the group");
-				}, function (err) {
+				},
+				function(err) {
 					expect(err.length).eq(1);
 					expect(err[0].attribute).eq(PartyGroupServiceImpl.ATTRIBUTE_VALUE_PARTY_SERVICE_SIGNATURE);
 					expect(err[0].message).eq(PartyGroupServiceImpl.ATTRIBUTE_VALUE_PARTY_SERVICE_SIGNATURE_INVALID);
 					done();
-				});
+				}
+			);
 		});
 	});
 
-
-	describe("When calling update with duplicated party items", function () {
-		it("The method should return an error", function (done) {
+	describe("When calling update with duplicated party items", function() {
+		it("The method should return an error", function(done) {
 			insertedGroup1.values.push({
 				party: insertedParty1
 			});
-			partyGroupService.update(insertedGroup1)
-				.then(function () {
+			partyGroupService.update(insertedGroup1).then(
+				function() {
 					expect.fail("The method should not have updated the group");
-				}, function (err) {
+				},
+				function(err) {
 					expect(err.length).eq(1);
 					expect(err[0].attribute).eq(PartyGroupServiceImpl.PARTY_ITEM);
 					expect(err[0].message).eq(PartyGroupServiceImpl.PARTY_ITEM_DUPLICATED);
 					done();
-				});
+				}
+			);
 		});
 	});
 
-
-	describe("When calling updated with party items that does not exist in the database", function () {
-		it("The method should return an error", function (done) {
+	describe("When calling updated with party items that does not exist in the database", function() {
+		it("The method should return an error", function(done) {
 			insertedGroup1.values.push({
-				party: 'invalid'
+				party: "invalid"
 			});
-			partyGroupService.update(insertedGroup1)
-				.then(function () {
+			partyGroupService.update(insertedGroup1).then(
+				function() {
 					expect.fail("The method should not have updated the group");
-				}, function (err) {
+				},
+				function(err) {
 					expect(err.length).eq(1);
 					expect(err[0].attribute).eq(PartyGroupServiceImpl.PARTY_ITEM);
 					expect(err[0].message).eq(PartyGroupServiceImpl.PARTY_ITEM_DOES_NOT_EXIST);
 					done();
-				});
+				}
+			);
 		});
 	});
-
 });
-

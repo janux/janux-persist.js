@@ -3,17 +3,15 @@
  * Created by ernesto on 8/31/17.
  */
 
-
-var chai = require('chai');
+var chai = require("chai");
 var expect = chai.expect;
 
 var GroupAttributeValueValidator = require("../../../dist/index").GroupAttributeValueValidator;
 var GroupAttributeValueEntity = require("../../../dist/index").GroupAttributeValueEntity;
 
-describe("Testing group attribute value validator", function () {
-
-	describe("When calling with correct values", function () {
-		it("The method should not return an error", function () {
+describe("Testing group attribute value validator", function() {
+	describe("When calling with correct values", function() {
+		it("The method should not return an error", function() {
 			var attributeValue = new GroupAttributeValueEntity();
 			attributeValue.idGroup = "12345";
 			attributeValue.key = "name";
@@ -23,8 +21,8 @@ describe("Testing group attribute value validator", function () {
 		});
 	});
 
-	describe("When calling with empty idGroup", function () {
-		it("The method should return one error", function () {
+	describe("When calling with empty idGroup", function() {
+		it("The method should return one error", function() {
 			var attributeValue = new GroupAttributeValueEntity();
 			attributeValue.idGroup = "  ";
 			attributeValue.key = "name";
@@ -36,8 +34,8 @@ describe("Testing group attribute value validator", function () {
 		});
 	});
 
-	describe("When calling with empty key", function () {
-		it("The method should return one error", function () {
+	describe("When calling with empty key", function() {
+		it("The method should return one error", function() {
 			var attributeValue = new GroupAttributeValueEntity();
 			attributeValue.idGroup = "12345";
 			attributeValue.key = "   ";
@@ -49,8 +47,8 @@ describe("Testing group attribute value validator", function () {
 		});
 	});
 
-	describe("When calling with empty value", function () {
-		it("The method should return one error", function () {
+	describe("When calling with empty value", function() {
+		it("The method should return one error", function() {
 			var attributeValue = new GroupAttributeValueEntity();
 			attributeValue.idGroup = "12345";
 			attributeValue.key = "name";
@@ -61,5 +59,4 @@ describe("Testing group attribute value validator", function () {
 			expect(errors[0].message).eq(GroupAttributeValueValidator.VALUE_EMPTY);
 		});
 	});
-
 });

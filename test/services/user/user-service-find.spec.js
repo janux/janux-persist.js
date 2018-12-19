@@ -2,8 +2,8 @@
  * Project janux-persistence
  * Created by ernesto on 7/11/17.
  */
-var chai = require('chai');
-var config = require('config');
+var chai = require("chai");
+var config = require("config");
 var UserService = require("../../../dist/index").UserService;
 var PartyService = require("../../../dist/index").PartyServiceImpl;
 var PartyGroupService = require("../../../dist/index").PartyGroupServiceImpl;
@@ -43,9 +43,8 @@ const accountLocked2 = false;
 const accountExpire2 = undefined;
 const accountExpirePassword2 = undefined;
 
-describe("Testing user service find method", function () {
-	describe("Given the inserted roles and accounts", function () {
-
+describe("Testing user service find method", function() {
+	describe("Given the inserted roles and accounts", function() {
 		var partyDao;
 		var accountDao;
 		var userService;
@@ -59,9 +58,7 @@ describe("Testing user service find method", function () {
 		var groupAttributeValueDao;
 		var partyGroupService;
 
-
-		beforeEach(function (done) {
-
+		beforeEach(function(done) {
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
 			staffDao = DaoUtil.createStaffDataDao(dbEngine, dbPath);
@@ -72,11 +69,12 @@ describe("Testing user service find method", function () {
 			groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 			partyGroupService = new PartyGroupService(partyService, groupService);
 			userService = UserService.createInstance(accountDao, partyService, partyGroupService);
-			staffDao.removeAll()
-				.then(function () {
+			staffDao
+				.removeAll()
+				.then(function() {
 					return partyDao.removeAll();
 				})
-				.then(function () {
+				.then(function() {
 					var person = new Person();
 					person.name.first = personName;
 					person.name.middle = personMiddleName;
@@ -85,18 +83,18 @@ describe("Testing user service find method", function () {
 					var contactReference = person.toJSON();
 					contactReference.typeName = person.typeName;
 					var account = {
-						username      : accountUsername,
-						password      : accountPassword,
-						enabled       : accountEnabled,
-						locked        : accountLocked,
-						expire        : accountExpire,
+						username: accountUsername,
+						password: accountPassword,
+						enabled: accountEnabled,
+						locked: accountLocked,
+						expire: accountExpire,
 						expirePassword: accountExpirePassword,
-						contact       : contactReference,
-						roles         : ["admin"]
+						contact: contactReference,
+						roles: ["admin"]
 					};
-					return userService.insert(account)
+					return userService.insert(account);
 				})
-				.then(function (insertedUser) {
+				.then(function(insertedUser) {
 					insertedUser1 = insertedUser;
 					var organization = new Organization();
 					organization.name = organizationName;
@@ -104,18 +102,18 @@ describe("Testing user service find method", function () {
 					var contactReference = organization.toJSON();
 					contactReference.typeName = organization.typeName;
 					var account2 = {
-						username      : accountUsername2,
-						password      : accountPassword2,
-						enabled       : accountEnabled2,
-						locked        : accountLocked2,
-						expire        : accountExpire2,
+						username: accountUsername2,
+						password: accountPassword2,
+						enabled: accountEnabled2,
+						locked: accountLocked2,
+						expire: accountExpire2,
 						expirePassword: accountExpirePassword2,
-						contact       : contactReference,
-						roles         : ["user"]
+						contact: contactReference,
+						roles: ["user"]
 					};
-					return UserService.insert(account2)
+					return UserService.insert(account2);
 				})
-				.then(function (insertedUser) {
+				.then(function(insertedUser) {
 					insertedUser2 = insertedUser;
 					done();
 				});

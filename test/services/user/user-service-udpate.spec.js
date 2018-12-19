@@ -2,9 +2,9 @@
  * Project janux-persistence
  * Created by ernesto on 6/29/17.
  */
-var chai = require('chai');
+var chai = require("chai");
 var expect = chai.expect;
-var config = require('config');
+var config = require("config");
 var DaoUtil = require("../../daos/dao-util");
 var UserService = require("../../../dist/index").UserService;
 var PartyService = require("../../../dist/index").PartyServiceImpl;
@@ -44,17 +44,14 @@ const accountLocked2 = false;
 const accountExpire2 = undefined;
 const accountExpirePassword2 = undefined;
 
-
 const accountUsername3 = "username3";
 const accountPassword3 = "password3";
 const personName2 = "Jane";
 const personMiddleName2 = "Smith";
 const contactEmail2 = "dev_full_stack@glarus.com";
 
-
-describe("Testing user service update method", function () {
-	describe("Given the inserted roles and accounts", function () {
-
+describe("Testing user service update method", function() {
+	describe("Given the inserted roles and accounts", function() {
 		var partyDao;
 		var accountDao;
 		var userService;
@@ -68,8 +65,7 @@ describe("Testing user service update method", function () {
 		var groupService;
 		var partyGroupService;
 
-		beforeEach(function (done) {
-
+		beforeEach(function(done) {
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
 			staffDao = DaoUtil.createStaffDataDao(dbEngine, dbPath);
@@ -80,14 +76,15 @@ describe("Testing user service update method", function () {
 			groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 			partyGroupService = new PartyGroupService(partyService, groupService);
 			userService = UserService.createInstance(accountDao, partyService, partyGroupService);
-			accountDao.removeAll()
-				.then(function () {
+			accountDao
+				.removeAll()
+				.then(function() {
 					return partyDao.removeAll();
 				})
-				.then(function () {
+				.then(function() {
 					return staffDao.removeAll();
 				})
-				.then(function () {
+				.then(function() {
 					var person = new Person();
 					person.name.first = personName;
 					person.name.middle = personMiddleName;
@@ -105,9 +102,9 @@ describe("Testing user service update method", function () {
 						contact: contactReference,
 						roles: ["admin"]
 					};
-					return userService.insert(account)
+					return userService.insert(account);
 				})
-				.then(function (insertedUser) {
+				.then(function(insertedUser) {
 					insertedUser1 = insertedUser;
 					var organization = new Organization();
 					organization.name = organizationName;
@@ -124,27 +121,26 @@ describe("Testing user service update method", function () {
 						contact: contactReference,
 						roles: ["user"]
 					};
-					return userService.insert(account2)
+					return userService.insert(account2);
 				})
-				.then(function (insertedUser) {
+				.then(function(insertedUser) {
 					insertedUser2 = insertedUser;
 					done();
 				});
 		});
 
-		describe("When updating the account", function () {
-			it("The method should update the account and contact data", function (done) {
+		describe("When updating the account", function() {
+			it("The method should update the account and contact data", function(done) {
 				insertedUser1.username = accountUsername3;
 				insertedUser1.password = accountPassword3;
 				insertedUser1.contact.name.first = personName2;
 				insertedUser1.contact.name.middle = "";
 				insertedUser1.contact.name.last = personMiddleName2;
 				insertedUser1.contact.emails[0].address = contactEmail2;
-				userService.update(insertedUser1)
-					.then(function (resultUpdate) {
-						done();
-					});
-			})
+				userService.update(insertedUser1).then(function(resultUpdate) {
+					done();
+				});
+			});
 		});
 	});
 });

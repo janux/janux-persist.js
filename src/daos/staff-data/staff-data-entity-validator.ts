@@ -2,10 +2,10 @@
  * Project janux-persist.js
  * Created by ernesto on 3/20/18
  */
-import {StaffDataEntity} from "daos/staff-data/staff-data-entity";
+import { StaffDataEntity } from "daos/staff-data/staff-data-entity";
 import * as _ from "lodash";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import {isBlankString} from "utils/string/blank-string-validator";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import { isBlankString } from "utils/string/blank-string-validator";
 
 export class StaffDataEntityValidator {
 	public static readonly ID_CONTACT_EMPTY: string = "idContact is empty";

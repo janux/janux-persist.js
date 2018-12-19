@@ -2,14 +2,13 @@
  * Project janux-persistence
  * Created by ernesto on 6/12/17.
  */
-import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import * as logger from 'utils/logger-api/logger-api';
+import { EntityPropertiesImpl } from "persistence/implementations/dao/entity-properties";
+import * as logger from "utils/logger-api/logger-api";
 
 /**
  * This class generates the timestamp values and insertMethod the values inside the object.
  */
 export class TimeStampGenerator {
-
 	public static DATE_UPDATED_PROPERTY: string = "lastUpdate";
 	public static DATE_CREATED_PROPERTY: string = "dateCreated";
 
@@ -19,9 +18,11 @@ export class TimeStampGenerator {
 	 * @param objectToInsert The object to insertMethod in the database.
 	 */
 	public static generateTimeStampForInsert(entityProperties: EntityPropertiesImpl, objectToInsert: any) {
-		this._log.debug("generateTimeStampForInsert with entityProperties: %j, objectToInsert:%j"
-			, entityProperties,
-			objectToInsert);
+		this._log.debug(
+			"generateTimeStampForInsert with entityProperties: %j, objectToInsert:%j",
+			entityProperties,
+			objectToInsert
+		);
 		// If the object has an AUTO_TIME_STAMP_PROPERTY, let's add the
 		// current date.
 		if (entityProperties != null && entityProperties.timeStamp === true) {
@@ -38,9 +39,11 @@ export class TimeStampGenerator {
 	 * @param objectToUpdate The object to updateMethod in the database.
 	 */
 	public static generateTimeStampForUpdate(entityProperties: EntityPropertiesImpl, objectToUpdate: any) {
-		this._log.debug("generateTimeStampForUpdate with entityProperties: %j, objectToUpdate %j",
+		this._log.debug(
+			"generateTimeStampForUpdate with entityProperties: %j, objectToUpdate %j",
 			entityProperties,
-			objectToUpdate);
+			objectToUpdate
+		);
 		if (entityProperties != null && entityProperties.timeStamp === true) {
 			this._log.debug("Inserting %j", this.DATE_UPDATED_PROPERTY);
 			objectToUpdate[this.DATE_UPDATED_PROPERTY] = new Date();

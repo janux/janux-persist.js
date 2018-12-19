@@ -1,4 +1,4 @@
-var chai = require('chai');
+var chai = require("chai");
 const DaoUtil = require("../../daos/dao-util");
 const _ = require("lodash");
 var SampleData = require("../../util/sample-data");
@@ -9,7 +9,7 @@ var PartyGroupServiceImpl = require("../../../dist/index").PartyGroupServiceImpl
 var GroupServiceImpl = require("../../../dist/index").GroupServiceImpl;
 var Constants = require("../../../dist/index").Constants;
 const expect = chai.expect;
-const config = require('config');
+const config = require("config");
 const serverAppContext = config.get("serverAppContext");
 const lokiJsDBPath = serverAppContext.db.lokiJsDBPath;
 const mongoConnUrl = serverAppContext.db.mongoConnUrl;
@@ -17,7 +17,7 @@ const dbEngine = serverAppContext.db.dbEngine;
 const dbPath = dbEngine === DataSourceHandler.LOKIJS ? lokiJsDBPath : mongoConnUrl;
 const CODE_RESELLER_CONTACT = "reseller contacts";
 
-describe("Testing reseller service", function () {
+describe("Testing reseller service", function() {
 	var groupDao;
 	var groupContentDao;
 	var groupAttributesDao;
@@ -39,14 +39,14 @@ describe("Testing reseller service", function () {
 
 	function createClientConcatGroup() {
 		var result = {
-			type       : Constants.GROUP_TYPE_COMPANY_CONTACTS,
-			name       : "group client contacts",
-			code       : "group client contacts",
+			type: Constants.GROUP_TYPE_COMPANY_CONTACTS,
+			name: "group client contacts",
+			code: "group client contacts",
 			description: "",
-			attributes : {},
-			values     : [
+			attributes: {},
+			values: [
 				{
-					party     : contactClient,
+					party: contactClient,
 					attributes: {}
 				}
 			]
@@ -56,14 +56,14 @@ describe("Testing reseller service", function () {
 
 	function createResellerConcatGroup() {
 		var result = {
-			type       : Constants.GROUP_TYPE_COMPANY_CONTACTS,
-			name       : CODE_RESELLER_CONTACT,
-			code       : CODE_RESELLER_CONTACT,
+			type: Constants.GROUP_TYPE_COMPANY_CONTACTS,
+			name: CODE_RESELLER_CONTACT,
+			code: CODE_RESELLER_CONTACT,
 			description: "",
-			attributes : {},
-			values     : [
+			attributes: {},
+			values: [
 				{
-					party     : contactReseller,
+					party: contactReseller,
 					attributes: {}
 				}
 			]
@@ -73,14 +73,14 @@ describe("Testing reseller service", function () {
 
 	function createResellerClientGroup() {
 		var result = {
-			type       : Constants.GROUP_TYPE_RESELLER_CLIENTS,
-			name       : "group reseller clients",
-			code       : "group reseller clients",
+			type: Constants.GROUP_TYPE_RESELLER_CLIENTS,
+			name: "group reseller clients",
+			code: "group reseller clients",
 			description: "",
-			attributes : {},
-			values     : [
+			attributes: {},
+			values: [
 				{
-					party     : client,
+					party: client,
 					attributes: {}
 				}
 			]
@@ -88,7 +88,7 @@ describe("Testing reseller service", function () {
 		return _.cloneDeep(result);
 	}
 
-	beforeEach(function (done) {
+	beforeEach(function(done) {
 		groupDao = DaoUtil.createGroupDao(dbEngine, dbPath);
 		groupContentDao = DaoUtil.createGroupContentDao(dbEngine, dbPath);
 		groupAttributesDao = DaoUtil.createGroupAttributesDao(dbEngine, dbPath);
@@ -98,24 +98,25 @@ describe("Testing reseller service", function () {
 		groupService = new GroupServiceImpl(groupDao, groupContentDao, groupAttributesDao);
 		partyGroupService = new PartyGroupServiceImpl(partyService, groupService);
 		resellerService = new ResellerServiceImpl(partyService, partyGroupService);
-		groupAttributesDao.removeAll()
-			.then(function () {
+		groupAttributesDao
+			.removeAll()
+			.then(function() {
 				return groupContentDao.removeAll();
 			})
-			.then(function () {
+			.then(function() {
 				return groupDao.removeAll();
 			})
-			.then(function () {
+			.then(function() {
 				return partyService.removeAll();
 			})
-			.then(function () {
+			.then(function() {
 				var party1 = SampleData.createPerson1();
 				var party2 = SampleData.createPerson2();
 				var party3 = SampleData.createOrganization1();
 				var party4 = SampleData.createOrganization2();
-				return partyService.insertMany([party1, party2, party3, party4])
+				return partyService.insertMany([party1, party2, party3, party4]);
 			})
-			.then(function (result) {
+			.then(function(result) {
 				contactReseller = result[0];
 				contactClient = result[1];
 				reseller = result[2];
@@ -125,42 +126,38 @@ describe("Testing reseller service", function () {
 				clientContactsGroup = createClientConcatGroup();
 				return partyGroupService.insert(client.id, clientContactsGroup);
 			})
-			.then(function () {
+			.then(function() {
 				// Inserting reseller contact group.
 				resellerContactGroup = createResellerConcatGroup();
 				return partyGroupService.insert(reseller.id, resellerContactGroup);
 			})
-			.then(function () {
+			.then(function() {
 				// Inserting reseller client groups.
 				resellerClientGroup = createResellerClientGroup();
 				return partyGroupService.insert(reseller.id, resellerClientGroup);
 			})
-			.then(function () {
+			.then(function() {
 				done();
 			});
 	});
 
-
-	describe("When calling findReseller", function () {
-		it("The method should return the client", function (done) {
-			resellerService.findReseller(client.id)
-				.then(function (result) {
-					expect(result.name).eq(reseller.name);
-					expect(result.id).eq(reseller.id);
-					done();
-				})
+	describe("When calling findReseller", function() {
+		it("The method should return the client", function(done) {
+			resellerService.findReseller(client.id).then(function(result) {
+				expect(result.name).eq(reseller.name);
+				expect(result.id).eq(reseller.id);
+				done();
+			});
 		});
 	});
 
-
-	describe("When calling findResellerContactsByClient", function () {
-		it("The method should return the reseller contacts group", function (done) {
-			resellerService.findResellerContactsByClient(client.id)
-				.then(function (result) {
-					expect(result.code).eq(CODE_RESELLER_CONTACT);
-					expect(result.values[0].party.id).eq(contactReseller.id);
-					done();
-				});
+	describe("When calling findResellerContactsByClient", function() {
+		it("The method should return the reseller contacts group", function(done) {
+			resellerService.findResellerContactsByClient(client.id).then(function(result) {
+				expect(result.code).eq(CODE_RESELLER_CONTACT);
+				expect(result.values[0].party.id).eq(contactReseller.id);
+				done();
+			});
 		});
 	});
 });

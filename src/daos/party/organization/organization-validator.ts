@@ -4,15 +4,14 @@
  */
 
 import JanuxPeople = require("janux-people");
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
 
 /**
  * Validates the values of the organization.
  */
 export class OrganizationValidator {
-
 	public static readonly NAME = "name";
 	public static readonly NAME_DUPLICATED = "There is another organization with the same name";
 	public static readonly NAME_EMPTY = "Organization name is empty";

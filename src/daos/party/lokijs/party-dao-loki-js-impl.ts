@@ -6,18 +6,17 @@
 import * as Promise from "bluebird";
 import JanuxPeople = require("janux-people");
 import * as _ from "lodash";
-import {EntityPropertiesImpl} from "persistence/implementations/dao/entity-properties";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import {LokiJsAdapter} from "persistence/implementations/db-adapters/lokijs-db-adapter";
-import {isBlankString} from "utils/string/blank-string-validator";
-import {PartyDao} from "../party-dao";
-import {PartyValidator} from "../party-validator";
+import { EntityPropertiesImpl } from "persistence/implementations/dao/entity-properties";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import { LokiJsAdapter } from "persistence/implementations/db-adapters/lokijs-db-adapter";
+import { isBlankString } from "utils/string/blank-string-validator";
+import { PartyDao } from "../party-dao";
+import { PartyValidator } from "../party-validator";
 
 /**
  * Implementation PartyDao for the lokijs database.
  */
 export class PartyDaoLokiJsImpl extends PartyDao {
-
 	constructor(dbAdapter: LokiJsAdapter, entityProperties: EntityPropertiesImpl) {
 		super(dbAdapter, entityProperties);
 	}
@@ -34,19 +33,16 @@ export class PartyDaoLokiJsImpl extends PartyDao {
 					$and: [
 						{
 							$or: [
-								{'name.first': {$contains: name}},
-								{'name.middle': {$contains: name}},
-								{'name.last': {$contains: name}}
+								{ "name.first": { $contains: name } },
+								{ "name.middle": { $contains: name } },
+								{ "name.last": { $contains: name } }
 							]
 						},
-						{typeName: {$eq: PartyValidator.PERSON}}
+						{ typeName: { $eq: PartyValidator.PERSON } }
 					]
 				},
 				{
-					$and: [
-						{name: {$contains: name}},
-						{typeName: {$eq: PartyValidator.ORGANIZATION}}
-					]
+					$and: [{ name: { $contains: name } }, { typeName: { $eq: PartyValidator.ORGANIZATION } }]
 				}
 			]
 		};
@@ -73,10 +69,10 @@ export class PartyDaoLokiJsImpl extends PartyDao {
 			personReference = objectToUpdate as JanuxPeople.Person;
 			query = {
 				$and: [
-					{id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
+					{ id: { $ne: objectToUpdate[this.ID_REFERENCE] } },
 					{
 						$or: [
-							{"emails.address": {$in: emailAddressesToLookFor}}
+							{ "emails.address": { $in: emailAddressesToLookFor } }
 							// {
 							// 	$and: [
 							// 		{"name.first": {$eq: personReference.name.first}},
@@ -95,24 +91,26 @@ export class PartyDaoLokiJsImpl extends PartyDao {
 			organizationReference = objectToUpdate as JanuxPeople.Organization;
 			query = {
 				$and: [
-					{id: {$ne: objectToUpdate[this.ID_REFERENCE]}},
+					{ id: { $ne: objectToUpdate[this.ID_REFERENCE] } },
 					{
 						$or: [
-							{"emails.address": {$in: emailAddressesToLookFor}},
-							{name: {$eq: organizationReference.name}}
+							{ "emails.address": { $in: emailAddressesToLookFor } },
+							{ name: { $eq: organizationReference.name } }
 						]
 					}
 				]
 			};
 		}
 
-		return this.findByQuery(query)
-		.then((resultQuery: JanuxPeople.PartyAbstract[]) => {
-			const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(resultQuery, emailAddressesToLookFor, objectToUpdate);
+		return this.findByQuery(query).then((resultQuery: JanuxPeople.PartyAbstract[]) => {
+			const errors: ValidationErrorImpl[] = PartyValidator.validateDuplicatedRecords(
+				resultQuery,
+				emailAddressesToLookFor,
+				objectToUpdate
+			);
 			return Promise.resolve(errors);
 		});
 
 		// return Promise.resolve([]);
 	}
-
 }

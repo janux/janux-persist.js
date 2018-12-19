@@ -2,10 +2,10 @@
  * Project janux-persist.js
  * Created by ernesto on 1/3/18.
  */
-import {BigDecimalDao} from "example/big-decimal/big-decimal-dao";
-import {BigDecimalEntity} from "example/big-decimal/big-decimal-entity";
+import { BigDecimalDao } from "example/big-decimal/big-decimal-dao";
+import { BigDecimalEntity } from "example/big-decimal/big-decimal-entity";
 import * as _ from "lodash";
-import {BigDecimalUtil} from "utils/big-decimal/big-decimal-util";
+import { BigDecimalUtil } from "utils/big-decimal/big-decimal-util";
 
 /**
  * This is an example to save a big decimal using mongodb.
@@ -17,7 +17,6 @@ import {BigDecimalUtil} from "utils/big-decimal/big-decimal-util";
  * to big numbers.
  */
 export class BigDecimalDaoMongoose extends BigDecimalDao {
-
 	protected convertBeforeSave(object: BigDecimalEntity): any {
 		const result: any = _.clone(object);
 		result.value = BigDecimalUtil.toBigDecimal128(object.value);

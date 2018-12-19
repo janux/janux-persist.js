@@ -5,17 +5,16 @@
 
 import JanuxPeople = require("janux-people");
 import * as _ from "lodash";
-import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
-import * as logger from 'utils/logger-api/logger-api';
-import {isBlankString} from "utils/string/blank-string-validator";
-import {OrganizationValidator} from "./organization/organization-validator";
-import {PersonValidator} from "./person/person-validator";
+import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
+import { OrganizationValidator } from "./organization/organization-validator";
+import { PersonValidator } from "./person/person-validator";
 
 /**
  * Validates if the party has the correct values.
  */
 export class PartyValidator {
-
 	public static readonly PERSON: string = "PersonImpl";
 	public static readonly ORGANIZATION: string = "OrganizationImpl";
 	public static readonly STAFF: string = "StaffImplTest";
@@ -46,11 +45,12 @@ export class PartyValidator {
 		let errors: ValidationErrorImpl[] = [];
 		if (isBlankString(party.typeName)) {
 			errors.push(new ValidationErrorImpl(this.TYPE, this.TYPE_EMPTY, ""));
-		} else if (party.typeName !== this.PERSON && party.typeName !== this.ORGANIZATION && party.typeName !== this.STAFF) {
-			errors.push(new ValidationErrorImpl(
-				this.TYPE,
-				this.TYPE_NOT_PERSON_OR_ORGANIZATION,
-				""));
+		} else if (
+			party.typeName !== this.PERSON &&
+			party.typeName !== this.ORGANIZATION &&
+			party.typeName !== this.STAFF
+		) {
+			errors.push(new ValidationErrorImpl(this.TYPE, this.TYPE_NOT_PERSON_OR_ORGANIZATION, ""));
 		} else {
 			errors = errors.concat(this.validateContactData(party));
 			if (party.typeName === this.PERSON || party.typeName === this.STAFF) {
@@ -71,12 +71,17 @@ export class PartyValidator {
 	 * @param reference
 	 * @return {ValidationErrorImpl[]}
 	 */
-	public static validateDuplicatedRecords(duplicatedContacts: JanuxPeople.PartyAbstract[], emailAddressesToLookFor: string[], reference: JanuxPeople.PartyAbstract): ValidationErrorImpl[] {
+	public static validateDuplicatedRecords(
+		duplicatedContacts: JanuxPeople.PartyAbstract[],
+		emailAddressesToLookFor: string[],
+		reference: JanuxPeople.PartyAbstract
+	): ValidationErrorImpl[] {
 		this._log.debug(
 			"Call to validateDuplicatedRecords with duplicatedContacts: %j  emailAddressesToLookFor: %j reference : %j",
 			duplicatedContacts,
 			emailAddressesToLookFor,
-			reference);
+			reference
+		);
 
 		const errors: ValidationErrorImpl[] = [];
 		// let person: JanuxPeople.Person;
@@ -93,10 +98,13 @@ export class PartyValidator {
 		for (const contact of duplicatedContacts) {
 			for (const emailAddress of contact.emailAddresses(false)) {
 				if (emailAddressesToLookFor.filter((value: string) => value === emailAddress.address).length > 0) {
-					errors.push(new ValidationErrorImpl(
-						this.CONTACTS_EMAILS,
-						this.THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL,
-						contact));
+					errors.push(
+						new ValidationErrorImpl(
+							this.CONTACTS_EMAILS,
+							this.THERE_IS_ANOTHER_PARTY_WITH_SAME_EMAIL,
+							contact
+						)
+					);
 				}
 			}
 		}
@@ -165,25 +173,45 @@ export class PartyValidator {
 		const errors: ValidationErrorImpl[] = [];
 
 		// Validate boolean values.
-		if (party['isSupplier'] != null && _.isBoolean(party['isSupplier']) === false) {
-			errors.push(new ValidationErrorImpl(OrganizationValidator.IS_SUPPLIER, OrganizationValidator.MUST_BE_BOOLEAN, ""));
+		if (party["isSupplier"] != null && _.isBoolean(party["isSupplier"]) === false) {
+			errors.push(
+				new ValidationErrorImpl(OrganizationValidator.IS_SUPPLIER, OrganizationValidator.MUST_BE_BOOLEAN, "")
+			);
 		}
 
-		if (party['isReseller'] != null && _.isBoolean(party['isReseller']) === false) {
-			errors.push(new ValidationErrorImpl(OrganizationValidator.IS_RESELLER, OrganizationValidator.MUST_BE_BOOLEAN, ""));
+		if (party["isReseller"] != null && _.isBoolean(party["isReseller"]) === false) {
+			errors.push(
+				new ValidationErrorImpl(OrganizationValidator.IS_RESELLER, OrganizationValidator.MUST_BE_BOOLEAN, "")
+			);
 		}
 
 		// Validate functions.
-		if (party['functionsProvided'] != null && _.isArray(party['functionsProvided']) === false) {
-			errors.push(new ValidationErrorImpl(OrganizationValidator.FUNCTIONS_PROVIDED, OrganizationValidator.NOT_ARRAY, ""));
-		} else if (_.some(party['functionsProvided'], value => isBlankString(value) === true)) {
-			errors.push(new ValidationErrorImpl(OrganizationValidator.FUNCTIONS_PROVIDED, OrganizationValidator.ELEMENT_NOT_STRING, ""));
+		if (party["functionsProvided"] != null && _.isArray(party["functionsProvided"]) === false) {
+			errors.push(
+				new ValidationErrorImpl(OrganizationValidator.FUNCTIONS_PROVIDED, OrganizationValidator.NOT_ARRAY, "")
+			);
+		} else if (_.some(party["functionsProvided"], value => isBlankString(value) === true)) {
+			errors.push(
+				new ValidationErrorImpl(
+					OrganizationValidator.FUNCTIONS_PROVIDED,
+					OrganizationValidator.ELEMENT_NOT_STRING,
+					""
+				)
+			);
 		}
 
-		if (party['functionsReceived'] != null && _.isArray(party['functionsReceived']) === false) {
-			errors.push(new ValidationErrorImpl(OrganizationValidator.FUNCTIONS_RECEIVED, OrganizationValidator.NOT_ARRAY, ""));
-		} else if (_.some(party['functionsReceived'], value => isBlankString(value) === true)) {
-			errors.push(new ValidationErrorImpl(OrganizationValidator.FUNCTIONS_RECEIVED, OrganizationValidator.ELEMENT_NOT_STRING, ""));
+		if (party["functionsReceived"] != null && _.isArray(party["functionsReceived"]) === false) {
+			errors.push(
+				new ValidationErrorImpl(OrganizationValidator.FUNCTIONS_RECEIVED, OrganizationValidator.NOT_ARRAY, "")
+			);
+		} else if (_.some(party["functionsReceived"], value => isBlankString(value) === true)) {
+			errors.push(
+				new ValidationErrorImpl(
+					OrganizationValidator.FUNCTIONS_RECEIVED,
+					OrganizationValidator.ELEMENT_NOT_STRING,
+					""
+				)
+			);
 		}
 
 		// Check there is at least one primary email
@@ -247,7 +275,10 @@ export class PartyValidator {
 		return errors;
 	}
 
-	private static checkOnlyOnePrimaryContact(prefix: string, contacts: JanuxPeople.EmailAddress | JanuxPeople.PhoneNumber | JanuxPeople.PostalAddress): ValidationErrorImpl[] {
+	private static checkOnlyOnePrimaryContact(
+		prefix: string,
+		contacts: JanuxPeople.EmailAddress | JanuxPeople.PhoneNumber | JanuxPeople.PostalAddress
+	): ValidationErrorImpl[] {
 		this._log.debug("Call to checkOnlyOnePrimaryContact with prefix: %j contacts: %j", prefix, contacts);
 		const errors: ValidationErrorImpl[] = [];
 		/*if (contacts.length > 0) {
@@ -263,5 +294,4 @@ export class PartyValidator {
          }*/
 		return errors;
 	}
-
 }

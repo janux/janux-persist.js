@@ -2,7 +2,7 @@
  * Project janux-persistence
  * Created by ernesto on 6/21/17.
  */
-var chai = require('chai');
+var chai = require("chai");
 var expect = chai.expect;
 var PersonEntity = require("janux-people").Person;
 var OrganizationEntity = require("janux-people").Organization;
@@ -24,23 +24,20 @@ const countryIsoCode = "MX";
 const address = "An address";
 const postalCode = "05000";
 
-
-describe("Party validator", function () {
-
+describe("Party validator", function() {
 	function generateSampleOrganization() {
 		var organization = new OrganizationEntity();
 		organization.name = name;
 		organization.isSupplier = true;
 		organization.isReseller = false;
-		organization.functionsProvided = ['AGENT', 'GUARD'];
+		organization.functionsProvided = ["AGENT", "GUARD"];
 		var emailObject = new EmailAddress(email);
 		organization.setContactMethod(work, emailObject);
 		return organization;
 	}
 
-
-	describe("When validating a person with correct values", function () {
-		it("The method should not return an error", function () {
+	describe("When validating a person with correct values", function() {
+		it("The method should not return an error", function() {
 			var person = new PersonEntity();
 			person.name.first = name;
 			person.name.middle = middleName;
@@ -48,20 +45,19 @@ describe("Party validator", function () {
 			person.setContactMethod(work, emailObject);
 			var errors = PartyValidator.validateParty(person);
 			expect(errors.length).eq(0);
-		})
+		});
 	});
 
-	describe("When validating a organization with correct values", function () {
-		it("The method should not return an error", function () {
+	describe("When validating a organization with correct values", function() {
+		it("The method should not return an error", function() {
 			var organization = generateSampleOrganization();
 			var errors = PartyValidator.validateParty(organization);
 			expect(errors.length).eq(0);
-		})
+		});
 	});
 
-
-	describe("When validating isSupplier as not boolean", function () {
-		it("The method should return an error", function () {
+	describe("When validating isSupplier as not boolean", function() {
+		it("The method should return an error", function() {
 			var organization = generateSampleOrganization();
 			organization.isSupplier = 1234;
 			var errors = PartyValidator.validateParty(organization);
@@ -71,9 +67,8 @@ describe("Party validator", function () {
 		});
 	});
 
-
-	describe("When validating isReseller as not boolean", function () {
-		it("The method should return an error", function () {
+	describe("When validating isReseller as not boolean", function() {
+		it("The method should return an error", function() {
 			var organization = generateSampleOrganization();
 			organization.isReseller = 1234;
 			var errors = PartyValidator.validateParty(organization);
@@ -83,9 +78,8 @@ describe("Party validator", function () {
 		});
 	});
 
-
-	describe("When calling validate with an invalid functionsProvided value", function () {
-		it("The method should return an error", function () {
+	describe("When calling validate with an invalid functionsProvided value", function() {
+		it("The method should return an error", function() {
 			var organization = generateSampleOrganization();
 			organization.functionsProvided = 1234;
 			var errors = PartyValidator.validateParty(organization);
@@ -95,9 +89,8 @@ describe("Party validator", function () {
 		});
 	});
 
-
-	describe("When callign validate whith an invalid functionsProvided item value", function () {
-		it("The method should return en error", function () {
+	describe("When callign validate whith an invalid functionsProvided item value", function() {
+		it("The method should return en error", function() {
 			var organization = generateSampleOrganization();
 			organization.functionsProvided.push(12334);
 			var errors = PartyValidator.validateParty(organization);
@@ -106,7 +99,6 @@ describe("Party validator", function () {
 			expect(errors[0].message).eq(OrganizationValidator.ELEMENT_NOT_STRING);
 		});
 	});
-
 
 	/*describe("When validating a party with no emails", function () {
      it("The method should return an error", function () {

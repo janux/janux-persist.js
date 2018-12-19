@@ -3,9 +3,9 @@
  * Created by ernesto on 5/29/17.
  */
 
-'use strict';
-require('bluebird');
-var chai = require('chai');
+"use strict";
+require("bluebird");
+var chai = require("chai");
 var expect = chai.expect;
 var ExampleUser = require("../../../dist/index").SampleUser;
 var validateExampleUser = require("../../../dist/index").validateExampleUser;
@@ -13,14 +13,14 @@ var validateExampleUser = require("../../../dist/index").validateExampleUser;
 const incorrectEmail = "jonSmith.com";
 const lastName = "Smith";
 
-describe("Testing user example dao validation", function () {
-	describe("When validating with incorrect email", function () {
-		it("Should have sent the error message", function () {
+describe("Testing user example dao validation", function() {
+	describe("When validating with incorrect email", function() {
+		it("Should have sent the error message", function() {
 			var user = new ExampleUser("", lastName, incorrectEmail);
 			var errors = validateExampleUser(user);
 			expect(errors.length).eq(2);
-			expect(errors[0].attribute).eq('name');
-			expect(errors[1].attribute).eq('email');
+			expect(errors[0].attribute).eq("name");
+			expect(errors[1].attribute).eq("email");
 		});
 	});
 });
