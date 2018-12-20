@@ -45,6 +45,7 @@ const line1Address = "Line 1 address";
 const line2Address = "Line 2 address";
 const line3Address = "Line 3 address";
 const postalCode = "05000";
+const taxIdentificationCode = "taxIdentificationCode";
 
 describe("Testing party dao insertMethod methods", function() {
 	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
@@ -78,6 +79,7 @@ describe("Testing party dao insertMethod methods", function() {
 				person.name.honorificSuffix = honorificSuffix;
 				person.isReseller = true;
 				person.isSupplier = true;
+				person.taxIdentificationCode = taxIdentificationCode;
 
 				person.setContactMethod(work, new EmailAddress(email));
 				person.setContactMethod(home, new EmailAddress(email2));
@@ -128,6 +130,7 @@ describe("Testing party dao insertMethod methods", function() {
 				expect(record.name.honorificPrefix).eq(honorificPrefix);
 				expect(record.name.honorificSuffix).eq(honorificSuffix);
 				expect(record.typeName).eq(PartyValidator.PERSON);
+				expect(record.taxIdentificationCode).eq(taxIdentificationCode);
 				expect(record.emailAddresses(false).length).eq(2);
 				expect(record.emailAddresses(false)[0].type).eq(work);
 				expect(record.emailAddresses(false)[0].primary).eq(true);

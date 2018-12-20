@@ -34,6 +34,7 @@ export class PartyServiceImpl implements PartyService {
 		result.code = party.code;
 		result.isReseller = party["isReseller"];
 		result.isSupplier = party["isSupplier"];
+		result.taxIdentificationCode = party["taxIdentificationCode"];
 		result.functionsProvided = party["functionsProvided"];
 		result.functionsReceived = party["functionsReceived"];
 		return result;
@@ -64,6 +65,7 @@ export class PartyServiceImpl implements PartyService {
 		result.lastUpdate = lastUpdate;
 		result.functionsProvided = object.functionsProvided;
 		result.functionsReceived = object.functionsReceived;
+		result.taxIdentificationCode = object.taxIdentificationCode;
 		result.staff = StaffDataImpl.fomJSON(object.staff);
 		return result;
 	}

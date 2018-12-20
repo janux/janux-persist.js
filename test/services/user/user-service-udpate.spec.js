@@ -75,7 +75,7 @@ describe("Testing user service update method", function() {
 			partyService = new PartyService(partyDao, staffDao);
 			groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 			partyGroupService = new PartyGroupService(partyService, groupService);
-			userService = UserService.createInstance(accountDao, partyService, partyGroupService);
+			userService = UserService.createInstance(accountDao, partyService);
 			accountDao
 				.removeAll()
 				.then(function() {

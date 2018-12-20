@@ -61,6 +61,9 @@ export const PartyMongooseSchema = new mongoose.Schema(
 		isSupplier: {
 			type: Boolean
 		},
+		taxIdentificationCode: {
+			type: String
+		},
 		// Exclusive for suppliers.
 		functionsProvided: {
 			type: mongoose.Schema.Types.Mixed

@@ -108,7 +108,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		let organizationReference: JanuxPeople.Organization;
 		let query: any;
 		emailAddressesToLookFor = objectToInsert.emailAddresses(false).map(value => value.address);
-		// TODO fx thos hack.
+		// TODO fix this hack.
 		emailAddressesToLookFor = _.filter(emailAddressesToLookFor, value => value != null);
 		if (emailAddressesToLookFor.length === 0) {
 			return Promise.resolve([]);
@@ -159,6 +159,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		result.typeName = object.typeName;
 		result.functionsProvided = object["functionsProvided"];
 		result.functionsReceived = object["functionsReceived"];
+		result.taxIdentificationCode = object["taxIdentificationCode"];
 		this.partyDaoLogger.debug("Returning %j", result);
 		return result;
 	}
@@ -182,6 +183,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		result.isSupplier = object.isSupplier;
 		result.functionsProvided = object.functionsProvided;
 		result.functionsReceived = object.functionsReceived;
+		result.taxIdentificationCode = object.taxIdentificationCode;
 		return result;
 	}
 }
