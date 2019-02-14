@@ -49,6 +49,10 @@ export class PartyDaoLokiJsImpl extends PartyDao {
 		return this.findByQuery(query);
 	}
 
+	findByIdsAndFunctionsProvided(ids: string[], functionsProvided: string[]): Promise<JanuxPeople.PartyAbstract[]> {
+		return Promise.reject("Method not implemented by lokijs");
+	}
+
 	/**
 	 * Validate the object before updateMethod to the database.
 	 * @param objectToUpdate

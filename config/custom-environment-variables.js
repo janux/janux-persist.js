@@ -3,7 +3,7 @@
  * Created by ernesto on 9/26/17.
  */
 
-'use strict';
+"use strict";
 var cfg = {
 	serverAppContext: {
 		db: {

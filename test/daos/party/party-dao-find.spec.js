@@ -33,6 +33,8 @@ const middleName2 = "Smith";
 
 var invalidId1 = "313030303030303030303030";
 var invalidId2 = "313030303030303030303032";
+var functions = ["FUNCTION-1", "FUNCTION_2"];
+var functions2 = ["FUNCTION_2", "FUNCTION_4"];
 
 describe("Testing party dao find methods", function() {
 	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
@@ -62,6 +64,7 @@ describe("Testing party dao find methods", function() {
 						person.name.last = lastName;
 						person.name.maternal = maternal;
 						person.isReseller = true;
+						person.functionsProvided = functions;
 
 						var organization2 = new OrganizationEntity();
 						organization2.name = organizationName2;
@@ -70,6 +73,7 @@ describe("Testing party dao find methods", function() {
 						person2.name.first = name2;
 						person2.name.middle = middleName2;
 						person2.isSupplier = true;
+						person2.functionsProvided = functions2;
 
 						return partyDao.insertMany([organization, person, organization2, person2]);
 					})
@@ -145,6 +149,29 @@ describe("Testing party dao find methods", function() {
 						expect(value.length).eq(1);
 						done();
 					});
+				});
+			});
+
+			describe("When calling findByIdsAndFunctionsProvided", function() {
+				it("The method should return the result", function(done) {
+					// The method only works for mongodb
+					if (dbEngine === DataSourceHandler.LOKIJS) {
+						done();
+					}
+					partyDao
+						.findByIdsAndFunctionsProvided(
+							[
+								insertedRecordOrganization.id,
+								insertedRecordOrganization2.id,
+								insertedRecordPerson.id,
+								insertedRecordPerson2.id
+							],
+							["FUNCTION_2", "BLA"]
+						)
+						.then(function(value) {
+							expect(value.length).eq(2);
+							done();
+						});
 				});
 			});
 		});

@@ -1,52 +1,25 @@
 {
 	"defaultSeverity": "off",
-	"extends": [
-		"tslint:recommended"
-	],
+	"extends": ["tslint:recommended"],
 	"jsRules": {},
 	"rules": {
 		"eofline": false,
-		"quotemark": [
-			false
-		],
-		"variable-name": [
-			true,
-			"ban-keywords",
-			"check-format",
-			"allow-leading-underscore"
-		],
-		"trailing-comma": [
-			false
-		],
-		"object-literal-sort-keys": [
-			false
-		],
-		"max-line-length": [
-			false
-		],
+		"quotemark": [false],
+		"variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+		"trailing-comma": [false],
+		"object-literal-sort-keys": [false],
+		"max-line-length": [false],
 		"curly": false,
 		"forin": false,
-		"member-access": [
-			false,
-			"check-accessor",
-			"check-constructor"
-		],
+		"member-access": [false, "check-accessor", "check-constructor"],
 		"no-empty-interface": false,
 		"no-console": true,
 		"no-shadowed-variable": false,
-		"interface-name": [
-			false
-		],
+		"interface-name": [false],
 		"no-string-literal": false,
-		"indent": [
-			true,
-			"tabs"
-		],
+		"indent": [true, "tabs"],
 		"no-empty": false,
-		"arrow-parens": [
-			true,
-			"ban-single-arg-parens"
-		],
+		"arrow-parens": [true, "ban-single-arg-parens"],
 		"align": false
 	},
 	"rulesDirectory": []

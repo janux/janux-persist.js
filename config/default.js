@@ -2,60 +2,57 @@
  * Project janux-persistence
  * Created by ernesto on 5/26/17.
  */
-'use strict';
+"use strict";
 
-var path = require('path');
+var path = require("path");
 //Gulp compiler options
 var cfg = {
-	dir      : {
-		src   : 'src',
-		dist  : 'dist',
-		test  : 'test',
-		doc   : 'doc',
-		config: 'config'
+	dir: {
+		src: "src",
+		dist: "dist",
+		test: "test",
+		doc: "doc",
+		config: "config"
 	},
-	file     : {
-		app: 'app.js'
+	file: {
+		app: "app.js"
 	},
-	log4js   : require('./log4js'),
+	log4js: require("./log4js"),
 	debugPort: 30000,
-	fileset  : {}
+	fileset: {}
 };
 
-cfg.fileset.ts = path.join(cfg.dir.src, '**', '*.ts');
-cfg.fileset.filesToWatch = path.join(cfg.dir.src, '**', '*');
+cfg.fileset.ts = path.join(cfg.dir.src, "**", "*.ts");
+cfg.fileset.filesToWatch = path.join(cfg.dir.src, "**", "*");
 cfg.configDirectoryFilesToCopy = path.join(cfg.dir.src, cfg.dir.config, "**", "*");
-cfg.fileset.tsTest = path.join(cfg.dir.test, '**', '*.spec.ts');
+cfg.fileset.tsTest = path.join(cfg.dir.test, "**", "*.spec.ts");
 cfg.serverAppFile = path.join(cfg.dir.dist, cfg.file.app);
 
 // files watched during the build
 cfg.fileset.watch = [];
 
-
 // The test specs; override this locally to run a single test suite
-cfg.fileset.test = [
-	path.join(cfg.dir.test, '**', '*.spec.js')
-];
+cfg.fileset.test = [path.join(cfg.dir.test, "**", "*.spec.js")];
 
 cfg.jshint = {
-	rcfile  : '.jshintrc',
-	reporter: 'default'
+	rcfile: ".jshintrc",
+	reporter: "default"
 };
 
 cfg.tsConfig = {
-	module        : "commonjs",
+	module: "commonjs",
 	removeComments: true,
-	target        : 'ES5',
-	skipLibCheck  : true,
-	declaration   : true
+	target: "ES5",
+	skipLibCheck: true,
+	declaration: true
 };
 
 //
 // Configure tests
 //
 cfg.serverAppContext = {
-	db    : {
-		dbEngine    : "mongoose",
+	db: {
+		dbEngine: "mongoose",
 		mongoConnUrl: "mongodb://localhost/janux-persistence-test",
 		lokiJsDBPath: "./janux-persistence-test.db"
 	},
@@ -65,7 +62,7 @@ cfg.serverAppContext = {
 };
 
 cfg.mocha = {
-	reporter: 'dot'
+	reporter: "dot"
 };
 
 module.exports = cfg;

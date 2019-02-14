@@ -64,6 +64,13 @@ export interface PartyService {
 	findByIsSupplier(isSupplier: boolean): Promise<JanuxPeople.Party[]>;
 
 	/**
+	 * Find all parties with the following criteria.
+	 * @param ids Filter all partied given the ids.
+	 * @param functionsProvided At least the party must have one of the functions provided.
+	 */
+	findByIdsAndFunctionsProvided(ids: string[], functionsProvided: string[]): Promise<JanuxPeople.Party[]>;
+
+	/**
 	 * Find all organizations who are suppliers.
 	 * @param {boolean} isSupplier
 	 * @return {Bluebird<Party[]>}

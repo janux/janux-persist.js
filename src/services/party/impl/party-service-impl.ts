@@ -43,7 +43,7 @@ export class PartyServiceImpl implements PartyService {
 	/**
 	 * Convert a object to a party instance.
 	 * @param object
-	 * @return {Party}
+	 * @return {PartyAbstract}
 	 */
 	public static fromJSON(object: any): JanuxPeople.PartyAbstract {
 		if (object == null) return object;
@@ -92,7 +92,7 @@ export class PartyServiceImpl implements PartyService {
 	/**
 	 * Find all records that has the email address.
 	 * @param {string} email
-	 * @return {Promise<JanuxPeople.Party[]>}
+	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
 	 */
 	findByEmail(email: string): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.partyDao.findByEmail(email).then((result: JanuxPeople.PartyAbstract[]) => {
@@ -103,7 +103,7 @@ export class PartyServiceImpl implements PartyService {
 	/**
 	 * Find all records that hast the phone number.
 	 * @param {string} phone
-	 * @return {Promise<JanuxPeople.Party[]>}
+	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
 	 */
 	findByPhone(phone: string): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.partyDao.findByPhone(phone).then((result: JanuxPeople.PartyAbstract[]) => {
@@ -113,7 +113,7 @@ export class PartyServiceImpl implements PartyService {
 
 	/**
 	 * Find all people
-	 * @return {Promise<JanuxPeople.Party[]>}
+	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
 	 */
 	findPeople(): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.partyDao.findPeople().then((result: JanuxPeople.PartyAbstract[]) => {
@@ -123,7 +123,7 @@ export class PartyServiceImpl implements PartyService {
 
 	/**
 	 * Find all organizations
-	 * @return {Promise<JanuxPeople.Party[]>}
+	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
 	 */
 	findOrganizations(): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.partyDao.findOrganizations().then((result: JanuxPeople.PartyAbstract[]) => {
@@ -134,12 +134,18 @@ export class PartyServiceImpl implements PartyService {
 	/**
 	 * Find all parties who are suppliers.
 	 * @param {boolean} isSupplier
-	 * @return {Bluebird<Party[]>}
+	 * @return {Bluebird<PartyAbstract[]>}
 	 */
 	findByIsSupplier(isSupplier: boolean): Promise<JanuxPeople.PartyAbstract[]> {
 		return this.partyDao.findByIsSupplierAndTypeName(isSupplier).then((result: JanuxPeople.PartyAbstract[]) => {
 			return this.mergeStaffData(result);
 		});
+	}
+
+	findByIdsAndFunctionsProvided(ids: string[], functionsProvided: string[]): Promise<JanuxPeople.PartyAbstract[]> {
+		return this.partyDao
+			.findByIdsAndFunctionsProvided(ids, functionsProvided)
+			.then((result: JanuxPeople.PartyAbstract[]) => this.mergeStaffData(result));
 	}
 
 	/**

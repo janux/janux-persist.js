@@ -25,6 +25,11 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 		super(dbAdapter, entityProperties);
 	}
 
+	public abstract findByIdsAndFunctionsProvided(
+		ids: string[],
+		functionsProvided: string[]
+	): Promise<JanuxPeople.PartyAbstract[]>;
+
 	/**
 	 * Find all record that matches with the name,
 	 * Because this method handles complex queries. This method must be implement per each db engine.

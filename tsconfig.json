@@ -13,29 +13,12 @@
 		"removeComments": true,
 		"baseUrl": "./src",
 		"paths": {
-			"daos/*": [
-				"daos/*"
-			],
-			"example/*": [
-				"example/*"
-			],
-			"persistence/*": [
-				"persistence/*"
-			],
-			"services/*": [
-				"services/*"
-			],
-			"utils/*": [
-				"utils/*"
-			]
+			"daos/*": ["daos/*"],
+			"example/*": ["example/*"],
+			"persistence/*": ["persistence/*"],
+			"services/*": ["services/*"],
+			"utils/*": ["utils/*"]
 		}
 	},
-	"exclude": [
-		"**/node_modules/*",
-		"vendor",
-		"dist",
-		"gulp",
-		"docker",
-		"config"
-	]
+	"exclude": ["**/node_modules/*", "vendor", "dist", "gulp", "docker", "config"]
 }

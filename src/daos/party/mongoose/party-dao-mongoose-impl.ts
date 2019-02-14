@@ -53,6 +53,20 @@ export class PartyDaoMongooseImpl extends PartyDao {
 		return this.findByQuery(query);
 	}
 
+	findByIdsAndFunctionsProvided(ids: string[], functionsProvided: string[]): Promise<JanuxPeople.PartyAbstract[]> {
+		const query = {
+			$and: [
+				{ id: { $in: ids } },
+				{
+					$or: _.map(functionsProvided, value => {
+						return { functionsProvided: value };
+					})
+				}
+			]
+		};
+		return this.findByQuery(query);
+	}
+
 	protected validateBeforeUpdate(objectToUpdate: JanuxPeople.PartyAbstract): Promise<ValidationErrorImpl[]> {
 		return this.validateDuplicated(objectToUpdate);
 	}
