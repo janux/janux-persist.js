@@ -161,6 +161,9 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	 */
 	public insertMany(objectsToInsert: t[]): Promise<t[]> {
 		this._log.debug("Call to insertMany with %j", objectsToInsert.length);
+		if (objectsToInsert.length === 0) {
+			return Promise.resolve([]);
+		}
 		const convertedObjectsToInsert: any = [];
 		let entityErrors: ValidationErrorImpl[];
 		for (const obj of objectsToInsert) {
@@ -254,6 +257,9 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	 */
 	public updateMany(objectsToUpdate: t[]): Promise<t[]> {
 		this._log.debug("Call to updateMany with %j", objectsToUpdate);
+		if (objectsToUpdate.length === 0) {
+			return Promise.resolve([]);
+		}
 		let entityErrors: ValidationErrorImpl[] = [];
 		if (_.some(objectsToUpdate, value => isBlankString(value['id']))) {
 			this._log.error("%j does not have an id", objectsToUpdate);
