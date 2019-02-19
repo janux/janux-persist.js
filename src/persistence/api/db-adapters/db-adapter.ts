@@ -3,7 +3,7 @@
  * Created by ernesto on 7/28/17.
  */
 import * as Promise from "bluebird";
-import { AttributeFilter } from "persistence/implementations/dao/attribute-filter";
+import {AttributeFilter} from "persistence/implementations/dao/attribute-filter";
 
 /**
  * This interface dine the method you need to implement per each database
@@ -96,9 +96,15 @@ export interface DbAdapter {
 
 	/**
 	 * Insert many documents at once inside the collection.
-	 * @param objectsToInsert The objects to insertMethod.
+	 * @param objectsToInsert The objects to insert.
 	 */
 	insertManyMethod(objectsToInsert: any[]): Promise<any>;
+
+	/**
+	 * Insert many documents at once inside the collection.
+	 * @param objectsToUpdate The objects to update.
+	 */
+	updateManyMethod(objectsToUpdate: any[]): Promise<any[]>;
 
 	/**
 	 * Return all the documents.

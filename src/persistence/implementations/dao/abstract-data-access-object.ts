@@ -5,14 +5,14 @@
 
 import Promise = require("bluebird");
 import * as _ from "lodash";
-import { CrudRepository } from "persistence/api/dao/crud-repository";
-import { TimeStampGenerator } from "persistence/generators/TimeStampGenerator";
-import { UuidGenerator } from "persistence/generators/UuidGenerator";
+import {CrudRepository} from "persistence/api/dao/crud-repository";
+import {TimeStampGenerator} from "persistence/generators/TimeStampGenerator";
+import {UuidGenerator} from "persistence/generators/UuidGenerator";
 import * as logger from "utils/logger-api/logger-api";
-import { isBlankString } from "utils/string/blank-string-validator";
-import { AttributeFilter } from "./attribute-filter";
-import { EntityPropertiesImpl } from "./entity-properties";
-import { ValidationErrorImpl } from "./validation-error";
+import {isBlankString} from "utils/string/blank-string-validator";
+import {AttributeFilter} from "./attribute-filter";
+import {EntityPropertiesImpl} from "./entity-properties";
+import {ValidationErrorImpl} from "./validation-error";
 
 /**
  * Base class of a dao per entity.
@@ -206,7 +206,7 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	 * @returns {any} A promise containing the updated object or a reject if something went wrong.
 	 */
 	public update(objectToUpdate: t): Promise<t> {
-		this._log.debug("Call to updateMethod with %j", objectToUpdate);
+		this._log.debug("Call to update with %j", objectToUpdate);
 
 		let entityErrors: ValidationErrorImpl[];
 		if (isBlankString(objectToUpdate[this.ID_REFERENCE])) {
@@ -221,9 +221,9 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 					TimeStampGenerator.generateTimeStampForUpdate(this.entityProperties, objectToUpdate);
 					return this.updateMethod(
 						this.addExtraValues(this.convertBeforeSave(objectToUpdate), objectToUpdate)
-					).then((resultInsert: any) => {
-						let result = this.convertAfterDbOperation(resultInsert);
-						result = this.addExtraValues(result, resultInsert);
+					).then((resultUpdate: any) => {
+						let result = this.convertAfterDbOperation(resultUpdate);
+						result = this.addExtraValues(result, resultUpdate);
 						return Promise.resolve(result);
 					});
 				} else {
@@ -234,6 +234,57 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 			this._log.warn("%j has validation errors: \n %j", objectToUpdate, entityErrors);
 			return Promise.reject(entityErrors);
 		}
+	}
+
+	/**
+	 * Update many objects.
+	 * The method performs the following tasks.
+	 * 1. Validates if the objects does have an id.
+	 * 2. Validate if the entity has the correct values by calling the method validateEntity.
+	 * 3. Validate if the entity is correct against the collection where is going to be updated by calling the
+	 * method validateBeforeUpdateMany.
+	 * 4. Adds the lastUpdate attribute by calling TimeStampGenerator.generateTimeStampForUpdate().
+	 * 5. Update the object in the database by calling updateManyMethod (). This method is implemented by the extended classes.
+	 * The values to be updated can be modified before updateManyMethod in the database by the method convertBeforeSave.
+	 * 6. Retrieves the values of updateManyMethod() and calls  the method convertAfterDbOperation.
+	 * 7. Returns the updated objects.
+	 * The difference with update is the the db adapter performs a bulk update.
+	 * @param objectsToUpdate The objects to updateMethod
+	 * @returns {any} A promise containing the updated object or a reject if something went wrong.
+	 */
+	public updateMany(objectsToUpdate: t[]): Promise<t[]> {
+		this._log.debug("Call to updateMany with %j", objectsToUpdate);
+		let entityErrors: ValidationErrorImpl[] = [];
+		if (_.some(objectsToUpdate, value => isBlankString(value['id']))) {
+			this._log.error("%j does not have an id", objectsToUpdate);
+			return Promise.reject("Object does not have an id");
+		}
+		for (const object of objectsToUpdate) {
+			entityErrors = entityErrors.concat(this.validateEntity(object));
+		}
+		if (entityErrors.length > 0) {
+			this._log.warn("%j has validation errors: \n %j", objectsToUpdate, entityErrors);
+			return Promise.reject(entityErrors);
+		}
+		return this.validateBeforeUpdateMany(objectsToUpdate)
+			.then((result: ValidationErrorImpl[]) => {
+				if (result.length > 0) {
+					return Promise.reject(result);
+				}
+				const convertedObjects: t[] = objectsToUpdate.map(value => {
+					TimeStampGenerator.generateTimeStampForUpdate(this.entityProperties, value);
+					return this.addExtraValues(this.convertBeforeSave(value), value);
+				});
+				return this.updateManyMethod(convertedObjects);
+			})
+			.then((updatedObjects: any[]) => {
+				const convertedObjects = updatedObjects.map(resultUpdate => {
+					let result = this.convertAfterDbOperation(resultUpdate);
+					result = this.addExtraValues(result, resultUpdate);
+					return result;
+				});
+				return Promise.resolve(convertedObjects);
+			});
 	}
 
 	/**
@@ -523,11 +574,20 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	}
 
 	/**
-	 * This method must be implemented in order to updateMethod an object to the database.
+	 * This method must be implemented in order to update an object to the database.
 	 * This method is called from this class and should not be called from outside.
 	 * @param objectToUpdate The object to updateMethod
 	 */
 	protected updateMethod(objectToUpdate: t): Promise<t> {
+		throw new Error("This method is not implemented");
+	}
+
+	/**
+	 * This method must be implemented in order to update several objects to the database.
+	 * This method is called from this class and should not be called from outside.
+	 * @param objectToUpdate The object to updateMethod
+	 */
+	protected updateManyMethod(objectToUpdate: t[]): Promise<t[]> {
 		throw new Error("This method is not implemented");
 	}
 
@@ -578,6 +638,17 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	 * returns an empty array
 	 */
 	protected validateBeforeUpdate(objectToUpdate: t): Promise<ValidationErrorImpl[]> {
+		throw new Error("This method is not implemented");
+	}
+
+	/**
+	 * This method must be implemented in order to perform database validations before an updateManyMethod,
+	 * such as look for duplicated records.
+	 * @param objectToUpdate To object to validate
+	 * @return A promise containing the validation errors. If there are no errors then
+	 * returns an empty array
+	 */
+	protected validateBeforeUpdateMany(objectToUpdate: t[]): Promise<ValidationErrorImpl[]> {
 		throw new Error("This method is not implemented");
 	}
 

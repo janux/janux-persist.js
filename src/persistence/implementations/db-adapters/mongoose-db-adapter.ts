@@ -4,10 +4,10 @@
  * Created by ernesto on 6/12/17.
  */
 import Promise = require("bluebird");
-import { Model } from "mongoose";
-import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
+import {Model} from "mongoose";
+import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
 import * as logger from "utils/logger-api/logger-api";
-import { AttributeFilter } from "../dao/attribute-filter";
+import {AttributeFilter} from "../dao/attribute-filter";
 
 /**
  * this class in an implementation of DbAdapter in order to use mongoose as the db engine.
@@ -33,9 +33,9 @@ export class MongooseAdapter implements DbAdapter {
 	findOneMethod(id): Promise<any> {
 		this._log.debug("Call to findOneMethod with model: %j id: %j ", this.adapterProperties.model.modelName, id);
 		return new Promise((resolve, reject) => {
-			const query = { id };
+			const query = {id};
 			this.adapterProperties.model
-				.findOne(query, { _id: 0 })
+				.findOne(query, {_id: 0})
 				.lean()
 				.exec((err, result: any) => {
 					if (err) throw err;
@@ -57,7 +57,7 @@ export class MongooseAdapter implements DbAdapter {
 			arrayOfIds
 		);
 		const query = {
-			id: { $in: arrayOfIds }
+			id: {$in: arrayOfIds}
 		};
 		return this.findByQueryMethod(query);
 	}
@@ -75,7 +75,7 @@ export class MongooseAdapter implements DbAdapter {
 			objectToDelete
 		);
 		return new Promise((resolve, reject) => {
-			const query = { id: objectToDelete.id };
+			const query = {id: objectToDelete.id};
 			this.adapterProperties.model
 				.remove(query)
 				.lean()
@@ -139,7 +139,7 @@ export class MongooseAdapter implements DbAdapter {
 		this._log.debug("Call to removeByIds with model: %j, ids: %j", this.adapterProperties.model.modelName, ids);
 		return new Promise((resolve, reject) => {
 			const query = {
-				id: { $in: ids }
+				id: {$in: ids}
 			};
 			this.adapterProperties.model
 				.remove(query)
@@ -169,7 +169,7 @@ export class MongooseAdapter implements DbAdapter {
 			const query = {};
 			query[attributeName] = value;
 			this.adapterProperties.model
-				.find(query, { _id: 0 })
+				.find(query, {_id: 0})
 				.lean()
 				.exec((err, result: any[]) => {
 					if (err) throw err;
@@ -219,7 +219,7 @@ export class MongooseAdapter implements DbAdapter {
 			values
 		);
 		const query = {};
-		query[attributeName] = { $in: values };
+		query[attributeName] = {$in: values};
 		return this.findByQueryMethod(query);
 	}
 
@@ -262,8 +262,8 @@ export class MongooseAdapter implements DbAdapter {
 			objectToUpdate
 		);
 		return new Promise((resolve, reject) => {
-			const query = { id: objectToUpdate.id };
-			const values = { $set: objectToUpdate };
+			const query = {id: objectToUpdate.id};
+			const values = {$set: objectToUpdate};
 			const options = {};
 			const newAttribute = "new";
 			options[newAttribute] = true;
@@ -298,6 +298,25 @@ export class MongooseAdapter implements DbAdapter {
 		});
 	}
 
+	updateManyMethod(objectsToUpdate: any[]): Promise<any[]> {
+		this._log.debug(
+			"Call to updateManyMethod with model: %j, objectsToUpdate %j",
+			this.adapterProperties.model.modelName,
+			objectsToUpdate
+		);
+		return new Promise((resolve, reject) => {
+			this.adapterProperties.model.bulkWrite(objectsToUpdate.map(objectToUpdate => {
+				return {
+					updateOne: {
+						filter: {id: objectToUpdate.id},
+						// According to mongoose, the $set is defined by mongoose.
+						update: objectToUpdate
+					}
+				};
+			})).then(() => resolve(objectsToUpdate));
+		});
+	}
+
 	/**
 	 * Return all objects
 	 * @return {Promise<any>} A promise containing all objects.
@@ -319,7 +338,7 @@ export class MongooseAdapter implements DbAdapter {
 		};
 		for (const attribute of attributes) {
 			const condition = {};
-			condition[attribute.attributeName] = { $eq: attribute.value };
+			condition[attribute.attributeName] = {$eq: attribute.value};
 			query.$and.push(condition);
 		}
 		return this.findByQueryMethod(query);
@@ -337,7 +356,7 @@ export class MongooseAdapter implements DbAdapter {
 		};
 		for (const attribute of attributes) {
 			const condition = {};
-			condition[attribute.attributeName] = { $eq: attribute.value };
+			condition[attribute.attributeName] = {$eq: attribute.value};
 			query.$or.push(condition);
 		}
 		return this.findByQueryMethod(query);
@@ -357,7 +376,7 @@ export class MongooseAdapter implements DbAdapter {
 		);
 		return new Promise<any>((resolve, reject) => {
 			this.adapterProperties.model
-				.find(query, { _id: 0 })
+				.find(query, {_id: 0})
 				.lean()
 				.exec((err, result: any[]) => {
 					if (err) throw err;
@@ -375,7 +394,7 @@ export class MongooseAdapter implements DbAdapter {
 	public removeById(id: any): Promise<any> {
 		this._log.debug("Call to removeById by id: %j and model: %j", id, this.adapterProperties.model.modelName);
 		return new Promise((resolve, reject) => {
-			const query = { id };
+			const query = {id};
 			this.adapterProperties.model
 				.remove(query)
 				.lean()
