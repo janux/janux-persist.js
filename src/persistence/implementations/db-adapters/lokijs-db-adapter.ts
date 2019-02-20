@@ -4,8 +4,8 @@
  */
 import Promise = require("bluebird");
 import * as _ from "lodash";
-import {DbAdapter} from "persistence/api/db-adapters/db-adapter";
-import {AttributeFilter} from "persistence/implementations/dao/attribute-filter";
+import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
+import { AttributeFilter } from "persistence/implementations/dao/attribute-filter";
 import * as logger from "utils/logger-api/logger-api";
 
 /**
@@ -41,7 +41,7 @@ export class LokiJsAdapter implements DbAdapter {
 			id,
 			this.adapterProperties.findCollection().name
 		);
-		const result = this.adapterProperties.findCollection().findOne({id});
+		const result = this.adapterProperties.findCollection().findOne({ id });
 		// if (_.isNil(result) === false) {
 		// result.id = result.$loki.toString();
 		// }
@@ -77,7 +77,7 @@ export class LokiJsAdapter implements DbAdapter {
 			objectToDelete
 		);
 		return new Promise(resolve => {
-			this.adapterProperties.findCollection().findAndRemove({id: objectToDelete.id});
+			this.adapterProperties.findCollection().findAndRemove({ id: objectToDelete.id });
 			this.adapterProperties.db.saveDatabase(() => {
 				resolve(objectToDelete);
 			});
@@ -137,7 +137,7 @@ export class LokiJsAdapter implements DbAdapter {
 		);
 		return new Promise(resolve => {
 			const query = {
-				id: {$in: ids}
+				id: { $in: ids }
 			};
 			this.adapterProperties.findCollection().findAndRemove(query);
 			this.adapterProperties.db.saveDatabase(() => {
@@ -162,7 +162,7 @@ export class LokiJsAdapter implements DbAdapter {
 		);
 		const query = {};
 		let result: any;
-		query[attributeName] = {$eq: value};
+		query[attributeName] = { $eq: value };
 		const resultQuery = this.adapterProperties.findCollection().find(query);
 		this._log.debug("Result %j", resultQuery);
 		if (resultQuery.length === 0) {
@@ -216,7 +216,7 @@ export class LokiJsAdapter implements DbAdapter {
 			values
 		);
 		const query = {};
-		query[attributeName] = {$in: values};
+		query[attributeName] = { $in: values };
 		let result = this.adapterProperties.findCollection().find(query);
 		result = _.clone(result);
 		this.adapterProperties.cleanArray(result);
@@ -348,7 +348,7 @@ export class LokiJsAdapter implements DbAdapter {
 		};
 		for (const attribute of attributes) {
 			const condition = {};
-			condition[attribute.attributeName] = {$eq: attribute.value};
+			condition[attribute.attributeName] = { $eq: attribute.value };
 			query.$and.push(condition);
 		}
 		return this.findByQueryMethod(query);
@@ -366,7 +366,7 @@ export class LokiJsAdapter implements DbAdapter {
 		};
 		for (const attribute of attributes) {
 			const condition = {};
-			condition[attribute.attributeName] = {$eq: attribute.value};
+			condition[attribute.attributeName] = { $eq: attribute.value };
 			query.$or.push(condition);
 		}
 		return this.findByQueryMethod(query);
@@ -403,7 +403,7 @@ export class LokiJsAdapter implements DbAdapter {
 		);
 		return new Promise(resolve => {
 			const query = {
-				id: {$eq: id}
+				id: { $eq: id }
 			};
 			this.adapterProperties.findCollection().findAndRemove(query);
 			this.adapterProperties.db.saveDatabase(() => {

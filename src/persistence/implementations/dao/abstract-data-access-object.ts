@@ -5,14 +5,14 @@
 
 import Promise = require("bluebird");
 import * as _ from "lodash";
-import {CrudRepository} from "persistence/api/dao/crud-repository";
-import {TimeStampGenerator} from "persistence/generators/TimeStampGenerator";
-import {UuidGenerator} from "persistence/generators/UuidGenerator";
+import { CrudRepository } from "persistence/api/dao/crud-repository";
+import { TimeStampGenerator } from "persistence/generators/TimeStampGenerator";
+import { UuidGenerator } from "persistence/generators/UuidGenerator";
 import * as logger from "utils/logger-api/logger-api";
-import {isBlankString} from "utils/string/blank-string-validator";
-import {AttributeFilter} from "./attribute-filter";
-import {EntityPropertiesImpl} from "./entity-properties";
-import {ValidationErrorImpl} from "./validation-error";
+import { isBlankString } from "utils/string/blank-string-validator";
+import { AttributeFilter } from "./attribute-filter";
+import { EntityPropertiesImpl } from "./entity-properties";
+import { ValidationErrorImpl } from "./validation-error";
 
 /**
  * Base class of a dao per entity.
@@ -261,7 +261,7 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 			return Promise.resolve([]);
 		}
 		let entityErrors: ValidationErrorImpl[] = [];
-		if (_.some(objectsToUpdate, value => isBlankString(value['id']))) {
+		if (_.some(objectsToUpdate, value => isBlankString(value["id"]))) {
 			this._log.error("%j does not have an id", objectsToUpdate);
 			return Promise.reject("Object does not have an id");
 		}

@@ -17,5 +17,5 @@ export const TickerMongooseSchema = new mongoose.Schema(
 			required: true
 		}
 	},
-	{id: false}
+	{ id: false }
 );
