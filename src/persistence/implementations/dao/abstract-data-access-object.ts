@@ -330,6 +330,9 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	 * an empty array.
 	 */
 	public findByIds(arrayOfIds: ID[]): Promise<t[]> {
+		if (arrayOfIds.length === 0) {
+			return Promise.resolve([]);
+		}
 		return this.findByIdsMethod(arrayOfIds).then((resultQuery: any[]) => {
 			return Promise.resolve(
 				resultQuery.map(value => this.addExtraValues(this.convertAfterDbOperation(value), value))
@@ -389,6 +392,9 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	 * @return {Promise<any[]>}
 	 */
 	public findByAttributeNameIn(attributeName: string, values: any[]): Promise<t[]> {
+		if (values.length === 0) {
+			return Promise.resolve([]);
+		}
 		return this.findByAttributeNameInMethod(attributeName, values).then((resultQuery: any[]) => {
 			return Promise.resolve(
 				resultQuery.map(value => this.addExtraValues(this.convertAfterDbOperation(value), value))
