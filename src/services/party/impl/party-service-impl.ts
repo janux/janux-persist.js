@@ -3,16 +3,16 @@
  * Created by ernesto on 11/9/17.
  */
 import Promise = require("bluebird");
-import { PartyDao } from "daos/party/party-dao";
-import { PartyValidator } from "daos/party/party-validator";
-import { StaffDataDao } from "daos/staff-data/staff-data-dao";
-import { StaffDataEntity } from "daos/staff-data/staff-data-entity";
+import {PartyDao} from "daos/party/party-dao";
+import {PartyValidator} from "daos/party/party-validator";
+import {StaffDataDao} from "daos/staff-data/staff-data-dao";
+import {StaffDataEntity} from "daos/staff-data/staff-data-entity";
 import JanuxPeople = require("janux-people");
 import * as _ from "lodash";
-import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
-import { PartyService } from "services/party/api/party-service";
-import { StaffDataImpl } from "services/staff/impl/staff-data-impl";
-import { DateUtil } from "utils/date/date-util";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {PartyService} from "services/party/api/party-service";
+import {StaffDataImpl} from "services/staff/impl/staff-data-impl";
+import {DateUtil} from "utils/date/date-util";
 
 export class PartyServiceImpl implements PartyService {
 	public static readonly PERSON: string = "PersonImpl";
@@ -322,9 +322,11 @@ export class PartyServiceImpl implements PartyService {
 		parties: JanuxPeople.PartyAbstract[],
 		staffEntities: StaffDataEntity[]
 	): JanuxPeople.PartyAbstract[] {
+		const groupedData = _.groupBy(staffEntities, value => value.idContact);
 		parties = parties.map(party => {
-			const record = _.find(staffEntities, it => it.idContact === party["id"]);
-			party["staff"] = StaffDataImpl.fomJSON(record);
+			// const record = _.find(staffEntities, it => it.idContact === party["id"]);
+			const staffData = groupedData[party['id']];
+			party["staff"] = staffData && staffData.length > 0 ? StaffDataImpl.fomJSON(staffData[0]) : undefined;
 			return party;
 		});
 		return parties;
