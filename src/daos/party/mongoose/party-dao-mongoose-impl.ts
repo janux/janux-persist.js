@@ -93,7 +93,11 @@ export class PartyDaoMongooseImpl extends PartyDao {
 					{ id: { $ne: objectToUpdate[this.ID_REFERENCE] } },
 					{
 						$or: [
-							{ "emails.address": { $in: emailAddressesToLookFor } }
+							{
+								"emails.address": {
+									$in: emailAddressesToLookFor
+								}
+							}
 							// {
 							// 	$and: [
 							// 		{"name.first": {$eq: personReference.name.first}},
@@ -114,7 +118,11 @@ export class PartyDaoMongooseImpl extends PartyDao {
 					{ id: { $ne: objectToUpdate[this.ID_REFERENCE] } },
 					{
 						$or: [
-							{ "emails.address": { $in: emailAddressesToLookFor } },
+							{
+								"emails.address": {
+									$in: emailAddressesToLookFor
+								}
+							},
 							{ name: { $eq: organizationReference.name } }
 						]
 					}

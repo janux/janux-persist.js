@@ -11,6 +11,7 @@ var AccountValidator = require("../../../dist/index").AccountValidator;
 var PartyService = require("../../../dist/index").PartyServiceImpl;
 var GroupService = require("../../../dist/index").GroupServiceImpl;
 var PartyGroupService = require("../../../dist/index").PartyGroupServiceImpl;
+var PasswordService = require("../../../dist/index").PasswordService;
 var SampleData = require("../../util/sample-data");
 var DaoUtil = require("../../daos/dao-util");
 var serverAppContext = config.get("serverAppContext");
@@ -35,6 +36,7 @@ describe("Testing user service service insertMethod method", function() {
 		var groupAttributeValueDao;
 		var groupService;
 		var partyGroupService;
+		var passwordService = new PasswordService();
 
 		beforeEach(function(done) {
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
@@ -46,7 +48,7 @@ describe("Testing user service service insertMethod method", function() {
 			partyService = new PartyService(partyDao, staffDao);
 			groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 			partyGroupService = new PartyGroupService(partyService, groupService);
-			userService = UserService.createInstance(accountDao, partyService, partyGroupService);
+			userService = UserService.createInstance(accountDao, partyService, passwordService);
 			setTimeout(function() {
 				accountDao
 					.removeAll()
@@ -89,7 +91,8 @@ describe("Testing user service service insertMethod method", function() {
 						expect(result.id).not.to.be.undefined;
 						expect(result.username).eq(account.username);
 						expect(result.dateCreated).not.to.be.undefined;
-						expect(result.password).eq(account.password);
+						// expect(result.password).eq(account.password);
+						expect(passwordService.isValidPassword(result.password, account.password)).eq(true);
 						expect(result.enabled).eq(account.enabled);
 						expect(result.locked).eq(account.locked);
 						expect(result.expire).eq(account.expire);
@@ -114,7 +117,10 @@ describe("Testing user service service insertMethod method", function() {
 					.then(function(resultQueryAccount) {
 						expect(resultQueryAccount.length).eq(1);
 						expect(resultQueryAccount[0].username).eq(account.username);
-						expect(resultQueryAccount[0].password).eq(account.password);
+						// expect(resultQueryAccount[0].password).eq(account.password);
+						expect(passwordService.isValidPassword(resultQueryAccount[0].password, account.password)).eq(
+							true
+						);
 						expect(resultQueryAccount[0].enabled).eq(account.enabled);
 						expect(resultQueryAccount[0].locked).eq(account.locked);
 						expect(resultQueryAccount[0].expire).eq(account.expire);

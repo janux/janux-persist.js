@@ -61,7 +61,10 @@ export class DataSource {
 
 	private connectToLokiJs(): DataSource {
 		this.log.debug("Call to connectToLokiJs", this.path);
-		const db = new lokijs(this.path, { throttledSaves: false, autoload: true });
+		const db = new lokijs(this.path, {
+			throttledSaves: false,
+			autoload: true
+		});
 		this.dbConnection = db;
 		this.status = DataSourceStatus.CONNECTED;
 		// db.loadDatabase({}, (err, data) => {

@@ -9,6 +9,7 @@ var PartyService = require("../../../dist/index").PartyServiceImpl;
 var PartyGroupService = require("../../../dist/index").PartyGroupServiceImpl;
 var GroupService = require("../../../dist/index").GroupServiceImpl;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
+var PasswordService = require("../../../dist/index").PasswordService;
 var DaoUtil = require("../../daos/dao-util");
 var serverAppContext = config.get("serverAppContext");
 var EmailAddress = require("janux-people").EmailAddress;
@@ -57,6 +58,7 @@ describe("Testing user service find method", function() {
 		var groupContentDao;
 		var groupAttributeValueDao;
 		var partyGroupService;
+		var passwordService;
 
 		beforeEach(function(done) {
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
@@ -68,7 +70,8 @@ describe("Testing user service find method", function() {
 			partyService = new PartyService(partyDao, staffDao);
 			groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 			partyGroupService = new PartyGroupService(partyService, groupService);
-			userService = UserService.createInstance(accountDao, partyService, partyGroupService);
+			passwordService = new PasswordService();
+			userService = UserService.createInstance(accountDao, partyService, passwordService);
 			staffDao
 				.removeAll()
 				.then(function() {

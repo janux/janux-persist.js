@@ -12,6 +12,7 @@ import * as JanuxPeople from "janux-people";
 import * as _ from "lodash";
 import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
 import { PartyServiceImpl } from "services/party/impl/party-service-impl";
+import { PasswordService } from "services/password/PasswordService";
 import { DateUtil } from "utils/date/date-util";
 import * as logger from "utils/logger-api/logger-api";
 import { isBlankString } from "utils/string/blank-string-validator";
@@ -21,8 +22,12 @@ import * as uuid from "uuid";
  * This class has basic user service methods.
  */
 export class UserService {
-	public static createInstance(accountDao: AccountDao, partyService: PartyServiceImpl) {
-		return this._instance || (this._instance = new this(accountDao, partyService));
+	public static createInstance(
+		accountDao: AccountDao,
+		partyService: PartyServiceImpl,
+		passwordService: PasswordService
+	) {
+		return this._instance || (this._instance = new this(accountDao, partyService, passwordService));
 	}
 
 	private static _instance: UserService;
@@ -36,10 +41,12 @@ export class UserService {
 	private ID_REFERENCE: string = "id";
 	private accountDao: AccountDao;
 	private partyService: PartyServiceImpl;
+	private passwordService: PasswordService;
 
-	private constructor(accountDao: AccountDao, partyService: PartyServiceImpl) {
+	private constructor(accountDao: AccountDao, partyService: PartyServiceImpl, passwordService: PasswordService) {
 		this.accountDao = accountDao;
 		this.partyService = partyService;
+		this.passwordService = passwordService;
 	}
 
 	/**
@@ -255,7 +262,7 @@ export class UserService {
 		user.mdate = new Date();
 		user.cdate = new Date();
 		user.username = object.username;
-		user.password = object.password;
+		user.password = this.passwordService.hashPassword(object.password);
 		user.expirePassword = DateUtil.stringToDate(object.expirePassword);
 		user.expire = DateUtil.stringToDate(object.expire);
 		user.locked = object.locked;
@@ -305,7 +312,7 @@ export class UserService {
 					user.enabled = object.enabled;
 					user.username = object.username;
 					if (object.password) {
-						user.password = object.password;
+						user.password = this.passwordService.hashPassword(object.password);
 					}
 					user.expirePassword = DateUtil.stringToDate(object.expirePassword);
 					user.expire = DateUtil.stringToDate(object.expire);

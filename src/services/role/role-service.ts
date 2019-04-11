@@ -141,7 +141,9 @@ export class RoleService {
 			.then(resultQuery => {
 				return Promise.map(resultQuery, aRole => {
 					let role: JanuxAuthorize.Role;
-					const roleObject: any = _.find(rolesOrder, { id: aRole.id });
+					const roleObject: any = _.find(rolesOrder, {
+						id: aRole.id
+					});
 					role = JanuxAuthorize.Role.fromJSON(aRole);
 					role.id = aRole.id;
 					role.sortOrder = roleObject.sortOrder;

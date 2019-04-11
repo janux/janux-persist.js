@@ -172,7 +172,9 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 				return Promise.map(groups, group => {
 					const groupToUpdate: GroupImpl<any> = _.clone(group);
 					const ids = group.values.map(value => value.id);
-					const newAttribues: any = _.find(groupsOrder, { code: groupToUpdate.code });
+					const newAttribues: any = _.find(groupsOrder, {
+						code: groupToUpdate.code
+					});
 
 					groupToUpdate.values = ids;
 					groupToUpdate.attributes = newAttribues.attributes;

@@ -14,6 +14,7 @@ const GroupService = require("../../../dist/index").GroupServiceImpl;
 const GroupImpl = require("../../../dist/index").GroupImpl;
 const UserService = require("../../../dist/index").UserService;
 const PartyServiceImpl = require("../../../dist/index").PartyServiceImpl;
+const PasswordService = require("../../../dist/index").PasswordService;
 
 //Config files
 const serverAppContext = config.get("serverAppContext");
@@ -38,6 +39,7 @@ describe("Testing user groups service update methods", function() {
 	var partyService;
 	var userService;
 	var userGroupService;
+	var passwordService;
 
 	var insertedUser1;
 	var insertedUser2;
@@ -51,7 +53,8 @@ describe("Testing user groups service update methods", function() {
 		groupAttributeValueDao = DaoUtil.createGroupAttributesDao(dbEngine, path);
 		groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 		partyService = new PartyServiceImpl(partyDao, staffDao);
-		userService = UserService.createInstance(staffDao, partyService);
+		passwordService = new PasswordService();
+		userService = UserService.createInstance(staffDao, partyService, passwordService);
 		userGroupService = new UserGroupService(userService, groupService);
 		setTimeout(function() {
 			// Delete all records.

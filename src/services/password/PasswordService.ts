@@ -3,22 +3,25 @@
  * Created by ernesto on 4/11/19
  */
 
-import * as Bluebird from "bluebird";
 import * as md5 from "md5";
-import {isBlankString} from "utils/string/blank-string-validator";
+import * as logger from "utils/logger-api/logger-api";
+import { isBlankString } from "utils/string/blank-string-validator";
 
 /**
  * Password service
  */
 export class PasswordService {
+	private static logger = logger.getLogger("PasswordService");
+
 	/**
 	 * Validates is the password is valid.
 	 * @param hash
 	 * @param password
 	 */
-	public async isValidPassword(hash: string, password: string): Bluebird<boolean> {
+	public isValidPassword(hash: string, password: string): boolean {
 		if (isBlankString(hash) || isBlankString(password)) {
-			return Bluebird.reject("Calling isValidPassword with empty values");
+			PasswordService.logger.error("Calling isValidPassword with empty values");
+			return false;
 		}
 		return md5(password) === hash;
 	}
@@ -27,9 +30,10 @@ export class PasswordService {
 	 * Generates a hash base on password.
 	 * @param password
 	 */
-	public async hashPassword(password: string): Bluebird<string> {
+	public hashPassword(password: string): string {
 		if (isBlankString(password)) {
-			return Bluebird.reject("Calling hashPassword with empty values");
+			PasswordService.logger.error("Calling hashPassword with empty value");
+			return "";
 		}
 		return md5(password);
 	}

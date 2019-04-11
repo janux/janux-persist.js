@@ -152,7 +152,9 @@ export class AuthContextService {
 						new ValidationErrorImpl(this.AUTHCONTEXT, this.AUTHCONTEXT_NOT_IN_DATABASE, object.id)
 					]);
 				} else {
-					const authObject: any = _.find(object, { name: authToUpdate.name });
+					const authObject: any = _.find(object, {
+						name: authToUpdate.name
+					});
 
 					authContext = resultQuery;
 					authContext.sortOrder = authObject.sortOrder;

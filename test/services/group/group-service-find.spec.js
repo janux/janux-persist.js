@@ -236,7 +236,9 @@ describe("Testing group service find methods", function() {
 					return groupService.insert(groups[2]);
 				})
 				.then(function() {
-					return groupService.findByTypeAndFilter(type, { parent: "root" });
+					return groupService.findByTypeAndFilter(type, {
+						parent: "root"
+					});
 				})
 				.then(function(groups) {
 					expect(groups.length).eq(2);
@@ -271,7 +273,9 @@ describe("Testing group service find methods", function() {
 					return groupService.insert(groups[2]);
 				})
 				.then(function() {
-					return groupService.findByTypeAndFilter(type, { code: "code 1" });
+					return groupService.findByTypeAndFilter(type, {
+						code: "code 1"
+					});
 				})
 				.then(function(groups) {
 					expect(groups.length).eq(1);

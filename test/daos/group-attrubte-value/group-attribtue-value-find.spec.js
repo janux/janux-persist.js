@@ -96,7 +96,9 @@ describe("Testing group attribute-value dao find methods", function() {
 
 		describe("When calling findByIdGroupsAndKeyValuesMatch with a shared key-value", function() {
 			it("The method should return 2 records", function(done) {
-				dao.findByIdGroupsAndKeyValuesMatch([idGroup1, idGroup2], { parent: value2a }).then(function(value) {
+				dao.findByIdGroupsAndKeyValuesMatch([idGroup1, idGroup2], {
+					parent: value2a
+				}).then(function(value) {
 					expect(value.length).eq(2);
 					done();
 				});
@@ -105,12 +107,13 @@ describe("Testing group attribute-value dao find methods", function() {
 
 		describe("When calling findByIdGroupsAndKeyValuesMatch with a shared key-value and a not shared key-value", function() {
 			it("The method should return 3 records", function(done) {
-				dao.findByIdGroupsAndKeyValuesMatch([idGroup1, idGroup2], { parent: value2a, code: value1a }).then(
-					function(value) {
-						expect(value.length).eq(3);
-						done();
-					}
-				);
+				dao.findByIdGroupsAndKeyValuesMatch([idGroup1, idGroup2], {
+					parent: value2a,
+					code: value1a
+				}).then(function(value) {
+					expect(value.length).eq(3);
+					done();
+				});
 			});
 		});
 	});
