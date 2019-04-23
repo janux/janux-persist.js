@@ -56,7 +56,7 @@ export class DataSource {
 			const serverAppContext: any = config.get("serverAppContext");
 			let poolSize: any = Number(serverAppContext.db.poolSize);
 			poolSize = _.isNumber(poolSize) && poolSize > 5 ? poolSize : 5;
-			this.log.debug("Pool size to use: %j", poolSize);
+			this.log.info("Pool size to use: %j", poolSize);
 			conn = mongoose.createConnection(this.path,
 				{
 					server: {
@@ -79,11 +79,10 @@ export class DataSource {
 
 	private connectToLokiJs(): DataSource {
 		this.log.debug("Call to connectToLokiJs", this.path);
-		const db = new lokijs(this.path, {
+		this.dbConnection = new lokijs(this.path, {
 			throttledSaves: false,
 			autoload: true
 		});
-		this.dbConnection = db;
 		this.status = DataSourceStatus.CONNECTED;
 		// db.loadDatabase({}, (err, data) => {
 		//    this.log.info("Connection to the database lokijs %j successful", this.path);
