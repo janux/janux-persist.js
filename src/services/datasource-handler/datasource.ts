@@ -54,12 +54,13 @@ export class DataSource {
 			// Later, the pool size, if defined in the datasource, might override
 			// the default value.
 			const serverAppContext: any = config.get("serverAppContext");
-			const poolSize: any = Number(serverAppContext.db.poolSize);
-			console.log("Pool size to use " + poolSize);
+			let poolSize: any = Number(serverAppContext.db.poolSize);
+			poolSize = _.isNumber(poolSize) && poolSize > 5 ? poolSize : 5;
+			this.log.debug("Pool size to use: %j", poolSize);
 			conn = mongoose.createConnection(this.path,
 				{
 					server: {
-						poolSize: _.isNumber(poolSize) && poolSize > 5 ? poolSize : 5
+						poolSize
 					}
 				});
 			this.dbConnection = conn;

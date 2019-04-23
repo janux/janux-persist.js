@@ -54,7 +54,7 @@ cfg.serverAppContext = {
 	db    : {
 		dbEngine    : "mongoose",
 		mongoConnUrl: "mongodb://localhost/janux-persistence-test",
-		poolSize    : "10",
+		poolSize    : "30",
 		lokiJsDBPath: "./janux-persistence-test.db"
 	},
 	system: {
