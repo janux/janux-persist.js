@@ -3,11 +3,13 @@
  * Created by ernesto on 7/19/17.
  */
 
+import config = require("config");
+import * as _ from "lodash";
 import * as lokijs from "lokijs";
 import * as mongoose from "mongoose";
 import * as logger from "utils/logger-api/logger-api";
-import { DataSourceHandler } from "./datasource-handler";
-import { DataSourceStatus } from "./datasource-status";
+import {DataSourceHandler} from "./datasource-handler";
+import {DataSourceStatus} from "./datasource-status";
 
 /**
  * Provides connection info to the database
@@ -46,16 +48,31 @@ export class DataSource {
 
 	private connectToMongodb(): DataSource {
 		this.log.debug("Call to connectToMongodb with url", this.path);
-		const conn: mongoose.Connection = mongoose.createConnection(this.path);
-		this.dbConnection = conn;
-		conn.on("error", err => {
-			this.log.error("Error connecting to mongodb \n %j", this.path, err);
-			throw new Error("Error connecting to mongodb database");
-		});
-		conn.once("open", () => {
-			this.log.info("Connection to mongodb database successful", this.path);
-			this.status = DataSourceStatus.CONNECTED;
-		});
+		let conn: mongoose.Connection;
+		if (_.isNil(this.dbConnection)) {
+			// For the moment we are going to use poolSize from config.
+			// Later, the pool size, if defined in the datasource, might override
+			// the default value.
+			const serverAppContext: any = config.get("serverAppContext");
+			const poolSize: any = Number(serverAppContext.db.poolSize);
+			console.log("Pool size to use " + poolSize);
+			conn = mongoose.createConnection(this.path,
+				{
+					server: {
+						poolSize: _.isNumber(poolSize) && poolSize > 5 ? poolSize : 5
+					}
+				});
+			this.dbConnection = conn;
+			conn.on("error", err => {
+				this.log.error("Error connecting to mongodb \n %j", this.path, err);
+				this.dbConnection = null;
+				throw new Error("Error connecting to mongodb database");
+			});
+			conn.once("open", () => {
+				this.log.info("Connection to mongodb database successful", this.path);
+				this.status = DataSourceStatus.CONNECTED;
+			});
+		}
 		return this;
 	}
 
