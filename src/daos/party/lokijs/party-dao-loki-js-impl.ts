@@ -50,7 +50,7 @@ export class PartyDaoLokiJsImpl extends PartyDao {
 	}
 
 	findByIdsAndFunctionsProvided(ids: string[], functionsProvided: string[]): Promise<JanuxPeople.PartyAbstract[]> {
-		return Promise.reject("Method not implemented by lokijs");
+		return Promise.reject("Method findByIdsAndFunctionsProvided not implemented by lokijs");
 	}
 
 	/**

@@ -2,6 +2,10 @@
  * Project janux-persistence
  * Created by ernesto on 6/9/17.
  */
+import bluebird = require("bluebird");
+import mongoose = require("mongoose");
+
+mongoose.Promise = bluebird;
 
 /**
  * This file helps to make the ts files

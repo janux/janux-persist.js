@@ -27,8 +27,8 @@ var dbEngineUtilLokijs = new LokiJsAdapter("users-example", lokiDatabase);
 var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(dbEngineUtilLokijs, new EntityProperties(true, true));
 
 //Mongodb implementation
-mongoose.connect(serverAppContext.db.mongoConnUrl);
-var model = mongoose.model("users-example", MongoUserSchemaExample);
+const conn = mongoose.createConnection(serverAppContext.db.mongoConnUrl);
+var model = conn.model("users-example", MongoUserSchemaExample);
 var dbEngineUtilMongodb = new MongooseAdapter(model);
 var userDaoMongoDb = ExampleUserDaoMongoDbImpl.createInstance(dbEngineUtilMongodb, new EntityProperties(true, true));
 
@@ -41,23 +41,23 @@ const lastName2 = "Smith";
 
 const incorrectEmail = "johnSmith.com";
 
-describe("Testing user example dao implementation insert methods", function() {
-	[userDaoLokiJS, userDaoMongoDb].forEach(function(userDao) {
-		beforeEach(function(done) {
-			userDao.removeAll().then(function() {
+describe("Testing user example dao implementation insert methods", function () {
+	[userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
+		beforeEach(function (done) {
+			userDao.removeAll().then(function () {
 				done();
 			});
 		});
 
-		describe("When inserting an incorrect user", function() {
-			it("Should send an error", function(done) {
+		describe("When inserting an incorrect user", function () {
+			it("Should send an error", function (done) {
 				var user = new ExampleUser(name, lastName, incorrectEmail);
 				userDao.insert(user).then(
-					function(result) {
+					function (result) {
 						assert.fail(result, "The system must no have inserted the user");
 						done();
 					},
-					function(error) {
+					function (error) {
 						assert("The program sent an error, is OK");
 						expect(error.length).eq(1);
 						done();
@@ -66,11 +66,11 @@ describe("Testing user example dao implementation insert methods", function() {
 			});
 		});
 
-		describe("When inserting correctly", function() {
-			it("Should the object have been inserted with the correct values", function(done) {
+		describe("When inserting correctly", function () {
+			it("Should the object have been inserted with the correct values", function (done) {
 				var user = new ExampleUser(name, lastName, email);
 				userDao.insert(user).then(
-					function(result) {
+					function (result) {
 						if (user instanceof ExampleUser) {
 							expect(result.name).eq(name);
 							expect(result.email).eq(email);
@@ -84,7 +84,7 @@ describe("Testing user example dao implementation insert methods", function() {
 
 							userDao
 								.findOne(result.id)
-								.then(function(resultQuery) {
+								.then(function (resultQuery) {
 									expect(resultQuery.name).eq(name);
 									expect(resultQuery.email).eq(email);
 									expect(resultQuery.typeName).not.to.be.undefined;
@@ -96,7 +96,7 @@ describe("Testing user example dao implementation insert methods", function() {
 									expect(result.lastUpdate).to.be.undefined;
 									done();
 								})
-								.catch(function(err) {
+								.catch(function (err) {
 									assert.fail(err, "The query must not have any error");
 									done();
 								});
@@ -105,7 +105,7 @@ describe("Testing user example dao implementation insert methods", function() {
 							done();
 						}
 					},
-					function(error) {
+					function (error) {
 						assert.fail(error, "The system must have inserted the object successfully");
 						done();
 					}
@@ -113,11 +113,11 @@ describe("Testing user example dao implementation insert methods", function() {
 			});
 		});
 
-		describe("When inserting many", function() {
-			it("Should the records have been inserted correctly in the database", function(done) {
+		describe("When inserting many", function () {
+			it("Should the records have been inserted correctly in the database", function (done) {
 				var user = new ExampleUser(name, lastName, email);
 				var user2 = new ExampleUser(name2, lastName2, email2);
-				userDao.insertMany([user, user2]).then(function(result) {
+				userDao.insertMany([user, user2]).then(function (result) {
 					expect(result.length).eq(2);
 					for (var i = 0; i < result.length; i++) {
 						var obj = result[i];
@@ -129,24 +129,24 @@ describe("Testing user example dao implementation insert methods", function() {
 			});
 		});
 
-		describe("When inserting duplicated data", function() {
-			it("Should the method send a reject", function(done) {
+		describe("When inserting duplicated data", function () {
+			it("Should the method send a reject", function (done) {
 				var user = new ExampleUser(name, lastName, email);
 				userDao.insert(user).then(
-					function(result) {
+					function (result) {
 						var duplicatedUser = new ExampleUser(name, lastName, email);
 						userDao.insert(duplicatedUser).then(
-							function(result) {
+							function (result) {
 								assert.fail(result, "The user must not be inserted");
 								done();
 							},
-							function(error) {
+							function (error) {
 								assert("The program sent an error, is OK");
 								done();
 							}
 						);
 					},
-					function(error) {
+					function (error) {
 						assert.fail(error, "Must be an inserted user");
 						done();
 					}

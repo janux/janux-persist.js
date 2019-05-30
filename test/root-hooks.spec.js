@@ -7,12 +7,12 @@
 //
 var config = require("config");
 var log4js = require("log4js");
-var mongoose = require("mongoose");
-var bluebird = require("bluebird");
+// var mongoose = require("mongoose");
+// var bluebird = require("bluebird");
 
 before(function() {
 	// we need to configure log4js here, because configuring it in the gulp build will
 	// not configure it for the mocha run
 	log4js.configure(config.log4js);
-	mongoose.Promise = bluebird;
+	// mongoose.Promise = bluebird;
 });

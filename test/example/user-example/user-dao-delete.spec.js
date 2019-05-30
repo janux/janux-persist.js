@@ -29,8 +29,8 @@ var dbEngineUtilLokijs = new LokiJsAdapter("users-example", lokiDatabase);
 var userDaoLokiJS = ExampleUserDaoLokiJsImpl.createInstance(dbEngineUtilLokijs, new EntityProperties(true, true));
 
 //Mongodb implementation
-mongoose.connect(serverAppContext.db.mongoConnUrl);
-var model = mongoose.model("users-example", MongoUserSchemaExample);
+const conn = mongoose.createConnection(serverAppContext.db.mongoConnUrl);
+var model = conn.model("users-example", MongoUserSchemaExample);
 var dbEngineUtilMongodb = new MongooseAdapter(model);
 var userDaoMongoDb = ExampleUserDaoMongoDbImpl.createInstance(dbEngineUtilMongodb, new EntityProperties(true, true));
 
@@ -39,84 +39,84 @@ const email2 = "jane_smith@gmail.com";
 const name = "John";
 const lastName = "Smith";
 
-describe("Testing user dao example delete methods", function() {
-	[userDaoLokiJS, userDaoMongoDb].forEach(function(userDao) {
+describe("Testing user dao example delete methods", function () {
+	[userDaoLokiJS, userDaoMongoDb].forEach(function (userDao) {
 		var insertedUsers;
 
-		beforeEach(function(done) {
-			userDao.removeAll().then(function() {
+		beforeEach(function (done) {
+			userDao.removeAll().then(function () {
 				var user = new ExampleUser(name, lastName, email);
 				var user2 = new ExampleUser(name, lastName, email2);
-				userDao.insertMany([user, user2]).then(function(result) {
+				userDao.insertMany([user, user2]).then(function (result) {
 					insertedUsers = result;
 					done();
 				});
 			});
 		});
 
-		context("Given the inserted users", function() {
-			it("This method should delete all records with no problems", function(done) {
+		context("Given the inserted users", function () {
+			it("This method should delete all records with no problems", function (done) {
 				userDao.removeAll().then(
-					function(result) {
+					function (result) {
 						//Perform a query
 						userDao.count().then(
-							function(count) {
+							function (count) {
 								expect(count).eq(0);
 								done();
 							},
-							function(error) {
+							function (error) {
 								assert.fail(error, "The method shouldn't have returned an error");
 								done();
 							}
 						);
 					},
-					function(error) {
+					function (error) {
 						assert.fail(error, "The method shouldn't have returned an error");
 						done();
 					}
 				);
 			});
 
-			it("This method should delete only one record", function(done) {
+			it("This method should delete only one record", function (done) {
 				expect(insertedUsers.length).eq(2);
 				var user = insertedUsers[0];
 				userDao.remove(user).then(
-					function(result) {
+					function (result) {
 						userDao.count().then(
-							function(count) {
+							function (count) {
 								expect(count).eq(1);
 								done();
 							},
-							function(error) {
+							function (error) {
 								assert.fail(error, "The method shouldn't have returned an error");
 								done();
 							}
 						);
 					},
-					function(error) {
+					function (error) {
 						assert.fail(error, "The method shouldn't have returned an error");
 						done();
 					}
 				);
 			});
 
-			it("This method should delete only one record", function(done) {
+			it("This method should delete only one record", function (done) {
 				expect(insertedUsers.length).eq(2);
 				var user = insertedUsers[0];
 				userDao.removeById(user.id).then(
-					function(result) {
+					function (result) {
 						userDao.count().then(
-							function(count) {
+							function (count) {
 								expect(count).eq(1);
 								done();
 							},
-							function(error) {
+							function (error) {
 								assert.fail(error, "The method shouldn't have returned an error");
 								done();
 							}
 						);
 					},
-					function(error) {
+					function (error) {
 						assert.fail(error, "The method shouldn't have returned an error");
 						done();
 					}
