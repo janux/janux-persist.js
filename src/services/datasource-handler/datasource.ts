@@ -55,7 +55,7 @@ export class DataSource {
 			// the default value.
 			const serverAppContext: any = config.get("serverAppContext");
 			let poolSize: any = Number(serverAppContext.db.poolSize);
-			poolSize = _.isNumber(poolSize) && poolSize > 5 ? poolSize : 5;
+			poolSize = _.isNumber(poolSize) && poolSize > 30 ? poolSize : 30;
 			this.log.info("Pool size to use: %j", poolSize);
 			conn = mongoose.createConnection(this.path,
 				{
