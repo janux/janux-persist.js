@@ -4,18 +4,18 @@
  */
 
 import * as Promise from "bluebird";
-import { PartyValidator } from "daos/party/party-validator";
-import { AccountDao } from "daos/user/account-dao";
-import { AccountEntity } from "daos/user/account-entity";
-import { AccountValidator } from "daos/user/account-validator";
+import {PartyValidator} from "daos/party/party-validator";
+import {AccountDao} from "daos/user/account-dao";
+import {AccountEntity} from "daos/user/account-entity";
+import {AccountValidator} from "daos/user/account-validator";
 import * as JanuxPeople from "janux-people";
 import * as _ from "lodash";
-import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
-import { PartyServiceImpl } from "services/party/impl/party-service-impl";
-import { PasswordService } from "services/password/PasswordService";
-import { DateUtil } from "utils/date/date-util";
+import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
+import {PartyServiceImpl} from "services/party/impl/party-service-impl";
+import {PasswordService} from "services/password/PasswordService";
+import {DateUtil} from "utils/date/date-util";
 import * as logger from "utils/logger-api/logger-api";
-import { isBlankString } from "utils/string/blank-string-validator";
+import {isBlankString} from "utils/string/blank-string-validator";
 import * as uuid from "uuid";
 
 /**
@@ -274,7 +274,15 @@ export class UserService {
 			return Promise.reject(errors);
 		}
 
-		return this.definePartyInfo(object.contact)
+		// Validate if there is another user with the same username.
+		return this.accountDao.findOneByUserName(user.username)
+			.then((result: AccountEntity) => {
+				if (!_.isNil(result)) {
+					return Promise.reject([new ValidationErrorImpl(this.ACCOUNT, AccountValidator.ANOTHER_USER, result.username)]);
+				} else {
+					return this.definePartyInfo(object.contact);
+				}
+			})
 			.then((contacts: JanuxPeople.PartyAbstract) => {
 				associatedParty = contacts;
 				user.contactId = associatedParty[this.ID_REFERENCE];
