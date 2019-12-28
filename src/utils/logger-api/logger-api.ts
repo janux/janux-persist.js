@@ -9,9 +9,10 @@ const log4js = checkForLog4js();
 function checkForLog4js() {
 	// console.log("Calling checkForLog4js");
 	try {
+		// console.log("log4js found");
 		return require("log4js");
 	} catch (e) {
-		// console.log("No log4js founded");
+		// console.log("log4js not found");
 		return null;
 	}
 }
