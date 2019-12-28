@@ -22,8 +22,8 @@ var dbPath = dbEngine === DataSourceHandler.LOKIJS ? lokiJsDBPath : mongoConnUrl
 
 var invalidId1 = "313030303030303030303030";
 
-describe("Testing user service service insertMethod method", function () {
-	describe("Given the inserted contacts", function () {
+describe("Testing user service service insertMethod method", function() {
+	describe("Given the inserted contacts", function() {
 		var insertedParty1;
 		var insertedParty2;
 		var partyDao;
@@ -38,7 +38,7 @@ describe("Testing user service service insertMethod method", function () {
 		var partyGroupService;
 		var passwordService = new PasswordService();
 
-		beforeEach(function (done) {
+		beforeEach(function(done) {
 			partyDao = DaoUtil.createPartyDao(dbEngine, dbPath);
 			accountDao = DaoUtil.createAccountDao(dbEngine, dbPath);
 			staffDao = DaoUtil.createStaffDataDao(dbEngine, dbPath);
@@ -49,35 +49,35 @@ describe("Testing user service service insertMethod method", function () {
 			groupService = new GroupService(groupDao, groupContentDao, groupAttributeValueDao);
 			partyGroupService = new PartyGroupService(partyService, groupService);
 			userService = UserService.createInstance(accountDao, partyService, passwordService);
-			setTimeout(function () {
+			setTimeout(function() {
 				accountDao
 					.removeAll()
-					.then(function () {
+					.then(function() {
 						return partyDao.removeAll();
 					})
-					.then(function () {
+					.then(function() {
 						return staffDao.removeAll();
 					})
-					.then(function () {
+					.then(function() {
 						// Inserting one person
 						var person = SampleData.createPerson1();
 						return partyDao.insert(person);
 					})
-					.then(function (insertedPerson) {
+					.then(function(insertedPerson) {
 						insertedParty1 = insertedPerson;
 						//Inserting organization
 						var organization = SampleData.createOrganization1();
 						return partyDao.insert(organization);
 					})
-					.then(function (insertedOrganization) {
+					.then(function(insertedOrganization) {
 						insertedParty2 = insertedOrganization;
 						done();
 					});
 			}, 10);
 		});
 
-		describe("When inserting an correct account with an contact id", function () {
-			it("It should not return any error", function (done) {
+		describe("When inserting an correct account with an contact id", function() {
+			it("It should not return any error", function(done) {
 				var temporalAccount;
 				var contactReference = insertedParty1.toJSON();
 				contactReference.id = insertedParty1.id;
@@ -87,7 +87,7 @@ describe("Testing user service service insertMethod method", function () {
 
 				userService
 					.insert(account)
-					.then(function (result) {
+					.then(function(result) {
 						expect(result.id).not.to.be.undefined;
 						expect(result.username).eq(account.username);
 						expect(result.dateCreated).not.to.be.undefined;
@@ -106,7 +106,7 @@ describe("Testing user service service insertMethod method", function () {
 						//Let's check if the party has the associated account.
 						return partyDao.findOne(result.contact.id);
 					})
-					.then(function (resultQueryPart) {
+					.then(function(resultQueryPart) {
 						expect(resultQueryPart.id).eq(insertedParty1.id);
 						expect(resultQueryPart.emailAddresses(false).length).eq(1);
 						expect(resultQueryPart.emailAddresses(false)[0].address).eq(contactReference.emails[0].address);
@@ -114,7 +114,7 @@ describe("Testing user service service insertMethod method", function () {
 						expect(resultQueryPart.emailAddresses(false)[0].primary).eq(true);
 						return accountDao.findAllMethod();
 					})
-					.then(function (resultQueryAccount) {
+					.then(function(resultQueryAccount) {
 						expect(resultQueryAccount.length).eq(1);
 						expect(resultQueryAccount[0].username).eq(account.username);
 						// expect(resultQueryAccount[0].password).eq(account.password);
@@ -131,8 +131,8 @@ describe("Testing user service service insertMethod method", function () {
 			});
 		});
 
-		describe("When inserting an account with an contact id that is already associated with another account", function () {
-			it("It should return an error", function (done) {
+		describe("When inserting an account with an contact id that is already associated with another account", function() {
+			it("It should return an error", function(done) {
 				var contactReference = insertedParty1.toJSON();
 				contactReference.id = insertedParty1.id;
 				contactReference.typeName = insertedParty1.typeName;
@@ -140,7 +140,7 @@ describe("Testing user service service insertMethod method", function () {
 				account.contact = contactReference;
 				userService
 					.insert(account)
-					.then(function (insertedRecord) {
+					.then(function(insertedRecord) {
 						var contactReference2 = insertedParty1.toJSON();
 						contactReference2.id = insertedParty1.id;
 						contactReference2.typeName = insertedParty1.typeName;
@@ -148,11 +148,11 @@ describe("Testing user service service insertMethod method", function () {
 						account2.contact = contactReference2;
 						return userService.insert(account2);
 					})
-					.then(function (insertedRecord2) {
+					.then(function(insertedRecord2) {
 						expect.fail("The method should not have inserted the record");
 						done();
 					})
-					.catch(function (err) {
+					.catch(function(err) {
 						expect(err.length).eq(1);
 						expect(err[0].attribute).eq(userService.ACCOUNT);
 						expect(err[0].message).eq(userService.ANOTHER_ACCOUNT_USING_CONTACT);
@@ -161,17 +161,17 @@ describe("Testing user service service insertMethod method", function () {
 			});
 		});
 
-		describe("When inserting an account with an contact id that does't exits in the database", function () {
-			it("It should return an error", function (done) {
+		describe("When inserting an account with an contact id that does't exits in the database", function() {
+			it("It should return an error", function(done) {
 				var account = SampleData.createEmptyUserAccount1();
 				account.contact = {id: invalidId1};
 				userService
 					.insert(account)
-					.then(function () {
+					.then(function() {
 						expect.fail("The method should not have inserted the record");
 						done();
 					})
-					.catch(function (err) {
+					.catch(function(err) {
 						expect(err.length).eq(1);
 						expect(err[0].attribute).eq(userService.PARTY);
 						expect(err[0].message).eq(userService.NO_CONTACT_IN_DATABASE);
@@ -180,8 +180,8 @@ describe("Testing user service service insertMethod method", function () {
 			});
 		});
 
-		describe("When inserting an account with a valid new contact", function () {
-			it("It should not return any error", function (done) {
+		describe("When inserting an account with a valid new contact", function() {
+			it("It should not return any error", function(done) {
 				var newPerson;
 				var contactReference;
 				var account;
@@ -192,11 +192,11 @@ describe("Testing user service service insertMethod method", function () {
 				account.contact = contactReference;
 				userService
 					.insert(account)
-					.then(function (result) {
+					.then(function(result) {
 						expect(result.dateCreated).not.to.be.null;
 						return partyDao.findOne(result.contactId);
 					})
-					.then(function (resultQuery) {
+					.then(function(resultQuery) {
 						expect(resultQuery).not.to.be.null;
 						expect(resultQuery.dateCreated).not.to.be.undefined;
 						done();
@@ -204,8 +204,8 @@ describe("Testing user service service insertMethod method", function () {
 			});
 		});
 
-		describe("When inserting an account with a new contact that has a duplicated email address", function () {
-			it("The method should return an error", function (done) {
+		describe("When inserting an account with a new contact that has a duplicated email address", function() {
+			it("The method should return an error", function(done) {
 				var newPerson;
 				var contactReference;
 				var account;
@@ -214,15 +214,15 @@ describe("Testing user service service insertMethod method", function () {
 				newPerson = SampleData.createPerson2();
 
 				accountDao.count()
-					.then(function (result) {
+					.then(function(result) {
 						initialAccountCount = result;
 						return partyDao.count();
 					})
-					.then(function (result) {
+					.then(function(result) {
 						initialPartyCount = result;
 						return partyService.insert(newPerson);
 					})
-					.then(function (result) {
+					.then(function(result) {
 						var newPersonSameEmailAddress = SampleData.createPerson2();
 						contactReference = newPersonSameEmailAddress.toJSON();
 						contactReference.typeName = newPersonSameEmailAddress.typeName;
@@ -231,16 +231,16 @@ describe("Testing user service service insertMethod method", function () {
 						account.contact = contactReference;
 						return userService.insert(account)
 					})
-					.then(function (result) {
+					.then(function(result) {
 						expect.fail("The method should not have inserted any record");
 						done();
-					}, function (error) {
+					}, function(error) {
 						partyDao.count()
-							.then(function (partyCount) {
+							.then(function(partyCount) {
 								expect(partyCount).eq(initialPartyCount + 1);
 								return accountDao.count();
 							})
-							.then(function (accountCount) {
+							.then(function(accountCount) {
 								expect(accountCount).eq(initialAccountCount);
 								done();
 							});
@@ -248,8 +248,8 @@ describe("Testing user service service insertMethod method", function () {
 			});
 		});
 
-		describe("When inserting an account with a duplicated username", function () {
-			it("The method should return an error", function (done) {
+		describe("When inserting an account with a duplicated username", function() {
+			it("The method should return an error", function(done) {
 				var contactReference = insertedParty1.toJSON();
 				var account;
 				contactReference.id = insertedParty1.id;
@@ -261,21 +261,21 @@ describe("Testing user service service insertMethod method", function () {
 				var initialAccountCount = 0;
 
 				// accountDao.count()
-				// 	.then(function (result) {
+				// 	.then(function(result) {
 				// 		initialAccountCount = result;
 				// 		return partyDao.count();
 				// 	})
-				// 	.then(function (result) {
+				// 	.then(function(result) {
 				// 		initialPartyCount = result;
 				// 		return userService.insert(account);
 				// 	});
 
-				userService.insert(account).then(function (result) {
+				userService.insert(account).then(function(result) {
 					return  accountDao.count()
-				}).then(function (result) {
+				}).then(function(result) {
 					initialAccountCount = result;
 					return partyDao.count();
-				}).then(function (result) {
+				}).then(function(result) {
 					initialPartyCount = result;
 					var contactReference2 = insertedParty2.toJSON();
 					var duplicatedUserNameAccount;
@@ -285,18 +285,18 @@ describe("Testing user service service insertMethod method", function () {
 					duplicatedUserNameAccount.username = account.username;
 					duplicatedUserNameAccount.contact = contactReference2;
 					return userService.insert(duplicatedUserNameAccount);
-				}).then(function (result2) {
+				}).then(function(result2) {
 					expect.fail("The method should not have inserted the record");
 					done();
-				}).catch(function (err) {
+				}).catch(function(err) {
 					expect(err.length).eq(1);
 					expect(err[0].message).eq(AccountValidator.ANOTHER_USER);
 					partyDao.count()
-						.then(function (partyCount) {
+						.then(function(partyCount) {
 							expect(partyCount).eq(initialPartyCount);
 							return accountDao.count();
 						})
-						.then(function (accountCount) {
+						.then(function(accountCount) {
 							expect(accountCount).eq(initialAccountCount);
 							done();
 						});
