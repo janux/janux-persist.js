@@ -35,7 +35,7 @@ module.exports = function(gulp) {
 			.on("end", done);
 	});
 
-	gulp.task("run-tests", ["compile-test"], function() {
+	gulp.task("run-test", function() {
 		return gulp.src(cfg.fileset.test, { read: false }).pipe(mocha({ reporter: cfg.mocha.reporter }));
 	});
 };
