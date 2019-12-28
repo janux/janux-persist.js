@@ -1,6 +1,7 @@
 "use strict";
 
-var gulp = require("gulp");
+var gulp = require("gulp"),
+	gulpSequence = require("gulp-sequence");
 
 if (!gulp.cfg) {
 	gulp.cfg = require("config");
@@ -27,7 +28,7 @@ gulp.task("default", ["clean", "compile"]);
 //
 // Compile and run tests for typescript project
 //
-gulp.task("test", ["run-tests"]);
+gulp.task("test", gulpSequence("compile-test", "run-test"));
 
 //
 // Generate documentation from typescript project
