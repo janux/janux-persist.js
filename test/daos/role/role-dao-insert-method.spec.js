@@ -68,7 +68,7 @@ describe("Testing role dao insertMethod methods", function() {
 				);
 
 				var out = role.toJSON();
-				console.log(out);
+				// console.log(out);
 				roleDao
 					.insert(role)
 					.then(
