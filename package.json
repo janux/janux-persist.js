@@ -59,7 +59,7 @@
 		"through2": "2.0.3",
 		"tslint": "5.6.0",
 		"typedoc": "0.7.1",
-		"typescript": "2.4.2"
+		"typescript": "3.8.3"
 	},
 	"author": "Janux",
 	"license": "ISC"
