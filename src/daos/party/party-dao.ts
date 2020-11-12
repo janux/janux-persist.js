@@ -66,10 +66,17 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 
 	/**
 	 * Find all people by Period
+	 * @param object
 	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
 	 */
-	public findPeopleByPeriod(): Promise<JanuxPeople.PartyAbstract[]> {
-		return this.findByAttribute("typeName", PartyValidator.PERSON);
+	public findPeopleByPeriod(object: any): Promise<JanuxPeople.PartyAbstract[]> {
+		const query = {
+			createdAt: {
+			  $gte: object.from,
+			  $lte: object.to
+			}
+		  };
+		return this.findByQuery(query);
 	}
 
 	/**

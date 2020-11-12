@@ -36,9 +36,10 @@ export interface PartyService {
 
 	/**
 	 * Find all people by period
+	 * @param object
 	 * @return {Promise<JanuxPeople.Party[]>}
 	 */
-	findPeopleByPeriod(): Promise<JanuxPeople.Party[]>;
+	findPeopleByPeriod(object: any): Promise<JanuxPeople.Party[]>;
 
 	/**
 	 * Find all organizations
