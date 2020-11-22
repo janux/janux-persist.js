@@ -3,8 +3,10 @@
  * Created by ernesto on 6/23/17.
  */
 var chai = require("chai");
+// var should = chai.should();
 var expect = chai.expect;
-var assert = chai.assert;
+// var assert = chai.assert;
+var MockDate = require("mockdate");
 var config = require("config");
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
@@ -18,14 +20,17 @@ var serverAppContext = config.get("serverAppContext");
 
 const firstName = "John";
 const middleName = "Doe";
+
 const lastName = "Iglesias";
 const maternal = "Smith";
+
 const honorificPrefix = "honorificPrefix";
 const honorificSuffix = "honorificSuffix";
+
 const work = "work";
 const home = "home";
 
-const organizationName = "Glarus";
+const organizationName1 = "Glarus";
 const organizationName2 = "Glarus 2";
 
 const name2 = "Jane";
@@ -36,14 +41,20 @@ var invalidId2 = "313030303030303030303032";
 var functions = ["FUNCTION-1", "FUNCTION_2"];
 var functions2 = ["FUNCTION_2", "FUNCTION_4"];
 
-describe("Testing party dao find methods", function() {
-	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
+var isReseller = false;
+
+
+const { eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('./date-utils');
+
+describe.only("Testing party dao find period method", function() {
+	[DataSourceHandler.MONGOOSE].forEach((dbEngine, i) => {
+	// [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine, i) => {
 		describe("Given the inserted records", function() {
-			var partyDao;
-			var insertedRecordOrganization;
-			var insertedRecordPerson;
+			var insertedRecordOrganization1;
 			var insertedRecordOrganization2;
+			var insertedRecordPerson1;
 			var insertedRecordPerson2;
+			var partyDao;
 
 			beforeEach(function(done) {
 				var path =
@@ -54,17 +65,17 @@ describe("Testing party dao find methods", function() {
 				partyDao
 					.removeAll()
 					.then(function() {
-						var organization = new OrganizationEntity();
-						organization.name = organizationName;
-						organization.isSupplier = true;
+						var organization1 = new OrganizationEntity();
+						organization1.name = organizationName1;
+						organization1.isSupplier = true;
 
-						var person = new PersonEntity();
-						person.name.first = firstName;
-						person.name.middle = middleName;
-						person.name.last = lastName;
-						person.name.maternal = maternal;
-						person.isReseller = true;
-						person.functionsProvided = functions;
+						var person1 = new PersonEntity();
+						person1.name.first = firstName;
+						person1.name.middle = middleName;
+						person1.name.last = lastName;
+						person1.name.maternal = maternal;
+						person1.isReseller = true;
+						person1.functionsProvided = functions;
 
 						var organization2 = new OrganizationEntity();
 						organization2.name = organizationName2;
@@ -75,41 +86,125 @@ describe("Testing party dao find methods", function() {
 						person2.isSupplier = true;
 						person2.functionsProvided = functions2;
 
-						return partyDao.insertMany([organization, person, organization2, person2]);
+						MockDate.set(eachTest[i > 5 ? 5 : i].creationTime); // set lastUpdate
+
+						return partyDao.insertMany([organization1, person1, organization2, person2]);
 					})
 					.then(function(result) {
-						insertedRecordOrganization = result[0];
-						insertedRecordPerson = result[1];
+						insertedRecordOrganization1 = result[0];
+						insertedRecordPerson1 = result[1];
 						insertedRecordOrganization2 = result[2];
 						insertedRecordPerson2 = result[3];
+					})
+					.then(() => {
+						MockDate.set(eachTest[i > 5 ? 5 : i].updateTime); // set lastUpdate
+						i++;
+						insertedRecordOrganization1.code = 7;
+						return partyDao.update(insertedRecordOrganization1)
+					})
+					.then(() => {
+						insertedRecordPerson1.code = 8;
+						return partyDao.update(insertedRecordPerson1)
+					})
+					.then((done) => {
+						MockDate.reset();
 						done();
 					})
 					.catch(function(err) {
-						assert.fail("Error", err);
 						done();
 					});
 			});
 
+			describe("When calling findPeopleByPeriod last30Days", function() {
+				it("The method should return 1 PartyValidator.PERSON record", function(done) {
+					partyDao
+						.findPeopleByPeriod({ from: last30Days.from(), to: last30Days.to() }).then(function(result) {
+							expect(result.length).eq(1);
+							expect(result[0].id).not.to.be.undefined;
+							expect(result[0].typeName).eq(PartyValidator.PERSON);
+							done();
+					})
+				});
+			});
+
+			describe("When calling findPeopleByPeriod last90Days", function() {
+				it("The method should return 1 PartyValidator.PERSON record ", function(done) {
+					partyDao
+						.findPeopleByPeriod({ from: last90Days.from(), to: last90Days.to() }).then(function(result) {
+							expect(result.length).eq(1);
+							expect(result[0].id).not.to.be.undefined;
+							expect(result[0].typeName).eq(PartyValidator.PERSON);
+							done();
+					})
+				});
+			});
+
+			describe("When calling findPeopleByPeriod in oneYear", function() {
+				it("The method should return 1 PartyValidator.PERSON record", function(done) {
+					partyDao
+						.findPeopleByPeriod({ from: oneYear.from(), to: oneYear.to() }).then(function(result) {
+							expect(result.length).eq(1);
+							expect(result[0].id).not.to.be.undefined;
+							expect(result[0].typeName).eq(PartyValidator.PERSON);
+							done();
+					})
+				});
+			});
+
+			describe("When calling findPeopleByPeriod in yearToDate", function() {
+				it("The method should return 1 PartyValidator.PERSON record", function(done) {
+					partyDao
+						.findPeopleByPeriod({ from: yearToDate.from(), to: yearToDate.to() }).then(function(result) {
+							expect(result.length).eq(1);
+							expect(result[0].id).not.to.be.undefined;
+							expect(result[0].typeName).eq(PartyValidator.PERSON);
+							done();
+					})
+				});
+			});
+
+			describe("When calling findPeopleByPeriod fiveYearToDate", function() {
+				it("The method should return 1 PartyValidator.PERSON record", function(done) {
+					partyDao
+						.findPeopleByPeriod({ from: fiveYearToDate.from(), to: fiveYearToDate.to() }).then(function(result) {
+							expect(result.length).eq(1);
+							expect(result[0].id).not.to.be.undefined;
+							expect(result[0].typeName).eq(PartyValidator.PERSON);
+							done();
+					})
+				});
+
+				it("The method should return 0 record", function(done) {
+					partyDao.
+						findPeopleByPeriod({ from: fiveYearToDate.from(), to: fiveYearToDate.to() }).then(function(result) {
+							expect(result.length).eq(0);
+							done();
+					})
+				});
+			});
+
 			describe("When calling findPeople", function() {
 				it("The method should return 2 records", function(done) {
-					partyDao.findPeople().then(function(result) {
-						expect(result.length).eq(2);
-						expect(result[0].id).not.to.be.undefined;
-						expect(result[0].typeName).eq(PartyValidator.PERSON);
-						expect(result[1].id).not.to.be.undefined;
-						expect(result[1].typeName).eq(PartyValidator.PERSON);
-						done();
-					});
+					partyDao
+						.findPeople().then(function(result) {
+							expect(result.length).eq(2);
+							expect(result[0].id).not.to.be.undefined;
+							expect(result[0].typeName).eq(PartyValidator.PERSON);
+							expect(result[1].id).not.to.be.undefined;
+							expect(result[1].typeName).eq(PartyValidator.PERSON);
+							done();
+					})
 				});
 			});
 
 			describe("When calling findOrganizations", function() {
 				it("The method should return 2 records", function(done) {
-					partyDao.findOrganizations().then(function(result) {
-						expect(result.length).eq(2);
-						expect(result[0].typeName).eq(PartyValidator.ORGANIZATION);
-						expect(result[1].typeName).eq(PartyValidator.ORGANIZATION);
-						done();
+					partyDao
+						.findOrganizations().then(function(result) {
+							expect(result.length).eq(2);
+							expect(result[0].typeName).eq(PartyValidator.ORGANIZATION);
+							expect(result[1].typeName).eq(PartyValidator.ORGANIZATION);
+							done();
 					});
 				});
 			});
@@ -161,9 +256,9 @@ describe("Testing party dao find methods", function() {
 					partyDao
 						.findByIdsAndFunctionsProvided(
 							[
-								insertedRecordOrganization.id,
+								insertedRecordOrganization1.id,
 								insertedRecordOrganization2.id,
-								insertedRecordPerson.id,
+								insertedRecordPerson1.id,
 								insertedRecordPerson2.id
 							],
 							["FUNCTION_2", "BLA"]
