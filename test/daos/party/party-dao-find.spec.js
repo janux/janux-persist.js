@@ -10,6 +10,8 @@ var MockDate = require("mockdate");
 var config = require("config");
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
+var EmailAddress = require("janux-people").EmailAddress;
+var PhoneNumber = require("janux-people").PhoneNumber;
 var PersonEntity = require("janux-people").Person;
 var OrganizationEntity = require("janux-people").Organization;
 var DaoUtil = require("../dao-util");
@@ -41,7 +43,13 @@ var invalidId2 = "313030303030303030303032";
 var functions = ["FUNCTION-1", "FUNCTION_2"];
 var functions2 = ["FUNCTION_2", "FUNCTION_4"];
 
+const email = "glarus@mail.com";
+const email3 = "glarus_dev@mail.com";
+const email4 = "glarus_sys@mail.com";
+const email5 = "glarus_admin@mail.com";
+
 var isReseller = false;
+var newCodePerson = 'new code';
 
 
 const { eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('./date-utils');
@@ -70,6 +78,8 @@ describe("Testing party dao find period method", function() {
 						var organization1 = new OrganizationEntity();
 						organization1.name = organizationName1;
 						organization1.isSupplier = true;
+						organization1.type = PartyValidator.ORGANIZATION;
+						organization1.setContactMethod(work, new EmailAddress(email));
 
 						var person1 = new PersonEntity();
 						person1.name.first = firstName;
@@ -78,15 +88,21 @@ describe("Testing party dao find period method", function() {
 						person1.name.maternal = maternal;
 						person1.isReseller = true;
 						person1.functionsProvided = functions;
+						person1.type = PartyValidator.PERSON;
+						person1.setContactMethod(work, new EmailAddress(email3));
 
 						var organization2 = new OrganizationEntity();
 						organization2.name = organizationName2;
+						organization2.type = PartyValidator.ORGANIZATION;
+						organization2.setContactMethod(work, new EmailAddress(email4));
 
 						var person2 = new PersonEntity();
 						person2.name.first = name2;
 						person2.name.middle = middleName2;
 						person2.isSupplier = true;
 						person2.functionsProvided = functions2;
+						person2.type = PartyValidator.PERSON;
+						person2.setContactMethod(work, new EmailAddress(email5));
 
 						MockDate.set(eachTest[i].creationTime); // set lastUpdate
 
@@ -121,8 +137,8 @@ describe("Testing party dao find period method", function() {
 				it("<last30Days 1 PartyValidator.PERSON>", function(done) {
 					MockDate.set(eachTest[i].updateTime); // set lastUpdate
 					i++;
-					insertedRecordOrganization1.code = 13;
-					insertedRecordPerson2.code = 14;
+					insertedRecordOrganization1.code = newCodePerson;
+					insertedRecordPerson2.code = newCodePerson;
 					partyDao
 						.update(insertedRecordPerson2)
 						.then(() => {
