@@ -1,8 +1,8 @@
 var moment = require("moment");
 
 const last30Days = {
-	from: function () { return moment().subtract('30', 'days').toDate() },
-	to: function () { return moment().add(1, 'day').startOf('day').toDate() }
+	from: function () { return moment().subtract('30', 'days').toDate().toUTCString() },
+	to: function () { return moment().add(1, 'day').startOf('day').toDate().toUTCString() }
 }
 
 const last90Days = {
