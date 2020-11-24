@@ -46,7 +46,7 @@ var isReseller = false;
 
 const { eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('./date-utils');
 
-describe.only("Testing party dao find period method", function() {
+describe("Testing party dao find period method", function() {
 	[DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
 	// [DataSourceHandler.LOKIJS].forEach((dbEngine) => {
 	// [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine) => {
@@ -97,37 +97,64 @@ describe.only("Testing party dao find period method", function() {
 						insertedRecordPerson1 = result[1];
 						insertedRecordOrganization2 = result[2];
 						insertedRecordPerson2 = result[3];
+						done();
 					})
-					.then((done) => {
-						MockDate.set(eachTest[i].updateTime); // set lastUpdate
-						console.log('value of i: ', i)
-						i++;
-						insertedRecordOrganization1.code = 7;
-						insertedRecordPerson1.code = 8;
-						return [
-							partyDao.update(insertedRecordOrganization1),
-							partyDao.update(insertedRecordPerson1),
-							MockDate.reset(),
-							done()
-						]
-					})
+					// .then((done) => {
+					// 	MockDate.set(eachTest[i].updateTime); // set lastUpdate
+					// 	console.log('value of i: ', i)
+					// 	i++;
+					// 	insertedRecordOrganization1.code = 7;
+					// 	insertedRecordPerson1.code = 8;
+					// 	return [
+					// 		partyDao.update(insertedRecordOrganization1),
+					// 		partyDao.update(insertedRecordPerson1),
+					// 		MockDate.reset(),
+					// 		done()
+					// 	]
+					// })
 					.catch(function(err) {
 						done();
 					});
 			});
 
 			describe.only("When calling findPeopleByPeriod last30Days", function() {
-				it("The method should return 1 PartyValidator.PERSON record", function(done) {
+				it("<last30Days 1 PartyValidator.PERSON>", function(done) {
+					MockDate.set(eachTest[i].updateTime); // set lastUpdate
+					i++;
+					insertedRecordOrganization1.code = 13;
+					insertedRecordPerson2.code = 14;
 					partyDao
-						.findPeopleByPeriod({ from: last30Days.from(), to: last30Days.to() }).then(function(result) {
-							console.log(`from: ${last30Days.from()} to: ${last30Days.to()}`)
-							console.log(`res: ${result} `)
-							console.log(`res length: ${result.length} `)
-							// expect(result.length).eq(1);
-							// expect(result[0].id).not.to.be.undefined;
-							// expect(result[0].typeName).eq(PartyValidator.PERSON);
+						.update(insertedRecordPerson2)
+						.then(() => {
+							return partyDao.update(insertedRecordOrganization1)
+							.then(() => {
+								return partyDao
+									.findPeopleByPeriod({ from: last30Days.from(), to: last30Days.to() }).then(function(result) {
+										console.log(`from: ${last30Days.from()} to: ${last30Days.to()}`)
+										console.log(`res: ${result} `)
+										console.log(`res length: ${result.length} `)
+										// expect(result.length).eq(1);
+										// expect(result[0].id).not.to.be.undefined;
+										// expect(result[0].typeName).eq(PartyValidator.PERSON);
+										MockDate.reset();
+										done();
+								})
+							})
+						})
+						.catch(function(err) {
+							expect.fail("Error");
 							done();
-					})
+						});
+					// partyDao
+					// 	.findPeopleByPeriod({ from: last30Days.from(), to: last30Days.to() }).then(function(result) {
+					// 		console.log(`from: ${last30Days.from()} to: ${last30Days.to()}`)
+					// 		console.log(`res: ${result} `)
+					// 		console.log(`res length: ${result.length} `)
+					// 		// expect(result.length).eq(1);
+					// 		// expect(result[0].id).not.to.be.undefined;
+					// 		// expect(result[0].typeName).eq(PartyValidator.PERSON);
+					// 		done();
+					// })
 				});
 			});
 

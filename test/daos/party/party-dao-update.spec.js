@@ -6,6 +6,7 @@ var chai = require("chai");
 var expect = chai.expect;
 var assert = chai.assert;
 var config = require("config");
+const { eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('./date-utils');
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
@@ -177,7 +178,19 @@ describe("Testing party dao updateMethod methods", function() {
 							expect(result.id).not.to.be.undefined;
 							expect(result.code).eq(newCodePerson);
 							expect(result.phoneNumbers(false).length).eq(1);
-							done();
+							
+						})
+						.then(() => {
+							return partyDao
+								.findPeopleByPeriod({ from: last30Days.from(), to: last30Days.to() }).then(function(result) {
+									console.log(`from: ${last30Days.from()} to: ${last30Days.to()}`)
+									console.log(`res: ${result} `)
+									console.log(`res length: ${result.length} `)
+									// expect(result.length).eq(1);
+									// expect(result[0].id).not.to.be.undefined;
+									// expect(result[0].typeName).eq(PartyValidator.PERSON);
+									done();
+							})
 						})
 						.catch(function(err) {
 							expect.fail("Error");
