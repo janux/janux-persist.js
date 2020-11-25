@@ -5,7 +5,7 @@
 var chai = require("chai");
 // var should = chai.should();
 var expect = chai.expect;
-// var assert = chai.assert;
+var assert = chai.assert;
 var MockDate = require("mockdate");
 var config = require("config");
 
@@ -55,8 +55,8 @@ var newCodePerson = 'new code';
 const { eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('./date-utils');
 
 describe("Testing party dao find period method", function() {
-	[DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
-	// [DataSourceHandler.LOKIJS].forEach((dbEngine) => {
+	// [DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
+	[DataSourceHandler.LOKIJS].forEach((dbEngine) => {
 	// [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine) => {
 		describe("Given the inserted records", function() {
 			var insertedRecordOrganization1;
@@ -129,7 +129,9 @@ describe("Testing party dao find period method", function() {
 					// 	]
 					// })
 					.catch(function(err) {
-						done();
+						assert(false);
+						console.log(err);
+						done(err);
 					});
 			});
 
@@ -141,6 +143,10 @@ describe("Testing party dao find period method", function() {
 					insertedRecordPerson2.code = newCodePerson;
 					partyDao
 						.update(insertedRecordPerson2)
+						// .then((r) => {
+						// 	console.log(r);
+						// 	done();
+						// })
 						.then(() => {
 							return partyDao.update(insertedRecordOrganization1)
 							.then(() => {
@@ -148,7 +154,7 @@ describe("Testing party dao find period method", function() {
 									.findPeopleByPeriod({ from: last30Days.from(), to: last30Days.to() }).then(function(result) {
 										console.log(`from: ${last30Days.from()} to: ${last30Days.to()}`)
 										console.log(`res: ${result} `)
-										console.log(`res length: ${result.length} `)
+										// console.log(`res length: ${result.length} `)
 										// expect(result.length).eq(1);
 										// expect(result[0].id).not.to.be.undefined;
 										// expect(result[0].typeName).eq(PartyValidator.PERSON);
@@ -156,10 +162,17 @@ describe("Testing party dao find period method", function() {
 										done();
 								})
 							})
+							.catch(function(err) {
+								console.log(err);
+								expect.fail("Error");
+								done();
+							});
 						})
 						.catch(function(err) {
-							expect.fail("Error");
-							done();
+							console.log(err);
+							assert.fail(err);
+							// expect.fail("Error");
+							done(err);
 						});
 					// partyDao
 					// 	.findPeopleByPeriod({ from: last30Days.from(), to: last30Days.to() }).then(function(result) {

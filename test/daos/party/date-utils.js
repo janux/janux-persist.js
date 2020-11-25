@@ -1,28 +1,28 @@
 var moment = require("moment");
 
 const last30Days = {
-	from: function () { return moment().subtract('30', 'days').toDate().toUTCString() },
-	to: function () { return moment().add(1, 'day').startOf('day').toDate().toUTCString() }
+	from: function () { return moment().subtract('30', 'days').toDate().toString() },
+	to: function () { return moment().add(1, 'day').startOf('day').toDate().toString() }
 }
 
 const last90Days = {
-	from: function () { return moment().subtract('90', 'days').toDate() },
-	to: function () { return moment().add(1, 'day').startOf('day').toDate() }
+	from: function () { return moment().subtract('90', 'days').toDate().toString() },
+	to: function () { return moment().add(1, 'day').startOf('day').toDate().toString() }
 }
 
 const oneYear = {
-	from: function () { return moment().subtract('1', 'years').toDate() },
-	to: function () { return moment().add(1, 'day').startOf('day').toDate() }
+	from: function () { return moment().subtract('1', 'years').toDate().toString() },
+	to: function () { return moment().add(1, 'day').startOf('day').toDate().toString() }
 }
 
 const yearToDate = {
-	from: function () { return moment().startOf('year').toDate() },
-	to: function () { return moment().add(1, 'day').startOf('day').toDate() }
+	from: function () { return moment().startOf('year').toDate().toString() },
+	to: function () { return moment().add(1, 'day').startOf('day').toDate().toString() }
 }
 
 const fiveYearToDate = {
-	from: function () { return moment().subtract('5', 'years').startOf('year').toDate() },
-	to: function () { return moment().add(1, 'day').startOf('day').toDate() }
+	from: function () { return moment().subtract('5', 'years').startOf('year').toDate().toString() },
+	to: function () { return moment().add(1, 'day').startOf('day').toDate().toString() }
 }
 
 const eachTest = [
