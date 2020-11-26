@@ -3,11 +3,12 @@
  * Created by ernesto on 6/23/17.
  */
 var chai = require("chai");
-// var should = chai.should();
+const fs = require('fs');
 var expect = chai.expect;
 var assert = chai.assert;
 var MockDate = require("mockdate");
 var config = require("config");
+var uuidv1 = require('uuid');
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
@@ -43,10 +44,10 @@ var invalidId2 = "313030303030303030303032";
 var functions = ["FUNCTION-1", "FUNCTION_2"];
 var functions2 = ["FUNCTION_2", "FUNCTION_4"];
 
-const email = "glarus@mail.com";
-const email3 = "glarus_dev@mail.com";
-const email4 = "glarus_sys@mail.com";
-const email5 = "glarus_admin@mail.com";
+const makeMail = () => {
+	// console.log('uuidv1', uuidv1())
+	return 'user' + uuidv1() + '@' + uuidv1() + '.com';
+}
 
 var isReseller = false;
 var newCodePerson = 'new code';
@@ -56,8 +57,8 @@ const { eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } 
 
 describe("Testing party dao find period method", function() {
 	// [DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
-	[DataSourceHandler.LOKIJS].forEach((dbEngine) => {
-	// [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine) => {
+	// [DataSourceHandler.LOKIJS].forEach((dbEngine) => {
+	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine) => {
 		describe("Given the inserted records", function() {
 			var insertedRecordOrganization1;
 			var insertedRecordOrganization2;
@@ -79,7 +80,7 @@ describe("Testing party dao find period method", function() {
 						organization1.name = organizationName1;
 						organization1.isSupplier = true;
 						organization1.type = PartyValidator.ORGANIZATION;
-						organization1.setContactMethod(work, new EmailAddress(email));
+						organization1.setContactMethod(work, new EmailAddress(makeMail()));
 
 						var person1 = new PersonEntity();
 						person1.name.first = firstName;
@@ -89,12 +90,12 @@ describe("Testing party dao find period method", function() {
 						person1.isReseller = true;
 						person1.functionsProvided = functions;
 						person1.type = PartyValidator.PERSON;
-						person1.setContactMethod(work, new EmailAddress(email3));
+						person1.setContactMethod(work, new EmailAddress(makeMail()));
 
 						var organization2 = new OrganizationEntity();
 						organization2.name = organizationName2;
 						organization2.type = PartyValidator.ORGANIZATION;
-						organization2.setContactMethod(work, new EmailAddress(email4));
+						organization2.setContactMethod(work, new EmailAddress(makeMail()));
 
 						var person2 = new PersonEntity();
 						person2.name.first = name2;
@@ -102,7 +103,7 @@ describe("Testing party dao find period method", function() {
 						person2.isSupplier = true;
 						person2.functionsProvided = functions2;
 						person2.type = PartyValidator.PERSON;
-						person2.setContactMethod(work, new EmailAddress(email5));
+						person2.setContactMethod(work, new EmailAddress(makeMail()));
 
 						MockDate.set(eachTest[i].creationTime); // set lastUpdate
 
@@ -143,10 +144,6 @@ describe("Testing party dao find period method", function() {
 					insertedRecordPerson2.code = newCodePerson;
 					partyDao
 						.update(insertedRecordPerson2)
-						// .then((r) => {
-						// 	console.log(r);
-						// 	done();
-						// })
 						.then(() => {
 							return partyDao.update(insertedRecordOrganization1)
 							.then(() => {
@@ -154,7 +151,7 @@ describe("Testing party dao find period method", function() {
 									.findPeopleByPeriod({ from: last30Days.from(), to: last30Days.to() }).then(function(result) {
 										console.log(`from: ${last30Days.from()} to: ${last30Days.to()}`)
 										console.log(`res: ${result} `)
-										// console.log(`res length: ${result.length} `)
+										console.log(`res length: ${result.length} `)
 										// expect(result.length).eq(1);
 										// expect(result[0].id).not.to.be.undefined;
 										// expect(result[0].typeName).eq(PartyValidator.PERSON);
