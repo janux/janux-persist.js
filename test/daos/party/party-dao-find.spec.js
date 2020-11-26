@@ -57,8 +57,8 @@ const { eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } 
 
 describe("Testing party dao find period method", function() {
 	// [DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
-	// [DataSourceHandler.LOKIJS].forEach((dbEngine) => {
-	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine) => {
+	[DataSourceHandler.LOKIJS].forEach((dbEngine) => {
+	// [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine) => {
 		describe("Given the inserted records", function() {
 			var insertedRecordOrganization1;
 			var insertedRecordOrganization2;
@@ -136,7 +136,7 @@ describe("Testing party dao find period method", function() {
 					});
 			});
 
-			describe.only("When calling findPeopleByPeriod last30Days", function() {
+			describe("When calling findPeopleByPeriod last30Days", function() {
 				it("<last30Days 1 PartyValidator.PERSON>", function(done) {
 					MockDate.set(eachTest[i].updateTime); // set lastUpdate
 					i++;
@@ -298,6 +298,7 @@ describe("Testing party dao find period method", function() {
 			describe("When calling find findByIsSupplierAndTypeName", function() {
 				it("The method should return one record", function(done) {
 					partyDao.findByIsSupplierAndTypeName(true, PartyValidator.ORGANIZATION).then(function(value) {
+						console.log('value: ', value)
 						expect(value.length).eq(1);
 						done();
 					});

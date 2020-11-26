@@ -13,10 +13,10 @@ var MockDate = require("mockdate");
 var uuidv1 = require('uuid');
 const fs = require('fs');
 
-var PersonEntity = require("janux-people").Person;
-var EmailAddress = require("janux-people").EmailAddress;
 var PartyValidator = require("../../../dist/index").PartyValidator;
+var EmailAddress = require("janux-people").EmailAddress;
 var PhoneNumber = require("janux-people").PhoneNumber;
+var PersonEntity = require("janux-people").Person;
 var OrganizationEntity = require("janux-people").Organization;
 var DaoUtil = require("../dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
@@ -37,14 +37,18 @@ const email = "glarus@mail.com";
 const email3 = "glarus_dev@mail.com";
 const email4 = "glarus_sys@mail.com";
 const email5 = "glarus_admin@mail.com";
+var invalidId1 = "313030303030303030303030";
+var invalidId2 = "313030303030303030303032";
+var functions = ["FUNCTION-1", "FUNCTION_2"];
+var functions2 = ["FUNCTION_2", "FUNCTION_4"];
+const organizationName1 = "Glarus";
+const organizationName2 = "Glarus 2";
 
 const makeMail = () => {
 	// console.log('uuidv1', uuidv1())
 	return 'user' + uuidv1() + '@' + uuidv1() + '.com';
 }
 
-const organizationName = "Glarus";
-const organizationName2 = "Glarus 2";
 
 const name2 = "Jane";
 const middleName2 = "Smith";
@@ -66,8 +70,8 @@ describe("Testing party dao find by Period Loki methods", function() {
 	[DataSourceHandler.LOKIJS].forEach((dbEngine, dbType) => {
 		describe("Given the inserted records", function() {
 			var partyDao;
-			var insertedRecordOrganization;
-			var insertedRecordPerson;
+			var insertedRecordOrganization1;
+			var insertedRecordPerson1;
 			var insertedRecordOrganization2;
 			var insertedRecordPerson2;
 
@@ -82,18 +86,18 @@ describe("Testing party dao find by Period Loki methods", function() {
 				partyDao
 					.removeAll()
 					.then(function() {
-						var organization = new OrganizationEntity();
-						organization.idAccount = idAccount;
-						organization.name = organizationName;
-						organization.type = PartyValidator.ORGANIZATION;
-						organization.setContactMethod(work, new EmailAddress(makeMail()));
+						var organization1 = new OrganizationEntity();
+						organization1.idAccount = idAccount;
+						organization1.name = organizationName1;
+						organization1.type = PartyValidator.ORGANIZATION;
+						organization1.setContactMethod(work, new EmailAddress(makeMail()));
 
-						var person = new PersonEntity();
-						person.name.first = firstName;
-						person.name.middle = middleName;
-						person.name.last = lastName;
-						person.type = PartyValidator.PERSON;
-						person.setContactMethod(work, new EmailAddress(makeMail()));
+						var person1 = new PersonEntity();
+						person1.name.first = firstName;
+						person1.name.middle = middleName;
+						person1.name.last = lastName;
+						person1.type = PartyValidator.PERSON;
+						person1.setContactMethod(work, new EmailAddress(makeMail()));
 
 						var organization2 = new OrganizationEntity();
 						organization2.name = organizationName2;
@@ -106,25 +110,25 @@ describe("Testing party dao find by Period Loki methods", function() {
 						person2.type = PartyValidator.PERSON;
 						person2.setContactMethod(work, new EmailAddress(makeMail()));
 
-						MockDate.set(eachTest[i].creationTime); // set lastUpdate
+						MockDate.set(eachTest[i > 5 ? 1 : i].creationTime); // set lastUpdate
 						
-						return partyDao.insertMany([organization, person, organization2, person2]);
+						return partyDao.insertMany([organization1, person1, organization2, person2]);
 					})
 					.then(function(result) {
-						insertedRecordOrganization = result[0];
-						insertedRecordPerson = result[1];
+						insertedRecordOrganization1 = result[0];
+						insertedRecordPerson1 = result[1];
 						insertedRecordOrganization2 = result[2];
 						insertedRecordPerson2 = result[3];
 						done();
 					})
 					.then((done) => {
-						MockDate.set(eachTest[i].updateTime); // set lastUpdate
+						MockDate.set(eachTest[i > 5 ? 1 : i].updateTime); // set lastUpdate
 						i++;
-						insertedRecordOrganization.code = 7;
-						insertedRecordPerson.code = 8;
+						insertedRecordOrganization1.code = 7;
+						insertedRecordPerson1.code = 8;
 						return [
-							partyDao.update(insertedRecordPerson),
-							partyDao.update(insertedRecordOrganization)
+							partyDao.update(insertedRecordPerson1),
+							partyDao.update(insertedRecordOrganization1)
 							.catch(function(err) {
 								console.log(err);
 								expect.fail("Error");
@@ -256,6 +260,99 @@ describe("Testing party dao find by Period Loki methods", function() {
 					})
 				});
 
+			});
+
+
+
+			describe("When calling findPeople", function() {
+				it("The method should return 2 records", function(done) {
+					partyDao
+						.findPeople().then(function(result) {
+							expect(result.length).eq(2);
+							expect(result[0].id).not.to.be.undefined;
+							expect(result[0].typeName).eq(PartyValidator.PERSON);
+							expect(result[1].id).not.to.be.undefined;
+							expect(result[1].typeName).eq(PartyValidator.PERSON);
+							done();
+					})
+				});
+			});
+
+			describe("When calling findOrganizations", function() {
+				it("The method should return 2 records", function(done) {
+					partyDao
+						.findOrganizations().then(function(result) {
+							expect(result.length).eq(2);
+							expect(result[0].typeName).eq(PartyValidator.ORGANIZATION);
+							expect(result[1].typeName).eq(PartyValidator.ORGANIZATION);
+							done();
+					});
+				});
+			});
+
+			describe("When calling the method findByIdsMethod", function() {
+				it("The method should return one record", function(done) {
+					partyDao
+						.findByIdsMethod([invalidId1, invalidId2, insertedRecordOrganization2.id])
+						.then(function(result) {
+							expect(result.length).eq(1);
+							done();
+						});
+				});
+			});
+
+			describe("When calling findOneMethod", function() {
+				it("The method should return one record when calling by a inserted id", function(done) {
+					partyDao.findOne(insertedRecordOrganization2.id).then(function(result) {
+						expect(result).not.to.be.null;
+						expect(result.id).eq(insertedRecordOrganization2.id);
+						expect(result.name).not.to.be.null;
+						done();
+					});
+				});
+
+				it("The method should return null with an invalid id", function(done) {
+					partyDao.findOne(invalidId1).then(function(result) {
+						expect(result).to.be.null;
+						done();
+					});
+				});
+			});
+
+			describe("When calling find findByIsSupplierAndTypeName", function() {
+				it("The method should return one record", function(done) {
+					partyDao.findByIsSupplierAndTypeName(true, PartyValidator.ORGANIZATION).then(function(value) {
+						// result.map((result) => {
+						// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
+						// })
+						console.log(`value : ${value} `);
+						expect(value.length).eq(1);
+						done();
+					});
+				});
+			});
+
+			describe("When calling findByIdsAndFunctionsProvided", function() {
+				it("The method should return the result", function(done) {
+					// The method only works for mongodb
+					if (dbEngine === DataSourceHandler.LOKIJS) {
+						done();
+					}
+					partyDao
+						.findByIdsAndFunctionsProvided(
+							[
+								insertedRecordOrganization1.id,
+								insertedRecordOrganization2.id,
+								insertedRecordPerson1.id,
+								insertedRecordPerson2.id
+							],
+							["FUNCTION_2", "BLA"]
+						)
+						.then(function(value) {
+							expect(value.length).eq(2);
+							done();
+						});
+				});
 			});
 
 		});
