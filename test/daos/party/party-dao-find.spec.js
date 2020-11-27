@@ -3,13 +3,10 @@
  * Created by ernesto on 6/23/17.
  */
 var chai = require("chai");
-// var should = chai.should();
 var expect = chai.expect;
 var assert = chai.assert;
 var MockDate = require("mockdate");
 var config = require("config");
-var uuidv1 = require('uuid');
-const fs = require('fs');
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
@@ -22,52 +19,11 @@ var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 //Config files
 var serverAppContext = config.get("serverAppContext");
 
-const firstName = "John";
-const middleName = "Doe";
-
-const lastName = "Iglesias";
-const maternal = "Smith";
-
-const honorificPrefix = "honorificPrefix";
-const honorificSuffix = "honorificSuffix";
-
-const work = "work";
-const home = "home";
-
-const organizationName1 = "Glarus";
-const organizationName2 = "Glarus 2";
-
-const name2 = "Jane";
-const middleName2 = "Smith";
-
-var invalidId1 = "313030303030303030303030";
-var invalidId2 = "313030303030303030303032";
-var functions = ["FUNCTION-1", "FUNCTION_2"];
-var functions2 = ["FUNCTION_2", "FUNCTION_4"];
-
-// const email1 = "glarus@mail.com";
-// const email2 = "glarus_dev@mail.com";
-// const email3 = "glarus_sys@mail.com";
-// const email4 = "glarus_admin@mail.com";
-
-var isReseller = false;
 var i = 0;
 
-const deleteLokiDB = () => {
-	let db = process.cwd()+'/janux-persistence-test.db';
-		fs.unlink(db, function (err) {
-			if (err) throw err;
-			// if no error, file has been deleted successfully
-			// console.log('db file deleted!');
-		});  
-}
-
-const makeMail = () => {
-	return 'user' + uuidv1() + '@' + uuidv1() + '.com';
-}
-
-
-const { eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('./date-utils');
+const {	eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate, deleteLokiDB, makeMail } = require('./date-utils');
+const { firstName, middleName, lastName, maternal, work, organizationName1 } = require('./date-utils');
+const { organizationName2, name2, middleName2, invalidId1, invalidId2, functions, functions2, M, L } = require('./date-utils');
 
 describe.only("Testing party dao find period method", function() {
 	[DataSourceHandler.LOKIJS, DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
@@ -143,7 +99,6 @@ describe.only("Testing party dao find period method", function() {
 						done();
 					})
 					.then((done) => {
-						
 						MockDate.set(eachTest[i > 5 ? 1 : i].updateTime);
 						i > 11 ? i = 0 : i++;
 						insertedRecordOrganization1.code = 7;
@@ -165,7 +120,7 @@ describe.only("Testing party dao find period method", function() {
 					});
 			});
 
-			describe(`${isMongoose() ? 'M' : 'L'} When calling a period last30Days`, function() {
+			describe(`${isMongoose() ? M : L} When calling a period last30Days`, function() {
 				it("The method should return 1 PERSON record", function(done) {
 					MockDate.reset();
 					partyDao
@@ -178,7 +133,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe(`${isMongoose() ? 'M' : 'L'} When calling a period last90Days`, function() {
+			describe(`${isMongoose() ? M : L} When calling a period last90Days`, function() {
 				it("The method should return 1 PERSON record ", function(done) {
 					MockDate.reset();
 					partyDao
@@ -191,7 +146,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe(`${isMongoose() ? 'M' : 'L'} When calling a period in oneYear`, function() {
+			describe(`${isMongoose() ? M : L} When calling a period in oneYear`, function() {
 				it("The method should return 1 PERSON record", function(done) {
 					MockDate.reset();
 					partyDao
@@ -204,7 +159,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe(`${isMongoose() ? 'M' : 'L'} When calling a period in yearToDate`, function() {
+			describe(`${isMongoose() ? M : L} When calling a period in yearToDate`, function() {
 				it("The method should return 1 PERSON record", function(done) {
 					MockDate.reset();
 					partyDao
@@ -217,7 +172,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe(`${isMongoose() ? 'M' : 'L'} When calling  a period of fiveYearToDate`, function() {
+			describe(`${isMongoose() ? M : L} When calling  a period of fiveYearToDate`, function() {
 				it("The method should return 1 PERSON record", function(done) {
 					MockDate.reset();
 					partyDao
@@ -230,7 +185,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe(`${isMongoose() ? 'M' : 'L'} When calling fiveYearToDate out of period`, function() {
+			describe(`${isMongoose() ? M : L} When calling fiveYearToDate out of period`, function() {
 				it("The method should return 0 record", function(done) {
 					MockDate.reset();
 					partyDao.
@@ -241,7 +196,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe(`${isMongoose() ? 'M' : 'L'} When calling findPeople`, function() {
+			describe(`${isMongoose() ? M : L} When calling findPeople`, function() {
 				it("The method should return 2 records", function(done) {
 					partyDao
 						.findPeople().then(function(result) {
@@ -255,7 +210,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe(`${isMongoose() ? 'M' : 'L'} When calling findOrganizations`, function() {
+			describe(`${isMongoose() ? M : L} When calling findOrganizations`, function() {
 				it("The method should return 2 records", function(done) {
 					partyDao
 						.findOrganizations().then(function(result) {
@@ -267,7 +222,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe(`${isMongoose() ? 'M' : 'L'} When calling the method findByIdsMethod`, function() {
+			describe(`${isMongoose() ? M : L} When calling the method findByIdsMethod`, function() {
 				it("The method should return one record", function(done) {
 					partyDao
 						.findByIdsMethod([invalidId1, invalidId2, insertedRecordOrganization2.id])
@@ -278,7 +233,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe(`${isMongoose() ? 'M' : 'L'} When calling findOneMethod`, function() {
+			describe(`${isMongoose() ? M : L} When calling findOneMethod`, function() {
 				it("The method should return one record when calling by a inserted id", function(done) {
 					partyDao.findOne(insertedRecordOrganization2.id).then(function(result) {
 						expect(result).not.to.be.null;
@@ -288,7 +243,7 @@ describe.only("Testing party dao find period method", function() {
 					});
 				});
 
-				it(`${isMongoose() ? 'M' : 'L'} The method should return null with an invalid id`, function(done) {
+				it(`The method should return null with an invalid id`, function(done) {
 					partyDao.findOne(invalidId1).then(function(result) {
 						expect(result).to.be.null;
 						done();
@@ -296,7 +251,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe(`${isMongoose() ? 'M' : 'L'} When calling find findByIsSupplierAndTypeName`, function() {
+			describe(`${isMongoose() ? M : L} When calling find findByIsSupplierAndTypeName`, function() {
 				it("The method should return one record", function(done) {
 					partyDao.findByIsSupplierAndTypeName(true, PartyValidator.ORGANIZATION).then(function(value) {
 						expect(value.length).eq(1);
@@ -305,7 +260,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe(`${isMongoose() ? 'M' : 'L'} When calling findByIdsAndFunctionsProvided`, function() {
+			describe(`${isMongoose() ? M : L} When calling findByIdsAndFunctionsProvided`, function() {
 				it("The method should return the result", function(done) {
 					// The method only works for mongodb
 					if (dbEngine === DataSourceHandler.LOKIJS) {
