@@ -111,7 +111,7 @@ describe("Testing party dao find by Period Loki methods", function() {
 						person2.type = PartyValidator.PERSON;
 						person2.setContactMethod(work, new EmailAddress(email4));
 
-						MockDate.set(eachTest[i > 5 ? 1 : i].creationTime); // set lastUpdate
+						MockDate.set(eachTest[i > 5 ? 1 : i].creationTime);
 						
 						return partyDao.insertMany([organization1, person1, organization2, person2]);
 					})
@@ -123,7 +123,7 @@ describe("Testing party dao find by Period Loki methods", function() {
 						done();
 					})
 					.then((done) => {
-						MockDate.set(eachTest[i > 5 ? 1 : i].updateTime); // set lastUpdate
+						MockDate.set(eachTest[i > 5 ? 1 : i].updateTime);
 						i++;
 						insertedRecordOrganization1.code = 7;
 						insertedRecordPerson1.code = 8;
@@ -145,8 +145,8 @@ describe("Testing party dao find by Period Loki methods", function() {
 			});
 
 			describe("When calling findPeopleByPeriod in last30Days period", function() {
-				MockDate.reset();
 				it("Last30Days It should return 1 record", function(done) {
+					MockDate.reset();
 					partyDao
 						.findPeopleByPeriod({ from: last30Days.from(), to: last30Days.to() })
 						.then((result) => {
@@ -163,8 +163,8 @@ describe("Testing party dao find by Period Loki methods", function() {
 			});
 
 			describe("When calling findPeopleByPeriod in last90Days period", function() {
-				MockDate.reset();
 				it("Last90Days It should return 1 record", function(done) {
+					MockDate.reset();
 					partyDao
 						.findPeopleByPeriod({ from: last90Days.from(), to: last90Days.to() })
 						.then((result) => {
@@ -181,8 +181,8 @@ describe("Testing party dao find by Period Loki methods", function() {
 			});
 
 			describe("When calling findPeopleByPeriod in oneYear period", function() {
-				MockDate.reset();
 				it("OneYear It should return 1 record", function(done) {
+					MockDate.reset();
 					partyDao
 						.findPeopleByPeriod({ from: oneYear.from(), to: oneYear.to() })
 						.then((result) => {
@@ -199,8 +199,8 @@ describe("Testing party dao find by Period Loki methods", function() {
 			});
 
 			describe("When calling findPeopleByPeriod in yearToDate period", function() {
-				MockDate.reset();
 				it("YearToDate It should return 1 record", function(done) {
+					MockDate.reset();
 					partyDao
 						.findPeopleByPeriod({ from: yearToDate.from(), to: yearToDate.to() })
 						.then((result) => {
