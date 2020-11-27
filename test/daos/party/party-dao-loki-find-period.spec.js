@@ -33,10 +33,10 @@ const honorificPrefix = "honorificPrefix";
 const honorificSuffix = "honorificSuffix";
 const work = "work";
 const home = "home";
-const email = "glarus@mail.com";
-const email3 = "glarus_dev@mail.com";
-const email4 = "glarus_sys@mail.com";
-const email5 = "glarus_admin@mail.com";
+const email1 = "glarus@mail.com";
+const email2 = "glarus_dev@mail.com";
+const email3 = "glarus_sys@mail.com";
+const email4 = "glarus_admin@mail.com";
 var invalidId1 = "313030303030303030303030";
 var invalidId2 = "313030303030303030303032";
 var functions = ["FUNCTION-1", "FUNCTION_2"];
@@ -44,11 +44,10 @@ var functions2 = ["FUNCTION_2", "FUNCTION_4"];
 const organizationName1 = "Glarus";
 const organizationName2 = "Glarus 2";
 
-const makeMail = () => {
-	// console.log('uuidv1', uuidv1())
-	return 'user' + uuidv1() + '@' + uuidv1() + '.com';
-}
-
+// const makeMail = () => {
+// 	// console.log('uuidv1', uuidv1())
+// 	return 'user' + uuidv1() + '@' + uuidv1() + '.com';
+// }
 
 const name2 = "Jane";
 const middleName2 = "Smith";
@@ -87,28 +86,29 @@ describe("Testing party dao find by Period Loki methods", function() {
 					.removeAll()
 					.then(function() {
 						var organization1 = new OrganizationEntity();
+						organization1.isSupplier = true;
 						organization1.idAccount = idAccount;
 						organization1.name = organizationName1;
 						organization1.type = PartyValidator.ORGANIZATION;
-						organization1.setContactMethod(work, new EmailAddress(makeMail()));
+						organization1.setContactMethod(work, new EmailAddress(email1));
 
 						var person1 = new PersonEntity();
 						person1.name.first = firstName;
 						person1.name.middle = middleName;
 						person1.name.last = lastName;
 						person1.type = PartyValidator.PERSON;
-						person1.setContactMethod(work, new EmailAddress(makeMail()));
+						person1.setContactMethod(work, new EmailAddress(email2));
 
 						var organization2 = new OrganizationEntity();
 						organization2.name = organizationName2;
 						organization2.type = PartyValidator.ORGANIZATION;
-						organization2.setContactMethod(work, new EmailAddress(makeMail()));
+						organization2.setContactMethod(work, new EmailAddress(email3));
 
 						var person2 = new PersonEntity();
 						person2.name.first = name2;
 						person2.name.middle = middleName2;
 						person2.type = PartyValidator.PERSON;
-						person2.setContactMethod(work, new EmailAddress(makeMail()));
+						person2.setContactMethod(work, new EmailAddress(email4));
 
 						MockDate.set(eachTest[i > 5 ? 1 : i].creationTime); // set lastUpdate
 						
@@ -262,8 +262,6 @@ describe("Testing party dao find by Period Loki methods", function() {
 
 			});
 
-
-
 			describe("When calling findPeople", function() {
 				it("The method should return 2 records", function(done) {
 					partyDao
@@ -322,10 +320,6 @@ describe("Testing party dao find by Period Loki methods", function() {
 			describe("When calling find findByIsSupplierAndTypeName", function() {
 				it("The method should return one record", function(done) {
 					partyDao.findByIsSupplierAndTypeName(true, PartyValidator.ORGANIZATION).then(function(value) {
-						// result.map((result) => {
-						// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-						// })
-						console.log(`value : ${value} `);
 						expect(value.length).eq(1);
 						done();
 					});
