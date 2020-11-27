@@ -9,6 +9,7 @@ var assert = chai.assert;
 var MockDate = require("mockdate");
 var config = require("config");
 var uuidv1 = require('uuid');
+const fs = require('fs');
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
@@ -52,6 +53,15 @@ var functions2 = ["FUNCTION_2", "FUNCTION_4"];
 var isReseller = false;
 var i = 0;
 
+const deleteLokiDB = () => {
+	let db = process.cwd()+'/janux-persistence-test.db';
+		fs.unlink(db, function (err) {
+			if (err) throw err;
+			// if no error, file has been deleted successfully
+			console.log('db file deleted!');
+		});  
+}
+
 const makeMail = () => {
 	// console.log('uuidv1', uuidv1())
 	return 'user' + uuidv1() + '@' + uuidv1() + '.com';
@@ -60,9 +70,9 @@ const makeMail = () => {
 const { eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('./date-utils');
 
 describe.only("Testing party dao find period method", function() {
-	// [DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
+	[DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
 	// [DataSourceHandler.LOKIJS].forEach((dbEngine) => {
-	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine) => {
+	// [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine) => {
 		describe("Given the inserted records", function() {
 			var insertedRecordOrganization1;
 			var insertedRecordOrganization2;
@@ -73,11 +83,11 @@ describe.only("Testing party dao find period method", function() {
 
 			beforeEach(function(done) {
 				console.log('______________________>');
-				// console.log('i value is: ', i);
 				if (dbEngine === DataSourceHandler.MONGOOSE) { 
 					console.log('MONGOOSE: test number ', i);
 				} else {
 					console.log('LOKIJS: test number ', i);
+					deleteLokiDB();
 				}
 				var path =
 					dbEngine === DataSourceHandler.LOKIJS
@@ -90,8 +100,10 @@ describe.only("Testing party dao find period method", function() {
 						var organization1 = new OrganizationEntity();
 						organization1.name = organizationName1;
 						organization1.isSupplier = true;
-						organization1.type = PartyValidator.ORGANIZATION;
-						organization1.setContactMethod(work, new EmailAddress(makeMail()));
+						if (dbEngine === DataSourceHandler.LOKIJS) { 
+							organization1.type = PartyValidator.ORGANIZATION;
+							organization1.setContactMethod(work, new EmailAddress(makeMail()));
+						}
 
 						var person1 = new PersonEntity();
 						person1.name.first = firstName;
@@ -100,21 +112,28 @@ describe.only("Testing party dao find period method", function() {
 						person1.name.maternal = maternal;
 						person1.isReseller = true;
 						person1.functionsProvided = functions;
-						person1.type = PartyValidator.PERSON;
-						person1.setContactMethod(work, new EmailAddress(makeMail()));
+						if (dbEngine === DataSourceHandler.LOKIJS) { 
+							person1.type = PartyValidator.PERSON;
+							person1.setContactMethod(work, new EmailAddress(makeMail()));
+						}
 
 						var organization2 = new OrganizationEntity();
 						organization2.name = organizationName2;
-						organization2.type = PartyValidator.ORGANIZATION;
-						organization2.setContactMethod(work, new EmailAddress(makeMail()));
+						if (dbEngine === DataSourceHandler.LOKIJS) { 
+							organization2.type = PartyValidator.ORGANIZATION;
+							organization2.setContactMethod(work, new EmailAddress(makeMail()));
+						}
+						
 
 						var person2 = new PersonEntity();
 						person2.name.first = name2;
 						person2.name.middle = middleName2;
 						person2.isSupplier = true;
 						person2.functionsProvided = functions2;
-						person2.type = PartyValidator.PERSON;
-						person2.setContactMethod(work, new EmailAddress(makeMail()));
+						if (dbEngine === DataSourceHandler.LOKIJS) { 
+							person2.type = PartyValidator.PERSON;
+							person2.setContactMethod(work, new EmailAddress(makeMail()));
+						}
 
 						MockDate.set(eachTest[i > 5 ? 1 : i].creationTime);
 
@@ -159,9 +178,9 @@ describe.only("Testing party dao find period method", function() {
 								console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
 							})
 							console.log(`res length: ${result.length} `);
-// 							expect(result.length).eq(1);
-							// expect(result[0].id).not.to.be.undefined;
-							// expect(result[0].typeName).eq(PartyValidator.PERSON);
+							expect(result.length).eq(1);
+							expect(result[0].id).not.to.be.undefined;
+							expect(result[0].typeName).eq(PartyValidator.PERSON);
 							done();
 					})
 				});
@@ -176,9 +195,9 @@ describe.only("Testing party dao find period method", function() {
 								console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
 							})
 							console.log(`res length: ${result.length} `);
-							// expect(result.length).eq(1);
-							// expect(result[0].id).not.to.be.undefined;
-							// expect(result[0].typeName).eq(PartyValidator.PERSON);
+							expect(result.length).eq(1);
+							expect(result[0].id).not.to.be.undefined;
+							expect(result[0].typeName).eq(PartyValidator.PERSON);
 							done();
 					})
 				});
@@ -193,9 +212,9 @@ describe.only("Testing party dao find period method", function() {
 								console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
 							})
 							console.log(`res length: ${result.length} `);
-							// expect(result.length).eq(1);
-							// expect(result[0].id).not.to.be.undefined;
-							// expect(result[0].typeName).eq(PartyValidator.PERSON);
+							expect(result.length).eq(1);
+							expect(result[0].id).not.to.be.undefined;
+							expect(result[0].typeName).eq(PartyValidator.PERSON);
 							done();
 					})
 				});
@@ -210,9 +229,9 @@ describe.only("Testing party dao find period method", function() {
 								console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
 							})
 							console.log(`res length: ${result.length} `);
-							// expect(result.length).eq(1);
-							// expect(result[0].id).not.to.be.undefined;
-							// expect(result[0].typeName).eq(PartyValidator.PERSON);
+							expect(result.length).eq(1);
+							expect(result[0].id).not.to.be.undefined;
+							expect(result[0].typeName).eq(PartyValidator.PERSON);
 							done();
 					})
 				});
@@ -227,9 +246,9 @@ describe.only("Testing party dao find period method", function() {
 								console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
 							})
 							console.log(`res length: ${result.length} `);
-							// expect(result.length).eq(1);
-							// expect(result[0].id).not.to.be.undefined;
-							// expect(result[0].typeName).eq(PartyValidator.PERSON);
+							expect(result.length).eq(1);
+							expect(result[0].id).not.to.be.undefined;
+							expect(result[0].typeName).eq(PartyValidator.PERSON);
 							done();
 					})
 				});
@@ -244,7 +263,7 @@ describe.only("Testing party dao find period method", function() {
 								console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
 							})
 							console.log(`res length: ${result.length} `);
-							// expect(result.length).eq(0);
+							expect(result.length).eq(0);
 							done();
 					})
 				});
