@@ -8,6 +8,7 @@ var expect = chai.expect;
 var assert = chai.assert;
 var MockDate = require("mockdate");
 var config = require("config");
+var uuidv1 = require('uuid');
 
 var PartyValidator = require("../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
@@ -43,20 +44,25 @@ var invalidId2 = "313030303030303030303032";
 var functions = ["FUNCTION-1", "FUNCTION_2"];
 var functions2 = ["FUNCTION_2", "FUNCTION_4"];
 
-const email1 = "glarus@mail.com";
-const email2 = "glarus_dev@mail.com";
-const email3 = "glarus_sys@mail.com";
-const email4 = "glarus_admin@mail.com";
+// const email1 = "glarus@mail.com";
+// const email2 = "glarus_dev@mail.com";
+// const email3 = "glarus_sys@mail.com";
+// const email4 = "glarus_admin@mail.com";
 
 var isReseller = false;
 var i = 0;
 
+const makeMail = () => {
+	// console.log('uuidv1', uuidv1())
+	return 'user' + uuidv1() + '@' + uuidv1() + '.com';
+}
+
 const { eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('./date-utils');
 
 describe.only("Testing party dao find period method", function() {
-	[DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
+	// [DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
 	// [DataSourceHandler.LOKIJS].forEach((dbEngine) => {
-	// [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine) => {
+	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine) => {
 		describe("Given the inserted records", function() {
 			var insertedRecordOrganization1;
 			var insertedRecordOrganization2;
@@ -67,7 +73,12 @@ describe.only("Testing party dao find period method", function() {
 
 			beforeEach(function(done) {
 				console.log('______________________>');
-				console.log('i value is: ', i);
+				// console.log('i value is: ', i);
+				if (dbEngine === DataSourceHandler.MONGOOSE) { 
+					console.log('MONGOOSE: test number ', i);
+				} else {
+					console.log('LOKIJS: test number ', i);
+				}
 				var path =
 					dbEngine === DataSourceHandler.LOKIJS
 						? serverAppContext.db.lokiJsDBPath
@@ -80,7 +91,7 @@ describe.only("Testing party dao find period method", function() {
 						organization1.name = organizationName1;
 						organization1.isSupplier = true;
 						organization1.type = PartyValidator.ORGANIZATION;
-						organization1.setContactMethod(work, new EmailAddress(email1));
+						organization1.setContactMethod(work, new EmailAddress(makeMail()));
 
 						var person1 = new PersonEntity();
 						person1.name.first = firstName;
@@ -90,12 +101,12 @@ describe.only("Testing party dao find period method", function() {
 						person1.isReseller = true;
 						person1.functionsProvided = functions;
 						person1.type = PartyValidator.PERSON;
-						person1.setContactMethod(work, new EmailAddress(email2));
+						person1.setContactMethod(work, new EmailAddress(makeMail()));
 
 						var organization2 = new OrganizationEntity();
 						organization2.name = organizationName2;
 						organization2.type = PartyValidator.ORGANIZATION;
-						organization2.setContactMethod(work, new EmailAddress(email3));
+						organization2.setContactMethod(work, new EmailAddress(makeMail()));
 
 						var person2 = new PersonEntity();
 						person2.name.first = name2;
@@ -103,7 +114,7 @@ describe.only("Testing party dao find period method", function() {
 						person2.isSupplier = true;
 						person2.functionsProvided = functions2;
 						person2.type = PartyValidator.PERSON;
-						person2.setContactMethod(work, new EmailAddress(email4));
+						person2.setContactMethod(work, new EmailAddress(makeMail()));
 
 						MockDate.set(eachTest[i > 5 ? 1 : i].creationTime);
 
