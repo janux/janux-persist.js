@@ -58,20 +58,18 @@ const deleteLokiDB = () => {
 		fs.unlink(db, function (err) {
 			if (err) throw err;
 			// if no error, file has been deleted successfully
-			console.log('db file deleted!');
+			// console.log('db file deleted!');
 		});  
 }
 
 const makeMail = () => {
-	// console.log('uuidv1', uuidv1())
 	return 'user' + uuidv1() + '@' + uuidv1() + '.com';
 }
+
 
 const { eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('./date-utils');
 
 describe.only("Testing party dao find period method", function() {
-	// [DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
-	// [DataSourceHandler.LOKIJS].forEach((dbEngine) => {
 	[DataSourceHandler.LOKIJS, DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
 		describe("Given the inserted records", function() {
 			var insertedRecordOrganization1;
@@ -79,16 +77,16 @@ describe.only("Testing party dao find period method", function() {
 			var insertedRecordPerson1;
 			var insertedRecordPerson2;
 			var partyDao;
-			
+			const isMongoose = () => {
+				if (dbEngine === DataSourceHandler.MONGOOSE) {
+					return true;
+				}
+			}
 
 			beforeEach(function(done) {
-				// console.log('______________________>');
-				if (dbEngine === DataSourceHandler.MONGOOSE) { 
-					console.log('MONGOOSE: test number ', i);
-				} else {
-					console.log('LOKIJS: test number ', i);
+				if (!isMongoose()) {
 					deleteLokiDB();
-				}
+				} 
 				var path =
 					dbEngine === DataSourceHandler.LOKIJS
 						? serverAppContext.db.lokiJsDBPath
@@ -124,7 +122,6 @@ describe.only("Testing party dao find period method", function() {
 							organization2.setContactMethod(work, new EmailAddress(makeMail()));
 						}
 						
-
 						var person2 = new PersonEntity();
 						person2.name.first = name2;
 						person2.name.middle = middleName2;
@@ -168,15 +165,11 @@ describe.only("Testing party dao find period method", function() {
 					});
 			});
 
-			describe("When calling a period last30Days", function() {
+			describe(`${isMongoose() ? 'M' : 'L'} When calling a period last30Days`, function() {
 				it("The method should return 1 PERSON record", function(done) {
 					MockDate.reset();
 					partyDao
 						.findPeopleByPeriod({ from: last30Days.from(), to: last30Days.to() }).then(function(result) {
-							// result.map((result) => {
-							// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-							// })
-							// console.log(`res length: ${result.length} `);
 							expect(result.length).eq(1);
 							expect(result[0].id).not.to.be.undefined;
 							expect(result[0].typeName).eq(PartyValidator.PERSON);
@@ -185,15 +178,11 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe("When calling a period last90Days", function() {
+			describe(`${isMongoose() ? 'M' : 'L'} When calling a period last90Days`, function() {
 				it("The method should return 1 PERSON record ", function(done) {
 					MockDate.reset();
 					partyDao
 						.findPeopleByPeriod({ from: last90Days.from(), to: last90Days.to() }).then(function(result) {
-							// result.map((result) => {
-							// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-							// })
-							// console.log(`res length: ${result.length} `);
 							expect(result.length).eq(1);
 							expect(result[0].id).not.to.be.undefined;
 							expect(result[0].typeName).eq(PartyValidator.PERSON);
@@ -202,15 +191,11 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe("When calling a period in oneYear", function() {
+			describe(`${isMongoose() ? 'M' : 'L'} When calling a period in oneYear`, function() {
 				it("The method should return 1 PERSON record", function(done) {
 					MockDate.reset();
 					partyDao
 						.findPeopleByPeriod({ from: oneYear.from(), to: oneYear.to() }).then(function(result) {
-							// result.map((result) => {
-							// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-							// })
-							// console.log(`res length: ${result.length} `);
 							expect(result.length).eq(1);
 							expect(result[0].id).not.to.be.undefined;
 							expect(result[0].typeName).eq(PartyValidator.PERSON);
@@ -219,15 +204,11 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe("When calling a period in yearToDate", function() {
+			describe(`${isMongoose() ? 'M' : 'L'} When calling a period in yearToDate`, function() {
 				it("The method should return 1 PERSON record", function(done) {
 					MockDate.reset();
 					partyDao
 						.findPeopleByPeriod({ from: yearToDate.from(), to: yearToDate.to() }).then(function(result) {
-							// result.map((result) => {
-							// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-							// })
-							// console.log(`res length: ${result.length} `);
 							expect(result.length).eq(1);
 							expect(result[0].id).not.to.be.undefined;
 							expect(result[0].typeName).eq(PartyValidator.PERSON);
@@ -236,15 +217,11 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe("When calling  a period of fiveYearToDate", function() {
+			describe(`${isMongoose() ? 'M' : 'L'} When calling  a period of fiveYearToDate`, function() {
 				it("The method should return 1 PERSON record", function(done) {
 					MockDate.reset();
 					partyDao
 						.findPeopleByPeriod({ from: fiveYearToDate.from(), to: fiveYearToDate.to() }).then(function(result) {
-							// result.map((result) => {
-							// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-							// })
-							// console.log(`res length: ${result.length} `);
 							expect(result.length).eq(1);
 							expect(result[0].id).not.to.be.undefined;
 							expect(result[0].typeName).eq(PartyValidator.PERSON);
@@ -253,22 +230,18 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe("When calling fiveYearToDate out of period", function() {
+			describe(`${isMongoose() ? 'M' : 'L'} When calling fiveYearToDate out of period`, function() {
 				it("The method should return 0 record", function(done) {
 					MockDate.reset();
 					partyDao.
 						findPeopleByPeriod({ from: fiveYearToDate.from(), to: fiveYearToDate.to() }).then(function(result) {
-							// result.map((result) => {
-							// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-							// })
-							// console.log(`res length: ${result.length} `);
 							expect(result.length).eq(0);
 							done();
 					})
 				});
 			});
 
-			describe("When calling findPeople", function() {
+			describe(`${isMongoose() ? 'M' : 'L'} When calling findPeople`, function() {
 				it("The method should return 2 records", function(done) {
 					partyDao
 						.findPeople().then(function(result) {
@@ -282,7 +255,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe("When calling findOrganizations", function() {
+			describe(`${isMongoose() ? 'M' : 'L'} When calling findOrganizations`, function() {
 				it("The method should return 2 records", function(done) {
 					partyDao
 						.findOrganizations().then(function(result) {
@@ -294,7 +267,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe("When calling the method findByIdsMethod", function() {
+			describe(`${isMongoose() ? 'M' : 'L'} When calling the method findByIdsMethod`, function() {
 				it("The method should return one record", function(done) {
 					partyDao
 						.findByIdsMethod([invalidId1, invalidId2, insertedRecordOrganization2.id])
@@ -305,7 +278,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe("When calling findOneMethod", function() {
+			describe(`${isMongoose() ? 'M' : 'L'} When calling findOneMethod`, function() {
 				it("The method should return one record when calling by a inserted id", function(done) {
 					partyDao.findOne(insertedRecordOrganization2.id).then(function(result) {
 						expect(result).not.to.be.null;
@@ -315,7 +288,7 @@ describe.only("Testing party dao find period method", function() {
 					});
 				});
 
-				it("The method should return null with an invalid id", function(done) {
+				it(`${isMongoose() ? 'M' : 'L'} The method should return null with an invalid id`, function(done) {
 					partyDao.findOne(invalidId1).then(function(result) {
 						expect(result).to.be.null;
 						done();
@@ -323,7 +296,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe("When calling find findByIsSupplierAndTypeName", function() {
+			describe(`${isMongoose() ? 'M' : 'L'} When calling find findByIsSupplierAndTypeName`, function() {
 				it("The method should return one record", function(done) {
 					partyDao.findByIsSupplierAndTypeName(true, PartyValidator.ORGANIZATION).then(function(value) {
 						expect(value.length).eq(1);
@@ -332,7 +305,7 @@ describe.only("Testing party dao find period method", function() {
 				});
 			});
 
-			describe("When calling findByIdsAndFunctionsProvided", function() {
+			describe(`${isMongoose() ? 'M' : 'L'} When calling findByIdsAndFunctionsProvided`, function() {
 				it("The method should return the result", function(done) {
 					// The method only works for mongodb
 					if (dbEngine === DataSourceHandler.LOKIJS) {
