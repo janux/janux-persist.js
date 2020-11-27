@@ -76,6 +76,7 @@ describe("Testing party dao find by Period Loki methods", function() {
 
 			beforeEach(function(done) {
 				deleteLokiDB();
+				console.log('______________________>');
 				console.log('i value is: ', i);
 				var path =
 					dbEngine === DataSourceHandler.LOKIJS
@@ -135,14 +136,6 @@ describe("Testing party dao find by Period Loki methods", function() {
 								done();
 							})
 						]
-						// .then(() => {
-						// 	return partyDao.update(insertedRecordOrganization)
-						// 	.catch(function(err) {
-						// 		console.log(err);
-						// 		expect.fail("Error");
-						// 		done();
-						// 	});
-						// })
 					})
 					.catch(function(err) {
 						console.log(err)
@@ -153,14 +146,14 @@ describe("Testing party dao find by Period Loki methods", function() {
 
 			describe("When calling findPeopleByPeriod in last30Days period", function() {
 				MockDate.reset();
-				it("It should return 1 record", function(done) {
+				it("Last30Days It should return 1 record", function(done) {
 					partyDao
 						.findPeopleByPeriod({ from: last30Days.from(), to: last30Days.to() })
 						.then((result) => {
-							result.map((result) => {
-								console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-							})
-							console.log(`res length: ${result.length} `);
+							// result.map((result) => {
+							// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
+							// })
+							// console.log(`res length: ${result.length} `);
 							expect(result.length).eq(1);
 							expect(result[0].id).not.to.be.undefined;
 							expect(result[0].typeName).eq(PartyValidator.PERSON);
@@ -171,14 +164,14 @@ describe("Testing party dao find by Period Loki methods", function() {
 
 			describe("When calling findPeopleByPeriod in last90Days period", function() {
 				MockDate.reset();
-				it("It should return 1 record", function(done) {
+				it("Last90Days It should return 1 record", function(done) {
 					partyDao
 						.findPeopleByPeriod({ from: last90Days.from(), to: last90Days.to() })
 						.then((result) => {
-							result.map((result) => {
-								console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-							})
-							console.log(`res length: ${result.length} `);
+							// result.map((result) => {
+							// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
+							// })
+							// console.log(`res length: ${result.length} `);
 							expect(result.length).eq(1);
 							expect(result[0].id).not.to.be.undefined;
 							expect(result[0].typeName).eq(PartyValidator.PERSON);
@@ -189,14 +182,14 @@ describe("Testing party dao find by Period Loki methods", function() {
 
 			describe("When calling findPeopleByPeriod in oneYear period", function() {
 				MockDate.reset();
-				it("It should return 1 record", function(done) {
+				it("OneYear It should return 1 record", function(done) {
 					partyDao
 						.findPeopleByPeriod({ from: oneYear.from(), to: oneYear.to() })
 						.then((result) => {
-							result.map((result) => {
-								console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-							})
-							console.log(`res length: ${result.length} `);
+							// result.map((result) => {
+							// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
+							// })
+							// console.log(`res length: ${result.length} `);
 							expect(result.length).eq(1);
 							expect(result[0].id).not.to.be.undefined;
 							expect(result[0].typeName).eq(PartyValidator.PERSON);
@@ -207,14 +200,14 @@ describe("Testing party dao find by Period Loki methods", function() {
 
 			describe("When calling findPeopleByPeriod in yearToDate period", function() {
 				MockDate.reset();
-				it("It should return 1 record", function(done) {
+				it("YearToDate It should return 1 record", function(done) {
 					partyDao
 						.findPeopleByPeriod({ from: yearToDate.from(), to: yearToDate.to() })
 						.then((result) => {
-							result.map((result) => {
-								console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-							})
-							console.log(`res length: ${result.length} `);
+							// result.map((result) => {
+							// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
+							// })
+							// console.log(`res length: ${result.length} `);
 							expect(result.length).eq(1);
 							expect(result[0].id).not.to.be.undefined;
 							expect(result[0].typeName).eq(PartyValidator.PERSON);
@@ -224,21 +217,21 @@ describe("Testing party dao find by Period Loki methods", function() {
 			});
 
 			describe("When calling findPeopleByPeriod in fiveYearToDate period", function() {
-				it("It should return 1 record", function(done) {
-					console.log(`today was: ${moment()}`);
+				it("FiveYearToDate It should return 1 record", function(done) {
+					// console.log(`today was: ${moment()}`);
 					MockDate.reset();
-					console.log(`today is: ${moment()}`);
-					console.log(`created date: ${eachTest[i].creationTime}`);
-					console.log(`updated date: ${eachTest[i].updateTime}`);
+					// console.log(`today is: ${moment()}`);
+					// console.log(`created date: ${eachTest[i].creationTime}`);
+					// console.log(`updated date: ${eachTest[i].updateTime}`);
 					partyDao
 						.findPeopleByPeriod({ from: fiveYearToDate.from(), to: fiveYearToDate.to() })
 						.then((result) => {
-							console.log()
-							result.map((result) => {
-								console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-							})
-							// console.log(`res : ${result} `);
-							console.log(`res length: ${result.length} `);
+							// console.log()
+							// result.map((result) => {
+							// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
+							// })
+							// // console.log(`res : ${result} `);
+							// console.log(`res length: ${result.length} `);
 							expect(result.length).eq(1);
 							expect(result[0].id).not.to.be.undefined;
 							expect(result[0].typeName).eq(PartyValidator.PERSON);
@@ -246,15 +239,15 @@ describe("Testing party dao find by Period Loki methods", function() {
 						})
 				});
 
-				it("The method should return 0 record", function(done) {
+				it("fiveYearToDate The method should return 0 record", function(done) {
 					MockDate.reset();
 					partyDao.
 						findPeopleByPeriod({ from: fiveYearToDate.from(), to: fiveYearToDate.to() }).then(function(result) {
-							result.map((result) => {
-								console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
-							})
-							console.log(`res : ${result} `);
-							console.log(`res length: ${result.length} `);
+							// result.map((result) => {
+							// 	console.log(`Created: ${result.dateCreated}, Updated: ${result.lastUpdate}`);
+							// })
+							// console.log(`res : ${result} `);
+							// console.log(`res length: ${result.length} `);
 							expect(result.length).eq(0);
 							done();
 					})
