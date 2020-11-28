@@ -26,7 +26,7 @@ const { firstName, middleName, lastName, maternal, work, organizationName1 } = r
 const { organizationName2, name2, middleName2, invalidId1, invalidId2, functions, functions2, M, L } = require('./date-utils');
 
 describe.only("Testing party dao find period method", function() {
-	[DataSourceHandler.LOKIJS, DataSourceHandler.MONGOOSE].forEach((dbEngine) => {
+	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine) => {
 		describe("Given the inserted records", function() {
 			var insertedRecordOrganization1;
 			var insertedRecordOrganization2;

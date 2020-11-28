@@ -56,11 +56,13 @@ const eachTest = [
 
 const deleteLokiDB = () => {
 	let db = process.cwd()+'/janux-persistence-test.db';
+	if (db) {
 		fs.unlink(db, function (err) {
 			if (err) throw err;
 			// if no error, file has been deleted successfully
 			// console.log('db file deleted!');
-		});  
+		});
+	}
 }
 
 const firstName = "John";
