@@ -8,6 +8,9 @@ var assert = chai.assert;
 var MockDate = require("mockdate");
 var config = require("config");
 
+const fs = require('fs');
+var uuidv1 = require('uuid');
+
 var PartyValidator = require("../../../dist/index").PartyValidator;
 var EmailAddress = require("janux-people").EmailAddress;
 var PhoneNumber = require("janux-people").PhoneNumber;
@@ -19,11 +22,35 @@ var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 //Config files
 var serverAppContext = config.get("serverAppContext");
 
+const {	eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('./date-utils');
+const firstName = "John";
+const middleName = "Doe";
+const lastName = "Iglesias";
+const maternal = "Smith";
+const work = "work";
+const organizationName1 = "Glarus";
+const organizationName2 = "Glarus 2";
+const name2 = "Jane";
+const middleName2 = "Smith";
+var invalidId1 = "313030303030303030303030";
+var invalidId2 = "313030303030303030303032";
+var functions = ["FUNCTION-1", "FUNCTION_2"];
+var functions2 = ["FUNCTION_2", "FUNCTION_4"];
+const M = 'M: ';
+const L = 'L: ';
 var i = 0;
 
-const {	eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate, deleteLokiDB, makeMail } = require('./date-utils');
-const { firstName, middleName, lastName, maternal, work, organizationName1 } = require('./date-utils');
-const { organizationName2, name2, middleName2, invalidId1, invalidId2, functions, functions2, M, L } = require('./date-utils');
+const deleteLokiDB = () => {
+	let db = process.cwd()+'/janux-persistence-test.db';
+	if (db) {
+		fs.unlink(db, function (err) {
+			if (err) throw err;
+			// if no error, file has been deleted successfully
+			// console.log('db file deleted!');
+		});
+	}
+}
+const makeMail = () => 'user' + uuidv1() + '@' + uuidv1() + '.com';
 
 describe.only("Testing party dao find period method", function() {
 	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach((dbEngine) => {
@@ -54,10 +81,8 @@ describe.only("Testing party dao find period method", function() {
 						var organization1 = new OrganizationEntity();
 						organization1.name = organizationName1;
 						organization1.isSupplier = true;
-						if (dbEngine === DataSourceHandler.LOKIJS) { 
-							organization1.type = PartyValidator.ORGANIZATION;
-							organization1.setContactMethod(work, new EmailAddress(makeMail()));
-						}
+						organization1.type = PartyValidator.ORGANIZATION;
+						organization1.setContactMethod(work, new EmailAddress(makeMail()));
 
 						var person1 = new PersonEntity();
 						person1.name.first = firstName;
@@ -66,27 +91,22 @@ describe.only("Testing party dao find period method", function() {
 						person1.name.maternal = maternal;
 						person1.isReseller = true;
 						person1.functionsProvided = functions;
-						if (dbEngine === DataSourceHandler.LOKIJS) { 
-							person1.type = PartyValidator.PERSON;
-							person1.setContactMethod(work, new EmailAddress(makeMail()));
-						}
+						person1.type = PartyValidator.PERSON;
+						person1.setContactMethod(work, new EmailAddress(makeMail()));
 
 						var organization2 = new OrganizationEntity();
 						organization2.name = organizationName2;
-						if (dbEngine === DataSourceHandler.LOKIJS) { 
-							organization2.type = PartyValidator.ORGANIZATION;
-							organization2.setContactMethod(work, new EmailAddress(makeMail()));
-						}
+						organization2.type = PartyValidator.ORGANIZATION;
+						organization2.setContactMethod(work, new EmailAddress(makeMail()));
 						
 						var person2 = new PersonEntity();
 						person2.name.first = name2;
 						person2.name.middle = middleName2;
 						person2.isSupplier = true;
 						person2.functionsProvided = functions2;
-						if (dbEngine === DataSourceHandler.LOKIJS) { 
-							person2.type = PartyValidator.PERSON;
-							person2.setContactMethod(work, new EmailAddress(makeMail()));
-						}
+						person2.type = PartyValidator.PERSON;
+						person2.setContactMethod(work, new EmailAddress(makeMail()));
+						
 						MockDate.set(eachTest[i > 5 ? 1 : i].creationTime);
 						
 						return partyDao.insertMany([organization1, person1, organization2, person2]);
@@ -96,22 +116,20 @@ describe.only("Testing party dao find period method", function() {
 						insertedRecordPerson1 = result[1];
 						insertedRecordOrganization2 = result[2];
 						insertedRecordPerson2 = result[3];
-						done();
 					})
 					.then((done) => {
 						MockDate.set(eachTest[i > 5 ? 1 : i].updateTime);
 						i > 11 ? i = 0 : i++;
 						insertedRecordOrganization1.code = 7;
 						insertedRecordPerson1.code = 8;
-						return [
+
+						return Promise.all([
 							partyDao.update(insertedRecordPerson1),
 							partyDao.update(insertedRecordOrganization1)
-							.catch(function(err) {
-								console.log(err);
-								expect.fail("Error");
-								done();
-							})
-						]
+							]);						
+					})
+					.then(function() {
+						done();
 					})
 					.catch(function(err) {
 						console.log(err)
