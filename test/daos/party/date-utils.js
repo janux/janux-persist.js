@@ -26,21 +26,28 @@ const fiveYearToDate = {
 }
 
 const eachTest = [
+	{	creationTime : moment().add(1, 'day').toDate().toString(),
+		updateTime : moment().add(1, 'day').toDate().toString()
+	},
+	{
+		creationTime: last30Days.from(),
+		updateTime    : moment().subtract('15', 'days').toDate().toString()
+	},
 	{
 		creationTime: last90Days.from(),
-		updateTime    : moment().subtract('15', 'days').toDate().toString()
+		updateTime    : moment().subtract('45', 'days').toDate().toString()
 	},
 	{
 		creationTime: oneYear.from(),
 		updateTime    : moment().subtract('80', 'days').toDate().toString()
 	},
 	{
-		creationTime: fiveYearToDate.from(),
-		updateTime    : moment().subtract('1', 'years').add('1', 'day').toDate().toString()
+		creationTime  : yearToDate.from(),
+		updateTime    : moment().startOf('year').add('1','day').toDate().toString()
 	},
 	{
-		creationTime  : fiveYearToDate.from(),
-		updateTime    : moment().startOf('year').add('1','day').toDate().toString()
+		creationTime: fiveYearToDate.from(),
+		updateTime    : moment().subtract('1', 'years').add('1', 'day').toDate().toString()
 	},
 	{
 		creationTime  : moment().subtract('8', 'years').startOf('year').toDate().toString(),
