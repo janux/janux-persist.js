@@ -21,7 +21,7 @@ var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 //Config files
 var serverAppContext = config.get("serverAppContext");
 
-const {	eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('./date-utils');
+const {	eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('../../util/date-utils');
 const firstName = "John";
 const middleName = "Doe";
 const lastName = "Iglesias";
