@@ -208,6 +208,18 @@ export class UserService {
 	}
 
 	/**
+	 *
+	 * @param period Filter all records given the username.
+	 * @return {Promise<any[]>}
+	 */
+	public findUserByPeriod(period: object): Promise<any[]> {
+		this._log.debug("Call to findAllByUserNameMatchByPeriod with period: %j", period);
+		return this.accountDao.findUserByPeriod(period).then((users: AccountEntity[]) => {
+			return this.populateContactData(users);
+		});
+	}
+
+	/**
 	 * Find all users whose contact name
 	 * @param name The name of the contact.
 	 * @return {Promise<any[]>}

@@ -34,6 +34,19 @@ export class AccountDaoLokiJsImpl extends AccountDao {
 	}
 
 	/**
+	 * Find all the users whose user name matches.
+	 * @param period The username to match.
+	 * @return {Promise<AccountEntity[]>} The parties whose username matches. If no record is founded then the method
+	 * returns an empty array.
+	 */
+	public findUserByPeriod(period: object): Promise<AccountEntity[]> {
+		const query = {
+			username: { $contains: period }
+		};
+		return this.findByQuery(query);
+	}
+
+	/**
 	 * Validate the object before inserting to the database.
 	 * In this case the method validates for duplicated usernames.
 	 * @param objectToInsert The object to validate.
