@@ -40,24 +40,10 @@ export class AccountDaoMongooseImpl extends AccountDao {
 	 * @return {Promise<AccountEntity[]>} The parties whose username matches. If no record is founded then the method
 	 * returns an empty array.
 	 */
-	public findUserByPeriod(period: any): Promise<AccountEntity[]> {
-		// const regexpUsername = new RegExp(period, "i");
+	public findUserByPeriod(username: string): Promise<AccountEntity[]> {
+		const regexpUsername = new RegExp(username, "i");
 		const query = {
-			// username: { $contains: period }
-			$or: [
-				{
-					dateCreated: {
-						$gte: new Date(period.from),
-						$lte: new Date(period.to)
-					}
-				},
-				{
-					lastUpdate: {
-						$gte: new Date(period.from),
-						$lte: new Date(period.to)
-					}
-				}
-			]
+			username: regexpUsername
 		};
 		return this.findByQuery(query);
 	}

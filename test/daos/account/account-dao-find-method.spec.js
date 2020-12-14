@@ -21,8 +21,11 @@ const invalidId = "313030303030303030300000";
 //Config files
 var serverAppContext = config.get("serverAppContext");
 
+const {	eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('../../util/date-utils');
+
 describe("Testing user dao find methods", function() {
-	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
+	// [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
+	[DataSourceHandler.MONGOOSE].forEach(function(dbEngine) {
 		describe("Given the inserted records", function() {
 			var insertedId;
 			var insertedId2;
@@ -51,6 +54,18 @@ describe("Testing user dao find methods", function() {
 						insertedId2 = result[1].id;
 						done();
 					});
+			});
+
+			describe("When looking for an findAllPeopleByPeriod", function() {
+				it("It should return one findAllPeopleByPeriod", function(done) {
+					accountDao.findUserByPeriod(username).then(function(result) {
+						expect(result.length).eq(2);
+						expect(result[0].username).eq(username);
+						expect(result[0].password).eq(password);
+						expect(result[0].contactId).eq(id);
+						done();
+					});
+				});
 			});
 
 			describe("When looking for an username", function() {

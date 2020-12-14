@@ -35,13 +35,13 @@ export class AccountDaoLokiJsImpl extends AccountDao {
 
 	/**
 	 * Find all the users whose user name matches.
-	 * @param period The username to match.
+	 * @param username The username to match.
 	 * @return {Promise<AccountEntity[]>} The parties whose username matches. If no record is founded then the method
 	 * returns an empty array.
 	 */
-	public findUserByPeriod(period: object): Promise<AccountEntity[]> {
+	public findUserByPeriod(username: string): Promise<AccountEntity[]> {
 		const query = {
-			username: { $contains: period }
+			username: { $contains: username }
 		};
 		return this.findByQuery(query);
 	}

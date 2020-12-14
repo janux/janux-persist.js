@@ -99,6 +99,30 @@ export class UserService {
 	}
 
 	/**
+	 * Find one user by its username.
+	 * @param username
+	 * @return {Promise<any>}
+	 */
+	public findPeopleByPeriod(username: string): Promise<any> {
+		this._log.debug("Call to findOneByUserName with username: %j", username);
+		let result: any;
+		return this.accountDao
+			.findOneByUserName(username)
+			.then((user: AccountEntity) => {
+				if (_.isNil(user)) return Promise.reject("No user with the username " + username);
+				result = user;
+				return this.partyService.findOne(user.contactId);
+			})
+			.then((contact: JanuxPeople.PartyAbstract) => {
+				result.contact = contact.toJSON();
+				result.contact.id = contact["id"];
+				result.contact.typeName = contact.typeName;
+				this._log.debug("Returning %j", result);
+				return Promise.resolve(result);
+			});
+	}
+
+	/**
 	 * Return all users given the ids.
 	 * @param {string[]} ids
 	 * @return {Bluebird<any[]>}
@@ -196,6 +220,30 @@ export class UserService {
 	}
 
 	/**
+	 * Find one user by its username.
+	 * @param username
+	 * @return {Promise<any>}
+	 */
+	public findUserByPeriod(username: string): Promise<any> {
+		this._log.debug("Call to findOneByUserName with username: %j", username);
+		let result: any;
+		return this.accountDao
+			.findUserByPeriod(username)
+			.then((user: AccountEntity) => {
+				if (_.isNil(user)) return Promise.reject("No user with the username " + username);
+				result = user;
+				return this.partyService.findOne(user.contactId);
+			})
+			.then((contact: JanuxPeople.PartyAbstract) => {
+				result.contact = contact.toJSON();
+				result.contact.id = contact["id"];
+				result.contact.typeName = contact.typeName;
+				this._log.debug("Returning %j", result);
+				return Promise.resolve(result);
+			});
+	}
+
+	/**
 	 *
 	 * @param username Filter all records given the username.
 	 * @return {Promise<any[]>}
@@ -203,18 +251,6 @@ export class UserService {
 	public findAllByUserNameMatch(username: string): Promise<any[]> {
 		this._log.debug("Call to findByUserNameMatch with username: %j", username);
 		return this.accountDao.findByUserNameMatch(username).then((users: AccountEntity[]) => {
-			return this.populateContactData(users);
-		});
-	}
-
-	/**
-	 *
-	 * @param period Filter all records given the username.
-	 * @return {Promise<any[]>}
-	 */
-	public findUserByPeriod(period: object): Promise<any[]> {
-		this._log.debug("Call to findAllByUserNameMatchByPeriod with period: %j", period);
-		return this.accountDao.findUserByPeriod(period).then((users: AccountEntity[]) => {
 			return this.populateContactData(users);
 		});
 	}

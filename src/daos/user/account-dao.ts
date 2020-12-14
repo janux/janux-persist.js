@@ -28,19 +28,20 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<Acc
 	public abstract findByUserNameMatch(username: string): Promise<AccountEntity[]>;
 
 	/**
-	 * Find all the users whose user name matches.
-	 * This is an abstract class because the query is implement in a different way for lokijs and
-	 * mongoose.
-	 * @param period The username to match.
+	 * Find one user with the username.
+	 * @param username the username to look for.
+	 * @return {Promise<AccountEntity>} The user, if no record is founded then it return a null.
 	 */
-	public abstract findUserByPeriod(period: object): Promise<AccountEntity[]>;
+	public findOneByUserName(username: string): Promise<AccountEntity> {
+		return this.findOneByAttribute("username", username);
+	}
 
 	/**
 	 * Find one user with the username.
 	 * @param username the username to look for.
 	 * @return {Promise<AccountEntity>} The user, if no record is founded then it return a null.
 	 */
-	public findOneByUserName(username: string): Promise<AccountEntity> {
+	public findUserByPeriod(username: string): Promise<AccountEntity> {
 		return this.findOneByAttribute("username", username);
 	}
 
