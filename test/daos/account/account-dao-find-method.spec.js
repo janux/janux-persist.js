@@ -18,18 +18,27 @@ const id = "313030303030303030303030";
 const id2 = "313030303030303030303031";
 const invalidId = "313030303030303030300000";
 
+const M = 'M: ';
+const L = 'L: ';
+
 //Config files
 var serverAppContext = config.get("serverAppContext");
 
 const {	eachTest, last30Days, last90Days, oneYear, yearToDate, fiveYearToDate } = require('../../util/date-utils');
 
 describe("Testing user dao find methods", function() {
-	// [DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
-	[DataSourceHandler.MONGOOSE].forEach(function(dbEngine) {
+	[DataSourceHandler.MONGOOSE, DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
+	// [DataSourceHandler.MONGOOSE].forEach(function(dbEngine) {
+	// [DataSourceHandler.LOKIJS].forEach(function(dbEngine) {
 		describe("Given the inserted records", function() {
 			var insertedId;
 			var insertedId2;
 			var accountDao;
+			const isMongoose = () => {
+				if (dbEngine === DataSourceHandler.MONGOOSE) {
+					return true;
+				}
+			}
 			before(function(done) {
 				var path =
 					dbEngine === DataSourceHandler.LOKIJS
@@ -56,19 +65,7 @@ describe("Testing user dao find methods", function() {
 					});
 			});
 
-			describe("When looking for an findAllPeopleByPeriod", function() {
-				it("It should return one findAllPeopleByPeriod", function(done) {
-					accountDao.findUserByPeriod(username).then(function(result) {
-						expect(result.length).eq(2);
-						expect(result[0].username).eq(username);
-						expect(result[0].password).eq(password);
-						expect(result[0].contactId).eq(id);
-						done();
-					});
-				});
-			});
-
-			describe("When looking for an username", function() {
+			describe.only("When looking for an username ", function() {
 				it("It should return one record", function(done) {
 					accountDao.findByUserNameMatch(username).then(function(result) {
 						expect(result.length).eq(2);
@@ -79,6 +76,20 @@ describe("Testing user dao find methods", function() {
 					});
 				});
 			});
+
+			describe.only(`${isMongoose() ? M : L} "When looking for an findAllPeopleByPeriod`, function() {
+				it("It should return one findAllPeopleByPeriod", function(done) {
+					accountDao.findUserByPeriod({ from: last30Days.from(), to: last30Days.to() }).then(function(result) {
+						expect(result.length).eq(2);
+						// console.log(`results ${JSON.stringify(result[0])}`)
+						expect(result[0].username).eq(username);
+						// expect(result[0].password).eq(password);
+						expect(result[0].contactId).eq(id);
+						done();
+					});
+				});
+			});
+
 			describe("When looking for one username", function() {
 				it("It should return one record", function(done) {
 					accountDao.findOneByUserName(username).then(function(result) {

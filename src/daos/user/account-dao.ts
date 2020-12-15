@@ -27,13 +27,42 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<Acc
 	 */
 	public abstract findByUserNameMatch(username: string): Promise<AccountEntity[]>;
 
+	// /**
+	//  * Find all the users whose user period matches.
+	//  * This is an abstract class because the query is implement in a different way for lokijs and
+	//  * mongoose.
+	//  * @param period The period to match.
+	//  */
+	// public abstract findPeopleByPeriod(period: object): Promise<AccountEntity[]>;
+
 	/**
-	 * Find one user with the username.
-	 * @param username the username to look for.
-	 * @return {Promise<AccountEntity>} The user, if no record is founded then it return a null.
+	 * Find all people by Period
+	 * @param period
+	 * @return {Promise<AccountEntity[]>}
 	 */
-	public findOneByUserName(username: string): Promise<AccountEntity> {
-		return this.findOneByAttribute("username", username);
+	public findPeopleByPeriod(object: any): Promise<AccountEntity[]> {
+		const query = {
+			$and: [
+				{
+					$or: [
+						{
+							dateCreated: {
+								$gte: new Date(object.from),
+								$lte: new Date(object.to)
+							}
+						},
+						{
+							lastUpdate: {
+								$gte: new Date(object.from),
+								$lte: new Date(object.to)
+							}
+						}
+					]
+				},
+
+			]
+		  };
+		return this.findByQuery(query);
 	}
 
 	/**
@@ -41,7 +70,7 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<Acc
 	 * @param username the username to look for.
 	 * @return {Promise<AccountEntity>} The user, if no record is founded then it return a null.
 	 */
-	public findUserByPeriod(username: string): Promise<AccountEntity> {
+	public findOneByUserName(username: string): Promise<AccountEntity> {
 		return this.findOneByAttribute("username", username);
 	}
 

@@ -66,7 +66,7 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 
 	/**
 	 * Find all people by Period
-	 * @param object
+	 * @param period
 	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
 	 */
 	public findPeopleByPeriod(object: any): Promise<JanuxPeople.PartyAbstract[]> {
