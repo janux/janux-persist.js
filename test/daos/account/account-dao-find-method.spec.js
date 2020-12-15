@@ -11,16 +11,16 @@ var DaoUtil = require("../dao-util");
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 
 const username = "username";
-const password = "password";
 const username2 = "username2";
+const password = "password";
 const password2 = "password2";
 const username3 = "IDoNotExists";
 const id = "313030303030303030303030";
 const id2 = "313030303030303030303031";
 const invalidId = "313030303030303030300000";
 
-const M = 'M: ';
-const L = 'L: ';
+const M = '';
+const L = '';
 var i = 0;
 
 //Config files
@@ -40,7 +40,7 @@ describe("Testing user dao find methods", function() {
 					return true;
 				}
 			}
-			before(function(done) {
+			beforeEach(function(done) {
 				var path =
 					dbEngine === DataSourceHandler.LOKIJS
 						? serverAppContext.db.lokiJsDBPath
@@ -60,19 +60,19 @@ describe("Testing user dao find methods", function() {
 						return accountDao.insertMany([account1, account2]);
 					})
 					.then(function(result) {
+						inserted1 = result[0];
+						inserted2 = result[1];
 						insertedId = result[0].id;
 						insertedId2 = result[1].id;
-						// console.log(`result ${JSON.stringify(result[0])}`)
-						// done();
 					})
 					.then(function(result) {
 						MockDate.set(eachTest[i > 7 ? 2 : i].updateTime);
-						i > 12 ? i = 0 : i++;
-						insertedId.username = insertedId.username;
-						insertedId2.username = insertedId2.username
+						i > 16 ? i = 0 : i++;
+						inserted1.username = inserted1.username;
+						inserted2.username = inserted2.username
 						return Promise.all([
-							accountDao.update(insertedId),
-							accountDao.update(insertedId2),
+							accountDao.update(inserted1),
+							accountDao.update(inserted2),
 						]);
 					})
 					.then(function() {
@@ -80,7 +80,6 @@ describe("Testing user dao find methods", function() {
 					})
 					.catch(function(err) {
 						console.log(err)
-						// assert.fail("Error", err);
 						done();
 					});
 			});
@@ -93,6 +92,13 @@ describe("Testing user dao find methods", function() {
 						expect(result[0].password).eq(password);
 						expect(result[0].contactId).eq(id);
 						done();
+					})
+					.then(function() {
+						return accountDao
+						.removeAll()
+					})
+					.catch(function(err) {
+						done()
 					});
 				});
 			});
@@ -102,10 +108,9 @@ describe("Testing user dao find methods", function() {
 					accountDao
 						.findUserByPeriod({ from: last30Days.from(), to: last30Days.to() }).then(function(result) {
 						expect(result.length).eq(2);
-						// console.log(`results ${JSON.stringify(result[0])}`)
 						expect(result[0].username).eq(username);
-						// expect(result[0].password).eq(password);
-						// expect(result[0].contactId).eq(id);
+						expect(result[0].password).eq(password);
+						expect(result[0].contactId).eq(id);
 						done();
 					});
 				});
@@ -118,7 +123,6 @@ describe("Testing user dao find methods", function() {
 						.findPeopleByPeriod({ from: last90Days.from(), to: last90Days.to() }).then(function(result) {
 							expect(result.length).eq(2);
 							expect(result[0].id).not.to.be.undefined;
-							// expect(result[0].typeName).eq(PartyValidator.PERSON);
 							done();
 					})
 				});
@@ -131,7 +135,6 @@ describe("Testing user dao find methods", function() {
 						.findPeopleByPeriod({ from: oneYear.from(), to: oneYear.to() }).then(function(result) {
 							expect(result.length).eq(2);
 							expect(result[0].id).not.to.be.undefined;
-							// expect(result[0].typeName).eq(PartyValidator.PERSON);
 							done();
 					})
 				});
@@ -144,7 +147,6 @@ describe("Testing user dao find methods", function() {
 						.findPeopleByPeriod({ from: yearToDate.from(), to: yearToDate.to() }).then(function(result) {
 							expect(result.length).eq(2);
 							expect(result[0].id).not.to.be.undefined;
-							// expect(result[0].typeName).eq(PartyValidator.PERSON);
 							done();
 					})
 				});
@@ -157,7 +159,6 @@ describe("Testing user dao find methods", function() {
 						.findPeopleByPeriod({ from: fiveYearToDate.from(), to: fiveYearToDate.to() }).then(function(result) {
 							expect(result.length).eq(2);
 							expect(result[0].id).not.to.be.undefined;
-							// expect(result[0].typeName).eq(PartyValidator.PERSON);
 							done();
 					})
 				});
