@@ -35,6 +35,36 @@ export class AccountDaoMongooseImpl extends AccountDao {
 	}
 
 	/**
+	 * Find all the users whose date or update period matches.
+	 * @param period The period to match.
+	 * @return {Promise<AccountEntity[]>} The users whose period matches. If no record is founded then the method
+	 * returns an empty array.
+	 */
+	public findUserByPeriod(period: any): Promise<AccountEntity[]> {
+		const query = {
+			$and: [
+				{
+					$or: [
+						{
+							dateCreated: {
+								$gte: new Date(period.from),
+								$lte: new Date(period.to)
+							}
+						},
+						{
+							lastUpdate: {
+								$gte: new Date(period.from),
+								$lte: new Date(period.to)
+							}
+						}
+					]
+				}
+			]
+		  };
+		return this.findByQuery(query);
+	}
+
+	/**
 	 * Validate the object before inserting to the database.
 	 * In this case the method validates for duplicated usernames.
 	 * @param objectToInsert The object to validate.

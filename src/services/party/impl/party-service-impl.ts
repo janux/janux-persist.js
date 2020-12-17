@@ -122,6 +122,17 @@ export class PartyServiceImpl implements PartyService {
 	}
 
 	/**
+	 * Find all people by period
+	 * @param object
+	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
+	 */
+	findPeopleByPeriod(object: any): Promise<JanuxPeople.PartyAbstract[]> {
+		return this.partyDao.findPeopleByPeriod(object).then((result: JanuxPeople.PartyAbstract[]) => {
+			return this.mergeStaffData(result);
+		});
+	}
+
+	/**
 	 * Find all organizations
 	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
 	 */

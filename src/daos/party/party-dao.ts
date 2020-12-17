@@ -65,6 +65,38 @@ export abstract class PartyDao extends AbstractDataAccessObjectWithAdapter<Janux
 	}
 
 	/**
+	 * Find all people by Period
+	 * @param period
+	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
+	 */
+	public findPeopleByPeriod(object: any): Promise<JanuxPeople.PartyAbstract[]> {
+		const query = {
+			$and: [
+				{
+					$or: [
+						{
+							dateCreated: {
+								$gte: new Date(object.from),
+								$lte: new Date(object.to)
+							}
+						},
+						{
+							lastUpdate: {
+								$gte: new Date(object.from),
+								$lte: new Date(object.to)
+							}
+						}
+					]
+				},
+				{
+					typeName: { $eq : 'PersonImpl' }
+				}
+			]
+		  };
+		return this.findByQuery(query);
+	}
+
+	/**
 	 * Find all organizations
 	 * @return {Promise<JanuxPeople.PartyAbstract[]>}
 	 */
