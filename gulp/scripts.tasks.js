@@ -15,7 +15,7 @@ module.exports = function(gulp) {
 	//
 	// Lint all custom TypeScript files.
 	//
-	gulp.task("ts-lint", function() {
+	gulp.task("ts-lint", () => {
 		console.log("linting ts files...");
 		return gulp
 			.src(cfg.fileset.ts)
@@ -23,12 +23,10 @@ module.exports = function(gulp) {
 			.pipe(tsLint.report());
 	});
 
-	gulp.task("compile", gulpSequence("compileFiles", "fixDeclarationFilesPath"));
-
 	/**
 	 * Compile all file with no source maps.
 	 */
-	gulp.task("compileFiles", ["ts-lint"], function(done) {
+	gulp.task("compileFiles", gulp.series("ts-lint", (done) => {
 		var tsProject = ts.createProject("tsconfig.json", {
 			typescript: require("typescript")
 		});
@@ -41,13 +39,13 @@ module.exports = function(gulp) {
 			})
 			.pipe(gulp.dest(tsProject.config.compilerOptions.outDir))
 			.on("end", done);
-	});
+	}));
 
 	/**
 	 * Fix declaration files path (.d.ts).
 	 * This task is meant to run after the task 'compile' or the task 'compile-test'
 	 */
-	gulp.task("fixDeclarationFilesPath", [], function(done) {
+	gulp.task("fixDeclarationFilesPath", (done) => {
 		var tsProject = ts.createProject("tsconfig.json", {
 			typescript: require("typescript")
 		});
@@ -60,4 +58,6 @@ module.exports = function(gulp) {
 			.pipe(gulp.dest(tsProject.config.compilerOptions.outDir))
 			.on("end", done);
 	});
+
+	gulp.task("compile", gulp.series("compileFiles", "fixDeclarationFilesPath"));
 };

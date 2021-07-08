@@ -13,12 +13,10 @@ var path = require("path"),
 module.exports = function(gulp) {
 	var cfg = gulp.cfg;
 
-	gulp.task("compile-test", gulpSequence("compile-files-test", "fixDeclarationFilesPath"));
-
 	/**
 	 * Compile with source maps in the js files, useful for debugging.
 	 */
-	gulp.task("compile-files-test", ["ts-lint"], function(done) {
+	gulp.task("compile-files-test", gulp.series("ts-lint", (done) => {
 		var tsProject = ts.createProject("tsconfig.json", {
 			typescript: require("typescript")
 		});
@@ -33,9 +31,11 @@ module.exports = function(gulp) {
 			.pipe(sourcemaps.write()) // sourcemaps are added to the .js file
 			.pipe(gulp.dest(tsProject.config.compilerOptions.outDir))
 			.on("end", done);
-	});
+	}));
 
-	gulp.task("run-test", function() {
+	gulp.task("run-test", () => {
 		return gulp.src(cfg.fileset.test, { read: false }).pipe(mocha({ reporter: cfg.mocha.reporter }));
 	});
+
+	gulp.task("compile-test", gulp.series("compile-files-test", "fixDeclarationFilesPath"));
 };

@@ -1,7 +1,7 @@
 "use strict";
 
 var gulp = require("gulp"),
-	gulpSequence = require("gulp-sequence");
+	 $   = require('gulp-load-plugins')()
 
 if (!gulp.cfg) {
 	gulp.cfg = require("config");
@@ -14,23 +14,19 @@ if (!gulp.cfg) {
 gulp.cfg.pkg = require("./package.json");
 
 // Load all the tasks that are defined in the 'gulp' folder.
-var taskDir = require("require-dir")("./gulp");
-
-for (var filename in taskDir) {
-	taskDir[filename](gulp);
-}
+$.loadSubtasks('gulp', $)
 
 //
 // Compile typescript project
 //
-gulp.task("default", ["clean", "compile"]);
+gulp.task("default", gulp.series("clean", "compile"));
 
 //
 // Compile and run tests for typescript project
 //
-gulp.task("test", gulpSequence("compile-test", "run-test"));
+gulp.task("test", gulp.series("compile-test", "run-test"));
 
 //
 // Generate documentation from typescript project
 //
-gulp.task("doc", ["clean:doc", "typedoc"]);
+gulp.task("doc", gulp.series("clean:doc", "typedoc"));

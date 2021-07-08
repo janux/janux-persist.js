@@ -9,7 +9,7 @@ var typedoc = require("gulp-typedoc"),
 module.exports = function(gulp) {
 	var cfg = gulp.cfg;
 
-	gulp.task("typedoc", function() {
+	gulp.task("typedoc", () => {
 		return gulp.src([cfg.fileset.ts]).pipe(
 			typedoc({
 				// TypeScript options (see typescript docs)
