@@ -29,7 +29,7 @@
 		"email-validator": "1.0.7",
 		"janux-people": "file:vendor/janux-people.js",
 		"janux-authorize": "file:vendor/janux-authorize.js",
-		"lodash": "4.17.12",
+		"lodash": "4.17.21",
 		"lokijs": "1.5.0",
 		"mongoose": "4.10.5",
 		"uuid": "3.0.1",
