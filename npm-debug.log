@@ -1,0 +1,79 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/ramoncalvo/.nvm/versions/node/v7.5.0/bin/node',
+1 verbose cli   '/Users/ramoncalvo/.nvm/versions/node/v7.5.0/bin/npm',
+1 verbose cli   'view',
+1 verbose cli   '--json',
+1 verbose cli   'janux-people',
+1 verbose cli   'description',
+1 verbose cli   'dist-tags.latest',
+1 verbose cli   'homepage',
+1 verbose cli   'version' ]
+2 info using npm@4.1.2
+3 info using node@v7.5.0
+4 silly mapToRegistry name janux-people
+5 silly mapToRegistry using default registry
+6 silly mapToRegistry registry https://registry.npmjs.org/
+7 silly mapToRegistry data Result {
+7 silly mapToRegistry   raw: 'janux-people',
+7 silly mapToRegistry   scope: null,
+7 silly mapToRegistry   escapedName: 'janux-people',
+7 silly mapToRegistry   name: 'janux-people',
+7 silly mapToRegistry   rawSpec: '',
+7 silly mapToRegistry   spec: 'latest',
+7 silly mapToRegistry   type: 'tag' }
+8 silly mapToRegistry uri https://registry.npmjs.org/janux-people
+9 verbose request uri https://registry.npmjs.org/janux-people
+10 verbose request no auth needed
+11 info attempt registry request try #1 at 6:23:06 PM
+12 verbose request id 66d6abccaebc6a3b
+13 http request GET https://registry.npmjs.org/janux-people
+14 http 404 https://registry.npmjs.org/janux-people
+15 verbose headers { date: 'Sat, 28 Nov 2020 00:22:56 GMT',
+15 verbose headers   'content-type': 'application/json',
+15 verbose headers   'content-length': '21',
+15 verbose headers   connection: 'keep-alive',
+15 verbose headers   'set-cookie': [ '__cfduid=dcc0cd6c7b5d0c3f1a3e8530b4a9bbf071606522976; expires=Mon, 28-Dec-20 00:22:56 GMT; path=/; domain=.npmjs.org; HttpOnly; SameSite=Lax' ],
+15 verbose headers   'cf-ray': '5f8feff8ef50ec46-MFE',
+15 verbose headers   vary: 'Accept-Encoding',
+15 verbose headers   'cf-cache-status': 'MISS',
+15 verbose headers   'cf-request-id': '06add44f8f0000ec467e974000000001',
+15 verbose headers   'expect-ct': 'max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"',
+15 verbose headers   server: 'cloudflare' }
+16 silly get cb [ 404,
+16 silly get   { date: 'Sat, 28 Nov 2020 00:22:56 GMT',
+16 silly get     'content-type': 'application/json',
+16 silly get     'content-length': '21',
+16 silly get     connection: 'keep-alive',
+16 silly get     'set-cookie': [ '__cfduid=dcc0cd6c7b5d0c3f1a3e8530b4a9bbf071606522976; expires=Mon, 28-Dec-20 00:22:56 GMT; path=/; domain=.npmjs.org; HttpOnly; SameSite=Lax' ],
+16 silly get     'cf-ray': '5f8feff8ef50ec46-MFE',
+16 silly get     vary: 'Accept-Encoding',
+16 silly get     'cf-cache-status': 'MISS',
+16 silly get     'cf-request-id': '06add44f8f0000ec467e974000000001',
+16 silly get     'expect-ct': 'max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"',
+16 silly get     server: 'cloudflare' } ]
+17 verbose stack Error: Not found : janux-people
+17 verbose stack     at makeError (/Users/ramoncalvo/.nvm/versions/node/v7.5.0/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:304:12)
+17 verbose stack     at CachingRegistryClient.<anonymous> (/Users/ramoncalvo/.nvm/versions/node/v7.5.0/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:292:14)
+17 verbose stack     at Request._callback (/Users/ramoncalvo/.nvm/versions/node/v7.5.0/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:212:14)
+17 verbose stack     at Request.self.callback (/Users/ramoncalvo/.nvm/versions/node/v7.5.0/lib/node_modules/npm/node_modules/request/request.js:186:22)
+17 verbose stack     at emitTwo (events.js:106:13)
+17 verbose stack     at Request.emit (events.js:192:7)
+17 verbose stack     at Request.<anonymous> (/Users/ramoncalvo/.nvm/versions/node/v7.5.0/lib/node_modules/npm/node_modules/request/request.js:1081:10)
+17 verbose stack     at emitOne (events.js:96:13)
+17 verbose stack     at Request.emit (events.js:189:7)
+17 verbose stack     at IncomingMessage.<anonymous> (/Users/ramoncalvo/.nvm/versions/node/v7.5.0/lib/node_modules/npm/node_modules/request/request.js:1001:12)
+18 verbose statusCode 404
+19 verbose pkgid janux-people
+20 verbose cwd /Users/ramoncalvo/pprojects/janux-open-source/janux-persist.js
+21 error Darwin 18.7.0
+22 error argv "/Users/ramoncalvo/.nvm/versions/node/v7.5.0/bin/node" "/Users/ramoncalvo/.nvm/versions/node/v7.5.0/bin/npm" "view" "--json" "janux-people" "description" "dist-tags.latest" "homepage" "version"
+23 error node v7.5.0
+24 error npm  v4.1.2
+25 error code E404
+26 error 404 Not found : janux-people
+27 error 404
+28 error 404 'janux-people' is not in the npm registry.
+29 error 404 You should bug the author to publish it (or use the name yourself!)
+30 error 404 Note that you can also install from a
+31 error 404 tarball, folder, http url, or git url.
+32 verbose exit [ 1, true ]

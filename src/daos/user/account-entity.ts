@@ -9,6 +9,7 @@
 export class AccountEntity {
 	public id: any;
 	public username: string;
+	public period: object;
 	public password: string;
 	public userId: string;
 	public mdate: Date;

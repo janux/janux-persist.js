@@ -121,5 +121,19 @@ describe("Testing user service find method", function() {
 					done();
 				});
 		});
+
+		describe("When updating the account", function() {
+			it("The method should update the account and contact data", function(done) {
+				// insertedUser1.username = accountUsername3;
+				// insertedUser1.password = accountPassword3;
+				// insertedUser1.contact.name.first = personName2;
+				// insertedUser1.contact.name.middle = "";
+				// insertedUser1.contact.name.last = personMiddleName2;
+				// insertedUser1.contact.emails[0].address = contactEmail2;
+				userService.findUserByPeriod(period).then(function(resultUpdate) {
+					done();
+				});
+			});
+		});
 	});
 });
