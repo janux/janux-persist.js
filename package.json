@@ -1,6 +1,6 @@
 {
 	"name": "janux-persist",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Janux persistence module",
 	"main": "dist/index.js",
 	"typings": "dist/index.d.ts",
@@ -36,8 +36,8 @@
 		"bluebird": "3.5.0",
 		"config": "1.26.1",
 		"email-validator": "1.0.7",
-		"janux-people": "file:vendor/janux-people.js",
-		"janux-authorize": "file:vendor/janux-authorize.js",
+		"janux-people": "1.0.0",
+		"janux-authorize": "1.0.0",
 		"lodash": "4.17.12",
 		"lokijs": "1.5.0",
 		"mongoose": "4.10.5",
