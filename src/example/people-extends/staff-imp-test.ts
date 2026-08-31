@@ -38,7 +38,16 @@ export class StaffImplTest extends Person {
 		this.currentEarnings = currentEarnings;
 	}
 
-	typeName: string = "StaffImplTest";
+	// @ts-ignore TS2611: janux-people is compiled with TS 3.1.8, whose declaration emit
+	// flattens `get typeName()` to `readonly typeName`, so TS 4.9 sees this override as
+	// widening a "property" to an accessor. It's a real prototype-level accessor override
+	// at runtime (correctly shadowing PersonImpl's getter) and must stay a getter: a plain
+	// field here throws at runtime ("Cannot set property typeName ... which has only a
+	// getter"), because PersonImpl.prototype.typeName has no setter for `this.typeName = x`
+	// to hit. See janux-persist.js/CLAUDE.md.
+	get typeName(): string {
+		return "StaffImplTest";
+	}
 
 	public toJSON(): StaffImplTest {
 		const out: any = this.contactMethods;

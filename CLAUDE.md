@@ -108,15 +108,34 @@ any effect — `exclude` only filters the initial file glob, and these files
 are pulled back in through the import graph. The entry has been removed to
 stop it implying the directory is skippable.
 
-## Known issue: TS2611 on `StaffImplTest.typeName`
+## Fixed: `StaffImplTest.typeName` must stay a getter, not a field
 
-`StaffImplTest.typeName` is declared as a class field rather than a getter.
-It was a getter, matching `PersonImpl`'s actual runtime shape, but janux-people
-is compiled with TypeScript 3.1.8, whose declaration emit flattens
-`get typeName(): string` into `readonly typeName: string`. TypeScript 4.9
-then refuses the accessor override with error TS2611. The field is
-behaviourally equivalent for a constant string; it can be reverted once
-janux-people is built with a matching compiler.
+`StaffImplTest.typeName` was changed from a getter to a plain class field to
+dodge a TypeScript 4.9 compile error (TS2611): janux-people is compiled with
+TypeScript 3.1.8, whose declaration emit flattens `get typeName(): string`
+into `readonly typeName: string`, and TS 4.9 refuses to let a subclass
+override that "property" with an accessor.
+
+That fix was **not** behaviourally equivalent, and broke real runtime
+behavior: `PersonImpl.prototype.typeName` is a getter-only accessor with no
+setter. A subclass field initializer compiles to `this.typeName = "..."` in
+the constructor, and assigning to a property whose only accessor up the
+prototype chain is a getter throws in strict mode
+(`TypeError: Cannot set property typeName of [object Object] which has only
+a getter`) — it does not silently create an own property. Every
+`new StaffImplTest(...)` call threw, which surfaced as two permanently
+timing-out tests (`staff-example-dao-update.spec.js`'s `beforeEach`, both
+db engines — its unhandled promise rejection had no `.catch()`, so `done()`
+was never called).
+
+Reverted to a getter (which correctly overrides the parent's getter at the
+prototype level, unlike a field) with a `// @ts-ignore` on the TS2611 line,
+since the diagnostic itself is a real false positive caused by the
+cross-package compiler-version skew, not a real type error. Verified: full
+suite is back to 404 passing, 0 failing (0.0.4 shipped with the broken
+field version — this is fixed in 0.0.5). Revisit once janux-people is
+built with a matching TypeScript version, at which point the `@ts-ignore`
+can likely come off too.
 
 ## Notes
 
