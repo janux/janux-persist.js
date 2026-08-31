@@ -142,10 +142,16 @@ can likely come off too.
 - Used by: easytitle24-2.x (server), glarus-services, glarus-ops, janux-mail,
   janux-portal
 - Git branch: `dev`, remote: github.com/janux/janux-persist.js
-- Every published version has a matching annotated tag (`v0.0.2`, `v0.0.3`,
-  `v0.0.4`, `v0.0.5`) on the commit that was actually published. See
-  `/VERSIONING.md` (workspace root) for the tagging and release-candidate
-  workflow — `0.0.2`-`0.0.5` predate the RC part of it.
+- Every published version has a matching annotated tag (`v0.0.2`, `v0.0.3`)
+  on the commit that was actually published. See `/VERSIONING.md` (workspace
+  root) for the tagging and release-candidate workflow. `0.0.4` and `0.0.5`
+  were briefly published and tagged, then unpublished and untagged: only
+  this workspace publishes/consumes janux-persist, so rather than carrying
+  the churn forward as `0.0.6`, those fixes (mongodb pin, StaffImplTest)
+  were consolidated back into `0.0.3` as a `0.0.3-rc1` release candidate —
+  a live example of why `VERSIONING.md`'s RC workflow exists. The `v0.0.3`
+  tag currently still points at the pre-consolidation commit; it'll move
+  once `0.0.3-rc1` is finalized.
 - Unmerged `origin/jl-1808-updateNode12` branch from 2021 (2 commits),
   relevant to the Node 12 baseline work.
 - `CommService` (`src/services/comm/comm-service.ts`) is the shared outbound
