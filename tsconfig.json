@@ -20,5 +20,5 @@
 			"utils/*": ["utils/*"]
 		}
 	},
-	"exclude": ["**/node_modules/*", "vendor", "dist", "gulp", "docker", "config"]
+	"exclude": ["**/node_modules/*", "vendor", "dist", "docker", "config", "src/example"]
 }

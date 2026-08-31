@@ -38,9 +38,7 @@ export class StaffImplTest extends Person {
 		this.currentEarnings = currentEarnings;
 	}
 
-	get typeName(): string {
-		return "StaffImplTest";
-	}
+	typeName: string = "StaffImplTest";
 
 	public toJSON(): StaffImplTest {
 		const out: any = this.contactMethods;

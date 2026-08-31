@@ -21,24 +21,26 @@ Before installing the dependencies. Make sure there is a reference of the projec
   $ cd vendor
   $ ln -s [path-to]/janux-people.js
 
-After cloning the project you need to do `npm install` in order to install the dependencies.`npm install` will automatically run `gulp` after installing the dependencies and to an initial build of the project by invoking the default gulp target.
+After cloning the project you need to do `npm install` in order to install the dependencies, followed by `npm run build` to do an initial build of the project.
  
 
 **Compile**
 
-To compile the project run `gulp`. To see the other tasks available: `gulp -T`.
+To compile the project run `npm run build`. This runs `tsc` followed by
+`tsc-alias`, which rewrites the `baseUrl`/`paths` aliases in the emitted
+JavaScript to relative paths.
+
+To recompile automatically as files change, run `npm run watch`.
 
 **Debugging**
 
-You can run `gulp compile-test`. This command generates the sourcemap inside the javascript files.
+The build emits sourcemaps alongside the compiled JavaScript (`sourceMap` is
+enabled in `tsconfig.json`).
 
 **Test**
 
-To test the project run `gulp test`
-
-**Typedoc**
-
-To generate the doc files run `gulp doc` 
+To test the project run `npm test`. This builds first, then runs mocha over
+`test/**/*.spec.js`.
 
 **Settings**
 
@@ -51,7 +53,7 @@ which mongo db uses the project.
  
  test.js
  
- For example, when you execute `gulp test`, the system gets the settings from test.js. 
+ For example, when you execute `npm test`, the system gets the settings from test.js. 
  
 **Extra tasks**
  
@@ -63,7 +65,7 @@ If you want to use janux-persist inside another project you need to do the follo
 
 1.. Make sure janux-persist is cloned and installed correctly
 
-2.. Run `gulp` to make sure the compiled files are generated.
+2.. Run `npm run build` to make sure the compiled files are generated.
 
 3.. Insert the dependency inside the package.json to the project you want to use janux-persist.
 
