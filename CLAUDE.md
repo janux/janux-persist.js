@@ -123,6 +123,9 @@ janux-people is built with a matching compiler.
 - Used by: easytitle24-2.x (server), glarus-services, glarus-ops, janux-mail,
   janux-portal
 - Git branch: `dev`, remote: github.com/janux/janux-persist.js
+- Every published version has a matching annotated tag (`v0.0.2`, `v0.0.3`,
+  `v0.0.4`) on the commit that was actually published — see `janux/CLAUDE.md`,
+  "Tag every published commit".
 - Unmerged `origin/jl-1808-updateNode12` branch from 2021 (2 commits),
   relevant to the Node 12 baseline work.
 - `CommService` (`src/services/comm/comm-service.ts`) is the shared outbound
