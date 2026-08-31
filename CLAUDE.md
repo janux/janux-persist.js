@@ -143,7 +143,7 @@ can likely come off too.
   janux-portal
 - Git branch: `dev`, remote: github.com/janux/janux-persist.js
 - Every published version has a matching annotated tag (`v0.0.2`, `v0.0.3`,
-  `v0.0.4`) on the commit that was actually published — see `janux/CLAUDE.md`,
+  `v0.0.4`, `v0.0.5`) on the commit that was actually published — see `janux/CLAUDE.md`,
   "Tag every published commit".
 - Unmerged `origin/jl-1808-updateNode12` branch from 2021 (2 commits),
   relevant to the Node 12 baseline work.
