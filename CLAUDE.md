@@ -25,10 +25,26 @@ email integration.
 - pug 2.0.3 (email templates)
 - md5 2.2.1, randomstring 1.1.5
 
-## Vendor Dependencies
+## janux-people / janux-authorize: real registry deps, not vendor/
 
-- janux-people.js → symlink to ../janux-people.js (sibling in janux/)
-- janux-authorize.js → symlink to ../janux-authorize.js (sibling in janux/)
+`package.json` declares `janux-people` and `janux-authorize` as real
+registry versions (`1.0.0` each), not `file:vendor/...`. They were `file:`
+paths through 0.0.2, which **broke every consumer's `npm install`**: `npm
+publish` ships whatever `files` lists (`dist`, `src`), `vendor/` was never
+part of that, so `file:vendor/janux-people.js` doesn't resolve outside this
+repo's own checkout. 0.0.1 apparently published fine only because whoever
+ran `npm publish` in 2021 hand-edited `package.json` to real semver first,
+without ever committing that edit. See the 0.0.3 commit for the full story
+and how it was reproduced (a genuinely clean install + `npm pack` into a
+throwaway project).
+
+For local cross-repo development against unpublished changes to
+janux-people or janux-authorize, use `npm link` — both are already globally
+linked in this environment (Node 10.24.1 and 12.22.11), same pattern
+glarus-ops already uses for janux-persist itself.
+
+The `vendor/` directory and its symlinks still exist and are harmless to
+leave in place, but they are no longer what `npm install` uses.
 
 ## Architecture
 
