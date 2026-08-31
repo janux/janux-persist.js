@@ -136,10 +136,22 @@ export class CommService {
 			(error, info) => {
 				if (error) {
 					this.fire(this.events.EMAIL_SENT_ERROR_EVENT, error);
-					this._log.info(error);
+					this._log.error(
+						"Failed to send email to: %j subject: %j - code: %j message: %j response: %j",
+						params.to,
+						params.subject,
+						error.code,
+						error.message,
+						error.response
+					);
 				} else {
 					this.fire(this.events.EMAIL_SUCCESS_SENT_EVENT, params);
-					this._log.info("Message sent: " + info.response);
+					this._log.info(
+						"Message sent to: %j subject: %j - response: %j",
+						params.to,
+						params.subject,
+						info.response
+					);
 				}
 			}
 		);
