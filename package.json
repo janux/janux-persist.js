@@ -1,6 +1,6 @@
 {
 	"name": "janux-persist",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "Janux persistence module",
 	"main": "dist/index.js",
 	"typings": "dist/index.d.ts",
@@ -21,7 +21,7 @@
 		"Ernesto Ortiz Gómez"
 	],
 	"dependencies": {
-		"mongodb": "2.2.36",
+		"mongodb": "2.2.27",
 		"@types/bluebird": "3.5.5",
 		"@types/config": "0.0.32",
 		"@types/email-validator": "1.0.30",

@@ -19,11 +19,30 @@ email integration.
 
 ## Key Dependencies
 
-- mongoose 4.10.5, mongodb 2.2.36, lokijs 1.5.0
+- mongoose 4.10.5, mongodb 2.2.27, lokijs 1.5.0
 - bluebird 3.5.0
 - nodemailer 4.6.8 + mail-time 0.1.7 (email integration)
 - pug 2.0.3 (email templates)
 - md5 2.2.1, randomstring 1.1.5
+
+## `mongodb` must stay pinned to exactly mongoose's own version
+
+`mongoose@4.10.5` hard-pins its own `mongodb` dependency to exactly
+`2.2.27` (not a range). This package's `mongodb` dependency (used only by
+`BigDecimalUtil.toBigDecimal128()`/`fromBigDecimal128()` for `Decimal128`)
+must be pinned to that exact same version, or npm installs two separate,
+non-deduped copies of `mongodb`/`bson` — and `Decimal128` becomes two
+different classes at runtime. Consumers who validate `Decimal128` fields
+through Mongoose (glarus-services does, for money/rate fields) then get
+"Cast to Decimal128 failed" on perfectly valid data, because mongoose's
+`instanceof` check runs against *its* copy of the class while the value
+was constructed against *this package's* copy.
+
+This was introduced (not present before) in the commit that first added
+`mongodb` as an explicit dependency here, pinned to `2.2.36` — one patch
+version off mongoose's `2.2.27`, just enough to break the shared-instance
+hoisting npm was doing implicitly before. Fixed in `0.0.4`. If mongoose's
+own pin ever changes, this one needs to move with it.
 
 ## janux-people / janux-authorize: real registry deps, not vendor/
 
