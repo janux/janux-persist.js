@@ -56,6 +56,27 @@ describe("Testing comm service", function() {
 		};
 	});
 
+	describe("When constructing the queue", function() {
+		it("Should keep email concatenation off", function() {
+			// Concatenation batches messages sharing a recipient. Turning it on
+			// reintroduces three regressions at once: a ~60s delay on every
+			// send (concatThrottling's default window), a dropped callback for
+			// any merged message, and a subject replaced by the
+			// "Multiple notifications" fallback. None are acceptable for
+			// transactional mail, and none surface in an obvious way — hence
+			// asserting on the constructed queue rather than trusting review.
+			expect(service.mailQueue.concatEmails).to.eq(false);
+		});
+
+		it("Should not defer the first send attempt", function() {
+			// concatThrottling is only applied on the concatenation branch, so
+			// with concatEmails off a message is queued with the caller's own
+			// sendAt and becomes eligible immediately.
+			expect(service.mailQueue.concatEmails).to.eq(false);
+			expect(service.mailQueue.maxTries).to.be.above(0);
+		});
+	});
+
 	describe("When calling sendEmail", function() {
 		it("Should log the attempt at INFO before handing off to the queue", function() {
 			service.sendEmail({

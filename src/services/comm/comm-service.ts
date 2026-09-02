@@ -70,8 +70,25 @@ export class CommService {
 				// for each transport, check `transport` object for more options
 				return '"Glarus App" <' + transport._options.from + ">";
 			},
-			concatEmails: true, // Concatenate emails to the same addressee
-			concatDelimiter: "<h1>{{{subject}}}</h1>" // Start each concatenated email with it's own subject
+			// Concatenation is off deliberately. It batches messages sharing a
+			// recipient into one email, which suits digests and actively harms
+			// the transactional mail this service carries:
+			//
+			//   - It delays *every* send. `concatThrottling` defaults to 60s
+			//     and is the window in which a second message may arrive to be
+			//     merged, so each message waits that long before its first
+			//     attempt even when nothing ever merges.
+			//   - It loses the caller's callback. A message merged into an
+			//     existing unsent document returns before the callback is
+			//     registered, so that send reports neither success nor failure.
+			//   - It rewrites the subject. Once a document holds more than one
+			//     message the subject is replaced by `concatSubject`, which is
+			//     unset here and so falls back to "Multiple notifications",
+			//     with the individual bodies concatenated beneath it.
+			//
+			// With it off, each message is its own queue document: independently
+			// retried, with a live callback, and sent under its own subject.
+			concatEmails: false
 		});
 	}
 
