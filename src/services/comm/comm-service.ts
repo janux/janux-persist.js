@@ -122,6 +122,28 @@ export class CommService {
 	public sendEmail(params: any) {
 		this._log.debug("Call to sendEmail with params: %j", params);
 
+		// Logged unconditionally, here, before the message is handed to the
+		// queue — this is the only reliable record that a send was attempted.
+		// The callbacks below cannot be relied on for that, because mail-time
+		// 0.1.7 does not always invoke them:
+		//
+		//   - Its give-up branch is guarded by `task.tries > this.maxTries`,
+		//     but its worker only claims tasks with `tries < this.maxTries`,
+		//     so `tries` tops out *at* the limit and the guard never opens.
+		//     A permanently failing message is retried to the limit and then
+		//     stranded in the queue forever, callback never called.
+		//   - The callback registry is in-memory, keyed by the queue
+		//     document's _id, so a restart discards it while the document
+		//     survives.
+		//   - With `concatEmails` on, a message merged into an existing
+		//     unsent document returns before its callback is registered.
+		//
+		// Consequence: the error branch below is effectively unreachable for
+		// send failures today. It is kept because it is correct, and becomes
+		// live again the moment the queue is replaced. Until then, "was this
+		// email attempted, and to whom" is answerable only from this line.
+		this._log.info("Attempting to send email to: %j subject: %j", params.to, params.subject);
+
 		// const that = this;
 
 		// Send email
