@@ -1,6 +1,6 @@
 {
 	"name": "janux-persist",
-	"version": "0.0.3-rc3",
+	"version": "0.0.3-rc4",
 	"description": "Janux persistence module",
 	"main": "dist/index.js",
 	"typings": "dist/index.d.ts",

@@ -177,6 +177,24 @@ export class UserActionServiceProd extends UserActionService {
 		};
 
 		return this.partyService.findOne(contactId).then((result: any) => {
+			// The destination address is caller-supplied (it identifies which
+			// of the contact's several addresses to use), but it must belong
+			// to this contact - otherwise a caller who merely knows an
+			// account/contact id can redirect the reset code anywhere.
+			const registeredEmails: string[] = result
+				.emailAddresses(false)
+				.map((emailAddress: any) => emailAddress.address);
+			if (!_.includes(registeredEmails, config.selectedEmail)) {
+				this._log.warn(
+					"Rejected recoverPassword: %j is not a registered email address for contact %j",
+					config.selectedEmail,
+					contactId
+				);
+				return Promise.reject(
+					"The selected email address does not belong to the account on file"
+				);
+			}
+
 			params.name = result.name.first + " " + result.name.last;
 
 			// Compile template

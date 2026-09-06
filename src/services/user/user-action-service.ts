@@ -22,6 +22,10 @@ import { isBlankString } from "utils/string/blank-string-validator";
 export abstract class UserActionService {
 	public ACCOUNT_INV = "accountAction";
 	public ACCOUNT_INV_NOT_IN_DATABASE = "The account action with this id does not exist in the database";
+	public ACCOUNT_INV_ALREADY_COMPLETED = "This account action has already been completed";
+	public ACCOUNT_INV_EXPIRED = "This account action has expired";
+	public ACCOUNT_INV_CODE_MISMATCH = "The code provided does not match this account action";
+	public ACCOUNT_INV_ACCOUNT_MISMATCH = "The account provided does not match the account associated with this action";
 	protected _log = logger.getLogger("UserActionService");
 	protected accountActionDao: AccountInvitationDao;
 	protected userService: UserService;
@@ -115,7 +119,7 @@ export abstract class UserActionService {
 				return this.userService.findOneByUserId(action.accountId);
 			})
 			.then((account: AccountEntity) => {
-				result.account = account;
+				result.account = this.userService.removeSensitiveData(account);
 				this._log.debug("Returning %j", result);
 				return Promise.resolve(result);
 			});
@@ -147,6 +151,21 @@ export abstract class UserActionService {
 
 	/**
 	 * Update the account action data.
+	 *
+	 * `skipAccountUpdate === true` is a trusted, service-internal call (the
+	 * `recoverPassword`/`inviteToCreateAccount` flows re-issuing their own
+	 * code/expire on an existing pending record) and is passed straight
+	 * through unvalidated, same as before.
+	 *
+	 * `skipAccountUpdate` falsy is the untrusted path: a caller (typically an
+	 * unauthenticated RPC route) claiming to *complete* an invitation/recovery
+	 * action. That path must not take `code`/`status`/`expire`/`accountId`
+	 * from the caller's object at all — it validates the caller-supplied code
+	 * against the stored record, requires the record still be pending and
+	 * unexpired, and requires the account being written match the account the
+	 * invitation was actually issued for. Only then is it moved to
+	 * "completed" and the account update performed.
+	 *
 	 * @param object The account action to be updated.
 	 */
 	public update(object: any, skipAccountUpdate: boolean): Promise<any> {
@@ -161,7 +180,9 @@ export abstract class UserActionService {
 					return Promise.reject([
 						new ValidationErrorImpl(this.ACCOUNT_INV, this.ACCOUNT_INV_NOT_IN_DATABASE, object.id)
 					]);
-				} else {
+				}
+
+				if (skipAccountUpdate) {
 					inv.id = object.id;
 					inv.expire = DateUtil.stringToDate(object.expire);
 					inv.accountId = object.accountId;
@@ -170,6 +191,41 @@ export abstract class UserActionService {
 
 					return this.accountActionDao.update(inv);
 				}
+
+				// Untrusted completion: validate against the stored record,
+				// never trust the caller's code/status/expire/accountId.
+				if (resultQuery.status !== "pending") {
+					return Promise.reject([
+						new ValidationErrorImpl(this.ACCOUNT_INV, this.ACCOUNT_INV_ALREADY_COMPLETED, object.id)
+					]);
+				}
+
+				const storedExpire = DateUtil.stringToDate(resultQuery.expire);
+				if (!_.isNil(storedExpire) && storedExpire < new Date()) {
+					return Promise.reject([
+						new ValidationErrorImpl(this.ACCOUNT_INV, this.ACCOUNT_INV_EXPIRED, object.id)
+					]);
+				}
+
+				if (isBlankString(object.code) || object.code !== resultQuery.code) {
+					return Promise.reject([
+						new ValidationErrorImpl(this.ACCOUNT_INV, this.ACCOUNT_INV_CODE_MISMATCH, object.id)
+					]);
+				}
+
+				if (_.isNil(object.account) || object.account.userId !== resultQuery.accountId) {
+					return Promise.reject([
+						new ValidationErrorImpl(this.ACCOUNT_INV, this.ACCOUNT_INV_ACCOUNT_MISMATCH, object.id)
+					]);
+				}
+
+				inv.id = resultQuery.id;
+				inv.expire = resultQuery.expire;
+				inv.accountId = resultQuery.accountId;
+				inv.code = resultQuery.code;
+				inv.status = "completed";
+
+				return this.accountActionDao.update(inv);
 			})
 			.then((updatedAccountAction: AccountInvitationEntity) => {
 				result = updatedAccountAction;
