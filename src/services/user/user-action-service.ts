@@ -399,6 +399,7 @@ export class UserActionService {
 							to: config.selectedEmail,
 							data: {
 								name,
+								email: config.selectedEmail,
 								hostname: config.hostname,
 								invitationCode
 							}
