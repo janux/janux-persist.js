@@ -11,7 +11,7 @@ var config = require("config");
 var moment = require("moment");
 var DaoUtil = require("../../daos/dao-util");
 var UserService = require("../../../dist/index").UserService;
-var UserActionServiceDev = require("../../../dist/index").UserActionServiceDev;
+var UserActionService = require("../../../dist/index").UserActionService;
 var PartyService = require("../../../dist/index").PartyServiceImpl;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var PasswordService = require("../../../dist/index").PasswordService;
@@ -56,7 +56,11 @@ describe("Testing UserActionService update method (JAM-19)", function() {
 			partyService = new PartyService(partyDao, staffDao);
 			passwordService = new PasswordService();
 			userService = UserService.createInstance(accountDao, partyService, passwordService);
-			userActionService = UserActionServiceDev.createInstance(accountActionDao, userService, partyService, null);
+			// createInstance memoizes on a private static; clear it so this
+			// spec doesn't inherit an instance (with a different eventBus)
+			// left behind by another user-action-service spec file.
+			UserActionService._instance = undefined;
+			userActionService = UserActionService.createInstance(accountActionDao, userService, partyService, null);
 
 			accountActionDao
 				.removeAll()

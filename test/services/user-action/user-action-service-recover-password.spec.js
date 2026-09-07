@@ -4,14 +4,19 @@
  * JAM-19 (item 1): recoverPassword() must not mail the reset code to an
  * address the caller merely supplies - only to an address actually
  * registered against the account's own contact record.
+ *
+ * Also covers the janux-mail plan's Step 1c collapse: recoverPassword no
+ * longer renders a template or calls a commService directly - it emits
+ * MAIL_EVENT_NAMES.PASSWORD_RECOVERY_REQUESTED through an injected event
+ * bus, and the calling app's own wiring module is what renders/sends.
  */
 var chai = require("chai");
 var expect = chai.expect;
 var config = require("config");
-var path = require("path");
 var DaoUtil = require("../../daos/dao-util");
 var UserService = require("../../../dist/index").UserService;
-var UserActionServiceProd = require("../../../dist/index").UserActionServiceProd;
+var UserActionService = require("../../../dist/index").UserActionService;
+var MAIL_EVENT_NAMES = require("../../../dist/index").MAIL_EVENT_NAMES;
 var PartyService = require("../../../dist/index").PartyServiceImpl;
 var DataSourceHandler = require("../../../dist/index").DataSourceHandler;
 var PasswordService = require("../../../dist/index").PasswordService;
@@ -25,25 +30,17 @@ var dbPath = dbEngine === DataSourceHandler.LOKIJS ? lokiJsDBPath : mongoConnUrl
 
 const registeredEmail = "owner@example.com";
 const attackerEmail = "attacker@evil.example.com";
-const templateUrl = path.join(__dirname, "..", "..", "fixtures", "recover-password-template.pug");
 
-function createFakeCommService() {
+function createFakeEventBus() {
 	return {
-		events: {
-			EMAIL_SUCCESS_SENT_EVENT: "emailSuccessSent",
-			EMAIL_SENT_ERROR_EVENT: "emailSentError"
-		},
-		sentEmails: [],
-		on: function() {
-			// No-op: tests assert on sentEmails directly rather than events.
-		},
-		sendEmail: function(emailParams) {
-			this.sentEmails.push(emailParams);
+		emittedEvents: [],
+		emit: function(eventName, payload) {
+			this.emittedEvents.push({ eventName: eventName, payload: payload });
 		}
 	};
 }
 
-describe("Testing UserActionServiceProd recoverPassword method (JAM-19)", function() {
+describe("Testing UserActionService recoverPassword method (JAM-19)", function() {
 	describe("Given an account whose contact has one registered email address", function() {
 		var accountActionDao;
 		var accountDao;
@@ -52,13 +49,13 @@ describe("Testing UserActionServiceProd recoverPassword method (JAM-19)", functi
 		var userService;
 		var partyService;
 		var passwordService;
-		var commService;
+		var eventBus;
 		var userActionService;
 		var insertedAccount;
 
-		// UserActionServiceProd is a singleton (createInstance caches the
-		// first-created instance, ignoring later args) - so the commService
-		// it holds must be wired up exactly once here, not recreated in
+		// UserActionService is a singleton (createInstance caches the
+		// first-created instance, ignoring later args) - so the eventBus it
+		// holds must be wired up exactly once here, not recreated in
 		// beforeEach, or later tests would assert on a mock object the
 		// service was never actually given.
 		before(function() {
@@ -68,18 +65,22 @@ describe("Testing UserActionServiceProd recoverPassword method (JAM-19)", functi
 			staffDao = DaoUtil.createStaffDataDao(dbEngine, dbPath);
 			partyService = new PartyService(partyDao, staffDao);
 			passwordService = new PasswordService();
-			commService = createFakeCommService();
+			eventBus = createFakeEventBus();
 			userService = UserService.createInstance(accountDao, partyService, passwordService);
-			userActionService = UserActionServiceProd.createInstance(
+			// createInstance memoizes on a private static; clear it so this
+			// spec's fake eventBus wins instead of a null one left behind by
+			// another user-action-service spec file sharing the same process.
+			UserActionService._instance = undefined;
+			userActionService = UserActionService.createInstance(
 				accountActionDao,
 				userService,
 				partyService,
-				commService
+				eventBus
 			);
 		});
 
 		beforeEach(function(done) {
-			commService.sentEmails = [];
+			eventBus.emittedEvents = [];
 
 			accountActionDao
 				.removeAll()
@@ -114,37 +115,35 @@ describe("Testing UserActionServiceProd recoverPassword method (JAM-19)", functi
 				});
 		});
 
-		// recoverPassword is `protected` in TypeScript, but that's not enforced
-		// at runtime in the compiled JS - called directly here the same way
-		// UserActionServiceProd's own methods call it internally.
-		it("rejects a caller-supplied address that does not belong to the account and sends no email", function(done) {
+		it("rejects a caller-supplied address that does not belong to the account and emits nothing", function(done) {
 			userActionService
 				.recoverPassword(insertedAccount.userId, insertedAccount.contact.id, {
 					selectedEmail: attackerEmail,
-					hostname: "example.com",
-					msgSubject: "Password recovery",
-					templateUrl: templateUrl
+					hostname: "example.com"
 				})
 				.then(function() {
 					done(new Error("Expected recoverPassword to reject an unregistered address"));
 				})
 				.catch(function() {
-					expect(commService.sentEmails).to.have.lengthOf(0);
+					expect(eventBus.emittedEvents).to.have.lengthOf(0);
 					done();
 				});
 		});
 
-		it("accepts and mails an address that is actually registered to the account's contact", function(done) {
+		it("accepts a registered address and emits password.recoveryRequested with the recovery data", function(done) {
 			userActionService
 				.recoverPassword(insertedAccount.userId, insertedAccount.contact.id, {
 					selectedEmail: registeredEmail,
-					hostname: "example.com",
-					msgSubject: "Password recovery",
-					templateUrl: templateUrl
+					hostname: "example.com"
 				})
 				.then(function() {
-					expect(commService.sentEmails).to.have.lengthOf(1);
-					expect(commService.sentEmails[0].to).to.equal(registeredEmail);
+					expect(eventBus.emittedEvents).to.have.lengthOf(1);
+					var emitted = eventBus.emittedEvents[0];
+					expect(emitted.eventName).to.equal(MAIL_EVENT_NAMES.PASSWORD_RECOVERY_REQUESTED);
+					expect(emitted.payload.to).to.equal(registeredEmail);
+					expect(emitted.payload.data.name).to.equal("Owner Doe");
+					expect(emitted.payload.data.hostname).to.equal("example.com");
+					expect(emitted.payload.data.recoveryCode).to.be.a("string").and.have.lengthOf(12);
 					done();
 				})
 				.catch(done);
