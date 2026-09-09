@@ -31,14 +31,14 @@ const contactEmail = "dev@glarus.com";
 const contactType = "work";
 
 const accountUsername = "username";
-const accountPassword = "password";
+const accountPassword = "password12345!";
 const accountEnabled = true;
 const accountLocked = false;
 const accountExpire = undefined;
 const accountExpirePassword = undefined;
 
 const accountUsername2 = "username2";
-const accountPassword2 = "password2";
+const accountPassword2 = "password2-2345";
 const accountEnabled2 = true;
 const accountLocked2 = false;
 const accountExpire2 = undefined;

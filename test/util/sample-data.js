@@ -72,7 +72,7 @@ function createOrganization3() {
 
 function createEmptyUserAccount1() {
 	const accountUsername = "username";
-	const accountPassword = "password";
+	const accountPassword = "password12345!";
 	const accountEnabled = true;
 	const accountLocked = false;
 	const accountExpire = undefined;
@@ -91,7 +91,7 @@ function createEmptyUserAccount1() {
 
 function createEmptyUserAccount2() {
 	const accountUsername = "username2";
-	const accountPassword = "password2";
+	const accountPassword = "password2-2345";
 	const accountEnabled = true;
 	const accountLocked = false;
 	const accountExpire = undefined;
@@ -109,7 +109,7 @@ function createEmptyUserAccount2() {
 
 function createEmptyUserAccount3() {
 	const accountUsername = "username3";
-	const accountPassword = "password3";
+	const accountPassword = "password3-2345";
 	const accountEnabled = true;
 	const accountLocked = false;
 	const accountExpire = undefined;

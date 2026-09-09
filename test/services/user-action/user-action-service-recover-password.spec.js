@@ -102,7 +102,7 @@ describe("Testing UserActionService recoverPassword method (JAM-19)", function()
 					contactReference.typeName = person.typeName;
 					return userService.insert({
 						username: "jam19-recover",
-						password: "originalPassword",
+						password: "originalPassword1!",
 						enabled: true,
 						locked: false,
 						contact: contactReference,

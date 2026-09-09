@@ -32,21 +32,21 @@ const contactEmail = "dev@glarus.com";
 const contactType = "work";
 
 const accountUsername = "username";
-const accountPassword = "password";
+const accountPassword = "password12345!";
 const accountEnabled = true;
 const accountLocked = false;
 const accountExpire = undefined;
 const accountExpirePassword = undefined;
 
 const accountUsername2 = "username2";
-const accountPassword2 = "password2";
+const accountPassword2 = "password2-2345";
 const accountEnabled2 = true;
 const accountLocked2 = false;
 const accountExpire2 = undefined;
 const accountExpirePassword2 = undefined;
 
 const accountUsername3 = "username3";
-const accountPassword3 = "password3";
+const accountPassword3 = "password3-2345";
 const personName2 = "Jane";
 const personMiddleName2 = "Smith";
 const contactEmail2 = "dev_full_stack@glarus.com";

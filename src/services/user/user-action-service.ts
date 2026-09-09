@@ -25,12 +25,12 @@ import { AccountInvitationDao } from "daos/user/account-invitation-dao";
 import { AccountInvitationEntity } from "daos/user/account-invitation-entity";
 import { AccountInvitationValidator } from "daos/user/account-invitation-validator";
 import * as _ from "lodash";
-import * as md5 from "md5";
 import * as moment from "moment";
 import * as randomstring from "randomstring";
 import { ValidationErrorImpl } from "persistence/implementations/dao/validation-error";
 import { PartyServiceImpl } from "services/party/impl/party-service-impl";
 import { UserService } from "services/user/user-service";
+import { DEFAULT_PASSWORD_POLICY, PasswordPolicy } from "services/password/password-policy";
 import { MAIL_EVENT_NAMES } from "services/user/user-action-mail-events";
 import { DateUtil } from "utils/date/date-util";
 import * as logger from "utils/logger-api/logger-api";
@@ -206,8 +206,11 @@ export class UserActionService {
 	 * "completed" and the account update performed.
 	 *
 	 * @param object The account action to be updated.
+	 * @param skipAccountUpdate
+	 * @param passwordPolicy Policy the completing account's new password must satisfy
+	 * (JAM-25) - defaults to DEFAULT_PASSWORD_POLICY, ignored when skipAccountUpdate is true.
 	 */
-	public update(object: any, skipAccountUpdate: boolean): Promise<any> {
+	public update(object: any, skipAccountUpdate: boolean, passwordPolicy: PasswordPolicy | null = DEFAULT_PASSWORD_POLICY): Promise<any> {
 		this._log.debug("Call to updateMethod with object:%j", object);
 		let result: any;
 		const inv: AccountInvitationEntity = new AccountInvitationEntity();
@@ -269,7 +272,7 @@ export class UserActionService {
 			.then((updatedAccountAction: AccountInvitationEntity) => {
 				result = updatedAccountAction;
 				if (!skipAccountUpdate) {
-					return this.userService.update(object.account);
+					return this.userService.update(object.account, passwordPolicy);
 				} else {
 					return updatedAccountAction;
 				}
@@ -334,7 +337,24 @@ export class UserActionService {
 			.then((result: any) => {
 				const name = result.name.first + " " + result.name.last;
 
-				// Create account with random values
+				// Create account with random values. The password is an
+				// unusable placeholder, not a real credential: it exists
+				// only because AccountDaoMongooseImpl.validateBeforeInsert()
+				// requires a non-blank one, and the invitee can't sign in
+				// with it anyway (enabled: false, plus insert()'s own hash
+				// makes it unguessable) until update() replaces it with a
+				// real one on completing registration.
+				//
+				// This used to be pre-hashed with md5 before handing it to
+				// insert(), which now also hashes whatever plaintext it is
+				// given (JAM-41) - that combination double-hashed it, and
+				// insert()'s new password-policy check (JAM-25) rejected
+				// the md5 digest outright besides (letters+digits, no
+				// symbol, never satisfies the composition rule). Pass the
+				// plaintext directly and opt out of the policy check with
+				// passwordPolicy: null below - this placeholder was never a
+				// user's chosen password, so it isn't the case that policy
+				// is meant to police.
 				const account = {
 					userId: contactId,
 					enabled: false,
@@ -344,19 +364,17 @@ export class UserActionService {
 							length: 12,
 							charset: "alphanumeric"
 						}),
-					password: md5(
-						randomstring.generate({
-							length: 12,
-							charset: "alphanumeric"
-						})
-					),
+					password: randomstring.generate({
+						length: 12,
+						charset: "alphanumeric"
+					}),
 					locked: false,
 					roles: rolesToAssign,
 					contact: { id: contactId }
 				};
 
 				return this.userService.findOneByContactId(contactId).then((accountFound: any) => {
-					const foundOrCreated = _.isNil(accountFound) ? this.userService.insert(account) : Promise.resolve(accountFound);
+					const foundOrCreated = _.isNil(accountFound) ? this.userService.insert(account, null) : Promise.resolve(accountFound);
 					return foundOrCreated.then((resultAccount: any) => ({ name, resultAccount }));
 				});
 			})

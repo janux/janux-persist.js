@@ -13,6 +13,7 @@ import * as _ from "lodash";
 import {ValidationErrorImpl} from "persistence/implementations/dao/validation-error";
 import {PartyServiceImpl} from "services/party/impl/party-service-impl";
 import {PasswordService} from "services/password/PasswordService";
+import {DEFAULT_PASSWORD_POLICY, isPasswordValid, PasswordPolicy} from "services/password/password-policy";
 import {DateUtil} from "utils/date/date-util";
 import * as logger from "utils/logger-api/logger-api";
 import {isBlankString} from "utils/string/blank-string-validator";
@@ -36,6 +37,14 @@ export class UserService {
 	public ACCOUNT = "account";
 	public ANOTHER_ACCOUNT_USING_CONTACT = "There is another account using this contact";
 	public ACCOUNT_NOT_IN_DATABASE = "The account with this id does not exist in the database";
+	// Deliberately generic, not "...required length" - isPasswordValid()
+	// (JAM-25) also rejects for failing the policy's composition rule
+	// (pattern), and this one message covers both without having to plumb
+	// back which check actually failed. The client's own validation (see
+	// each app's validation-service.js) is what shows an actionable,
+	// specific message before a request ever reaches here; this is the
+	// server-side backstop for any caller that skips or bypasses that.
+	public PASSWORD_POLICY_VIOLATION = "Password does not meet the required policy";
 	public PARTY_TYPE = "party.type";
 	private _log = logger.getLogger("UserService");
 	private ID_REFERENCE: string = "id";
@@ -78,12 +87,12 @@ export class UserService {
 	 * @param object
 	 * @return {Promise<any>}
 	 */
-	public saveOrUpdate(object: any): Promise<any> {
+	public saveOrUpdate(object: any, passwordPolicy: PasswordPolicy | null = DEFAULT_PASSWORD_POLICY): Promise<any> {
 		this._log.debug("Call to saveOrUpdate with object: %j", object);
 		if (isBlankString(object.id)) {
-			return this.insert(object);
+			return this.insert(object, passwordPolicy);
 		} else {
-			return this.update(object);
+			return this.update(object, passwordPolicy);
 		}
 	}
 
@@ -252,10 +261,22 @@ export class UserService {
 	 * If the contact info doesn't hav an id. The the system
 	 * assumes is going to insertMethod a new party record.
 	 */
-	public insert(object: any): Promise<any> {
+	public insert(object: any, passwordPolicy: PasswordPolicy | null = DEFAULT_PASSWORD_POLICY): Promise<any> {
 		this._log.debug("Call to insertMethod with object %j", object);
 		let associatedParty: JanuxPeople.PartyAbstract;
 		let result: any;
+
+		// Validated against the plaintext before it's hashed below - once
+		// hashed there's no length left to check (JAM-25). Only enforced
+		// when a password is actually being set: an invitation-created
+		// account has none yet, and gets one later via update() on
+		// completion, which validates it there instead. Pass
+		// passwordPolicy: null to skip the check entirely (no legitimate
+		// caller needs that today, but see update()'s equivalent).
+		if (object.password && passwordPolicy && !isPasswordValid(object.password, passwordPolicy)) {
+			return Promise.reject([new ValidationErrorImpl(this.ACCOUNT, this.PASSWORD_POLICY_VIOLATION, null)]);
+		}
+
 		const user: AccountEntity = new AccountEntity();
 		user.enabled = object.enabled;
 		user.userId = object.userId || uuid.v4();
@@ -303,10 +324,22 @@ export class UserService {
 	 * One difference with insertMethod is the updateMethod will not update; the contact data.
 	 * Instead one must use partyService.updateMethod().
 	 * @param object The account to be updated.
+	 * @param passwordPolicy Policy `object.password` (if present) must satisfy - defaults to
+	 * DEFAULT_PASSWORD_POLICY. Pass `null` to skip the check: the one legitimate case for that is
+	 * an app's own lazy md5-to-bcrypt migration (JAM-41) resubmitting an *existing* password purely
+	 * to upgrade its hash format, which is not the user choosing a new password and so should not be
+	 * held to a policy that postdates it.
 	 */
-	public update(object: any): Promise<any> {
+	public update(object: any, passwordPolicy: PasswordPolicy | null = DEFAULT_PASSWORD_POLICY): Promise<any> {
 		this._log.debug("Call to updateMethod with object:%j", object);
 		let result: any;
+
+		// Validated against the plaintext before it's hashed below - once
+		// hashed there's no length left to check (JAM-25).
+		if (object.password && passwordPolicy && !isPasswordValid(object.password, passwordPolicy)) {
+			return Promise.reject([new ValidationErrorImpl(this.ACCOUNT, this.PASSWORD_POLICY_VIOLATION, null)]);
+		}
+
 		const user: AccountEntity = new AccountEntity();
 		// Find the user. This also helps to retrieve the contactId.
 		return this.accountDao

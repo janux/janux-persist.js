@@ -69,7 +69,7 @@ describe("Testing UserActionService findOneByCode method (JAM-19)", function() {
 					contactReference.typeName = person.typeName;
 					return userService.insert({
 						username: "jam19-findbycode",
-						password: "shouldNeverLeaveTheServer",
+						password: "shouldNeverLeaveTheServer1!",
 						enabled: true,
 						locked: false,
 						contact: contactReference,

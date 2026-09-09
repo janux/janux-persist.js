@@ -29,8 +29,8 @@ const contactEmail = "john.doe@example.com";
 const contactType = "work";
 
 const accountUsername = "jam19-account";
-const accountPassword = "originalPassword";
-const attackerPassword = "attackerControlledPassword";
+const accountPassword = "originalPassword1!";
+const attackerPassword = "attackerControlledPassword1!";
 
 const validCode = "VALID-CODE-1";
 
@@ -102,7 +102,7 @@ describe("Testing UserActionService update method (JAM-19)", function() {
 					otherContactReference.typeName = otherPerson.typeName;
 					return userService.insert({
 						username: "jam19-attacker",
-						password: "whatever",
+						password: "whatever12345!",
 						enabled: true,
 						locked: false,
 						contact: otherContactReference,
@@ -192,7 +192,7 @@ describe("Testing UserActionService update method (JAM-19)", function() {
 		});
 
 		it("rejects an already-completed invitation (no replay)", function(done) {
-			var newPassword = "firstCompletionPassword";
+			var newPassword = "firstCompletionPassword1!";
 			userActionService
 				.update(
 					{
@@ -223,7 +223,7 @@ describe("Testing UserActionService update method (JAM-19)", function() {
 		});
 
 		it("accepts a valid completion: correct code, matching account, pending and unexpired", function(done) {
-			var newPassword = "legitimateNewPassword";
+			var newPassword = "legitimateNewPassword1!";
 			userActionService
 				.update(
 					{
