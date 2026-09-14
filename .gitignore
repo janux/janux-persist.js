@@ -9,3 +9,5 @@
 /janux-persist.js.iml
 /package-lock.json
 /test.log
+/coverage/
+/.nyc_output/
