@@ -19,7 +19,6 @@ export * from "./daos/auth-context/mongoose/auth-context-mongoose-schema";
 export * from "./daos/user/account-validator";
 export * from "./daos/user/account-dao";
 export * from "./daos/user/account-entity";
-export * from "./daos/user/account-status";
 export * from "./daos/user/lokijs/account-dao-lokijs-impl";
 export * from "./daos/user/mongoose/account-dao-mongoose-impl";
 export * from "./daos/user/lokijs/account-invitation-dao-lokijs-impl";

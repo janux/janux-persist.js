@@ -97,4 +97,16 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<Acc
 	 * @param objectToUpdate
 	 */
 	protected abstract validateBeforeUpdate(objectToUpdate: AccountEntity): Promise<ValidationErrorImpl[]>;
+
+	/**
+	 * Rehydrate the plain object coming back from the db adapter (mongoose's
+	 * `.lean()` query results, lokijs's own document objects) into a real
+	 * AccountEntity instance, same pattern as PartyDao.convertAfterDbOperation.
+	 * Without this, every account read via find/query is a bare Object with
+	 * no prototype methods - see AccountEntity.canAuthenticate().
+	 * @param object The data retrieved from the database.
+	 */
+	protected convertAfterDbOperation(object: any): AccountEntity {
+		return Object.assign(new AccountEntity(), object);
+	}
 }
