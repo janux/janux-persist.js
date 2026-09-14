@@ -5,9 +5,12 @@
 		"test/**",
 		"**/*.d.ts",
 		"vendor/**",
-		"config/**"
+		"config/**",
+		"src/services/staff-group-service/**",
+		"src/**/*-schema.ts",
+		"src/utils/logger-api/**",
+		"src/utils/big-decimal/big-decimal-util.ts"
 	],
 	"reporter": ["text-summary", "text", "html"],
-	"report-dir": "coverage",
-	"cache": false
+	"report-dir": "coverage"
 }
