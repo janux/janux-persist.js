@@ -13,8 +13,12 @@ email integration.
 - **Language**: TypeScript 4.9.5 → compiled to `dist/` (target ES5)
 - **Build**: `tsc` + `tsc-alias` via npm scripts (Gulp removed)
 - **Test**: Mocha 3.4.2 + Chai 4.0.2
-- **Node**: not specified in `engines`; consumers run it on Node 10 (e24)
-  and Node 12 (glarus)
+- **Node**: `>= 12.0.0` (declared in `engines`). Both consumers now run
+  Node 12 — e24 moved off Node 10 (`E24-16`, pinned to `12.22.1` via
+  `.nvmrc`); glarus was already `>= 12.0.0`. Verified: full suite (444
+  passing) builds and runs clean under Node 12.22.11, no code changes
+  needed — mongoose 4.10.5/mongodb 2.2.27 were already fine on 12, only
+  the declared floor and local dev docs were stale at 10.
 - **Database**: Mongoose 4.10.5 + LokiJS 1.5.0
 
 ## Key Dependencies

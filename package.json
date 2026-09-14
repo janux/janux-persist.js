@@ -11,6 +11,10 @@
 	"publishConfig": {
 		"registry": "https://registry.januxmedia.com/"
 	},
+	"engines": {
+		"node": ">= 12.0.0",
+		"npm": ">= 6.0.0"
+	},
 	"scripts": {
 		"build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
 		"test": "npm run build && mocha 'test/**/*.spec.js' --timeout 10000",
