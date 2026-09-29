@@ -20,15 +20,17 @@ export class StaffDataDao extends AbstractDataAccessObjectWithAdapter<StaffDataE
 	}
 
 	public findOneByIdContact(idContact: string): Promise<StaffDataEntity> {
-		this.log.debug("Call to findOneByIdContact by idContact: %j", idContact);
+		this.log.debug("finding staff data by idContact %j", idContact);
 		return this.findOneByAttribute("idContact", idContact);
 	}
 
 	public findByIdContactIn(idContacts: string[]): Promise<StaffDataEntity[]> {
+		this.log.debug("finding staff data by idContacts %j", idContacts);
 		return this.findByAttributeNameIn("idContact", idContacts);
 	}
 
 	public removeByIdContact(idContact: string): Promise<any> {
+		this.log.debug("removing staff data by idContact %j", idContact);
 		return this.findOneByIdContact(idContact).then((result: StaffDataEntity) => {
 			if (!_.isNil(result)) {
 				return Promise.resolve(this.removeById(result.id));
@@ -38,6 +40,7 @@ export class StaffDataDao extends AbstractDataAccessObjectWithAdapter<StaffDataE
 	}
 
 	public removeByIdContactIn(idContacts: string[]): Promise<any> {
+		this.log.debug("removing staff data by idContacts %j", idContacts);
 		return this.findByIdContactIn(idContacts).then((result: StaffDataEntity[]) => {
 			return this.removeByIds(result.map(value => value.id));
 		});

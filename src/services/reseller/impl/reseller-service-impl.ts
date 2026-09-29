@@ -10,11 +10,13 @@ import { PartyGroupServiceImpl } from "services/party-group-service/impl/party-g
 import { PartyServiceImpl } from "services/party/impl/party-service-impl";
 import { ResellerService } from "services/reseller/api/reseller-service";
 import { Constants } from "utils/constants";
+import * as logger from "utils/logger-api/logger-api";
 
 /**
  * Implementation of the reseller service.
  */
 export class ResellerServiceImpl implements ResellerService {
+	private _log = logger.getLogger("ResellerServiceImpl");
 	private partyGroupService: PartyGroupServiceImpl;
 	private partyService: PartyServiceImpl;
 
@@ -24,6 +26,7 @@ export class ResellerServiceImpl implements ResellerService {
 	}
 
 	async findReseller(idClient: string): Bluebird<PartyAbstract> {
+		this._log.trace("finding reseller for client %j", idClient);
 		const result: Array<GroupImpl<PartyGroupItemImpl>> = await this.partyGroupService.findByTypeAndPartyItem(
 			Constants.GROUP_TYPE_RESELLER_CLIENTS,
 			idClient
@@ -46,6 +49,7 @@ export class ResellerServiceImpl implements ResellerService {
 	 * undefined if the reseller does not have it own clients group.
 	 */
 	findResellerContactsByClient(idClient: string): Bluebird<GroupImpl<PartyGroupItemImpl>> {
+		this._log.trace("finding reseller contacts for client %j", idClient);
 		// Get the reseller group where the client belongs.
 		return this.partyGroupService
 			.findByTypeAndPartyItem(Constants.GROUP_TYPE_RESELLER_CLIENTS, idClient)
