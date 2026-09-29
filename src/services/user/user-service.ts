@@ -64,9 +64,16 @@ export class UserService {
 	 * @return {Promise<any>} A promise indicating the operation is executed successfully.
 	 */
 	public deleteUserByUserId(userId: string): Promise<any> {
-		this._log.debug("Call to deleteUserByUserId with userId: %j", userId);
+		this._log.debug("deleting user by userId %j", userId);
 		return this.accountDao.findOneByUserId(userId).then((resultQuery: AccountEntity) => {
-			return this.accountDao.remove(resultQuery);
+			if (_.isNil(resultQuery)) {
+				this._log.warn("failed to delete user by userId %j: not found", userId);
+				return Promise.reject("No user with the userId " + userId);
+			}
+			return this.accountDao.remove(resultQuery).then((result: any) => {
+				this._log.info("deleted user -> userId %j", userId);
+				return result;
+			});
 		});
 	}
 
@@ -76,9 +83,12 @@ export class UserService {
 	 * @return {Bluebird<any>}
 	 */
 	public deleteByUserIds(userIds: string[]): Promise<any> {
-		this._log.debug("Call to deleteByUserIds with %j", userIds);
+		this._log.debug("deleting %j users by userId", userIds.length);
 		return this.accountDao.findByContactIdsIn(userIds).then((resultQuery: AccountEntity[]) => {
-			return this.accountDao.removeByIds(resultQuery.map(value => value.id));
+			return this.accountDao.removeByIds(resultQuery.map(value => value.id)).then((result: any) => {
+				this._log.info("deleted %j users", resultQuery.length);
+				return result;
+			});
 		});
 	}
 
@@ -88,7 +98,7 @@ export class UserService {
 	 * @return {Promise<any>}
 	 */
 	public saveOrUpdate(object: any, passwordPolicy: PasswordPolicy | null = DEFAULT_PASSWORD_POLICY): Promise<any> {
-		this._log.debug("Call to saveOrUpdate with object: %j", object);
+		this._log.debug("saveOrUpdate choosing insert or update for user %j", _.omit(object, "password"));
 		if (isBlankString(object.id)) {
 			return this.insert(object, passwordPolicy);
 		} else {
@@ -101,7 +111,7 @@ export class UserService {
 	 * @return {Promise<any[]>}
 	 */
 	public findAll(): Promise<any[]> {
-		this._log.debug("Call to findAllMethod");
+		this._log.debug("finding all users");
 		return this.accountDao.findAll().then((users: AccountEntity[]) => {
 			return this.populateContactData(users);
 		});
@@ -113,7 +123,7 @@ export class UserService {
 	 * @return {Bluebird<any[]>}
 	 */
 	public findByIdsIn(ids: string[]): Promise<any[]> {
-		this._log.debug("Call to findByIdsIn with ids %j", ids);
+		this._log.debug("finding users by ids %j", ids);
 		return this.accountDao.findByIds(ids).then((users: AccountEntity[]) => {
 			return this.populateContactData(users);
 		});
@@ -125,7 +135,7 @@ export class UserService {
 	 * @returns {Bluebird<any>}
 	 */
 	public findOneByContactId(contactId: string): Promise<any> {
-		this._log.debug("Call to findByContactId with contactId %j", contactId);
+		this._log.debug("finding user by contactId %j", contactId);
 		return this.accountDao.findOneByContactId(contactId);
 	}
 
@@ -135,13 +145,13 @@ export class UserService {
 	 * @return {Promise<any>}
 	 */
 	public findOneById(id: string): Promise<any> {
-		this._log.debug("Call to findOneById with id: %j", id);
+		this._log.debug("finding user by id %j", id);
 		let result: any;
 		return this.accountDao
 			.findOne(id)
 			.then((user: AccountEntity) => {
 				if (_.isNil(user)) {
-					this._log.error("No user with the id " + id);
+					this._log.warn("failed to find user by id %j: not found", id);
 					return Promise.reject("No user with the id " + id);
 				}
 				result = user;
@@ -151,7 +161,7 @@ export class UserService {
 				result.contact = contact.toJSON();
 				result.contact.id = contact["id"];
 				result.contact.typeName = contact.typeName;
-				this._log.debug("Returning %j", _.omit(result, "password"));
+				this._log.debug("found user by id %j -> %j", id, _.omit(result, "password"));
 				return Promise.resolve(result);
 			});
 	}
@@ -162,12 +172,15 @@ export class UserService {
 	 * @return {Promise<any>}
 	 */
 	public findOneByUserId(id: any): Promise<any> {
-		this._log.debug("Call to findOneByUserId with id: %j", id);
+		this._log.debug("finding user by userId %j", id);
 		let result: any;
 		return this.accountDao
 			.findOneByUserId(id)
 			.then((user: AccountEntity) => {
-				if (_.isNil(user)) return Promise.reject("No user with the id " + id);
+				if (_.isNil(user)) {
+					this._log.warn("failed to find user by userId %j: not found", id);
+					return Promise.reject("No user with the id " + id);
+				}
 				result = user;
 				return this.partyService.findOne(user.contactId);
 			})
@@ -175,7 +188,7 @@ export class UserService {
 				result.contact = contact.toJSON();
 				result.contact.id = contact["id"];
 				result.contact.typeName = contact.typeName;
-				this._log.debug("Returning %j", _.omit(result, "password"));
+				this._log.debug("found user by userId %j -> %j", id, _.omit(result, "password"));
 				return Promise.resolve(result);
 			});
 	}
@@ -186,12 +199,15 @@ export class UserService {
 	 * @return {Promise<any>}
 	 */
 	public findOneByUserName(username: string): Promise<any> {
-		this._log.debug("Call to findOneByUserName with username: %j", username);
+		this._log.debug("finding user by username %j", username);
 		let result: any;
 		return this.accountDao
 			.findOneByUserName(username)
 			.then((user: AccountEntity) => {
-				if (_.isNil(user)) return Promise.reject("No user with the username " + username);
+				if (_.isNil(user)) {
+					this._log.warn("failed to find user by username %j: not found", username);
+					return Promise.reject("No user with the username " + username);
+				}
 				result = user;
 				return this.partyService.findOne(user.contactId);
 			})
@@ -199,7 +215,7 @@ export class UserService {
 				result.contact = contact.toJSON();
 				result.contact.id = contact["id"];
 				result.contact.typeName = contact.typeName;
-				this._log.debug("Returning %j", _.omit(result, "password"));
+				this._log.debug("found user by username %j -> %j", username, _.omit(result, "password"));
 				return Promise.resolve(result);
 			});
 	}
@@ -210,7 +226,7 @@ export class UserService {
 	 * @return {Promise<any[]>}
 	 */
 	public findAllByUserNameMatch(username: string): Promise<any[]> {
-		this._log.debug("Call to findByUserNameMatch with username: %j", username);
+		this._log.debug("finding users by username match %j", username);
 		return this.accountDao.findByUserNameMatch(username).then((users: AccountEntity[]) => {
 			return this.populateContactData(users);
 		});
@@ -222,7 +238,7 @@ export class UserService {
 	 * @return {Promise<any[]>}
 	 */
 	public findAllByContactNameMatch(name: string): Promise<any[]> {
-		this._log.debug("Call to findByContactNameContaining with name %j", name);
+		this._log.debug("finding users by contact name match %j", name);
 		return this.partyService.findByName(name).then((resultQuery: JanuxPeople.PartyAbstract[]) => {
 			return this.populateUserData(resultQuery);
 		});
@@ -234,7 +250,7 @@ export class UserService {
 	 * @return {Bluebird<any[]>}
 	 */
 	public findAllByEmail(email: string): Promise<any[]> {
-		this._log.debug("Call to findByEmail with email %j", email);
+		this._log.debug("finding users by email %j", email);
 		return this.partyService.findByEmail(email).then((resultQuery: JanuxPeople.PartyAbstract[]) => {
 			return this.populateUserData(resultQuery);
 		});
@@ -246,7 +262,7 @@ export class UserService {
 	 * @return {Bluebird<any[]>}
 	 */
 	public findAllByPhone(phone: string): Promise<any[]> {
-		this._log.debug("Call to findByPhone with email %j", phone);
+		this._log.debug("finding users by phone %j", phone);
 		return this.partyService.findByPhone(phone).then((resultQuery: JanuxPeople.PartyAbstract[]) => {
 			return this.populateUserData(resultQuery);
 		});
@@ -263,7 +279,7 @@ export class UserService {
 	 */
 	public insert(object: any, passwordPolicy: PasswordPolicy | null = DEFAULT_PASSWORD_POLICY): Promise<any> {
 		// object.password is the new account's plaintext password - never log it.
-		this._log.debug("Call to insertMethod with object %j", _.omit(object, "password"));
+		this._log.debug("inserting user %j", _.omit(object, "password"));
 		let associatedParty: JanuxPeople.PartyAbstract;
 		let result: any;
 
@@ -275,6 +291,7 @@ export class UserService {
 		// passwordPolicy: null to skip the check entirely (no legitimate
 		// caller needs that today, but see update()'s equivalent).
 		if (object.password && passwordPolicy && !isPasswordValid(object.password, passwordPolicy)) {
+			this._log.warn("failed to insert user %j: password policy violation", _.omit(object, "password"));
 			return Promise.reject([new ValidationErrorImpl(this.ACCOUNT, this.PASSWORD_POLICY_VIOLATION, null)]);
 		}
 
@@ -293,6 +310,7 @@ export class UserService {
 		// Validate user
 		const errors = AccountValidator.validateAccountExceptContactId(user);
 		if (errors.length > 0) {
+			this._log.warn("failed to insert user %j: validation errors %j", _.omit(object, "password"), errors);
 			return Promise.reject(errors);
 		}
 
@@ -300,6 +318,7 @@ export class UserService {
 		return this.accountDao.findOneByUserName(user.username)
 			.then((result: AccountEntity) => {
 				if (!_.isNil(result)) {
+					this._log.warn("failed to insert user %j: username already exists", _.omit(object, "password"));
 					return Promise.reject([new ValidationErrorImpl(this.ACCOUNT, AccountValidator.ANOTHER_USER, result.username)]);
 				} else {
 					return this.definePartyInfo(object.contact);
@@ -315,7 +334,8 @@ export class UserService {
 				result.contact = associatedParty.toJSON();
 				result.contact.id = associatedParty["id"];
 				result.contact.typeName = associatedParty.typeName;
-				this._log.debug("Returning %j", _.omit(result, "password"));
+				this._log.debug("inserted user with merged contact -> %j", _.omit(result, "password"));
+				this._log.info("inserted user -> id %j", result.id);
 				return Promise.resolve(result);
 			});
 	}
@@ -334,12 +354,13 @@ export class UserService {
 	public update(object: any, passwordPolicy: PasswordPolicy | null = DEFAULT_PASSWORD_POLICY): Promise<any> {
 		// object.password, when present, is the caller's new plaintext
 		// password (not yet hashed below) - never log it.
-		this._log.debug("Call to updateMethod with object:%j", _.omit(object, "password"));
+		this._log.debug("updating user %j", _.omit(object, "password"));
 		let result: any;
 
 		// Validated against the plaintext before it's hashed below - once
 		// hashed there's no length left to check (JAM-25).
 		if (object.password && passwordPolicy && !isPasswordValid(object.password, passwordPolicy)) {
+			this._log.warn("failed to update user %j: password policy violation", _.omit(object, "password"));
 			return Promise.reject([new ValidationErrorImpl(this.ACCOUNT, this.PASSWORD_POLICY_VIOLATION, null)]);
 		}
 
@@ -349,6 +370,7 @@ export class UserService {
 			.findOne(object.id)
 			.then(resultQuery => {
 				if (resultQuery === null) {
+					this._log.warn("failed to update user %j: not found", _.omit(object, "password"));
 					return Promise.reject([
 						new ValidationErrorImpl(this.ACCOUNT, this.ACCOUNT_NOT_IN_DATABASE, object.id)
 					]);
@@ -383,6 +405,7 @@ export class UserService {
 				result.contact = updatedParty.toJSON();
 				result.contact.typeName = updatedParty.typeName;
 				result.contact.id = updatedParty.id;
+				this._log.info("updated user -> id %j", result.id);
 				return Promise.resolve(result);
 			});
 	}
@@ -400,42 +423,38 @@ export class UserService {
 	}
 
 	private populateUserData(contacts: JanuxPeople.PartyAbstract[]): Promise<any> {
-		this._log.debug("Call to populate populateUserData with contacts: %j", contacts);
+		this._log.trace("populating user data for %j contacts", contacts.length);
 		const ids = _.map(contacts, (o: any) => o.id);
 		let result: any;
 		return this.accountDao.findByContactIdsIn(ids).then((users: AccountEntity[]) => {
 			result = this.mixData(users, contacts);
-			this._log.debug("populateUserData : returning %j", result);
 			return Promise.resolve(result);
 		});
 	}
 
 	private populateContactData(users: AccountEntity[]) {
-		this._log.debug("Call to populateContactData with users: %j", users);
+		this._log.trace("populating contact data for %j users", users.length);
 		let result: any = users;
 		const contactIds = users.map(value => value.contactId);
 		return this.partyService.findByIds(contactIds).then((contacts: JanuxPeople.PartyAbstract[]) => {
 			result = this.mixData(result, contacts);
-			this._log.debug("populateContactData : returning %j", result);
 			return Promise.resolve(result);
 		});
 	}
 
 	private mixData(users: any[], contacts: JanuxPeople.PartyAbstract[]): any[] {
-		this._log.debug("Call to mix data with users: %j contacts %j", users, contacts);
 		for (const user of users) {
 			const contact = _.find(contacts, o => {
 				return o["id"] === user.contactId;
 			});
-			this._log.debug("Founded contact %j", contact);
 			if (_.isNil(contact)) {
-				this._log.error("NOT CONTACT FOUNDED");
+				this._log.warn("no contact found for user with contactId %j; skipping contact merge", user.contactId);
+				continue;
 			}
 			user.contact = contact.toJSON();
 			user.contact.id = contact["id"];
 			user.contact.typeName = contact.typeName;
 		}
-		this._log.debug("Returning from mapData: %j", users);
 		return users;
 	}
 
@@ -445,7 +464,7 @@ export class UserService {
 	 * @return {any}
 	 */
 	private definePartyInfo(party: any): Promise<JanuxPeople.PartyAbstract | ValidationErrorImpl[]> {
-		this._log.debug("Call to define party  info with party: %j", party);
+		this._log.debug("defining party info for %j", party);
 		let person: JanuxPeople.Person;
 		let organization: JanuxPeople.Organization;
 		// Check for an id
@@ -453,30 +472,27 @@ export class UserService {
 			// No id. Check port party type before inserting a new party.
 			if (_.isString(party.typeName) && party.typeName === PartyValidator.PERSON) {
 				person = PartyServiceImpl.fromJSON(party) as JanuxPeople.Person;
-				this._log.debug("Inserting the person %j", person);
 				return this.partyService.insert(person);
 			} else if (_.isString(party.typeName) && party.typeName === PartyValidator.ORGANIZATION) {
 				// Itś an organization
 				organization = PartyServiceImpl.fromJSON(party) as JanuxPeople.Organization;
 				// Insert the organization.
-				this._log.debug("Inserting the organization %j", organization);
 				return this.partyService.insert(organization);
 			} else {
-				this._log.warn("No correct party type, returning a reject");
+				this._log.warn("failed to define party info for %j: no correct party type", party);
 				// No party type, sending an error.
 				return Promise.reject([
 					new ValidationErrorImpl(this.PARTY_TYPE, PartyValidator.TYPE_NOT_PERSON_OR_ORGANIZATION, "")
 				]);
 			}
 		} else {
-			this._log.debug("The account to insertMethod has a contact id");
 			let referenceObject: JanuxPeople.PartyAbstract;
 			// Look for if there is a party with the same id
 			return this.partyService
 				.findOne(party.id)
 				.then((resultQueryParty: JanuxPeople.PartyAbstract) => {
 					if (_.isNull(resultQueryParty)) {
-						this._log.warn("The id %j does not exist in the database", party.id);
+						this._log.warn("failed to define party info: contact id %j does not exist", party.id);
 						return Promise.reject([
 							new ValidationErrorImpl(this.PARTY, this.NO_CONTACT_IN_DATABASE, party.id)
 						]);
@@ -488,10 +504,9 @@ export class UserService {
 				})
 				.then((resultQueryAccount: AccountEntity) => {
 					if (_.isNull(resultQueryAccount)) {
-						this._log.debug("Returning %j", resultQueryAccount);
 						return Promise.resolve(referenceObject);
 					} else {
-						this._log.warn("The contact founded has an associated account");
+						this._log.warn("failed to define party info: contact %j already has an associated account", party.id);
 						return Promise.reject([
 							new ValidationErrorImpl(this.ACCOUNT, this.ANOTHER_ACCOUNT_USING_CONTACT, "")
 						]);
