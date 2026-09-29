@@ -55,4 +55,19 @@ export class AccountEntity {
 		}
 		return true;
 	}
+
+	/**
+	 * Never serialize the password hash. JSON.stringify() and log4js's %j
+	 * both call this when present, so every current and future log
+	 * statement or API response that runs an AccountEntity through either
+	 * gets this for free, instead of relying on each call site to remember
+	 * to omit it. Direct property access (this.password) is unaffected -
+	 * PasswordService and the validators still read/compare it normally;
+	 * only serialization is scrubbed.
+	 */
+	public toJSON(): any {
+		const clone: any = Object.assign({}, this);
+		delete clone.password;
+		return clone;
+	}
 }

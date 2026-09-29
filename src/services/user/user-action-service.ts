@@ -216,7 +216,13 @@ export class UserActionService {
 	 * (JAM-25) - defaults to DEFAULT_PASSWORD_POLICY, ignored when skipAccountUpdate is true.
 	 */
 	public update(object: any, skipAccountUpdate: boolean, passwordPolicy: PasswordPolicy | null = DEFAULT_PASSWORD_POLICY): Promise<any> {
-		this._log.debug("Call to updateMethod with object:%j", object);
+		// object.code is the invitation/recovery code and object.account.password is the
+		// completing account's new plaintext password when present - never log either.
+		const safeObjectToLog: any = _.omit(object, "code");
+		if (safeObjectToLog.account) {
+			safeObjectToLog.account = _.omit(safeObjectToLog.account, "password");
+		}
+		this._log.debug("updating account action %j", safeObjectToLog);
 		let result: any;
 		// accountActionDao.update() only $sets the fields it's given and
 		// echoes the input object back, not the stored document -- `inv`
@@ -399,6 +405,9 @@ export class UserActionService {
 				});
 			})
 			.then(({ name, resultAccount }: { name: string; resultAccount: any }) => {
+				// Safe: resultAccount is always a real AccountEntity here (both branches above
+				// resolve through the DAO's convertAfterDbOperation), and AccountEntity.toJSON()
+				// omits password - unlike invFound/recFound below, this needs no extra redaction.
 				this._log.info("Creating account " + JSON.stringify(resultAccount));
 
 				const type = "createAccount";
@@ -422,7 +431,8 @@ export class UserActionService {
 							case "pending":
 								invFound.code = invitation.code;
 								invFound.expire = invitation.expire;
-								this._log.info("Invitation found " + JSON.stringify(invFound));
+								// Never log the code - see update()'s handling of the same field.
+								this._log.info("Invitation found " + JSON.stringify(_.omit(invFound, "code")));
 								saved = this.update(invFound, true);
 								break;
 							case "completed":
@@ -506,7 +516,8 @@ export class UserActionService {
 						case "pending":
 							recFound.code = recoveryRecord.code;
 							recFound.expire = recoveryRecord.expire;
-							this._log.info("Recovery found " + JSON.stringify(recFound));
+							// Never log the code - see update()'s handling of the same field.
+							this._log.info("Recovery found " + JSON.stringify(_.omit(recFound, "code")));
 							saved = this.update(recFound, true);
 							break;
 						case "completed":
