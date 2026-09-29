@@ -35,7 +35,7 @@ export class RoleService {
 	 * @return {Promise<U>}
 	 */
 	public findAll(): Promise<any[]> {
-		this._log.debug("Call to findAll Method");
+		this._log.debug("finding all roles");
 		return this.roleDao.findAll().then((roles: JanuxAuthorize.Role[]) => {
 			return roles;
 		});
@@ -47,13 +47,13 @@ export class RoleService {
 	 * @return {Promise<any>}
 	 */
 	public findOneByName(roleName: string): Promise<any> {
-		this._log.debug("Call to findOneByName with roleName: %j", roleName);
-		let result: any;
+		this._log.debug("finding role by name %j", roleName);
 		return this.roleDao.findOneByName(roleName).then((role: JanuxAuthorize.Role) => {
-			if (_.isNil(role)) return Promise.reject("No role with the rolename " + roleName);
-			result = role;
-			this._log.debug("Returning %j", result);
-			return Promise.resolve(result);
+			if (_.isNil(role)) {
+				this._log.warn("failed to find role by name %j: not found", roleName);
+				return Promise.reject("No role with the rolename " + roleName);
+			}
+			return Promise.resolve(role);
 		});
 	}
 
@@ -63,7 +63,7 @@ export class RoleService {
 	 * @return {Bluebird<any>}
 	 */
 	public findByNameIn(names: string[]): Promise<any> {
-		this._log.debug("Call to findByNameIn with names : %j", names);
+		this._log.debug("finding roles by names %j", names);
 		return this.roleDao.findByNameIn(names);
 	}
 
@@ -73,13 +73,13 @@ export class RoleService {
 	 * @return {Promise<any>}
 	 */
 	public findOneById(id: any): Promise<any> {
-		this._log.debug("Call to findOneByUserId with id: %j", id);
-		let result: any;
+		this._log.debug("finding role by id %j", id);
 		return this.roleDao.findOne(id).then((role: JanuxAuthorize.Role) => {
-			if (_.isNil(role)) return Promise.reject("No role with the id " + id);
-			result = role;
-			this._log.debug("Returning %j", result);
-			return Promise.resolve(result);
+			if (_.isNil(role)) {
+				this._log.warn("failed to find role by id %j: not found", id);
+				return Promise.reject("No role with the id " + id);
+			}
+			return Promise.resolve(role);
 		});
 	}
 
@@ -89,13 +89,14 @@ export class RoleService {
 	 * @return {Promise<any>}
 	 */
 	public insert(object: any): Promise<any> {
-		this._log.debug("Call to insertMethod with object %j", object);
+		this._log.debug("inserting role %j", object);
 		const role: JanuxAuthorize.Role = JanuxAuthorize.Role.fromJSON(object);
 		role.id = object.id;
 
 		// Validate role
 		const errors = RoleValidator.validateRole(role);
 		if (errors.length > 0) {
+			this._log.warn("failed to insert role %j: validation errors %j", object, errors);
 			return Promise.reject(errors);
 		}
 
@@ -107,7 +108,7 @@ export class RoleService {
 	 * @param object The role to be updated.
 	 */
 	public update(object: any): Promise<any> {
-		this._log.debug("Call to updateMethod with object:%j", object);
+		this._log.debug("updating role %j", object);
 
 		let role: JanuxAuthorize.Role;
 		// Find the role.
@@ -115,6 +116,7 @@ export class RoleService {
 			.findOne(object.id)
 			.then(resultQuery => {
 				if (resultQuery === null) {
+					this._log.warn("failed to update role %j: not found", object);
 					return Promise.reject([new ValidationErrorImpl(this.ROLE, this.ROLE_NOT_IN_DATABASE, object.id)]);
 				} else {
 					role = JanuxAuthorize.Role.fromJSON(object);
@@ -133,7 +135,7 @@ export class RoleService {
 	 * @param array of objects containing id and sort order of each role
 	 */
 	public updateSortOrder(rolesOrder: any): Promise<any> {
-		this._log.debug("Call to updateSortOrder with object:%j", rolesOrder);
+		this._log.debug("updating sort order for %j roles", rolesOrder.length);
 
 		// Find the roles
 		return this.roleDao
@@ -152,7 +154,10 @@ export class RoleService {
 				});
 			})
 			.then((updatedRoles: any) => {
-				return Promise.all(updatedRoles);
+				return Promise.all(updatedRoles).then((result: any[]) => {
+					this._log.info("updated sort order for %j roles", result.length);
+					return result;
+				});
 			});
 	}
 
@@ -162,10 +167,17 @@ export class RoleService {
 	 * @return {Promise<any>} A promise indicating the operation is executed successfully.
 	 */
 	public deleteById(roleId: string): Promise<any> {
-		this._log.debug("Call to deleteById with roleId: %j", roleId);
+		this._log.debug("deleting role by id %j", roleId);
 
 		return this.roleDao.findOne(roleId).then((resultQuery: JanuxAuthorize.Role) => {
-			return this.roleDao.remove(resultQuery);
+			if (_.isNil(resultQuery)) {
+				this._log.warn("failed to delete role by id %j: not found", roleId);
+				return Promise.reject("No role with the id " + roleId);
+			}
+			return this.roleDao.remove(resultQuery).then((result: any) => {
+				this._log.info("deleted role -> id %j", roleId);
+				return result;
+			});
 		});
 	}
 
@@ -175,10 +187,17 @@ export class RoleService {
 	 * @return {Promise<any>} A promise indicating the operation is executed successfully.
 	 */
 	public deleteByName(roleName: string): Promise<any> {
-		this._log.debug("Call to deleteById with roleName: %j", roleName);
+		this._log.debug("deleting role by name %j", roleName);
 
 		return this.roleDao.findOneByName(roleName).then((resultQuery: JanuxAuthorize.Role) => {
-			return this.roleDao.remove(resultQuery);
+			if (_.isNil(resultQuery)) {
+				this._log.warn("failed to delete role by name %j: not found", roleName);
+				return Promise.reject("No role with the rolename " + roleName);
+			}
+			return this.roleDao.remove(resultQuery).then((result: any) => {
+				this._log.info("deleted role -> name %j", roleName);
+				return result;
+			});
 		});
 	}
 
@@ -188,7 +207,7 @@ export class RoleService {
 	 * @return {Promise<any>}
 	 */
 	public saveOrUpdate(object: any): Promise<any> {
-		this._log.debug("Call to saveOrUpdate with object: %j", object);
+		this._log.debug("saveOrUpdate choosing insert or update for role %j", object);
 		if (isBlankString(object.id)) {
 			return this.insert(object);
 		} else {
