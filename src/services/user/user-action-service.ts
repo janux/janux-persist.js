@@ -154,7 +154,12 @@ export class UserActionService {
 		return this.accountActionDao
 			.findOneByCode(code)
 			.then((action: AccountInvitationEntity) => {
-				if (_.isNil(action)) return Promise.reject("No account action with the code " + code);
+				if (_.isNil(action)) {
+					// Never log the code itself -- it's a bearer credential,
+					// same as a password, until it's spent.
+					this._log.warn("findOneByCode: no account action found for the supplied code");
+					return Promise.reject("No account action with the code " + code);
+				}
 				result = action;
 				return this.userService.findOneByUserId(action.accountId);
 			})
@@ -213,12 +218,17 @@ export class UserActionService {
 	public update(object: any, skipAccountUpdate: boolean, passwordPolicy: PasswordPolicy | null = DEFAULT_PASSWORD_POLICY): Promise<any> {
 		this._log.debug("Call to updateMethod with object:%j", object);
 		let result: any;
+		// accountActionDao.update() only $sets the fields it's given and
+		// echoes the input object back, not the stored document -- `inv`
+		// never carries `type`, so it has to be captured here to log it.
+		let actionType: string;
 		const inv: AccountInvitationEntity = new AccountInvitationEntity();
 		// Find the action
 		return this.accountActionDao
 			.findOne(object.id)
 			.then(resultQuery => {
 				if (resultQuery === null) {
+					this._log.warn("update: no account action with id %j", object.id);
 					return Promise.reject([
 						new ValidationErrorImpl(this.ACCOUNT_INV, this.ACCOUNT_INV_NOT_IN_DATABASE, object.id)
 					]);
@@ -235,8 +245,13 @@ export class UserActionService {
 				}
 
 				// Untrusted completion: validate against the stored record,
-				// never trust the caller's code/status/expire/accountId.
+				// never trust the caller's code/status/expire/accountId. Each
+				// rejection here is expected, attacker/user-caused input
+				// (a stale tab, a reused link, a guessed code) rather than a
+				// system fault -- WARN, not ERROR, and never log the code
+				// itself, only the action id.
 				if (resultQuery.status !== "pending") {
+					this._log.warn("update: account action %j already completed", object.id);
 					return Promise.reject([
 						new ValidationErrorImpl(this.ACCOUNT_INV, this.ACCOUNT_INV_ALREADY_COMPLETED, object.id)
 					]);
@@ -244,18 +259,21 @@ export class UserActionService {
 
 				const storedExpire = DateUtil.stringToDate(resultQuery.expire);
 				if (!_.isNil(storedExpire) && storedExpire < new Date()) {
+					this._log.warn("update: account action %j has expired", object.id);
 					return Promise.reject([
 						new ValidationErrorImpl(this.ACCOUNT_INV, this.ACCOUNT_INV_EXPIRED, object.id)
 					]);
 				}
 
 				if (isBlankString(object.code) || object.code !== resultQuery.code) {
+					this._log.warn("update: code mismatch for account action %j", object.id);
 					return Promise.reject([
 						new ValidationErrorImpl(this.ACCOUNT_INV, this.ACCOUNT_INV_CODE_MISMATCH, object.id)
 					]);
 				}
 
 				if (_.isNil(object.account) || object.account.userId !== resultQuery.accountId) {
+					this._log.warn("update: account mismatch for account action %j", object.id);
 					return Promise.reject([
 						new ValidationErrorImpl(this.ACCOUNT_INV, this.ACCOUNT_INV_ACCOUNT_MISMATCH, object.id)
 					]);
@@ -266,6 +284,7 @@ export class UserActionService {
 				inv.accountId = resultQuery.accountId;
 				inv.code = resultQuery.code;
 				inv.status = "completed";
+				actionType = resultQuery.type;
 
 				return this.accountActionDao.update(inv);
 			})
@@ -280,6 +299,7 @@ export class UserActionService {
 			.then((updatedAccount: any) => {
 				if (!skipAccountUpdate) {
 					result.account = updatedAccount;
+					this._log.info('update: completed "%s" action for %j', actionType, updatedAccount && updatedAccount.username);
 				}
 				return Promise.resolve(result);
 			});
