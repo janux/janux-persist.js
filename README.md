@@ -189,3 +189,32 @@ The project for the moment has two IGenericDaoCRUD instances. One for mongodb (M
 **Using janux-persist inside another node project.**
 
 Make sure the version of bluebird and @types/bluebird of janux-persist are the same in you project. Otherwise the typescript compiler will crash..
+
+**Logging when this project is symlinked into a consumer (dev-link)**
+
+`logger-api.ts` gets its loggers with a plain `require("log4js")`. When
+janux-persist is installed normally (a real package under the consumer's
+`node_modules`), Node's module resolution walks up from there and finds the
+consumer's own `node_modules/log4js` -- the exact same module instance the
+consumer already configured with `log4js.configure(...)`. Since log4js keeps
+its configuration as state on that module instance, janux-persist's loggers
+just inherit it automatically, no extra wiring needed.
+
+Symlinking this project into a consumer for local cross-repo development
+(e.g. via `janux/bin/dev-link`) breaks that: Node resolves `require`s from
+the symlink's *real* path, so `require("log4js")` walks up from this
+project's own directory tree instead of the consumer's, and finds this
+project's own separate, never-configured log4js instance (or none at all,
+depending on what's installed here). It cannot walk back down into the
+consumer's `node_modules` to find the one that's actually configured, so
+none of this project's log output shows up anywhere -- not in the consumer's
+log files, not even on the console -- even though the log calls are
+genuinely executing.
+
+`JNX_PERSIST_DEV_LOG_FILE` (see `configureForLocalDevLink()` in
+`logger-api.ts`) is the workaround: set it to a file path before starting
+the consumer app in a dev-link session, and this project's own log4js
+instance configures itself to write DEBUG-level output there, independent of
+whatever the consumer's own log4js setup is. It's a manual, dev-link-only
+escape hatch (JAM-79) -- a normal registry install of this package never
+needs it.
