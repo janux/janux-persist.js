@@ -33,6 +33,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * @return {Promise<GroupPropertiesImpl[]>}
 	 */
 	findGroupProperties(): Promise<GroupPropertiesImpl[]> {
+		this.log.trace("finding auth-context group properties");
 		return this.groupService.findPropertiesByType(this.AUTHCONTEXT_GROUP_TYPE);
 	}
 
@@ -45,6 +46,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * @return {Promise<GroupPropertiesImpl[]>}
 	 */
 	findPropertiesByTypeAndItem(authContext: any): Promise<GroupPropertiesImpl[]> {
+		this.log.trace("finding auth-context group properties for item %j", authContext[this.REFERENCE_ID]);
 		return this.groupService.findPropertiesByTypeAndItem(
 			this.AUTHCONTEXT_GROUP_TYPE,
 			authContext[this.REFERENCE_ID]
@@ -57,6 +59,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * @return {Promise<GroupImpl<any>>}
 	 */
 	findOne(code: string): Promise<GroupImpl<any>> {
+		this.log.trace("finding auth-context group by code %j", code);
 		let result: GroupImpl<any>;
 		return this.groupService.findOne(code).then((resultQuery: GroupImpl<any>) => {
 			if (resultQuery == null) return Promise.resolve(null);
@@ -65,7 +68,10 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 			return this.authContextService.findByIdsIn(result.values).then((authContext: any[]) => {
 				if (result.values.length !== authContext.length) {
 					this.log.warn(
-						"The amount of authContext associated does not match with the authContext in the database"
+						"auth-context group %j: %j associated ids but only %j found in the database",
+						code,
+						result.values.length,
+						authContext.length
 					);
 				}
 				result.values = authContext;
@@ -79,6 +85,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * @return {Promise<GroupImpl<any>>}
 	 */
 	findAll(): Promise<Array<GroupImpl<any>>> {
+		this.log.debug("finding all auth-context groups");
 		return this.groupService.findAll(this.AUTHCONTEXT_GROUP_TYPE).then((groups: Array<GroupImpl<any>>) => {
 			return this.mapData(groups);
 		});
@@ -94,7 +101,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 */
 	switchToNewGroup(authContext: any, newGroupCode: string): Promise<any> {
 		this.log.debug(
-			"Call to switchToNewGroup with item %j, newGroupCode: %j ",
+			"switching auth-context %j to group %j",
 			authContext[this.REFERENCE_ID],
 			newGroupCode
 		);
@@ -104,6 +111,10 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 			.then(resultQuery => {
 				// Adds the new association.
 				return this.groupService.addItem(newGroupCode, authContext[this.REFERENCE_ID]);
+			})
+			.then((result: any) => {
+				this.log.info("switched auth-context %j to group %j", authContext[this.REFERENCE_ID], newGroupCode);
+				return result;
 			});
 	}
 
@@ -117,7 +128,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	insert(group: GroupImpl<any>): Promise<GroupImpl<any>> {
 		// Ensure authorization context group type
 		group.type = this.AUTHCONTEXT_GROUP_TYPE;
-		this.log.debug("Call to insert with group %j", group);
+		this.log.debug("inserting auth-context group %j", group);
 		// Map the authContext data in order to insert only the ids
 		const newGroup: GroupImpl<any> = _.clone(group);
 		const ids = group.values.map(value => value.id);
@@ -126,11 +137,13 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 			.findByIdsIn(ids)
 			.then((resultQuery: any[]) => {
 				if (resultQuery.length !== ids.length) {
+					this.log.warn("failed to insert auth-context group %j: some auth contexts do not exist", group.code);
 					return Promise.reject(this.NO_AUTHCONTEXTS);
 				}
 				return this.groupService.insert(newGroup);
 			})
 			.then(result => {
+				this.log.info("inserted auth-context group -> code %j", group.code);
 				return Promise.resolve(group);
 			});
 	}
@@ -143,6 +156,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * Returns a reject if the content of the groups has duplicated values or any of the  authContext does not exists in the database.
 	 */
 	update(group: GroupImpl<any>): Promise<GroupImpl<any>> {
+		this.log.debug("updating auth-context group %j", group);
 		// Map the ids
 		const groupToUpdate: GroupImpl<any> = _.clone(group);
 		const ids = group.values.map(value => value.id);
@@ -152,11 +166,13 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 			.findByIdsIn(ids)
 			.then((resultQuery: any[]) => {
 				if (resultQuery.length !== ids.length) {
+					this.log.warn("failed to update auth-context group %j: some auth contexts do not exist", group.code);
 					return Promise.reject(this.NO_AUTHCONTEXTS);
 				}
 				return this.groupService.update(groupToUpdate);
 			})
 			.then(result => {
+				this.log.info("updated auth-context group -> code %j", group.code);
 				return Promise.resolve(group);
 			});
 	}
@@ -167,6 +183,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * @return {Promise<<any>}
 	 */
 	updateGroupsSortOrder(groupsOrder: any): Promise<any> {
+		this.log.debug("updating sort order for %j auth-context groups", groupsOrder.length);
 		return this.findAll()
 			.then(groups => {
 				return Promise.map(groups, group => {
@@ -183,7 +200,10 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 				});
 			})
 			.then(updateGroups => {
-				return Promise.all(updateGroups);
+				return Promise.all(updateGroups).then((result: any[]) => {
+					this.log.info("updated sort order for %j auth-context groups", result.length);
+					return result;
+				});
 			});
 	}
 
@@ -193,6 +213,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * @return {Promise<any>} Returns a reject if there is no group with the specified code.
 	 */
 	remove(code: string): Promise<any> {
+		this.log.debug("removing auth-context group by code %j", code);
 		return this.groupService.remove(code);
 	}
 
@@ -206,6 +227,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * Return a reject if the objectToInsert is null or does not exits in the database.
 	 */
 	addItem(code: string, authContext: any): Promise<any> {
+		this.log.debug("adding auth-context %j to group %j", authContext[this.REFERENCE_ID], code);
 		return this.authContextService.findOneById(authContext.id).then(resultQuery => {
 			return this.groupService.addItem(code, authContext[this.REFERENCE_ID]);
 		});
@@ -220,6 +242,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * Returns a reject if the object to remove is null or undefined.
 	 */
 	removeItem(code: string, authContext: any): Promise<any> {
+		this.log.debug("removing auth-context %j from group %j", authContext[this.REFERENCE_ID], code);
 		return this.groupService.removeItem(code, authContext[this.REFERENCE_ID]);
 	}
 
@@ -231,6 +254,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	 * with the type and filter.
 	 */
 	findByFilter(filter: { [p: string]: string }): Promise<Array<GroupImpl<any>>> {
+		this.log.debug("finding auth-context groups by filter %j", filter);
 		return this.groupService
 			.findByTypeAndFilter(this.AUTHCONTEXT_GROUP_TYPE, filter)
 			.then((groups: Array<GroupImpl<string>>) => {
@@ -239,6 +263,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 	}
 
 	private mapData(groups: Array<GroupImpl<string>>): Promise<Array<GroupImpl<any>>> {
+		this.log.trace("mapping data for %j auth-context groups", groups.length);
 		// Map the ids to authContext.
 		let authContextIds: string[] = [];
 		for (const group of groups) {
@@ -251,7 +276,7 @@ export class AuthContextGroupServiceImpl implements AuthContextGroupService {
 				it.values = it.values.map(value => {
 					const filteredAuthContext = authContext.filter(value2 => value2.id === value);
 					if (filteredAuthContext.length === 0) {
-						this.log.warn("There is no associated auth-context with the id %j", value);
+						this.log.warn("no auth-context found with id %j", value);
 						return undefined;
 					} else {
 						return filteredAuthContext[0];

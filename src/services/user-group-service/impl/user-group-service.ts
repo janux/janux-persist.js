@@ -29,10 +29,12 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 * @return {Promise<GroupPropertiesImpl[]>}
 	 */
 	findGroupProperties(): Promise<GroupPropertiesImpl[]> {
+		this.log.trace("finding user group properties");
 		return this.groupService.findPropertiesByType(this.USERS_GROUP_TYPE);
 	}
 
 	findPropertiesByTypeAndItem(type: string, user: any): Promise<GroupPropertiesImpl[]> {
+		this.log.trace("finding user group properties for item %j", user[this.REFERENCE_ID]);
 		return this.groupService.findPropertiesByTypeAndItem(this.USERS_GROUP_TYPE, user[this.REFERENCE_ID]);
 	}
 
@@ -42,6 +44,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 * @return {Promise<GroupImpl<any>>}
 	 */
 	findOne(code: string): Promise<GroupImpl<any>> {
+		this.log.trace("finding user group by code %j", code);
 		let result: GroupImpl<any>;
 		return this.groupService.findOne(code).then((resultQuery: GroupImpl<any>) => {
 			if (resultQuery == null) return Promise.resolve(null);
@@ -49,7 +52,12 @@ export class UserGroupServiceImpl implements UserGroupService {
 			result = _.clone(resultQuery);
 			return this.userService.findByIdsIn(result.values).then((users: any[]) => {
 				if (result.values.length !== users.length) {
-					this.log.warn("The amount of users associated does not match with the users in the database");
+					this.log.warn(
+						"user group %j: %j associated ids but only %j found in the database",
+						code,
+						result.values.length,
+						users.length
+					);
 				}
 				result.values = users;
 				return Promise.resolve(result);
@@ -62,6 +70,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 * @return {Promise<GroupImpl<any>>}
 	 */
 	findAll(): Promise<Array<GroupImpl<any>>> {
+		this.log.debug("finding all user groups");
 		return this.groupService.findAll(this.USERS_GROUP_TYPE).then((groups: Array<GroupImpl<any>>) => {
 			return this.mapData(groups);
 		});
@@ -75,7 +84,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 * the database.
 	 */
 	insert(group: GroupImpl<any>): Promise<GroupImpl<any>> {
-		this.log.debug("Call to insert with group %j", group);
+		this.log.debug("inserting user group %j", group);
 		// Map the users data in order to insert only the ids
 		const newGroup: GroupImpl<any> = _.clone(group);
 		const ids = group.values.map(value => value.id);
@@ -84,11 +93,13 @@ export class UserGroupServiceImpl implements UserGroupService {
 			.findByIdsIn(ids)
 			.then((resultQuery: any[]) => {
 				if (resultQuery.length !== ids.length) {
+					this.log.warn("failed to insert user group %j: some users do not exist", group.code);
 					return Promise.reject(this.NO_USERS);
 				}
 				return this.groupService.insert(newGroup);
 			})
 			.then(result => {
+				this.log.info("inserted user group -> code %j", group.code);
 				return Promise.resolve(group);
 			});
 	}
@@ -101,6 +112,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 * Returns a reject if the content of the groups has duplicated values or any of the  users does not exists in the database.
 	 */
 	update(group: GroupImpl<any>): Promise<GroupImpl<any>> {
+		this.log.debug("updating user group %j", group);
 		// Map the ids
 		const groupToUpdate: GroupImpl<any> = _.clone(group);
 		const ids = group.values.map(value => value.id);
@@ -110,11 +122,13 @@ export class UserGroupServiceImpl implements UserGroupService {
 			.findByIdsIn(ids)
 			.then((resultQuery: any[]) => {
 				if (resultQuery.length !== ids.length) {
+					this.log.warn("failed to update user group %j: some users do not exist", group.code);
 					return Promise.reject(this.NO_USERS);
 				}
 				return this.groupService.update(groupToUpdate);
 			})
 			.then(result => {
+				this.log.info("updated user group -> code %j", group.code);
 				return Promise.resolve(group);
 			});
 	}
@@ -125,6 +139,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 * @return {Promise<any>} Returns a reject if there is no group with the specified code.
 	 */
 	remove(code: string): Promise<any> {
+		this.log.debug("removing user group by code %j", code);
 		return this.groupService.remove(code);
 	}
 
@@ -138,6 +153,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 * Return a reject if the objectToInsert is null or does not exits in the database.
 	 */
 	addItem(code: string, user: any): Promise<any> {
+		this.log.debug("adding user %j to group %j", user[this.REFERENCE_ID], code);
 		return this.userService.findOneById(user.id).then(resultQuery => {
 			return this.groupService.addItem(code, user[this.REFERENCE_ID]);
 		});
@@ -152,6 +168,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 * Returns a reject if the object to remove is null or undefined.
 	 */
 	removeItem(code: string, user: any): Promise<any> {
+		this.log.debug("removing user %j from group %j", user[this.REFERENCE_ID], code);
 		return this.groupService.removeItem(code, user[this.REFERENCE_ID]);
 	}
 
@@ -163,6 +180,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 	 * with the type and filter.
 	 */
 	findByFilter(filter: { [p: string]: string }): Promise<Array<GroupImpl<any>>> {
+		this.log.debug("finding user groups by filter %j", filter);
 		return this.groupService
 			.findByTypeAndFilter(this.USERS_GROUP_TYPE, filter)
 			.then((groups: Array<GroupImpl<string>>) => {
@@ -171,6 +189,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 	}
 
 	private mapData(groups: Array<GroupImpl<string>>): Promise<Array<GroupImpl<any>>> {
+		this.log.trace("mapping data for %j user groups", groups.length);
 		// Map the ids to users.
 		let usersIds: string[] = [];
 		for (const group of groups) {
@@ -183,7 +202,7 @@ export class UserGroupServiceImpl implements UserGroupService {
 				it.values = it.values.map(value => {
 					const filteredUser = users.filter(value2 => value2.id === value);
 					if (filteredUser.length === 0) {
-						this.log.warn("There is no associated user with the id %j", value);
+						this.log.warn("no user found with id %j", value);
 						return undefined;
 					} else {
 						return filteredUser[0];
