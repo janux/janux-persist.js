@@ -40,7 +40,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * @return {Promise<GroupProperties[]>} Return a list of group references.
 	 */
 	findPropertiesByType(type: string): Promise<GroupPropertiesImpl[]> {
-		this.log.debug("Call to findPropertiesByType with type %j", type);
+		this.log.debug("finding properties by type %j", type);
 		let groups: GroupEntity[];
 		// TODO refactor this method with findPropertiesByTypes.
 		return this.groupDao
@@ -68,7 +68,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	}
 
 	findPropertiesByTypes(types: string[]): Promise<GroupPropertiesImpl[]> {
-		this.log.debug("Call to findPropertiesByTypes with types %j", types);
+		this.log.debug("finding properties by types %j", types);
 		let groups: GroupEntity[];
 		return this.groupDao
 			.findByTypeIn(types)
@@ -102,14 +102,14 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * is defined.
 	 */
 	findPropertiesByTypeAndItem(type: string, object: t): Promise<GroupPropertiesImpl[]> {
-		this.log.debug("Call to findAllPropertiesByTypeAndItem with type: %j, object: %j", type, object);
+		this.log.debug("finding properties by type %j and item %j", type, object);
 		return this.groupDao.findByType(type).then((resultQuery: GroupEntity[]) => {
 			return this.mapGroupDataWithItem(resultQuery, object);
 		});
 	}
 
 	findPropertiesByTypesAndItem(types: string[], object: t): Promise<GroupPropertiesImpl[]> {
-		this.log.debug("Call to findPropertiesOwnedByPartyAndTypes with types: %j, object: %j", types, object);
+		this.log.debug("finding properties by types %j and item %j", types, object);
 		return this.groupDao.findByTypeIn(types).then((resultQuery: GroupEntity[]) => {
 			return this.mapGroupDataWithItem(resultQuery, object);
 		});
@@ -122,7 +122,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * group with this type.
 	 */
 	findAll(type: string): Promise<Array<GroupImpl<t>>> {
-		this.log.debug("Call to findAll with type %j", type);
+		this.log.debug("finding all groups by type %j", type);
 		return this.groupDao.findByType(type).then((result: GroupEntity[]) => {
 			return this.mapCompleteGroupData(result);
 		});
@@ -134,7 +134,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * @return {Bluebird<Array<GroupImpl<t>>>}
 	 */
 	findAllByTypes(types: string[]): Promise<Array<GroupImpl<t>>> {
-		this.log.debug("Call to findByTypes with types %j ", types);
+		this.log.debug("finding all groups by types %j", types);
 		return this.groupDao.findByTypeIn(types).then((result: GroupEntity[]) => {
 			return this.mapCompleteGroupData(result);
 		});
@@ -153,6 +153,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 		attributeName: string,
 		value: any
 	): Promise<Array<GroupImpl<t>>> {
+		this.log.debug("finding groups by type %j, attributeName %j, value %j", type, attributeName, value);
 		let groups: GroupEntity[];
 		return this.groupDao
 			.findByType(type)
@@ -174,7 +175,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * @return {Promise<Group<t>>} Return the group or null if there is no group given the code.
 	 */
 	findOne(code: string): Promise<GroupImpl<t>> {
-		this.log.debug("Call to findOne with code %j", code);
+		this.log.debug("finding group by code %j", code);
 		let groupReference: GroupEntity;
 		return this.groupDao.findOneByCode(code).then((group: GroupEntity) => {
 			if (group == null) {
@@ -197,7 +198,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * with the type and filter.
 	 */
 	findByTypeAndFilter(type: string, filter: { [p: string]: string }): Promise<Array<GroupImpl<t>>> {
-		this.log.debug("Call to findByTypeAndFilter with type: %j , filter: %j", type, filter);
+		this.log.debug("finding groups by type %j and filter %j", type, filter);
 		let groups: GroupEntity[];
 		let groupsMathCriteria: GroupEntity[];
 		let ids: string[];
@@ -249,17 +250,21 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * has duplicated values.
 	 */
 	insert(group: GroupImpl<t>): Promise<GroupImpl<t>> {
-		this.log.debug("Call to insert with group: %j", group);
+		this.log.debug("inserting group %j", group);
 		const errors = GroupServiceValidator.validateGroup(group);
 		if (errors.length > 0) {
+			this.log.warn("failed to insert group %j: validation errors %j", group, errors);
 			return Promise.reject(errors);
 		}
 		return this.groupDao.findOneByCode(group.code).then((resultQuery: GroupEntity) => {
 			if (resultQuery != null) {
-				this.log.warn("There is a group with the same type and attributes: %j", group);
+				this.log.warn("failed to insert group %j: duplicate code", group);
 				return Promise.reject(GroupServiceValidator.DUPLICATED_GROUP);
 			} else {
-				return this.insertToDatabase(group);
+				return this.insertToDatabase(group).then((result: GroupImpl<t>) => {
+					this.log.info("inserted group -> code %j", group.code);
+					return result;
+				});
 			}
 		});
 	}
@@ -271,16 +276,18 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * Returns a reject if the content of the groups has duplicated values.
 	 */
 	update(group: GroupImpl<t>): Promise<GroupImpl<t>> {
-		this.log.debug("Call to update with group %j", group);
+		this.log.debug("updating group %j", group);
 		let updatedGroup: GroupEntity;
 		const errors = GroupServiceValidator.validateGroup(group);
 		if (errors.length > 0) {
+			this.log.warn("failed to update group %j: validation errors %j", group, errors);
 			return Promise.reject(errors);
 		}
 		return this.groupDao
 			.findOneByCode(group.code)
 			.then((groupToUpdate: GroupEntity) => {
 				if (groupToUpdate == null) {
+					this.log.warn("failed to update group %j: not found", group);
 					return Promise.reject(GroupServiceValidator.NO_GROUP);
 				}
 				// Update the group entity.
@@ -322,6 +329,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 			})
 			.then(() => {
 				// Update attributes.
+				this.log.info("updated group -> code %j", group.code);
 				return Promise.resolve(group);
 			});
 	}
@@ -332,10 +340,10 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * @return {Promise<any>} Returns a reject if there is no group with the specified code.
 	 */
 	remove(code: string): Promise<any> {
-		this.log.debug("Call to remove with code %j", code);
+		this.log.debug("removing group by code %j", code);
 		return this.groupDao.findOneByCode(code).then((resultQuery: GroupEntity) => {
 			if (resultQuery == null) {
-				this.log.warn("There is no group given the code %j", code);
+				this.log.warn("failed to remove group by code %j: not found", code);
 				return Promise.reject(GroupServiceValidator.NO_GROUP);
 			} else {
 				return this.groupAttributeValueDao
@@ -347,6 +355,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 						return this.groupDao.remove(resultQuery);
 					})
 					.then(() => {
+						this.log.info("removed group -> code %j", code);
 						return Promise.resolve();
 					});
 			}
@@ -363,8 +372,9 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * Return a reject if the objectToInsert is null.
 	 */
 	addItem(code: string, objectToInsert: t): Promise<any> {
-		this.log.debug("Call to addItem with code %j, objectToInsert: %j", code, objectToInsert);
+		this.log.debug("adding item to group %j: %j", code, objectToInsert);
 		if (objectToInsert == null) {
+			this.log.warn("failed to add item to group %j: item is empty", code);
 			const error: ValidationErrorImpl = new ValidationErrorImpl(
 				GroupServiceValidator.ITEM,
 				GroupServiceValidator.ITEM_EMPTY,
@@ -376,7 +386,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 			.findOneByCode(code)
 			.then((group: GroupEntity) => {
 				if (group == null) {
-					this.log.warn("There is no group given the code %j", code);
+					this.log.warn("failed to add item to group %j: not found", code);
 					return Promise.reject(GroupServiceValidator.NO_GROUP);
 				} else {
 					const newContent: GroupContentEntity = new GroupContentEntity();
@@ -386,6 +396,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 				}
 			})
 			.then(() => {
+				this.log.info("added item to group -> code %j", code);
 				return Promise.resolve();
 			});
 	}
@@ -398,8 +409,9 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * Returns a reject if the object to remove is null or undefined.
 	 */
 	removeItemByType(type: string, objectToRemove: t): Promise<any> {
-		this.log.debug("Call to removeItemByType with type: %j, objectToRemove: %j ", type, objectToRemove);
+		this.log.debug("removing item from groups by type %j: %j", type, objectToRemove);
 		if (objectToRemove == null) {
+			this.log.warn("failed to remove item from groups by type %j: item is empty", type);
 			const error: ValidationErrorImpl = new ValidationErrorImpl(
 				GroupServiceValidator.ITEM,
 				GroupServiceValidator.ITEM_EMPTY,
@@ -414,12 +426,11 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 				return this.groupContentDao.findByIdGroupsInAndValue(ids, objectToRemove);
 			})
 			.then((objectsToDelete: GroupContentEntity[]) => {
-				this.log.debug("The object was founded in %j records", objectsToDelete.length);
 				const ids = objectsToDelete.map(value => value.id);
-				return this.groupContentDao.removeByIds(ids);
-			})
-			.then(() => {
-				return Promise.resolve();
+				return this.groupContentDao.removeByIds(ids).then(() => {
+					this.log.info("removed item from %j groups of type %j", objectsToDelete.length, type);
+					return Promise.resolve();
+				});
 			});
 	}
 
@@ -432,8 +443,9 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 	 * Returns a reject if the object to remove is null or undefined.
 	 */
 	removeItem(code: string, objectToRemove: t): Promise<any> {
-		this.log.debug("Call to removeItem with code %j", code);
+		this.log.debug("removing item from group %j: %j", code, objectToRemove);
 		if (objectToRemove == null) {
+			this.log.warn("failed to remove item from group %j: item is empty", code);
 			const error: ValidationErrorImpl = new ValidationErrorImpl(
 				GroupServiceValidator.ITEM,
 				GroupServiceValidator.ITEM_EMPTY,
@@ -445,7 +457,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 			.findOneByCode(code)
 			.then((group: GroupEntity) => {
 				if (group == null) {
-					this.log.warn("There is no group given the code %j", code);
+					this.log.warn("failed to remove item from group %j: not found", code);
 					return Promise.reject(GroupServiceValidator.NO_GROUP);
 				} else {
 					// Look for the content to delete.
@@ -454,10 +466,10 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 			})
 			.then((objectsToRemove: GroupContentEntity[]) => {
 				const ids = objectsToRemove.map(value => value.id);
-				return this.groupContentDao.removeByIds(ids);
-			})
-			.then(() => {
-				return Promise.resolve();
+				return this.groupContentDao.removeByIds(ids).then(() => {
+					this.log.info("removed item from group -> code %j", code);
+					return Promise.resolve();
+				});
 			});
 	}
 
@@ -579,7 +591,7 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 		attributeValues: GroupAttributeValueEntity[],
 		groupContent: GroupContentEntity[]
 	): Array<GroupImpl<t>> {
-		this.log.debug("Call to mapData");
+		this.log.trace("mapping data for %j groups", groups.length);
 		const result: Array<GroupImpl<t>> = [];
 		let group: GroupImpl<t>;
 		for (const element of groups) {

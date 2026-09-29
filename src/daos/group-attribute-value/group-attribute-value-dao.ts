@@ -43,7 +43,7 @@ export class GroupAttributeValueDao extends AbstractDataAccessObjectWithAdapter<
 	 * @return {Promise<GroupAttributeValueEntity[]>}
 	 */
 	public findByIdGroupAndKey(idGroup: string, key: string): Promise<GroupAttributeValueEntity[]> {
-		this.log.debug("Call to findByIdGroupAndKey with idGroup %j , key: %j", idGroup, key);
+		this.log.debug("finding attribute values by idGroup %j and key %j", idGroup, key);
 		const query = {
 			$and: [{ idGroup: { $eq: idGroup } }, { key: { $eq: key } }]
 		};
@@ -57,7 +57,7 @@ export class GroupAttributeValueDao extends AbstractDataAccessObjectWithAdapter<
 	 * only filters the data by idGroups.
 	 */
 	public findByIdGroupsAndKeyValuesMatch(idGroups: string[], keyValues: {}) {
-		this.log.debug("Call to findByIdGroupsAndKeyValuesMatch with idGroups %j, keyValues: %j", idGroups, keyValues);
+		this.log.debug("finding attribute values by idGroups %j and keyValues %j", idGroups, keyValues);
 		let query: {};
 		const subQueries = [];
 		for (const key in keyValues) {
@@ -109,7 +109,7 @@ export class GroupAttributeValueDao extends AbstractDataAccessObjectWithAdapter<
 	}
 
 	private validateDuplicated(resultQuery: GroupAttributeValueEntity[]): Promise<ValidationErrorImpl[]> {
-		this.log.debug("Call to validateDuplicated with %j", resultQuery);
+		this.log.debug("validating duplicated attribute values %j", resultQuery);
 		const errors: ValidationErrorImpl[] = [];
 		if (resultQuery.length > 0) {
 			errors.push(
