@@ -196,3 +196,10 @@ can likely come off too.
 - `CommService` (`src/services/comm/comm-service.ts`) is the shared outbound
   mail path for easytitle24, glarus-ops and janux-mail. It is slated for
   removal — see `plan/2026-08-26.janux-mail-plan.md` in the workspace root.
+- Every log4js category registered through `getLogger()`
+  (`src/utils/logger-api/logger-api.ts`) is prefixed `jnx-persist:`, per
+  `CODE_CONVENTIONS.md`'s logging section, so a consuming app's combined log
+  stream can tell this package's lines apart from its own. A consuming app
+  can override the prefix by defining `januxPersist.logCategoryPrefix` in
+  its own config (e.g. `""` to turn it off); this package's own
+  `config/default.js` is never read in that context, only the host app's.

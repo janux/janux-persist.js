@@ -190,6 +190,43 @@ The project for the moment has two IGenericDaoCRUD instances. One for mongodb (M
 
 Make sure the version of bluebird and @types/bluebird of janux-persist are the same in you project. Otherwise the typescript compiler will crash..
 
+**Log category prefix**
+
+Every logger this project gets through `getLogger()` (`logger-api.ts`) is
+registered under a category prefixed `jnx-persist:`, e.g. a DAO's
+`getLogger("PartyDao")` call actually registers `jnx-persist:PartyDao`. The
+point is a combined log stream in a consuming app: with three different
+packages (this one, the consumer's own code, other dependencies) all
+logging into the same file via the app's own log4js config, the prefix is
+what lets you tell which layer produced a given line, or grep for just this
+package's output (`grep 'jnx-persist:'`).
+
+This only works because the prefix is baked into the category string
+itself, not into a layout pattern -- there is exactly one log4js instance
+per process, configured by whichever app calls `log4js.configure(...)`
+first (the consuming app's own `config/log4js*.js`, in production). This
+project's own `config/log4js.js` is only ever active when its own test
+suite runs standalone; it plays no part once janux-persist is required into
+a host app.
+
+A consuming app can override the prefix (or drop it) by defining
+`januxPersist.logCategoryPrefix` in its own node-config settings:
+
+    // in the consuming app's config/default.js (or an environment-specific override)
+    module.exports = {
+        // ...the app's own settings...
+        januxPersist: {
+            logCategoryPrefix: "" // or any other string, e.g. "persist:"
+        }
+    };
+
+If that key isn't defined, `jnx-persist:` is used. This project's own
+`config/default.js` intentionally does not set this key -- as above, it's
+never read once this package is installed as a real dependency, only the
+host app's config is, so documenting the default in code
+(`logger-api.ts`) rather than in a config file here avoids implying a
+consumer needs to copy anything from it.
+
 **Logging when this project is symlinked into a consumer (dev-link)**
 
 `logger-api.ts` gets its loggers with a plain `require("log4js")`. When

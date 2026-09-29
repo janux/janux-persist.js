@@ -1,11 +1,21 @@
-/**
- * Project
- * Created by ernesto on 9/1/17.
- */
+import config = require("config");
 import { FakeLogger } from "./fake-logger";
 
 const log4js = checkForLog4js();
 configureForLocalDevLink();
+
+/**
+ * The prefix every category registered through getLogger() is given, so a
+ * combined log stream in a consuming app can tell janux-persist's lines
+ * apart from its own or another dependency's. A consuming app can override
+ * it by defining "januxPersist.logCategoryPrefix" in its own config (e.g.
+ * to "" to turn the prefix off, or to something else entirely).
+ */
+const CATEGORY_PREFIX_CONFIG_KEY = "januxPersist.logCategoryPrefix";
+const DEFAULT_CATEGORY_PREFIX = "jnx-persist:";
+const categoryPrefix: string = config.has(CATEGORY_PREFIX_CONFIG_KEY)
+	? config.get(CATEGORY_PREFIX_CONFIG_KEY)
+	: DEFAULT_CATEGORY_PREFIX;
 
 function checkForLog4js() {
 	// console.log("Calling checkForLog4js");
@@ -40,5 +50,5 @@ function configureForLocalDevLink() {
 }
 
 export function getLogger(path) {
-	return log4js ? log4js.getLogger("jnx-persist:" + path) : new FakeLogger();
+	return log4js ? log4js.getLogger(categoryPrefix + path) : new FakeLogger();
 }

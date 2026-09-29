@@ -22,6 +22,42 @@ describe("Testing logger-api getLogger", function() {
 		});
 	});
 
+	describe("When a consuming app overrides januxPersist.logCategoryPrefix in its own config", function() {
+		it("registers the category under the configured prefix instead of the jnx-persist: default", function() {
+			// Same reload technique as the "log4js cannot be resolved" spec below:
+			// getLogger() reads config once, at module load time, into the
+			// categoryPrefix const, so exercising an override means forcing one
+			// fresh, isolated reload with a stubbed "config" module.
+			var originalRequire = Module.prototype.require;
+			Module.prototype.require = function(request) {
+				if (request === "config") {
+					return {
+						has: function(key) {
+							return key === "januxPersist.logCategoryPrefix";
+						},
+						get: function(key) {
+							return "custom-prefix:";
+						}
+					};
+				}
+				return originalRequire.apply(this, arguments);
+			};
+
+			var getLogger;
+			try {
+				delete require.cache[LOGGER_API_PATH];
+				getLogger = require(LOGGER_API_PATH).getLogger;
+			} finally {
+				Module.prototype.require = originalRequire;
+				delete require.cache[LOGGER_API_PATH];
+				require(LOGGER_API_PATH);
+			}
+
+			var logger = getLogger("override-test");
+			expect(logger.category).eq("custom-prefix:override-test");
+		});
+	});
+
 	describe("When log4js cannot be resolved", function() {
 		it("falls back to FakeLogger instead of throwing", function() {
 			// getLogger() decides between a real log4js logger and FakeLogger once, at
