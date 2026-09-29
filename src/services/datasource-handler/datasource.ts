@@ -64,7 +64,7 @@ export class DataSource {
 				});
 			this.dbConnection = conn;
 			conn.on("error", err => {
-				this.log.error("Error connecting to mongodb \n %j", this.path, err);
+				this.log.error("Error connecting to mongodb %j: %j", this.path, { message: err.message, stack: err.stack });
 				this.dbConnection = null;
 				throw new Error("Error connecting to mongodb database");
 			});

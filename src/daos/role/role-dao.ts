@@ -17,7 +17,7 @@ import { RoleValidator } from "./role-validator";
  *  is JanuxPeople.Person or JanuxPeople.Organization.
  */
 export abstract class RoleDao extends AbstractDataAccessObjectWithAdapter<JanuxAuthorize.Role, string> {
-	private authContextDaoLogger = logger.getLogger("authContextDao");
+	private roleDaoLogger = logger.getLogger("RoleDao");
 
 	constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
 		super(dbAdapter, entityProperties);
@@ -62,13 +62,13 @@ export abstract class RoleDao extends AbstractDataAccessObjectWithAdapter<JanuxA
 	 * @return {any} the transformed object.
 	 */
 	protected convertBeforeSave(object: JanuxAuthorize.Role): any {
-		this.authContextDaoLogger.debug("Call to convertBeforeSave with object: %j ", object);
+		this.roleDaoLogger.debug("Call to convertBeforeSave with object: %j ", object);
 		let result: any = object.toJSON();
 
 		// TODO: JanuxAuthorize.Role has circular references?
 		result = JSON.parse(JSON.stringify(result));
 		result.typeName = object.typeName;
-		this.authContextDaoLogger.debug("Returning %j", result);
+		this.roleDaoLogger.debug("Returning %j", result);
 		return result;
 	}
 

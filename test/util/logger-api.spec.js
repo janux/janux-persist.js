@@ -17,7 +17,7 @@ describe("Testing logger-api getLogger", function() {
 			// instance under test.
 			var logger = loggerApi.getLogger("logger-api.spec");
 			expect(logger).not.instanceOf(FakeLogger);
-			expect(logger.category).eq("logger-api.spec");
+			expect(logger.category).eq("jnx-persist:logger-api.spec");
 			expect(typeof logger.info).eq("function");
 		});
 	});

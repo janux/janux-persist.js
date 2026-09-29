@@ -138,7 +138,7 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 				}
 			});
 		} else {
-			this._log.warn("%j has validation errors: \n %j", objectToInsert, entityErrors);
+			this._log.warn("%j has validation errors: %j", objectToInsert, entityErrors);
 			return Promise.reject(entityErrors);
 		}
 	}
@@ -174,7 +174,7 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 		for (const obj of objectsToInsert) {
 			entityErrors = this.validateEntity(obj);
 			if (entityErrors.length > 0) {
-				this._log.warn("%j has validation errors: \n %j", obj, entityErrors);
+				this._log.warn("%j has validation errors: %j", obj, entityErrors);
 				return Promise.reject(entityErrors);
 			} else {
 				// Generate automatic ids.
@@ -233,7 +233,7 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 				}
 			});
 		} else {
-			this._log.warn("%j has validation errors: \n %j", objectToUpdate, entityErrors);
+			this._log.warn("%j has validation errors: %j", objectToUpdate, entityErrors);
 			return Promise.reject(entityErrors);
 		}
 	}
@@ -268,7 +268,7 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 			entityErrors = entityErrors.concat(this.validateEntity(object));
 		}
 		if (entityErrors.length > 0) {
-			this._log.warn("%j has validation errors: \n %j", objectsToUpdate, entityErrors);
+			this._log.warn("%j has validation errors: %j", objectsToUpdate, entityErrors);
 			return Promise.reject(entityErrors);
 		}
 		return this.validateBeforeUpdateMany(objectsToUpdate)

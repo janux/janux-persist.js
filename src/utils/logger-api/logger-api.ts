@@ -40,5 +40,5 @@ function configureForLocalDevLink() {
 }
 
 export function getLogger(path) {
-	return log4js ? log4js.getLogger(path) : new FakeLogger();
+	return log4js ? log4js.getLogger("jnx-persist:" + path) : new FakeLogger();
 }
