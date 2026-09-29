@@ -35,7 +35,7 @@ export class AuthContextService {
 	 * @return {Promise<U>}
 	 */
 	public findAll(): Promise<any[]> {
-		this._log.debug("Call to findAll Method");
+		this._log.debug("finding all auth contexts");
 		return this.authContextDao.findAll().then((authContexts: JanuxAuthorize.AuthorizationContext[]) => {
 			return authContexts;
 		});
@@ -48,7 +48,7 @@ export class AuthContextService {
 	 * If no records are founded, then the method returns an empty array.
 	 */
 	public findByIdsIn(ids: string[]): Promise<any[]> {
-		this._log.debug("Call to findByIdsIn with ids %j", ids);
+		this._log.debug("finding auth contexts by ids %j", ids);
 		return this.authContextDao.findByIds(ids).then((authContexts: JanuxAuthorize.AuthorizationContext[]) => {
 			return authContexts;
 		});
@@ -60,16 +60,15 @@ export class AuthContextService {
 	 * @return {Promise<any>}
 	 */
 	public findOneByName(authContextName: string): Promise<any> {
-		this._log.debug("Call to findOneByName with authContextName: %j", authContextName);
-		let result: any;
+		this._log.debug("finding auth context by name %j", authContextName);
 		return this.authContextDao.findOneByName(authContextName).then((authContextStored: any) => {
 			const authContext: JanuxAuthorize.AuthorizationContext = authContextStored;
-			authContext.id = authContextStored.id;
-			if (_.isNil(authContext))
+			if (_.isNil(authContext)) {
+				this._log.warn("failed to find auth context by name %j: not found", authContextName);
 				return Promise.reject("No authContext with the authContextname " + authContextName);
-			result = authContext;
-			this._log.debug("Returning %j", result);
-			return Promise.resolve(result);
+			}
+			authContext.id = authContextStored.id;
+			return Promise.resolve(authContext);
 		});
 	}
 
@@ -79,13 +78,13 @@ export class AuthContextService {
 	 * @return {Promise<any>}
 	 */
 	public findOneById(id: any): Promise<any> {
-		this._log.debug("Call to findOneByUserId with id: %j", id);
-		let result: any;
+		this._log.debug("finding auth context by id %j", id);
 		return this.authContextDao.findOne(id).then((authContext: JanuxAuthorize.AuthorizationContext) => {
-			if (_.isNil(authContext)) return Promise.reject("No authContext with the id " + id);
-			result = authContext;
-			this._log.debug("Returning %j", result);
-			return Promise.resolve(result);
+			if (_.isNil(authContext)) {
+				this._log.warn("failed to find auth context by id %j: not found", id);
+				return Promise.reject("No authContext with the id " + id);
+			}
+			return Promise.resolve(authContext);
 		});
 	}
 
@@ -95,13 +94,14 @@ export class AuthContextService {
 	 * @return {Promise<any>}
 	 */
 	public insert(object: any): Promise<any> {
-		this._log.debug("Call to insertMethod with object %j", object);
+		this._log.debug("inserting auth context %j", object);
 		const authContext: JanuxAuthorize.AuthorizationContext = JanuxAuthorize.AuthorizationContext.fromJSON(object);
 		authContext.id = object.id;
 
 		// Validate authContext
 		const errors = AuthContextValidator.validateAuthContext(authContext);
 		if (errors.length > 0) {
+			this._log.warn("failed to insert auth context %j: validation errors %j", object, errors);
 			return Promise.reject(errors);
 		}
 
@@ -113,7 +113,7 @@ export class AuthContextService {
 	 * @param object The authContext to be updated.
 	 */
 	public update(object: any): Promise<any> {
-		this._log.debug("Call to updateMethod with object:%j", object);
+		this._log.debug("updating auth context %j", object);
 
 		let authContext: JanuxAuthorize.AuthorizationContext;
 		// Find the authContext
@@ -121,6 +121,7 @@ export class AuthContextService {
 			.findOne(object.id)
 			.then(resultQuery => {
 				if (resultQuery === null) {
+					this._log.warn("failed to update auth context %j: not found", object);
 					return Promise.reject([
 						new ValidationErrorImpl(this.AUTHCONTEXT, this.AUTHCONTEXT_NOT_IN_DATABASE, object.id)
 					]);
@@ -141,13 +142,14 @@ export class AuthContextService {
 	 * @param object The authContext name and sort order to be updated.
 	 */
 	public updateSortOrder(object: any): Promise<any> {
-		this._log.debug("Call to updateSortOrder with object:%j", object);
+		this._log.debug("updating sort order for %j auth contexts", object.length);
 
 		const promises = Promise.map(object, (authToUpdate: any) => {
 			let authContext: JanuxAuthorize.AuthorizationContext;
 			// Find the authContext
 			return this.authContextDao.findOneByName(authToUpdate.name).then(resultQuery => {
 				if (resultQuery === null) {
+					this._log.warn("failed to update sort order for %j: not found", authToUpdate.name);
 					return Promise.reject([
 						new ValidationErrorImpl(this.AUTHCONTEXT, this.AUTHCONTEXT_NOT_IN_DATABASE, object.id)
 					]);
@@ -163,7 +165,10 @@ export class AuthContextService {
 			});
 		});
 
-		return Promise.all(promises);
+		return Promise.all(promises).then((updated: any[]) => {
+			this._log.info("updated sort order for %j auth contexts", updated.length);
+			return updated;
+		});
 	}
 
 	/**
@@ -172,10 +177,17 @@ export class AuthContextService {
 	 * @return {Promise<any>} A promise indicating the operation is executed successfully.
 	 */
 	public deleteById(authContextId: string): Promise<any> {
-		this._log.debug("Call to deleteById with authContextId: %j", authContextId);
+		this._log.debug("deleting auth context by id %j", authContextId);
 
 		return this.authContextDao.findOne(authContextId).then((resultQuery: JanuxAuthorize.AuthorizationContext) => {
-			return this.authContextDao.remove(resultQuery);
+			if (_.isNil(resultQuery)) {
+				this._log.warn("failed to delete auth context by id %j: not found", authContextId);
+				return Promise.reject("No authContext with the id " + authContextId);
+			}
+			return this.authContextDao.remove(resultQuery).then((result: any) => {
+				this._log.info("deleted auth context -> id %j", authContextId);
+				return result;
+			});
 		});
 	}
 
@@ -185,12 +197,19 @@ export class AuthContextService {
 	 * @return {Promise<any>} A promise indicating the operation is executed successfully.
 	 */
 	public deleteByName(authContextName: string): Promise<any> {
-		this._log.debug("Call to deleteById with authContextName: %j", authContextName);
+		this._log.debug("deleting auth context by name %j", authContextName);
 
 		return this.authContextDao
 			.findOneByName(authContextName)
 			.then((resultQuery: JanuxAuthorize.AuthorizationContext) => {
-				return this.authContextDao.remove(resultQuery);
+				if (_.isNil(resultQuery)) {
+					this._log.warn("failed to delete auth context by name %j: not found", authContextName);
+					return Promise.reject("No authContext with the authContextname " + authContextName);
+				}
+				return this.authContextDao.remove(resultQuery).then((result: any) => {
+					this._log.info("deleted auth context -> name %j", authContextName);
+					return result;
+				});
 			});
 	}
 
@@ -200,7 +219,7 @@ export class AuthContextService {
 	 * @return {Promise<any>}
 	 */
 	public saveOrUpdate(object: any): Promise<any> {
-		this._log.debug("Call to saveOrUpdate with object: %j", object);
+		this._log.debug("saveOrUpdate choosing insert or update for auth context %j", object);
 		if (isBlankString(object.id)) {
 			return this.insert(object);
 		} else {
