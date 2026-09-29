@@ -38,7 +38,14 @@ export class MongooseAdapter implements DbAdapter {
 				.findOne(query, { _id: 0 })
 				.lean()
 				.exec((err, result: any) => {
-					if (err) throw err;
+					if (err) {
+						this._log.error("failed to findOneMethod with model %j id %j: %j", this.adapterProperties.model.modelName, id, {
+							message: err && err.message,
+							stack: err && err.stack
+						});
+						reject(err);
+						return;
+					}
 					resolve(result);
 				});
 		});
@@ -80,7 +87,14 @@ export class MongooseAdapter implements DbAdapter {
 				.remove(query)
 				.lean()
 				.exec((err, result) => {
-					if (err) throw err;
+					if (err) {
+						this._log.error("failed to remove %j from model %j: %j", objectToDelete, this.adapterProperties.model.modelName, {
+							message: err && err.message,
+							stack: err && err.stack
+						});
+						reject(err);
+						return;
+					}
 					resolve(result);
 				});
 		});
@@ -91,11 +105,18 @@ export class MongooseAdapter implements DbAdapter {
 	 * @return {Promise<number>} Returns the amount of documents.
 	 */
 	count(): Promise<number> {
-		this._log.debug("Call to count");
+		this._log.debug("Call to count with model: %j", this.adapterProperties.model.modelName);
 		return new Promise<number>((resolve, reject) => {
 			this.adapterProperties.model.count({}, (err, count) => {
-				if (err) throw err;
-				this._log.debug("Result: %j", count);
+				if (err) {
+					this._log.error("failed to count model %j: %j", this.adapterProperties.model.modelName, {
+						message: err && err.message,
+						stack: err && err.stack
+					});
+					reject(err);
+					return;
+				}
+				this._log.debug("count of model %j -> %j", this.adapterProperties.model.modelName, count);
 				resolve(count);
 			});
 		});
@@ -106,11 +127,18 @@ export class MongooseAdapter implements DbAdapter {
 	 * @param query
 	 */
 	countByQuery(query: any): Promise<number> {
-		this._log.debug("Call to countByQuery with query: %j", query);
+		this._log.debug("Call to countByQuery with model: %j, query: %j", this.adapterProperties.model.modelName, query);
 		return new Promise<number>((resolve, reject) => {
 			this.adapterProperties.model.count(query, (err, count) => {
-				if (err) throw err;
-				this._log.debug("Result: %j", count);
+				if (err) {
+					this._log.error("failed to countByQuery %j on model %j: %j", query, this.adapterProperties.model.modelName, {
+						message: err && err.message,
+						stack: err && err.stack
+					});
+					reject(err);
+					return;
+				}
+				this._log.debug("countByQuery %j on model %j -> %j", query, this.adapterProperties.model.modelName, count);
 				resolve(count);
 			});
 		});
@@ -124,7 +152,14 @@ export class MongooseAdapter implements DbAdapter {
 		this._log.debug("Call to removeAll all with model: %j", this.adapterProperties.model.modelName);
 		return new Promise((resolve, reject) => {
 			this.adapterProperties.model.remove({}, err => {
-				if (err) throw err;
+				if (err) {
+					this._log.error("failed to removeAll from model %j: %j", this.adapterProperties.model.modelName, {
+						message: err && err.message,
+						stack: err && err.stack
+					});
+					reject(err);
+					return;
+				}
 				resolve();
 			});
 		});
@@ -145,7 +180,14 @@ export class MongooseAdapter implements DbAdapter {
 				.remove(query)
 				.lean()
 				.exec((err, result) => {
-					if (err) throw err;
+					if (err) {
+						this._log.error("failed to removeByIds %j from model %j: %j", ids, this.adapterProperties.model.modelName, {
+							message: err && err.message,
+							stack: err && err.stack
+						});
+						reject(err);
+						return;
+					}
 					resolve(result);
 				});
 		});
@@ -172,14 +214,29 @@ export class MongooseAdapter implements DbAdapter {
 				.find(query, { _id: 0 })
 				.lean()
 				.exec((err, result: any[]) => {
-					if (err) throw err;
+					if (err) {
+						this._log.error(
+							"failed to findOneByAttributeMethod %j = %j on model %j: %j",
+							attributeName,
+							value,
+							this.adapterProperties.model.modelName,
+							{ message: err && err.message, stack: err && err.stack }
+						);
+						reject(err);
+						return;
+					}
 					if (result.length === 0) {
 						resolve(null);
 					} else if (result.length === 1) {
 						// this.adapterProperties.cleanObjectIds(result[0]);
 						resolve(result[0]);
 					} else {
-						this._log.warn("The query returned more than one result.");
+						this._log.warn(
+							"findOneByAttributeMethod %j = %j on model %j returned more than one result",
+							attributeName,
+							value,
+							this.adapterProperties.model.modelName
+						);
 						reject("The system returned more than one record.");
 					}
 				});
@@ -230,7 +287,6 @@ export class MongooseAdapter implements DbAdapter {
 	 * attribute called "id" as string.
 	 */
 	insertMethod(objectToInsert: any): Promise<any> {
-		this._log.debug("Call to insertMethod with objectToInsert: %j", objectToInsert);
 		this._log.debug(
 			"Call to insertMethod with model: %j, objectToInsert: %j",
 			this.adapterProperties.model.modelName,
@@ -239,9 +295,16 @@ export class MongooseAdapter implements DbAdapter {
 		return new Promise((resolve, reject) => {
 			const newObject = new this.adapterProperties.model(objectToInsert);
 			newObject.save((err, result: any) => {
-				if (err) throw err;
+				if (err) {
+					this._log.error("failed to insertMethod %j on model %j: %j", objectToInsert, this.adapterProperties.model.modelName, {
+						message: err && err.message,
+						stack: err && err.stack
+					});
+					reject(err);
+					return;
+				}
 				// result = this.adapterProperties.cleanObjectIds(result._doc);
-				this._log.debug("Returning result after insertMethod %j", objectToInsert);
+				this._log.debug("insertMethod on model %j -> %j", this.adapterProperties.model.modelName, objectToInsert);
 				resolve(objectToInsert);
 			});
 		});
@@ -271,9 +334,16 @@ export class MongooseAdapter implements DbAdapter {
 				.findOneAndUpdate(query, values, options)
 				.lean()
 				.exec((err, result: any) => {
-					if (err) throw err;
+					if (err) {
+						this._log.error("failed to updateMethod %j on model %j: %j", objectToUpdate, this.adapterProperties.model.modelName, {
+							message: err && err.message,
+							stack: err && err.stack
+						});
+						reject(err);
+						return;
+					}
 					// result = this.adapterProperties.cleanObjectIds(result);
-					this._log.debug("Returning result after updateMethod %j", objectToUpdate);
+					this._log.debug("updateMethod on model %j -> %j", this.adapterProperties.model.modelName, objectToUpdate);
 					resolve(objectToUpdate);
 				});
 		});
@@ -293,6 +363,21 @@ export class MongooseAdapter implements DbAdapter {
 		);
 		return new Promise((resolve, reject) => {
 			this.adapterProperties.model.insertMany(objectsToInsert, (err, values) => {
+				if (err) {
+					this._log.error(
+						"failed to insertManyMethod %j records on model %j: %j",
+						objectsToInsert.length,
+						this.adapterProperties.model.modelName,
+						{ message: err && err.message, stack: err && err.stack }
+					);
+					reject(err);
+					return;
+				}
+				this._log.debug(
+					"insertManyMethod on model %j -> %j records",
+					this.adapterProperties.model.modelName,
+					objectsToInsert.length
+				);
 				resolve(objectsToInsert);
 			});
 		});
@@ -317,7 +402,23 @@ export class MongooseAdapter implements DbAdapter {
 						};
 					})
 				)
-				.then(() => resolve(objectsToUpdate));
+				.then(() => {
+					this._log.debug(
+						"updateManyMethod on model %j -> %j records",
+						this.adapterProperties.model.modelName,
+						objectsToUpdate.length
+					);
+					resolve(objectsToUpdate);
+				})
+				.catch((err: any) => {
+					this._log.error(
+						"failed to updateManyMethod %j records on model %j: %j",
+						objectsToUpdate.length,
+						this.adapterProperties.model.modelName,
+						{ message: err && err.message, stack: err && err.stack }
+					);
+					reject(err);
+				});
 		});
 	}
 
@@ -383,8 +484,15 @@ export class MongooseAdapter implements DbAdapter {
 				.find(query, { _id: 0 })
 				.lean()
 				.exec((err, result: any[]) => {
-					if (err) throw err;
-					this._log.debug("Returning %j records", result.length);
+					if (err) {
+						this._log.error("failed to findByQueryMethod %j on model %j: %j", query, this.adapterProperties.model.modelName, {
+							message: err && err.message,
+							stack: err && err.stack
+						});
+						reject(err);
+						return;
+					}
+					this._log.debug("findByQueryMethod %j on model %j -> %j records", query, this.adapterProperties.model.modelName, result.length);
 					resolve(result);
 				});
 		});
@@ -403,7 +511,14 @@ export class MongooseAdapter implements DbAdapter {
 				.remove(query)
 				.lean()
 				.exec((err, result) => {
-					if (err) throw err;
+					if (err) {
+						this._log.error("failed to removeById %j from model %j: %j", id, this.adapterProperties.model.modelName, {
+							message: err && err.message,
+							stack: err && err.stack
+						});
+						reject(err);
+						return;
+					}
 					resolve(result);
 				});
 		});
