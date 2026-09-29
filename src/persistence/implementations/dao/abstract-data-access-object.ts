@@ -74,7 +74,6 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	private readonly _log = logger.getLogger("AbstractDataAccessObject");
 
 	constructor(entityProperties: EntityPropertiesImpl) {
-		this._log.debug("AbstractDataAccessObject constructor");
 		this.entityProperties = entityProperties;
 	}
 

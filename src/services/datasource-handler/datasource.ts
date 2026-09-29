@@ -56,7 +56,6 @@ export class DataSource {
 			const serverAppContext: any = config.get("serverAppContext");
 			let poolSize: any = Number(serverAppContext.db.poolSize);
 			poolSize = _.isNumber(poolSize) && poolSize > 30 ? poolSize : 30;
-			this.log.info("Pool size to use: %j", poolSize);
 			conn = mongoose.createConnection(this.path,
 				{
 					server: {
@@ -70,8 +69,8 @@ export class DataSource {
 				throw new Error("Error connecting to mongodb database");
 			});
 			conn.once("open", () => {
-				this.log.info("Connection to mongodb database successful", this.path);
 				this.status = DataSourceStatus.CONNECTED;
+				this.log.info("Connected to mongodb: %j", { dbEngine: this.dbEngine, path: this.path, poolSize });
 			});
 		}
 		return this;

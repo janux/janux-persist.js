@@ -16,7 +16,6 @@ export class GroupDao extends AbstractDataAccessObjectWithAdapter<GroupEntity, s
 
 	constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
 		super(dbAdapter, entityProperties);
-		this.log.debug("constructor");
 	}
 
 	/**

@@ -31,7 +31,6 @@ export abstract class AbstractDataAccessObjectWithAdapter<t, ID> extends Abstrac
 	 */
 	constructor(dbAdapter: DbAdapter, entityProperties: EntityPropertiesImpl) {
 		super(entityProperties);
-		this._logger.debug("Calling constructor");
 
 		this.adapterProperties = dbAdapter.adapterProperties;
 

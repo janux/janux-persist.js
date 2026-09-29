@@ -32,7 +32,6 @@ export class GroupServiceImpl<t> implements GroupService<t> {
 		this.groupDao = groupDao;
 		this.groupContentDao = groupContentDao;
 		this.groupAttributeValueDao = groupAttributeValueDao;
-		this.log.debug("Constructor");
 	}
 
 	/**

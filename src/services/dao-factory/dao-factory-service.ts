@@ -18,7 +18,16 @@ import { Dao } from "./dao";
  */
 export class DaoFactory {
 	public static subscribeDao<T>(daoSettings: DaoSettings, classReference: any): T {
-		this._log.debug("Call to subscribeDao with daoSettings %j", daoSettings);
+		// Omits daoSettings.schema - the full Mongoose schema (every field's
+		// validators/getters/setters), not needed to know which DAO is being
+		// subscribed and far too large for a single log line.
+		this._log.debug(
+			"Call to subscribeDao with dbEngine %j, dbPath %j, collectionName %j, entityProperties %j",
+			daoSettings.dbEngine,
+			daoSettings.dbPath,
+			daoSettings.collectionName,
+			daoSettings.entityProperties
+		);
 		let dbAdapter: DbAdapter;
 		let dao: T;
 		const existingDao: Dao = this.getDao(daoSettings.dbEngine, daoSettings.dbPath, daoSettings.collectionName);

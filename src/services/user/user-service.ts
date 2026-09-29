@@ -151,7 +151,7 @@ export class UserService {
 				result.contact = contact.toJSON();
 				result.contact.id = contact["id"];
 				result.contact.typeName = contact.typeName;
-				this._log.debug("Returning %j", result);
+				this._log.debug("Returning %j", _.omit(result, "password"));
 				return Promise.resolve(result);
 			});
 	}
@@ -175,7 +175,7 @@ export class UserService {
 				result.contact = contact.toJSON();
 				result.contact.id = contact["id"];
 				result.contact.typeName = contact.typeName;
-				this._log.debug("Returning %j", result);
+				this._log.debug("Returning %j", _.omit(result, "password"));
 				return Promise.resolve(result);
 			});
 	}
@@ -199,7 +199,7 @@ export class UserService {
 				result.contact = contact.toJSON();
 				result.contact.id = contact["id"];
 				result.contact.typeName = contact.typeName;
-				this._log.debug("Returning %j", result);
+				this._log.debug("Returning %j", _.omit(result, "password"));
 				return Promise.resolve(result);
 			});
 	}
@@ -262,7 +262,8 @@ export class UserService {
 	 * assumes is going to insertMethod a new party record.
 	 */
 	public insert(object: any, passwordPolicy: PasswordPolicy | null = DEFAULT_PASSWORD_POLICY): Promise<any> {
-		this._log.debug("Call to insertMethod with object %j", object);
+		// object.password is the new account's plaintext password - never log it.
+		this._log.debug("Call to insertMethod with object %j", _.omit(object, "password"));
 		let associatedParty: JanuxPeople.PartyAbstract;
 		let result: any;
 
@@ -314,7 +315,7 @@ export class UserService {
 				result.contact = associatedParty.toJSON();
 				result.contact.id = associatedParty["id"];
 				result.contact.typeName = associatedParty.typeName;
-				this._log.debug("Returning %j", result);
+				this._log.debug("Returning %j", _.omit(result, "password"));
 				return Promise.resolve(result);
 			});
 	}
@@ -331,7 +332,9 @@ export class UserService {
 	 * held to a policy that postdates it.
 	 */
 	public update(object: any, passwordPolicy: PasswordPolicy | null = DEFAULT_PASSWORD_POLICY): Promise<any> {
-		this._log.debug("Call to updateMethod with object:%j", object);
+		// object.password, when present, is the caller's new plaintext
+		// password (not yet hashed below) - never log it.
+		this._log.debug("Call to updateMethod with object:%j", _.omit(object, "password"));
 		let result: any;
 
 		// Validated against the plaintext before it's hashed below - once
