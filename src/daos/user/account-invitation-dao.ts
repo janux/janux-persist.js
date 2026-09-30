@@ -88,4 +88,13 @@ export abstract class AccountInvitationDao extends AbstractDataAccessObjectWithA
 	protected convertBeforeSave(object: any): any {
 		return Object.assign(new AccountInvitationEntity(), object);
 	}
+
+	/**
+	 * Same rehydration as convertBeforeSave() above, for the read side - a
+	 * bare object coming back from find*() has no toJSON() to redact the
+	 * code with either. Same pattern as AccountDao.convertAfterDbOperation().
+	 */
+	protected convertAfterDbOperation(object: any): AccountInvitationEntity {
+		return Object.assign(new AccountInvitationEntity(), object);
+	}
 }

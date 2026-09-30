@@ -90,13 +90,13 @@ export class UserActionService {
 	 * @return {Promise<any>}
 	 */
 	public findOneById(id: string): Promise<any> {
-		this._log.debug("Call to findOneById with id: %j", id);
+		this._log.debug("finding account action by id %j", id);
 		let result: any;
 		return this.accountActionDao
 			.findOne(id)
 			.then((action: AccountInvitationEntity) => {
 				if (_.isNil(action)) {
-					this._log.error("No account action with the id " + id);
+					this._log.warn("failed to find account action by id %j: not found", id);
 					return Promise.reject("No account action with the id " + id);
 				}
 				result = action;
@@ -104,7 +104,7 @@ export class UserActionService {
 			})
 			.then((account: AccountEntity) => {
 				result.account = account;
-				this._log.debug("Returning %j", result);
+				this._log.debug("found account action by id %j -> %j", id, result);
 				return Promise.resolve(result);
 			});
 	}
@@ -115,7 +115,7 @@ export class UserActionService {
 	 * @return {Promise<any>}
 	 */
 	public findOneByAccountId(id: any): Promise<any> {
-		this._log.debug("Call to findOneByAccountId with id: %j", id);
+		this._log.debug("finding account action by accountId %j", id);
 		return this.accountActionDao.findOneByAccountId(id).then((action: AccountInvitationEntity) => {
 			return action;
 		});
@@ -127,7 +127,7 @@ export class UserActionService {
 	 * @returns {Bluebird<any[]>}
 	 */
 	public findByAccountIdsIn(accountIds: string[]): Promise<any[]> {
-		this._log.debug("Call to findByContactIdsIn with accountIds: %j", accountIds);
+		this._log.debug("finding account actions by accountIds %j", accountIds);
 		return this.accountActionDao.findByAccountIdsIn(accountIds);
 	}
 
@@ -138,6 +138,7 @@ export class UserActionService {
 	 * @return {Bluebird<any>}
 	 */
 	public findByAccountIdAndType(accountId: string, type: string): Promise<any> {
+		this._log.trace("finding account action by accountId %j and type %j", accountId, type);
 		return this.findByAccountIdsIn([accountId]).then(result => {
 			return _.filter(result, { type })[0];
 		});
@@ -149,7 +150,8 @@ export class UserActionService {
 	 * @return {Promise<any>}
 	 */
 	public findOneByCode(code: string): Promise<any> {
-		this._log.debug("Call to findOneByCode with code: %j", code);
+		// Never log the code itself -- it's a bearer credential, same as a password, until it's spent.
+		this._log.debug("finding account action by code");
 		let result: any;
 		return this.accountActionDao
 			.findOneByCode(code)
@@ -175,20 +177,29 @@ export class UserActionService {
 	 * @param object The action to insert.
 	 */
 	public insert(object: any): Promise<any> {
-		this._log.debug("Call to insertMethod with object %j", object);
+		// object.code is the invitation/recovery code - never log the raw
+		// object. inv, once fully populated below, is a real
+		// AccountInvitationEntity, protected by its own toJSON().
 		const inv: AccountInvitationEntity = new AccountInvitationEntity();
 		inv.expire = DateUtil.stringToDate(object.expire);
 		inv.accountId = object.accountId;
 		inv.code = object.code;
+		inv.status = object.status;
+		inv.type = object.type;
+		this._log.debug("inserting account action %j", inv);
 
 		// Validate account action
 		const errors = AccountInvitationValidator.validateAccountInvitation(inv);
 		if (errors.length > 0) {
+			this._log.warn("failed to insert account action %j: validation errors %j", inv, errors);
 			return Promise.reject(errors);
 		}
 
-		return this.accountActionDao.insert(object).then((action: AccountInvitationEntity) => {
-			this._log.debug("Returning %j", action);
+		// Insert inv (a real entity), not the raw object - every log
+		// statement downstream, starting with AbstractDataAccessObject's
+		// own, relies on this to redact the code.
+		return this.accountActionDao.insert(inv).then((action: AccountInvitationEntity) => {
+			this._log.debug("inserted account action %j", action);
 			return Promise.resolve(action);
 		});
 	}
@@ -317,7 +328,7 @@ export class UserActionService {
 	 * @return {Promise<any>}
 	 */
 	public saveOrUpdate(object: any): Promise<any> {
-		this._log.debug("Call to saveOrUpdate with object: %j", object);
+		this._log.debug("saveOrUpdate choosing insert or update for account action %j", _.omit(object, "code"));
 		if (isBlankString(object.id)) {
 			return this.insert(object);
 		} else {
@@ -331,9 +342,16 @@ export class UserActionService {
 	 * @return {Promise<any>} A promise indicating the operation is executed successfully.
 	 */
 	public deleteActionById(actionId: string): Promise<any> {
-		this._log.debug("Call to deleteActionById with id: %j", actionId);
+		this._log.debug("deleting account action by id %j", actionId);
 		return this.accountActionDao.findOne(actionId).then((resultQuery: AccountInvitationEntity) => {
-			return this.accountActionDao.remove(resultQuery);
+			if (_.isNil(resultQuery)) {
+				this._log.warn("failed to delete account action by id %j: not found", actionId);
+				return Promise.reject("No account action with the id " + actionId);
+			}
+			return this.accountActionDao.remove(resultQuery).then((result: any) => {
+				this._log.info("deleted account action -> id %j", actionId);
+				return result;
+			});
 		});
 	}
 
@@ -351,7 +369,7 @@ export class UserActionService {
 	 * @return {Bluebird<any>}
 	 */
 	public inviteToCreateAccount(contactId: string, rolesToAssign: any, config: any): Promise<any> {
-		this._log.debug("Call to inviteToCreateAccount with id %j and email %j", contactId, config.selectedEmail);
+		this._log.debug("inviting contact %j to create an account, email %j", contactId, config.selectedEmail);
 
 		const invitationCode = randomstring.generate({
 			length: 12,
@@ -452,6 +470,7 @@ export class UserActionService {
 								invitationCode
 							}
 						});
+						this._log.info("invited contact %j to create an account -> accountId %j", contactId, resultAccount.userId);
 						return savedInvitation;
 					});
 				});
@@ -473,7 +492,7 @@ export class UserActionService {
 	 * @return {Bluebird<any>}
 	 */
 	public recoverPassword(accountId: string, contactId: string, config: any): Promise<any> {
-		this._log.debug("Call to recoverPassword with id %j and email %j", contactId, config.selectedEmail);
+		this._log.debug("recovering password for contact %j, email %j", contactId, config.selectedEmail);
 
 		return this.partyService.findOne(contactId).then((result: any) => {
 			const registeredEmails: string[] = result
@@ -537,6 +556,7 @@ export class UserActionService {
 							recoveryCode
 						}
 					});
+					this._log.info("recovering password for contact %j -> accountId %j", contactId, accountId);
 					return savedRecovery;
 				});
 			});
