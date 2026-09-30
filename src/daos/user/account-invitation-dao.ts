@@ -74,4 +74,18 @@ export abstract class AccountInvitationDao extends AbstractDataAccessObjectWithA
 	 * @param objectToUpdate
 	 */
 	protected abstract validateBeforeUpdate(objectToUpdate: AccountInvitationEntity): Promise<ValidationErrorImpl[]>;
+
+	/**
+	 * Rehydrate the plain object being inserted/updated (UserActionService.insert()
+	 * passes its raw input object, not an AccountInvitationEntity instance) into a
+	 * real AccountInvitationEntity before it reaches the adapter. Without this, the
+	 * object AbstractDataAccessObject.insert()/update() log at INFO has no
+	 * toJSON() to redact the invitation/recovery code with - same rehydration
+	 * AccountDao.convertAfterDbOperation() does on the read side, just needed here
+	 * on the write side instead since AccountInvitationDao's callers don't already
+	 * construct a real entity themselves.
+	 */
+	protected convertBeforeSave(object: any): any {
+		return Object.assign(new AccountInvitationEntity(), object);
+	}
 }
