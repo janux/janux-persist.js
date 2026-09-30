@@ -22,7 +22,7 @@ export class DaoFactory {
 		// validators/getters/setters), not needed to know which DAO is being
 		// subscribed and far too large for a single log line.
 		this._log.debug(
-			"Call to subscribeDao with dbEngine %j, dbPath %j, collectionName %j, entityProperties %j",
+			"subscribing dao for dbEngine %j, dbPath %j, collectionName %j, entityProperties %j",
 			daoSettings.dbEngine,
 			daoSettings.dbPath,
 			daoSettings.collectionName,
@@ -36,7 +36,9 @@ export class DaoFactory {
 			dbAdapter = this.createDbAdapter(dataSource, daoSettings);
 			dao = new classReference(dbAdapter, daoSettings.entityProperties);
 			this.insertDao(daoSettings.dbEngine, daoSettings.dbPath, daoSettings.collectionName, dao);
+			this._log.info("subscribed new dao -> collectionName %j", daoSettings.collectionName);
 		} else {
+			this._log.debug("reusing existing dao -> collectionName %j", daoSettings.collectionName);
 			dao = existingDao.daoInstance;
 		}
 		return dao;
@@ -46,6 +48,7 @@ export class DaoFactory {
 	private static daos: Dao[] = [];
 
 	private static createDbAdapter(dataSource: DataSource, daoSettings: DaoSettings) {
+		this._log.debug("creating db adapter for dbEngine %j, collectionName %j", dataSource.dbEngine, daoSettings.collectionName);
 		let dbAdapter: DbAdapter;
 		if (dataSource.dbEngine === DataSourceHandler.MONGOOSE) {
 			dbAdapter = new MongooseAdapter(
@@ -64,31 +67,36 @@ export class DaoFactory {
 	 * @return {Promise<DataSource>}
 	 */
 	private static getDataSource(dbEngine: any, path: string): DataSource {
-		this._log.debug("Call to getDataSource with dbEngine: %j path: %j", dbEngine, path);
+		this._log.debug("getting data source for dbEngine %j, path %j", dbEngine, path);
 		const dataSource: DataSource = DataSourceHandler.getDataSource(dbEngine, path, undefined);
 		// Connect to the database.
 		return dataSource.connect();
 	}
 
 	private static getDao(dbEngine: any, dbPath: string, daoName: string): Dao {
-		this._log.debug("Call to getDao with dbEngine %j, dbPath: %j, daoName %j", dbEngine, dbPath, daoName);
+		this._log.debug("looking up dao for dbEngine %j, dbPath %j, daoName %j", dbEngine, dbPath, daoName);
 		const existingDaos: Dao[] = this.daos.filter(
 			value => value.dbEngine === dbEngine && value.daoName === daoName && value.dbPath === dbPath
 		);
 		let result: Dao;
 		if (existingDaos.length === 1) {
-			this._log.debug("Returning existing dao");
 			result = existingDaos[0];
 		} else if (existingDaos.length === 0) {
-			this._log.debug("There is no dao");
 			result = undefined;
 		} else {
+			this._log.error(
+				"found more than one dao for dbEngine %j, dbPath %j, daoName %j",
+				dbEngine,
+				dbPath,
+				daoName
+			);
 			throw new Error("There is more than one dao with the same features");
 		}
 		return result;
 	}
 
 	private static insertDao(dbEngine: any, dbPath: string, daoName: string, partyDao: any) {
+		this._log.debug("registering dao for dbEngine %j, dbPath %j, daoName %j", dbEngine, dbPath, daoName);
 		const dao: Dao = new Dao();
 		dao.daoInstance = partyDao;
 		dao.daoName = daoName;
