@@ -90,6 +90,8 @@ export class CommService {
 			// retried, with a live callback, and sent under its own subject.
 			concatEmails: false
 		});
+
+		this._log.info("initialized mail service");
 	}
 
 	/**
@@ -99,7 +101,7 @@ export class CommService {
 	 * @return {Promise<any>} A promise indicating the operation is executed successfully.
 	 */
 	public on(eventName: string, callbackToAdd: any) {
-		this._log.debug("Call to register event with event name: %j", eventName);
+		this._log.debug("registering listener for event %j", eventName);
 
 		if (_.isNil(this.listeners[eventName])) {
 			this.listeners[eventName] = [];
@@ -113,6 +115,7 @@ export class CommService {
 	 * @param callBackToRemove The callback to remove as event listener
 	 */
 	public off(eventName: string, callbackToRemove: any) {
+		this._log.debug("removing listener for event %j", eventName);
 		if (this.listeners[eventName]) {
 			this.listeners[eventName] = this.listeners[eventName].filter(callback => {
 				return callback !== callbackToRemove;
@@ -126,6 +129,7 @@ export class CommService {
 	 * @param value
 	 */
 	public fire(eventName: string, value: any) {
+		this._log.trace("firing event %j", eventName);
 		if (this.listeners[eventName]) {
 			this.listeners[eventName].forEach(callback => {
 				callback(value);
@@ -137,7 +141,7 @@ export class CommService {
 	 * @param params
 	 */
 	public sendEmail(params: any) {
-		this._log.debug("Call to sendEmail with params: %j", params);
+		this._log.debug("sending email %j", params);
 
 		// Logged unconditionally, here, before the message is handed to the
 		// queue — this is the only reliable record that a send was attempted.
@@ -219,7 +223,7 @@ export class CommService {
 	 * @return {Promise<DataSource>}
 	 */
 	private getDataSource(dbEngine: any, path: string): DataSource {
-		this._log.debug("Call to getDataSource with dbEngine: %j path: %j", dbEngine, path);
+		this._log.debug("getting data source for dbEngine %j, path %j", dbEngine, path);
 		const dataSource: DataSource = DataSourceHandler.getDataSource(dbEngine, path, undefined);
 		// Connect to the database.
 		return dataSource.connect();
