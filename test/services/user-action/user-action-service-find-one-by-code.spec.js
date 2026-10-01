@@ -102,5 +102,24 @@ describe("Testing UserActionService findOneByCode method (JAM-19)", function() {
 				})
 				.catch(done);
 		});
+
+		// findOneByCode()'s whole contract is to hand the code back to a caller
+		// that round-trips it straight into update() to complete the action --
+		// the code has to survive that round trip, including the
+		// JSON.stringify() a real HTTP response goes through.
+		// AccountInvitationEntity.toJSON() (added for the DAO-layer logging
+		// fix) strips code on every JSON.stringify(), not just log statements,
+		// so a caller serializing this result over the wire silently lost it.
+		it("includes a code that survives JSON.stringify(), for a legitimate caller to round-trip into update()", function(done) {
+			userActionService
+				.findOneByCode("FIND-ME")
+				.then(function(result) {
+					expect(result.code).to.equal("FIND-ME");
+					var serialized = JSON.parse(JSON.stringify(result));
+					expect(serialized.code).to.equal("FIND-ME");
+					done();
+				})
+				.catch(done);
+		});
 	});
 });

@@ -168,7 +168,15 @@ export class UserActionService {
 			.then((account: AccountEntity) => {
 				result.account = this.userService.removeSensitiveData(account);
 				this._log.debug("Returning %j", result);
-				return Promise.resolve(result);
+				// Unlike the DAO-layer logging AccountInvitationEntity.toJSON() guards
+				// against, this method's whole contract is to hand the code back to a
+				// legitimate caller -- the client round-trips it into update() to
+				// complete a password recovery or invitation acceptance. Returning the
+				// entity instance as-is would run it through that same toJSON() (every
+				// JSON.stringify(), including the one serializing the HTTP response)
+				// and silently strip the code the caller actually needs. A plain clone
+				// has no toJSON() to do that, so the code survives.
+				return Promise.resolve(Object.assign({}, result));
 			});
 	}
 
