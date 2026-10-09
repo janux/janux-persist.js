@@ -39,7 +39,7 @@ export class DataSourceHandler {
 			throw new Error(this.DB_PATH_EMPTY);
 		}
 
-		const existing: DataSource[] = this.dataSources.filter(value => value.dbEngine === dbEngine && path === path);
+		const existing: DataSource[] = this.dataSources.filter(value => value.dbEngine === dbEngine && value.path === path);
 		if (existing.length === 0) {
 			this._log.debug("No datasource founded with the parameters %j and %j, creating a new one", dbEngine, path);
 			const dataSource: DataSource = this.generateDataSource(dbEngine, path, extraParams);
