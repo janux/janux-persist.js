@@ -40,7 +40,6 @@
 		"bcryptjs": "3.0.3",
 		"big.js": "5.0.3",
 		"bluebird": "3.5.0",
-		"config": "1.26.1",
 		"email-validator": "1.0.7",
 		"janux-authorize": "1.0.0",
 		"janux-people": "1.0.0",
@@ -56,10 +55,14 @@
 		"randomstring": "1.1.5",
 		"uuid": "3.0.1"
 	},
+	"peerDependencies": {
+		"config": ">=3.3.12"
+	},
 	"devDependencies": {
 		"@types/node": "14.18.36",
 		"chai": "4.0.2",
-		"log4js": "2.3.3",
+		"config": "3.3.12",
+		"log4js": "6.9.1",
 		"mocha": "3.4.2",
 		"nyc": "^15.1.0",
 		"tsc-alias": "1.8.8",

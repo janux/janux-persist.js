@@ -11,8 +11,9 @@ var log4js = require("log4js");
 // var bluebird = require("bluebird");
 
 before(function() {
-	// we need to configure log4js here, because configuring it in the gulp build will
-	// not configure it for the mocha run
-	log4js.configure(config.log4js);
+	// we need to configure log4js here so that it is set up for the mocha run
+	// config 3.x hands out immutable objects, and log4js's file appender sets
+	// options on the object it is given, so pass it a copy
+	log4js.configure(config.util.cloneDeep(config.log4js));
 	// mongoose.Promise = bluebird;
 });

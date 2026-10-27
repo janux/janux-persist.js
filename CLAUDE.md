@@ -13,12 +13,12 @@ email integration.
 - **Language**: TypeScript 4.9.5 → compiled to `dist/` (target ES5)
 - **Build**: `tsc` + `tsc-alias` via npm scripts (Gulp removed)
 - **Test**: Mocha 3.4.2 + Chai 4.0.2
-- **Node**: `>= 12.0.0` (declared in `engines`). Both consumers now run
-  Node 12 — e24 moved off Node 10 (`E24-16`, pinned to `12.22.1` via
-  `.nvmrc`); glarus was already `>= 12.0.0`. Verified: full suite (444
-  passing) builds and runs clean under Node 12.22.11, no code changes
-  needed — mongoose 4.10.5/mongodb 2.2.27 were already fine on 12, only
-  the declared floor and local dev docs were stale at 10.
+- **Node**: `>= 12.0.0` (declared in `engines`, which also covers 24).
+  Both consumers run Node 12 today — e24 moved off Node 10 (`E24-16`,
+  pinned to `12.22.1` via `.nvmrc`); glarus was already `>= 12.0.0`.
+  Verified: the full suite (479 passing) builds and runs clean under both
+  Node 12.22 and Node 24.22 — mongoose 4.10.5/mongodb 2.2.27 were already
+  fine on 12, only the declared floor and local dev docs were stale at 10.
 - **Database**: Mongoose 4.10.5 + LokiJS 1.5.0
 
 ## Key Dependencies
@@ -28,6 +28,31 @@ email integration.
 - nodemailer 4.6.8 + mail-time 0.1.7 (email integration)
 - pug 2.0.3 (email templates)
 - md5 2.2.1, randomstring 1.1.5
+
+## `config` (node-config) is a peerDependency, not a dependency
+
+The consuming app owns `config`: this package declares it under
+`peerDependencies` (`>=3.3.12`) and pins 3.3.12 as a `devDependency` for
+its own tests. It must not go back under `dependencies`: that gives every
+consumer a private nested copy at `node_modules/janux-persist/node_modules/config`,
+which can resolve different values than the app's own copy, and the old
+1.26.1 copy crashes at load on Node 23+ (`Utils.isRegExp is not a function`;
+JAM-136).
+
+The library still calls `require("config")` itself, for three keys the
+consuming app defines: `januxPersist.logCategoryPrefix` (optional, read once
+when `logger-api` loads), `serverAppContext.db.poolSize` (`DataSource`;
+required, `config.get` throws if `serverAppContext` is missing) and
+`serverAppContext.system.environment` (`EnvironmentService`; defaults to
+`"development"`). Having callers pass these in instead is deliberately not
+done in this line; see the library-never-reads-config rule in
+`SOFTWARE_DESIGN.md`.
+
+Two things to know when running the tests: config 3.x hands out immutable
+objects, so `test/root-hooks.spec.js` gives log4js a `config.util.cloneDeep`
+copy of its settings (log4js's file appender writes to the object it is
+given); and the test-time `log4js` is 6.9.1, because 2.3.3 calls
+`util.isError`, which Node 23 removed.
 
 ## `mongodb` must stay pinned to exactly mongoose's own version
 
