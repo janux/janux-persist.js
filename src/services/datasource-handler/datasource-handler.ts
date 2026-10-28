@@ -4,6 +4,7 @@
  */
 import * as logger from "utils/logger-api/logger-api";
 import { isBlankString } from "utils/string/blank-string-validator";
+import { redactConnectionUrl } from "utils/redact/redact-connection-url";
 import { DataSource } from "./datasource";
 import { DataSourceStatus } from "./datasource-status";
 
@@ -29,7 +30,7 @@ export class DataSourceHandler {
 	 * @return {Promise<DataSource>}
 	 */
 	public static getDataSource(dbEngine: string, path: string, extraParams: any): DataSource {
-		this._log.debug("Call to getDataSource with dbEngine %j, path %j, extraParams %j", dbEngine, path, extraParams);
+		this._log.debug("Call to getDataSource with dbEngine %j, path %j, extraParams %j", dbEngine, redactConnectionUrl(path), extraParams);
 		if (isBlankString(dbEngine)) {
 			throw new Error(this.DB_ENGINE_EMPTY);
 		} else if (dbEngine !== this.MONGOOSE && dbEngine !== this.LOKIJS) {
@@ -41,12 +42,12 @@ export class DataSourceHandler {
 
 		const existing: DataSource[] = this.dataSources.filter(value => value.dbEngine === dbEngine && value.path === path);
 		if (existing.length === 0) {
-			this._log.debug("No datasource founded with the parameters %j and %j, creating a new one", dbEngine, path);
+			this._log.debug("No datasource founded with the parameters %j and %j, creating a new one", dbEngine, redactConnectionUrl(path));
 			const dataSource: DataSource = this.generateDataSource(dbEngine, path, extraParams);
 			this.dataSources.push(dataSource);
 			return dataSource;
 		} else {
-			this._log.debug("There is a datasource with the params %j and %j", dbEngine, path);
+			this._log.debug("There is a datasource with the params %j and %j", dbEngine, redactConnectionUrl(path));
 			return existing[0];
 		}
 	}

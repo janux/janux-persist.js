@@ -228,3 +228,13 @@ can likely come off too.
   can override the prefix by defining `januxPersist.logCategoryPrefix` in
   its own config (e.g. `""` to turn it off); this package's own
   `config/default.js` is never read in that context, only the host app's.
+- **Never log a data source path as it is.** A MongoDB path is a connection
+  string, credentials included. Every log statement that mentions one
+  (`DataSource`, `DataSourceHandler`, `DaoFactory`, `CommService`) passes it
+  through `redactConnectionUrl()` (`src/utils/redact/redact-connection-url.ts`),
+  which drops the `user:password@` segment and leaves LokiJS file paths alone
+  (JAM-152). `test/services/datasource-handler/no-credentials-in-logs.spec.js`
+  exercises each of those code paths with a credentialed URL and fails if any
+  captured line, at any level, carries the password. Add a case there when a
+  new statement touches a path. It does not cover an application logging its
+  own configuration; that is the app's to redact.

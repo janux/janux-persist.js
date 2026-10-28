@@ -10,6 +10,7 @@ import * as nodemailer from "nodemailer";
 import { DataSource } from "services/datasource-handler/datasource";
 import { DataSourceHandler } from "services/datasource-handler/datasource-handler";
 import * as logger from "utils/logger-api/logger-api";
+import { redactConnectionUrl } from "utils/redact/redact-connection-url";
 
 export class CommService {
 	public static createInstance(commDataSource: any, smtp: any) {
@@ -223,7 +224,7 @@ export class CommService {
 	 * @return {Promise<DataSource>}
 	 */
 	private getDataSource(dbEngine: any, path: string): DataSource {
-		this._log.debug("getting data source for dbEngine %j, path %j", dbEngine, path);
+		this._log.debug("getting data source for dbEngine %j, path %j", dbEngine, redactConnectionUrl(path));
 		const dataSource: DataSource = DataSourceHandler.getDataSource(dbEngine, path, undefined);
 		// Connect to the database.
 		return dataSource.connect();

@@ -10,6 +10,7 @@ import { DaoSettings } from "services/dao-factory/dao-settings";
 import { DataSource } from "services/datasource-handler/datasource";
 import { DataSourceHandler } from "services/datasource-handler/datasource-handler";
 import * as logger from "utils/logger-api/logger-api";
+import { redactConnectionUrl } from "utils/redact/redact-connection-url";
 import { Dao } from "./dao";
 
 /**
@@ -24,7 +25,7 @@ export class DaoFactory {
 		this._log.debug(
 			"subscribing dao for dbEngine %j, dbPath %j, collectionName %j, entityProperties %j",
 			daoSettings.dbEngine,
-			daoSettings.dbPath,
+			redactConnectionUrl(daoSettings.dbPath),
 			daoSettings.collectionName,
 			daoSettings.entityProperties
 		);
@@ -67,14 +68,14 @@ export class DaoFactory {
 	 * @return {Promise<DataSource>}
 	 */
 	private static getDataSource(dbEngine: any, path: string): DataSource {
-		this._log.debug("getting data source for dbEngine %j, path %j", dbEngine, path);
+		this._log.debug("getting data source for dbEngine %j, path %j", dbEngine, redactConnectionUrl(path));
 		const dataSource: DataSource = DataSourceHandler.getDataSource(dbEngine, path, undefined);
 		// Connect to the database.
 		return dataSource.connect();
 	}
 
 	private static getDao(dbEngine: any, dbPath: string, daoName: string): Dao {
-		this._log.debug("looking up dao for dbEngine %j, dbPath %j, daoName %j", dbEngine, dbPath, daoName);
+		this._log.debug("looking up dao for dbEngine %j, dbPath %j, daoName %j", dbEngine, redactConnectionUrl(dbPath), daoName);
 		const existingDaos: Dao[] = this.daos.filter(
 			value => value.dbEngine === dbEngine && value.daoName === daoName && value.dbPath === dbPath
 		);
@@ -87,7 +88,7 @@ export class DaoFactory {
 			this._log.error(
 				"found more than one dao for dbEngine %j, dbPath %j, daoName %j",
 				dbEngine,
-				dbPath,
+				redactConnectionUrl(dbPath),
 				daoName
 			);
 			throw new Error("There is more than one dao with the same features");
@@ -96,7 +97,7 @@ export class DaoFactory {
 	}
 
 	private static insertDao(dbEngine: any, dbPath: string, daoName: string, partyDao: any) {
-		this._log.debug("registering dao for dbEngine %j, dbPath %j, daoName %j", dbEngine, dbPath, daoName);
+		this._log.debug("registering dao for dbEngine %j, dbPath %j, daoName %j", dbEngine, redactConnectionUrl(dbPath), daoName);
 		const dao: Dao = new Dao();
 		dao.daoInstance = partyDao;
 		dao.daoName = daoName;

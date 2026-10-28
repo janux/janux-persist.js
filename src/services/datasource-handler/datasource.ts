@@ -8,6 +8,7 @@ import * as _ from "lodash";
 import * as lokijs from "lokijs";
 import * as mongoose from "mongoose";
 import * as logger from "utils/logger-api/logger-api";
+import { redactConnectionUrl } from "utils/redact/redact-connection-url";
 import {DataSourceHandler} from "./datasource-handler";
 import {DataSourceStatus} from "./datasource-status";
 
@@ -29,7 +30,7 @@ export class DataSource {
 		this.log.debug(
 			"Call to connect with dbEngine: %j path:%j extraParams %j",
 			this.dbEngine,
-			this.path,
+			redactConnectionUrl(this.path),
 			this.extraParams
 		);
 		if (this.status === DataSourceStatus.CONNECTED) {
@@ -47,7 +48,7 @@ export class DataSource {
 	}
 
 	private connectToMongodb(): DataSource {
-		this.log.debug("Call to connectToMongodb with url", this.path);
+		this.log.debug("Call to connectToMongodb with url", redactConnectionUrl(this.path));
 		let conn: mongoose.Connection;
 		if (_.isNil(this.dbConnection)) {
 			// For the moment we are going to use poolSize from config.
@@ -64,20 +65,23 @@ export class DataSource {
 				});
 			this.dbConnection = conn;
 			conn.on("error", err => {
-				this.log.error("Error connecting to mongodb %j: %j", this.path, { message: err.message, stack: err.stack });
+				this.log.error("Error connecting to mongodb %j: %j", redactConnectionUrl(this.path), {
+					message: redactConnectionUrl(err.message),
+					stack: redactConnectionUrl(err.stack)
+				});
 				this.dbConnection = null;
 				throw new Error("Error connecting to mongodb database");
 			});
 			conn.once("open", () => {
 				this.status = DataSourceStatus.CONNECTED;
-				this.log.info("Connected to mongodb: %j", { dbEngine: this.dbEngine, path: this.path, poolSize });
+				this.log.info("Connected to mongodb: %j", { dbEngine: this.dbEngine, path: redactConnectionUrl(this.path), poolSize });
 			});
 		}
 		return this;
 	}
 
 	private connectToLokiJs(): DataSource {
-		this.log.debug("Call to connectToLokiJs", this.path);
+		this.log.debug("Call to connectToLokiJs", redactConnectionUrl(this.path));
 		this.dbConnection = new lokijs(this.path, {
 			throttledSaves: false,
 			autoload: true
