@@ -3,9 +3,8 @@
  */
 var chai = require("chai");
 var expect = chai.expect;
-var util = require("util");
 var EventEmitter = require("events").EventEmitter;
-var log4js = require("log4js");
+var capture = require("../../util/log-capture");
 var mongoose = require("mongoose");
 var index = require("../../../dist/index");
 var DataSourceHandler = index.DataSourceHandler;
@@ -24,13 +23,8 @@ var loggerApi = require("../../../dist/utils/logger-api/logger-api");
 //
 describe("Testing that no log statement prints data source credentials (JAM-152)", function() {
 	var PASSWORD = "s3cretPassw0rd";
-	var LEVELS = ["trace", "debug", "info", "warn", "error", "fatal", "mark"];
 	var suffix = Date.now();
-
-	var loggerPrototype = Object.getPrototypeOf(log4js.getLogger("no-credentials-in-logs"));
-	var originals = {};
 	var originalCreateConnection;
-	var captured;
 	var connections;
 
 	function urlFor(name) {
@@ -43,22 +37,7 @@ describe("Testing that no log statement prints data source credentials (JAM-152)
 	}
 
 	before(function() {
-		LEVELS.forEach(function(level) {
-			originals[level] = loggerPrototype[level];
-			loggerPrototype[level] = function() {
-				var args = Array.prototype.slice.call(arguments);
-				var rendered = [util.format.apply(null, args)];
-				args.forEach(function(arg) {
-					try {
-						rendered.push(typeof arg === "string" ? arg : JSON.stringify(arg));
-					} catch (e) {
-						rendered.push(String(arg));
-					}
-				});
-				captured.push({ level: level, category: this.category, text: rendered.join(" | ") });
-				return originals[level].apply(this, arguments);
-			};
-		});
+		capture.install();
 		originalCreateConnection = mongoose.createConnection;
 		mongoose.createConnection = function(url) {
 			var connection = new EventEmitter();
@@ -72,26 +51,22 @@ describe("Testing that no log statement prints data source credentials (JAM-152)
 	});
 
 	after(function() {
-		LEVELS.forEach(function(level) {
-			loggerPrototype[level] = originals[level];
-		});
+		capture.uninstall();
 		mongoose.createConnection = originalCreateConnection;
 	});
 
 	beforeEach(function() {
-		captured = [];
+		capture.reset();
 		connections = [];
 	});
 
 	function expectNoCredentials() {
-		var leaks = captured.filter(function(entry) {
-			return entry.text.indexOf(PASSWORD) !== -1 || entry.text.indexOf("scanuser") !== -1;
-		});
+		var leaks = capture.leaks([PASSWORD, "scanuser"]);
 		expect(leaks, "log lines carrying credentials: " + JSON.stringify(leaks)).to.be.empty;
 	}
 
 	function logged(category, level) {
-		return captured.filter(function(entry) {
+		return capture.entries().filter(function(entry) {
 			return entry.category.indexOf(category) !== -1 && entry.level === level;
 		});
 	}
@@ -128,7 +103,7 @@ describe("Testing that no log statement prints data source credentials (JAM-152)
 	it("connecting to a LokiJS file keeps logging the path", function() {
 		var path = "no-credentials-in-logs-" + suffix + ".db";
 		DataSourceHandler.getDataSource(DataSourceHandler.LOKIJS, path).connect();
-		expect(captured.some(function(entry) {
+		expect(capture.entries().some(function(entry) {
 			return entry.text.indexOf(path) !== -1;
 		})).eq(true);
 	});

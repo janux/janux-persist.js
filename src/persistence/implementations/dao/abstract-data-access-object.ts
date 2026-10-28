@@ -9,6 +9,7 @@ import { CrudRepository } from "persistence/api/dao/crud-repository";
 import { TimeStampGenerator } from "persistence/generators/TimeStampGenerator";
 import { UuidGenerator } from "persistence/generators/UuidGenerator";
 import * as logger from "utils/logger-api/logger-api";
+import { loggableFilters, loggableQuery, loggableValue, loggableValues } from "utils/redact/redact-log-values";
 import { isBlankString } from "utils/string/blank-string-validator";
 import { AttributeFilter } from "./attribute-filter";
 import { EntityPropertiesImpl } from "./entity-properties";
@@ -76,6 +77,15 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	// AbstractDataAccessObject is always instantiated through a concrete subclass, never
 	// directly, so this never resolves to "AbstractDataAccessObject" itself.
 	private readonly _log = logger.getLogger(this.constructor.name);
+
+	/**
+	 * The names of the attributes whose values must never reach a log line, such as a password or a
+	 * bearer token (JAM-80). A DAO whose entity has one overrides this; the queries and attribute
+	 * filters the DAO and its db adapter log then carry a marker in place of the value.
+	 */
+	protected sensitiveAttributes(): string[] {
+		return [];
+	}
 
 	constructor(entityProperties: EntityPropertiesImpl) {
 		this.entityProperties = entityProperties;
@@ -422,17 +432,17 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	 * one document that matches the criteria.
 	 */
 	public findOneByAttribute(attributeName: string, value): Promise<t> {
-		this._log.trace("finding one by attribute %j = %j", attributeName, value);
+		this._log.trace("finding one by attribute %j = %j", attributeName, loggableValue(attributeName, value, this.sensitiveAttributes()));
 		return this.findOneByAttributeMethod(attributeName, value)
 			.then((resultQuery: any) => {
 				const result = _.isNil(resultQuery)
 					? resultQuery
 					: this.addExtraValues(this.convertAfterDbOperation(resultQuery), resultQuery);
-				this._log.trace("found one by attribute %j = %j -> %j", attributeName, value, result);
+				this._log.trace("found one by attribute %j = %j -> %j", attributeName, loggableValue(attributeName, value, this.sensitiveAttributes()), result);
 				return Promise.resolve(result);
 			})
 			.catch((err: any) => {
-				this._log.error("failed to find one by attribute %j = %j: %j", attributeName, value, {
+				this._log.error("failed to find one by attribute %j = %j: %j", attributeName, loggableValue(attributeName, value, this.sensitiveAttributes()), {
 					message: err && err.message,
 					stack: err && err.stack
 				});
@@ -448,15 +458,15 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	 * returns an empty array.
 	 */
 	public findByAttribute(attributeName: string, value): Promise<t[]> {
-		this._log.trace("finding by attribute %j = %j", attributeName, value);
+		this._log.trace("finding by attribute %j = %j", attributeName, loggableValue(attributeName, value, this.sensitiveAttributes()));
 		return this.findByAttributeMethod(attributeName, value)
 			.then((resultQuery: any[]) => {
 				const result = resultQuery.map(v => this.addExtraValues(this.convertAfterDbOperation(v), v));
-				this._log.trace("found by attribute %j = %j -> %j records", attributeName, value, result.length);
+				this._log.trace("found by attribute %j = %j -> %j records", attributeName, loggableValue(attributeName, value, this.sensitiveAttributes()), result.length);
 				return Promise.resolve(result);
 			})
 			.catch((err: any) => {
-				this._log.error("failed to find by attribute %j = %j: %j", attributeName, value, {
+				this._log.error("failed to find by attribute %j = %j: %j", attributeName, loggableValue(attributeName, value, this.sensitiveAttributes()), {
 					message: err && err.message,
 					stack: err && err.stack
 				});
@@ -474,15 +484,15 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 		if (values.length === 0) {
 			return Promise.resolve([]);
 		}
-		this._log.trace("finding by attribute %j in %j", attributeName, values);
+		this._log.trace("finding by attribute %j in %j", attributeName, loggableValues(attributeName, values, this.sensitiveAttributes()));
 		return this.findByAttributeNameInMethod(attributeName, values)
 			.then((resultQuery: any[]) => {
 				const result = resultQuery.map(value => this.addExtraValues(this.convertAfterDbOperation(value), value));
-				this._log.trace("found by attribute %j in %j -> %j records", attributeName, values, result.length);
+				this._log.trace("found by attribute %j in %j -> %j records", attributeName, loggableValues(attributeName, values, this.sensitiveAttributes()), result.length);
 				return Promise.resolve(result);
 			})
 			.catch((err: any) => {
-				this._log.error("failed to find by attribute %j in %j: %j", attributeName, values, {
+				this._log.error("failed to find by attribute %j in %j: %j", attributeName, loggableValues(attributeName, values, this.sensitiveAttributes()), {
 					message: err && err.message,
 					stack: err && err.stack
 				});
@@ -496,15 +506,15 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	 * @return {Promise<any[]>} The objects that matches the criteria.
 	 */
 	public findByAttributesAndOperator(attributes: AttributeFilter[]): Promise<t[]> {
-		this._log.trace("finding by attributes (AND) %j", attributes);
+		this._log.trace("finding by attributes (AND) %j", loggableFilters(attributes, this.sensitiveAttributes()));
 		return this.findByAttributesAndOperatorMethod(attributes)
 			.then((resultQuery: any[]) => {
 				const result = resultQuery.map(value => this.addExtraValues(this.convertAfterDbOperation(value), value));
-				this._log.trace("found by attributes (AND) %j -> %j records", attributes, result.length);
+				this._log.trace("found by attributes (AND) %j -> %j records", loggableFilters(attributes, this.sensitiveAttributes()), result.length);
 				return Promise.resolve(result);
 			})
 			.catch((err: any) => {
-				this._log.error("failed to find by attributes (AND) %j: %j", attributes, {
+				this._log.error("failed to find by attributes (AND) %j: %j", loggableFilters(attributes, this.sensitiveAttributes()), {
 					message: err && err.message,
 					stack: err && err.stack
 				});
@@ -517,15 +527,15 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	 * @param attributes The attributes-value filters.
 	 */
 	public findByAttributesOrOperator(attributes: AttributeFilter[]): Promise<t[]> {
-		this._log.trace("finding by attributes (OR) %j", attributes);
+		this._log.trace("finding by attributes (OR) %j", loggableFilters(attributes, this.sensitiveAttributes()));
 		return this.findByAttributesOrOperatorMethod(attributes)
 			.then((resultQuery: any[]) => {
 				const result = resultQuery.map(value => this.addExtraValues(this.convertAfterDbOperation(value), value));
-				this._log.trace("found by attributes (OR) %j -> %j records", attributes, result.length);
+				this._log.trace("found by attributes (OR) %j -> %j records", loggableFilters(attributes, this.sensitiveAttributes()), result.length);
 				return Promise.resolve(result);
 			})
 			.catch((err: any) => {
-				this._log.error("failed to find by attributes (OR) %j: %j", attributes, {
+				this._log.error("failed to find by attributes (OR) %j: %j", loggableFilters(attributes, this.sensitiveAttributes()), {
 					message: err && err.message,
 					stack: err && err.stack
 				});
@@ -540,15 +550,15 @@ export abstract class AbstractDataAccessObject<t, ID> implements CrudRepository<
 	 * returns an empty array.
 	 */
 	public findByQuery(query: any): Promise<t[]> {
-		this._log.trace("finding by query %j", query);
+		this._log.trace("finding by query %j", loggableQuery(query, this.sensitiveAttributes()));
 		return this.findByQueryMethod(query)
 			.then((resultQuery: any[]) => {
 				const result = resultQuery.map(value => this.addExtraValues(this.convertAfterDbOperation(value), value));
-				this._log.trace("found by query %j -> %j records", query, result.length);
+				this._log.trace("found by query %j -> %j records", loggableQuery(query, this.sensitiveAttributes()), result.length);
 				return Promise.resolve(result);
 			})
 			.catch((err: any) => {
-				this._log.error("failed to find by query %j: %j", query, { message: err && err.message, stack: err && err.stack });
+				this._log.error("failed to find by query %j: %j", loggableQuery(query, this.sensitiveAttributes()), { message: err && err.message, stack: err && err.stack });
 				throw err;
 			});
 	}

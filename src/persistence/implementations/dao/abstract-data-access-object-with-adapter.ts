@@ -33,6 +33,9 @@ export abstract class AbstractDataAccessObjectWithAdapter<t, ID> extends Abstrac
 		super(entityProperties);
 
 		this.adapterProperties = dbAdapter.adapterProperties;
+		// The adapter's methods run with this DAO as `this`, so this is how they learn which
+		// attribute values to keep out of the log (JAM-80).
+		this.adapterProperties.sensitiveAttributes = this.sensitiveAttributes();
 
 		// Injecting the db adapter methods to the dao instance.
 		for (const property in dbAdapter) {

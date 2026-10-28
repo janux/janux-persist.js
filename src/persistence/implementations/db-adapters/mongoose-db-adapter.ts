@@ -7,6 +7,7 @@ import Promise = require("bluebird");
 import { Model } from "mongoose";
 import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
 import * as logger from "utils/logger-api/logger-api";
+import { loggableFilters, loggableQuery, loggableValue, loggableValues } from "utils/redact/redact-log-values";
 import { AttributeFilter } from "../dao/attribute-filter";
 
 /**
@@ -127,18 +128,18 @@ export class MongooseAdapter implements DbAdapter {
 	 * @param query
 	 */
 	countByQuery(query: any): Promise<number> {
-		this._log.debug("Call to countByQuery with model: %j, query: %j", this.adapterProperties.model.modelName, query);
+		this._log.debug("Call to countByQuery with model: %j, query: %j", this.adapterProperties.model.modelName, loggableQuery(query, this.adapterProperties.sensitiveAttributes));
 		return new Promise<number>((resolve, reject) => {
 			this.adapterProperties.model.count(query, (err, count) => {
 				if (err) {
-					this._log.error("failed to countByQuery %j on model %j: %j", query, this.adapterProperties.model.modelName, {
+					this._log.error("failed to countByQuery %j on model %j: %j", loggableQuery(query, this.adapterProperties.sensitiveAttributes), this.adapterProperties.model.modelName, {
 						message: err && err.message,
 						stack: err && err.stack
 					});
 					reject(err);
 					return;
 				}
-				this._log.debug("countByQuery %j on model %j -> %j", query, this.adapterProperties.model.modelName, count);
+				this._log.debug("countByQuery %j on model %j -> %j", loggableQuery(query, this.adapterProperties.sensitiveAttributes), this.adapterProperties.model.modelName, count);
 				resolve(count);
 			});
 		});
@@ -205,7 +206,7 @@ export class MongooseAdapter implements DbAdapter {
 			"Call to findOneByAttributeMethod with model: %j, attributeName: %j , value: %j",
 			this.adapterProperties.model.modelName,
 			attributeName,
-			value
+			loggableValue(attributeName, value, this.adapterProperties.sensitiveAttributes)
 		);
 		return new Promise((resolve, reject) => {
 			const query = {};
@@ -218,7 +219,7 @@ export class MongooseAdapter implements DbAdapter {
 						this._log.error(
 							"failed to findOneByAttributeMethod %j = %j on model %j: %j",
 							attributeName,
-							value,
+							loggableValue(attributeName, value, this.adapterProperties.sensitiveAttributes),
 							this.adapterProperties.model.modelName,
 							{ message: err && err.message, stack: err && err.stack }
 						);
@@ -234,7 +235,7 @@ export class MongooseAdapter implements DbAdapter {
 						this._log.warn(
 							"findOneByAttributeMethod %j = %j on model %j returned more than one result",
 							attributeName,
-							value,
+							loggableValue(attributeName, value, this.adapterProperties.sensitiveAttributes),
 							this.adapterProperties.model.modelName
 						);
 						reject("The system returned more than one record.");
@@ -255,7 +256,7 @@ export class MongooseAdapter implements DbAdapter {
 			"Call to findByAttributeMethod with model: %j, attributeName: %j , value: %j",
 			this.adapterProperties.model.modelName,
 			attributeName,
-			value
+			loggableValue(attributeName, value, this.adapterProperties.sensitiveAttributes)
 		);
 		const query = {};
 		query[attributeName] = value;
@@ -273,7 +274,7 @@ export class MongooseAdapter implements DbAdapter {
 			"Call to findByAttributeNameInMethod model: %j, attributeName: %j values: ",
 			this.adapterProperties.model.modelName,
 			attributeName,
-			values
+			loggableValues(attributeName, values, this.adapterProperties.sensitiveAttributes)
 		);
 		const query = {};
 		query[attributeName] = { $in: values };
@@ -437,7 +438,7 @@ export class MongooseAdapter implements DbAdapter {
 	 * @return {Promise<any>} The objects that matches the criteria.
 	 */
 	public findByAttributesAndOperatorMethod(attributes: AttributeFilter[]): Promise<any[]> {
-		this._log.debug("Call to findByAttributesAndOperatorMethod with attributes: %j", attributes);
+		this._log.debug("Call to findByAttributesAndOperatorMethod with attributes: %j", loggableFilters(attributes, this.adapterProperties.sensitiveAttributes));
 		const query = {
 			$and: []
 		};
@@ -455,7 +456,7 @@ export class MongooseAdapter implements DbAdapter {
 	 * @return {Promise<any>} The objects that matches the criteria.
 	 */
 	public findByAttributesOrOperatorMethod(attributes: AttributeFilter[]): Promise<any[]> {
-		this._log.debug("Call to findByAttributesOrOperatorMethod with attributes: %j", attributes);
+		this._log.debug("Call to findByAttributesOrOperatorMethod with attributes: %j", loggableFilters(attributes, this.adapterProperties.sensitiveAttributes));
 		const query = {
 			$or: []
 		};
@@ -477,7 +478,7 @@ export class MongooseAdapter implements DbAdapter {
 		this._log.debug(
 			"call to findByQueryMethod with model: %j, query: %j",
 			this.adapterProperties.model.modelName,
-			query
+			loggableQuery(query, this.adapterProperties.sensitiveAttributes)
 		);
 		return new Promise<any>((resolve, reject) => {
 			this.adapterProperties.model
@@ -485,14 +486,14 @@ export class MongooseAdapter implements DbAdapter {
 				.lean()
 				.exec((err, result: any[]) => {
 					if (err) {
-						this._log.error("failed to findByQueryMethod %j on model %j: %j", query, this.adapterProperties.model.modelName, {
+						this._log.error("failed to findByQueryMethod %j on model %j: %j", loggableQuery(query, this.adapterProperties.sensitiveAttributes), this.adapterProperties.model.modelName, {
 							message: err && err.message,
 							stack: err && err.stack
 						});
 						reject(err);
 						return;
 					}
-					this._log.debug("findByQueryMethod %j on model %j -> %j records", query, this.adapterProperties.model.modelName, result.length);
+					this._log.debug("findByQueryMethod %j on model %j -> %j records", loggableQuery(query, this.adapterProperties.sensitiveAttributes), this.adapterProperties.model.modelName, result.length);
 					resolve(result);
 				});
 		});

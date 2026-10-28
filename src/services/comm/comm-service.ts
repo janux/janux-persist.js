@@ -142,7 +142,15 @@ export class CommService {
 	 * @param params
 	 */
 	public sendEmail(params: any) {
-		this._log.debug("sending email %j", params);
+		// Not the whole message: the body of a password-recovery or invitation email carries the
+		// single-use code in its link (JAM-80).
+		this._log.debug(
+			"sending email to %j subject %j, text %j characters, html %j characters",
+			params.to,
+			params.subject,
+			params.text ? String(params.text).length : 0,
+			params.html ? String(params.html).length : 0
+		);
 
 		// Logged unconditionally, here, before the message is handed to the
 		// queue — this is the only reliable record that a send was attempted.

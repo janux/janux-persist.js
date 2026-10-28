@@ -23,6 +23,14 @@ export abstract class AccountInvitationDao extends AbstractDataAccessObjectWithA
 	}
 
 	/**
+	 * The code is a single-use bearer token for creating an account or taking one over, so no
+	 * query that carries it may be logged (JAM-80).
+	 */
+	protected sensitiveAttributes(): string[] {
+		return ["code"];
+	}
+
+	/**
 	 * Find one invitation with the code provided.
 	 * @param code the code to look for.
 	 * @return {Promise<AccountInvitationEntity>} The invitation, if no record is founded then it return a null.

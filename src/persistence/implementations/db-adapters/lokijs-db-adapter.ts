@@ -7,6 +7,7 @@ import * as _ from "lodash";
 import { DbAdapter } from "persistence/api/db-adapters/db-adapter";
 import { AttributeFilter } from "persistence/implementations/dao/attribute-filter";
 import * as logger from "utils/logger-api/logger-api";
+import { loggableFilters, loggableQuery, loggableValue, loggableValues } from "utils/redact/redact-log-values";
 
 /**
  * Generic implementation of lokijs db functions
@@ -120,13 +121,13 @@ export class LokiJsAdapter implements DbAdapter {
 	 */
 	countByQuery(query: any): Promise<number> {
 		const collectionName = this.adapterProperties.findCollection().name;
-		this._log.debug("Call to countByQuery with collection: %j and query %j", collectionName, query);
+		this._log.debug("Call to countByQuery with collection: %j and query %j", collectionName, loggableQuery(query, this.adapterProperties.sensitiveAttributes));
 		try {
 			const result = this.adapterProperties.findCollection().count(query);
-			this._log.debug("countByQuery %j on collection %j -> %j", query, collectionName, result);
+			this._log.debug("countByQuery %j on collection %j -> %j", loggableQuery(query, this.adapterProperties.sensitiveAttributes), collectionName, result);
 			return Promise.resolve(result);
 		} catch (err) {
-			this._log.error("failed to countByQuery %j on collection %j: %j", query, collectionName, {
+			this._log.error("failed to countByQuery %j on collection %j: %j", loggableQuery(query, this.adapterProperties.sensitiveAttributes), collectionName, {
 				message: err && err.message,
 				stack: err && err.stack
 			});
@@ -197,7 +198,7 @@ export class LokiJsAdapter implements DbAdapter {
 			"Call to findOneByAttributeMethod with collection: %j, attributeName: %j, value: %j",
 			collectionName,
 			attributeName,
-			value
+			loggableValue(attributeName, value, this.adapterProperties.sensitiveAttributes)
 		);
 		try {
 			const query = {};
@@ -205,23 +206,23 @@ export class LokiJsAdapter implements DbAdapter {
 			query[attributeName] = { $eq: value };
 			const resultQuery = this.adapterProperties.findCollection().find(query);
 			if (resultQuery.length === 0) {
-				this._log.debug("findOneByAttributeMethod %j = %j on collection %j -> null", attributeName, value, collectionName);
+				this._log.debug("findOneByAttributeMethod %j = %j on collection %j -> null", attributeName, loggableValue(attributeName, value, this.adapterProperties.sensitiveAttributes), collectionName);
 				return Promise.resolve(null);
 			} else if (resultQuery.length === 1) {
 				result = _.clone(resultQuery[0]);
-				this._log.debug("findOneByAttributeMethod %j = %j on collection %j -> %j", attributeName, value, collectionName, result);
+				this._log.debug("findOneByAttributeMethod %j = %j on collection %j -> %j", attributeName, loggableValue(attributeName, value, this.adapterProperties.sensitiveAttributes), collectionName, result);
 				return Promise.resolve(result);
 			} else {
 				this._log.warn(
 					"findOneByAttributeMethod %j = %j on collection %j returned more than one result",
 					attributeName,
-					value,
+					loggableValue(attributeName, value, this.adapterProperties.sensitiveAttributes),
 					collectionName
 				);
 				return Promise.reject("The system returned more than one record");
 			}
 		} catch (err) {
-			this._log.error("failed to findOneByAttributeMethod %j = %j on collection %j: %j", attributeName, value, collectionName, {
+			this._log.error("failed to findOneByAttributeMethod %j = %j on collection %j: %j", attributeName, loggableValue(attributeName, value, this.adapterProperties.sensitiveAttributes), collectionName, {
 				message: err && err.message,
 				stack: err && err.stack
 			});
@@ -239,16 +240,16 @@ export class LokiJsAdapter implements DbAdapter {
 	 */
 	public findByAttributeMethod(attributeName: string, value): Promise<any[]> {
 		const collectionName = this.adapterProperties.findCollection().name;
-		this._log.debug("Call to findByAttributeMethod with attributeName: %j, value: %j, collection %j", attributeName, value, collectionName);
+		this._log.debug("Call to findByAttributeMethod with attributeName: %j, value: %j, collection %j", attributeName, loggableValue(attributeName, value, this.adapterProperties.sensitiveAttributes), collectionName);
 		try {
 			const query = {};
 			query[attributeName] = value;
 			let result = this.adapterProperties.findCollection().find(query);
 			result = _.clone(result);
-			this._log.debug("findByAttributeMethod %j = %j on collection %j -> %j records", attributeName, value, collectionName, result.length);
+			this._log.debug("findByAttributeMethod %j = %j on collection %j -> %j records", attributeName, loggableValue(attributeName, value, this.adapterProperties.sensitiveAttributes), collectionName, result.length);
 			return Promise.resolve(result);
 		} catch (err) {
-			this._log.error("failed to findByAttributeMethod %j = %j on collection %j: %j", attributeName, value, collectionName, {
+			this._log.error("failed to findByAttributeMethod %j = %j on collection %j: %j", attributeName, loggableValue(attributeName, value, this.adapterProperties.sensitiveAttributes), collectionName, {
 				message: err && err.message,
 				stack: err && err.stack
 			});
@@ -269,7 +270,7 @@ export class LokiJsAdapter implements DbAdapter {
 			"Call to findByAttributeNameInMethod with collection: %j, attributeName: %j, values: %j",
 			collectionName,
 			attributeName,
-			values
+			loggableValues(attributeName, values, this.adapterProperties.sensitiveAttributes)
 		);
 		try {
 			const query = {};
@@ -280,13 +281,13 @@ export class LokiJsAdapter implements DbAdapter {
 			this._log.debug(
 				"findByAttributeNameInMethod %j in %j on collection %j -> %j records",
 				attributeName,
-				values,
+				loggableValues(attributeName, values, this.adapterProperties.sensitiveAttributes),
 				collectionName,
 				result.length
 			);
 			return Promise.resolve(result);
 		} catch (err) {
-			this._log.error("failed to findByAttributeNameInMethod %j in %j on collection %j: %j", attributeName, values, collectionName, {
+			this._log.error("failed to findByAttributeNameInMethod %j in %j on collection %j: %j", attributeName, loggableValues(attributeName, values, this.adapterProperties.sensitiveAttributes), collectionName, {
 				message: err && err.message,
 				stack: err && err.stack
 			});
@@ -427,7 +428,7 @@ export class LokiJsAdapter implements DbAdapter {
 	 * @return {Promise<any>}
 	 */
 	findByAttributesAndOperatorMethod(attributes: AttributeFilter[]): Promise<any[]> {
-		this._log.debug("Call to findByAttributesAndOperatorMethod with attributes: %j", attributes);
+		this._log.debug("Call to findByAttributesAndOperatorMethod with attributes: %j", loggableFilters(attributes, this.adapterProperties.sensitiveAttributes));
 		const query = {
 			$and: []
 		};
@@ -445,7 +446,7 @@ export class LokiJsAdapter implements DbAdapter {
 	 * @return {Promise<any>}
 	 */
 	public findByAttributesOrOperatorMethod(attributes: AttributeFilter[]): Promise<any[]> {
-		this._log.debug("Call to findByAttributesOrOperatorMethod with attributes: %j", attributes);
+		this._log.debug("Call to findByAttributesOrOperatorMethod with attributes: %j", loggableFilters(attributes, this.adapterProperties.sensitiveAttributes));
 		const query = {
 			$or: []
 		};
@@ -465,14 +466,14 @@ export class LokiJsAdapter implements DbAdapter {
 	 */
 	public findByQueryMethod(query: any): Promise<any[]> {
 		const collectionName = this.adapterProperties.findCollection().name;
-		this._log.debug("Call to findByQueryMethod with collection: %j, query: %j", collectionName, query);
+		this._log.debug("Call to findByQueryMethod with collection: %j, query: %j", collectionName, loggableQuery(query, this.adapterProperties.sensitiveAttributes));
 		try {
 			let result = this.adapterProperties.findCollection().find(query);
 			result = _.clone(result);
-			this._log.debug("findByQueryMethod %j on collection %j -> %j records", query, collectionName, result.length);
+			this._log.debug("findByQueryMethod %j on collection %j -> %j records", loggableQuery(query, this.adapterProperties.sensitiveAttributes), collectionName, result.length);
 			return Promise.resolve(result);
 		} catch (err) {
-			this._log.error("failed to findByQueryMethod %j on collection %j: %j", query, collectionName, {
+			this._log.error("failed to findByQueryMethod %j on collection %j: %j", loggableQuery(query, this.adapterProperties.sensitiveAttributes), collectionName, {
 				message: err && err.message,
 				stack: err && err.stack
 			});

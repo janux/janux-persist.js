@@ -238,6 +238,24 @@ can likely come off too.
   captured line, at any level, carries the password. Add a case there when a
   new statement touches a path. It does not cover an application logging its
   own configuration; that is the app's to redact.
+- **Never log a secret value, and say which attributes are secret.** A DAO
+  whose entity carries one (an account's `password`, an invitation's `code`,
+  the single-use bearer token) overrides `sensitiveAttributes()`
+  (`AccountDao`, `AccountInvitationDao`); every statement in
+  `AbstractDataAccessObject` and the two db adapters that logs a query, an
+  attribute filter or an attribute value goes through
+  `src/utils/redact/redact-log-values.ts`, so the value becomes `[redacted]`
+  while the rest of the query stays readable. The entities themselves
+  (`AccountEntity`, `AccountInvitationEntity`) redact in `toJSON()`, and
+  services log `_.omit(object, "password")` or `"code"` rather than the raw
+  request. `CommService` logs only the recipient, subject and body sizes of a
+  message, never the body, because a recovery or invitation email carries the
+  code in its link (JAM-80).
+  `test/services/user-action/no-secrets-in-logs.spec.js` runs the user,
+  invitation, recovery and mail flows with every log line captured
+  (`test/util/log-capture.js`, below the level check, so DEBUG and TRACE
+  count) and fails if any password, hash or code appears. A new entity with a
+  secret field, or a new flow that handles one, belongs in that spec.
 - **janux-people is pinned to 1.0.2** (JAM-129): `typeName` is declared rather
   than read off the constructor's source, and `toJSON()` carries it. Keep
   consumers on the same version: two copies of janux-people mean two sets of

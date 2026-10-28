@@ -20,6 +20,13 @@ export abstract class AccountDao extends AbstractDataAccessObjectWithAdapter<Acc
 	}
 
 	/**
+	 * A password, or its hash, must not be logged as part of a query either (JAM-80).
+	 */
+	protected sensitiveAttributes(): string[] {
+		return ["password"];
+	}
+
+	/**
 	 * Find all the users whose user name matches.
 	 * This is an abstract class because the query is implement in a different way for lokijs and
 	 * mongoose.
