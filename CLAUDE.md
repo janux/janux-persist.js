@@ -238,3 +238,11 @@ can likely come off too.
   captured line, at any level, carries the password. Add a case there when a
   new statement touches a path. It does not cover an application logging its
   own configuration; that is the app's to redact.
+- **janux-people is pinned to 1.0.2** (JAM-129): `typeName` is declared rather
+  than read off the constructor's source, and `toJSON()` carries it. Keep
+  consumers on the same version: two copies of janux-people mean two sets of
+  `Person` / `Organization` classes, and `instanceof` checks between objects
+  from one copy and classes from the other fail silently.
+  `test/services/party/janux-people-1-0-2.spec.js` checks that janux-persist
+  and its callers resolve a single copy, and that `StaffImplTest` keeps its own
+  `typeName` (the party DAO dispatches on it).

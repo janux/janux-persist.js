@@ -42,7 +42,7 @@
 		"bluebird": "3.5.0",
 		"email-validator": "1.0.7",
 		"janux-authorize": "1.0.0",
-		"janux-people": "1.0.0",
+		"janux-people": "1.0.2",
 		"lodash": "4.17.12",
 		"lokijs": "1.5.0",
 		"mail-time": "0.1.7",

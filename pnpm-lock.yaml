@@ -57,8 +57,8 @@ importers:
         specifier: 1.0.0
         version: 1.0.0
       janux-people:
-        specifier: 1.0.0
-        version: 1.0.0
+        specifier: 1.0.2
+        version: 1.0.2
       lodash:
         specifier: 4.17.12
         version: 4.17.12
@@ -828,8 +828,9 @@ packages:
   janux-authorize@1.0.0:
     resolution: {integrity: sha1-df2JpKKxTm7FrDU0Eap/9Ip6KGc=}
 
-  janux-people@1.0.0:
-    resolution: {integrity: sha1-HoeNH3WT6p9BLtfyEH8VC5rends=}
+  janux-people@1.0.2:
+    resolution: {integrity: sha512-JmP3dUXT/DpUDNTcaDW3oPrAUV3BEGdNOVnkYyjMgwHd3DrQ+b1CfU5MMom3Y+Qq+zHz/AOgYY6E1dAfa2ZNzQ==}
+    engines: {node: '>=10'}
 
   josk@1.1.0:
     resolution: {integrity: sha512-/PPqm5cRx/h4Dpn7XrynJmjaSRmArkPKZMXrhjWUTx/mymS2sryIwVgU32SbIigZH1Jbgr2JHW+evz502zj4hQ==}
@@ -2150,9 +2151,7 @@ snapshots:
     dependencies:
       lodash: 3.10.1
 
-  janux-people@1.0.0:
-    dependencies:
-      lodash: 3.10.1
+  janux-people@1.0.2: {}
 
   josk@1.1.0:
     dependencies:
